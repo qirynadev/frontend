@@ -1,0 +1,20 @@
+{
+  "name": "Qiryna",
+  "short_name": "Qiryna",
+  "description": "Orientation scolaire et professionnelle",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#582cfd",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "./assets/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

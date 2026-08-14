@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Connexion — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-connexion">
+
+    <div class="connexion-header">
+      <div class="connexion-main">
+
+        <!-- Logo (442:1122) pb 20px -->
+        <div class="logo-wrap">
+          <div class="connexion-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+        </div>
+
+        <!-- Hero (442:1124) pt 30 / pb 7 / gap 10 -->
+        <div class="connexion-hero">
+          <div class="connexion-hero-copy">
+            <h1>Bienvenue chez Qiryna&nbsp;</h1>
+            <div class="intro">
+              <p>Votre avenir commence par&nbsp;</p>
+              <p>le bon choix d’orientation.&nbsp;</p>
+            </div>
+          </div>
+          <div class="connexion-hero-illus">
+            <img src="../assets/images/hero-connexion.png" alt="Illustration orientation" />
+          </div>
+        </div>
+
+        <!-- Toggle (453:2396) pt 24 -->
+        <div class="connexion-toggle-wrap">
+          <div class="auth-toggle">
+            <button type="button" class="active">Se connecter&nbsp;</button>
+            <a href="inscription.html">S'inscrire&nbsp;</a>
+          </div>
+        </div>
+
+        <!-- Form (442:1141) pt 15 -->
+        <div class="connexion-form-wrap">
+          <div class="connexion-form-card">
+            <div class="connexion-fields">
+              <!-- Email -->
+              <div class="input-group">
+                <label for="email">Adresse e-mail</label>
+                <div class="input-field-offset">
+                  <div class="input-field">
+                    <span class="field-icon field-icon--email"><img src="../assets/icons/ic-email.svg" alt="" /></span>
+                    <input id="email" type="email" placeholder="exemple@email.com" autocomplete="email" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="input-group connexion-password-field">
+                <label for="password">Mot de passe</label>
+                <div class="input-field-offset">
+                  <div class="input-field">
+                    <span class="field-icon field-icon--lock"><img src="../assets/icons/ic-lock.svg" alt="" /></span>
+                    <input id="password" type="password" placeholder="••••••••••••••••" autocomplete="current-password" />
+                    <button class="eye-btn" type="button" aria-label="Afficher le mot de passe">
+                      <img src="../assets/icons/ic-eye.svg" alt="" width="20" height="20" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Forgot (442:1164) h 32 -->
+              <div class="connexion-forgot">
+                <a href="mot-de-passe.html">Mot de passe oublié ?&nbsp;</a>
+              </div>
+            </div>
+
+            <!-- Submit (442:1167) pt 5 -->
+            <div class="connexion-submit-wrap">
+              <button class="btn-primary" type="button" data-connexion-submit>Se connecter</button>
+            </div>
+
+            <!-- OR (même principe que inscription) -->
+            <div class="divider-or"><span>OU CONTINUER AVEC</span></div>
+
+            <!-- Social — logos + noms uniquement -->
+            <div class="social-row">
+              <button class="social-btn social-btn--name" type="button">
+                <img src="../assets/icons/ic-google.svg" alt="" width="16" height="16" />
+                <span class="social-name">Google</span>
+              </button>
+              <button class="social-btn social-btn--name" type="button">
+                <img src="../assets/icons/ic-apple.svg" alt="" width="16" height="16" />
+                <span class="social-name">Apple</span>
+              </button>
+              <button class="social-btn social-btn--name" type="button">
+                <img src="../assets/icons/ic-facebook.svg" alt="" width="16" height="16" />
+                <span class="social-name">Facebook</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info box (442:1204) pt 24 / h 200 -->
+        <div class="connexion-info-box">
+          <div class="info-row">
+            <span class="info-icon"><img src="../assets/icons/ic-shield.svg" alt="" /></span>
+            <div class="info-text">
+              <p class="info-title">Sécurisé et confidentiel</p>
+              <p class="info-desc">Vos données sont protégées et ne seront jamais partagées.&nbsp;</p>
+            </div>
+          </div>
+          <div class="info-row info-row--middle">
+            <span class="info-icon"><img src="../assets/icons/ic-person.svg" alt="" /></span>
+            <div class="info-text">
+              <p class="info-title">Un accompagnement personnalisé</p>
+              <p class="info-desc">Des recommandations adaptées à votre profil.</p>
+            </div>
+          </div>
+          <div class="info-row info-row--last">
+            <span class="info-icon"><img src="../assets/icons/ic-clock.svg" alt="" /></span>
+            <div class="info-text">
+              <p class="info-title">Gagnez du temps</p>
+              <p class="info-desc">Trouvez votre voie plus rapidement et sereinement.&nbsp;</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Nav (455:4820) gap 8 / py 10 -->
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-orientation.svg" alt="" width="24" height="24" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="connexion.html" class="nav-item active" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte-active.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+
+  document.querySelectorAll('.eye-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const input = btn.closest('.input-field')?.querySelector('input');
+      if (input) input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  document.querySelector('[data-connexion-submit]')?.addEventListener('click', () => {
+    window.location.href = 'reglages.html';
+  });
+</script>
+</body>
+</html>

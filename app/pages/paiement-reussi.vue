@@ -1,0 +1,295 @@
+<script setup lang="ts">
+/**
+ * Paiement réussi — **tunnel domaines d'étude** ← `maquette/pwa/pages/paiement-reussi.html`.
+ *
+ * L'écran générique de fin de paiement : celui vers lequel reviennent les
+ * parcours qui n'ont pas le leur. Le parcours langue, lui, a
+ * `langues/[slug]/paiement-reussi.vue` — cinq étapes empilées au lieu de
+ * quatre en rangée. Voir LOT-5.md § 7 quinquies.
+ *
+ * | Bloc | Règles reprises de `app.css` |
+ * |---|---|
+ * | barre supérieure | `padding-bottom: 30px`, retour 24×24, logo 145×45, cloche 49×49 |
+ * | réussite | illustration 276×123 `object-fit: cover` · titre 24px / 31,25px `-0.625px` insécable · sous-titre 8px au-dessus, centré |
+ * | récapitulatif | carte `padding: 17px 15px`, `gap: 20px`, bord `#f1f5f9`, ombre `0 0 3.5px` |
+ * | vignette | 64×48, rayon 7, image à `112,5%` décalée de `-6,25%` |
+ * | méta | `gap: 14px`, `padding-top: 4px` · étiquette 12px / 20px · valeur 13px alignée à droite |
+ * | Stripe | fond `rgb(99 91 255 / .1)`, rayon 6, 10,5px **italique**, `letter-spacing: .525px` |
+ * | bienvenue | `padding: 20px 0` · encart `#f4f9f6`, bord `#f3f9f5`, `padding: 21px 10px`, `gap: 16px` |
+ * | frise | rangée `min-height: 205px`, `padding-top: 10px` · séparateurs **absolus** à 25 / 50 / 75 % |
+ * | étapes | icône 50×50, pastille 21×20 — une couleur par rang · description `min-height: 32px` |
+ * | aide | `min-height: 91px`, bouton **absolu** à droite, centré verticalement |
+ * | sous 375px | titre enroulable · le bouton d'aide passe **sous** le texte |
+ *
+ * ### Deux écarts de donnée
+ *
+ * | Maquette | Réel | Décision |
+ * |---|---|---|
+ * | « ...4242 » (4 derniers chiffres) | `/payment/validate` ne renvoie aucune information de carte | la mention est retirée ; « stripe » et « Carte bancaire » restent, qui sont exacts |
+ * | « Plus de garanties » sous le nom de l'école | `offer.description` — vide sur les huit formules du catalogue | la ligne n'est rendue que si elle est renseignée |
+ *
+ * ### Les quatre états
+ *
+ * **Chargement** squelettes · **erreur** `PageState` · **vide** aucun
+ * `order_id` dans l'URL, avec un renvoi vers « Mon projet » plutôt qu'une page
+ * de succès mensongère · **nominal**, et ses deux variantes : refusé, en
+ * attente.
+ */
+import { paymentRepo } from '~/core/repositories'
+
+definePageMeta({ middleware: 'auth' })
+
+const route = useRoute()
+const { t, locale, d, n } = useI18n()
+const localePath = useLocalePath()
+
+/** Stripe renvoie l'identifiant de commande dans l'URL. */
+const orderId = computed(() => {
+  const raw = route.query.order_id ?? route.query.orderId
+  return typeof raw === 'string' ? raw : ''
+})
+
+const { data: validation, apiError, isInitialLoading, refresh } = await usePageData(
+  `payment-success-${orderId.value}`,
+  () => (orderId.value === '' ? Promise.resolve(null) : paymentRepo.validate(orderId.value, locale.value)),
+  { watch: [orderId, locale] },
+)
+
+const order = computed(() => validation.value?.order ?? null)
+const confirmed = computed(() => validation.value?.confirmed === true)
+const failed = computed(() => validation.value?.failed === true)
+
+const paymentDate = computed(() => {
+  if (!order.value?.createdAt) return ''
+  return d(new Date(order.value.createdAt), 'long')
+})
+
+/**
+ * Les quatre étapes — éditoriales.
+ *
+ * Aucune n'a de source côté API : ce sont les engagements de service que
+ * décrit la maquette, pas un suivi. Elles ne portent donc **aucun statut**,
+ * contrairement à celles du parcours langue.
+ */
+const steps = [
+  { icon: 'ic-paiement-step1', tone: 'bg-paiement-step-1', titleKey: 'checkout.success.step1Title', descKey: 'checkout.success.step1Desc' },
+  { icon: 'ic-paiement-step2', tone: 'bg-paiement-step-2', titleKey: 'checkout.success.step2Title', descKey: 'checkout.success.step2Desc' },
+  { icon: 'ic-paiement-step3', tone: 'bg-success', titleKey: 'checkout.success.step3Title', descKey: 'checkout.success.step3Desc' },
+  { icon: 'ic-paiement-step4', tone: 'bg-paiement-step-4', titleKey: 'checkout.success.step4Title', descKey: 'checkout.success.step4Desc' },
+] as const
+
+usePageSeo(() => ({
+  title: t('checkout.success.seoTitle'),
+  description: t('checkout.success.seoDescription'),
+  noindex: true,
+}))
+</script>
+
+<template>
+  <div>
+    <AppTopBar back back-to="/" />
+
+    <PageState
+      :loading="isInitialLoading"
+      :error="apiError"
+      :empty="orderId === ''"
+      :on-retry="() => refresh()"
+    >
+      <template #loading>
+        <div class="flex flex-col gap-20">
+          <QSkeleton variant="rect" :height="123" />
+          <QSkeleton variant="rect" :height="180" />
+          <QSkeleton variant="rect" :height="205" />
+        </div>
+      </template>
+
+      <template #empty>
+        <QEmptyState
+          :title="$t('checkout.success.orderTitle')"
+          :description="$t('confirmation.missingOrder')"
+        >
+          <template #action>
+            <QButton :to="localePath('/mon-projet')">{{ $t('nav.project') }}</QButton>
+          </template>
+        </QEmptyState>
+      </template>
+
+      <!-- La maquette ne montre que le succès ; le refus et l'attente existent. -->
+      <QAlert
+        v-if="failed"
+        tone="danger"
+        :title="$t('confirmation.failedTitle')"
+        :message="$t('confirmation.failedDescription')"
+        class="mb-20"
+      />
+      <QAlert
+        v-else-if="!confirmed"
+        tone="warning"
+        :title="$t('confirmation.pendingTitle')"
+        :message="$t('confirmation.pendingDescription')"
+        class="mb-20"
+      />
+
+      <!-- Réussite -->
+      <div class="flex flex-col items-center pb-20">
+        <div class="h-123 w-276 shrink-0 overflow-hidden">
+          <img
+            src="/img/hero-paiement.webp"
+            alt=""
+            width="276"
+            height="123"
+            class="pointer-events-none size-full object-cover"
+          >
+        </div>
+
+        <h1
+          class="m-0 text-5xl leading-[31.25px] font-semibold tracking-[-0.625px] whitespace-nowrap text-text max-[375.02px]:whitespace-normal"
+        >
+          {{ $t('checkout.success.title') }}
+        </h1>
+
+        <div class="pt-8 text-center text-xl leading-normal font-normal whitespace-pre-line text-text">
+          {{ $t('checkout.success.subtitle') }}
+        </div>
+      </div>
+
+      <!-- Récapitulatif -->
+      <div
+        v-if="order"
+        class="flex flex-col gap-20 rounded-xl border border-border-soft bg-white px-15 py-17 shadow-card"
+      >
+        <p class="m-0 text-exact-15-5 font-semibold text-text">
+          {{ $t('checkout.success.orderTitle') }}
+        </p>
+
+        <div class="flex items-center justify-between gap-12 py-4">
+          <div class="flex min-w-0 flex-1 items-center gap-12">
+            <div class="h-48 w-64 shrink-0 overflow-hidden rounded-exact-7 bg-border-soft">
+              <!-- L'image déborde de 12,5% et se recentre : cadrage de la maquette. -->
+              <img
+                v-if="order.offer?.icon"
+                :src="order.offer.icon"
+                alt=""
+                class="-ml-[6.25%] h-full w-[112.5%] max-w-none object-cover"
+              >
+            </div>
+
+            <div class="min-w-0">
+              <p class="m-0 text-base leading-[22.5px] font-medium text-navy-2">{{ order.offer?.title }}</p>
+              <p v-if="order.offer?.description" class="m-0 text-base leading-16 font-medium text-slate">
+                {{ order.offer.description }}
+              </p>
+            </div>
+          </div>
+
+          <p class="m-0 shrink-0 text-2xl leading-[25.5px] font-bold whitespace-nowrap text-navy-2">
+            {{ n(order.price.amount, 'currency') }}
+          </p>
+        </div>
+
+        <div aria-hidden="true" class="h-1 bg-border-soft" />
+
+        <div class="flex flex-col gap-14 pt-4">
+          <div class="flex items-center justify-between gap-8">
+            <span class="shrink-0 text-base leading-20 font-normal text-text">
+              {{ $t('checkout.paymentDateLabel') }}
+            </span>
+            <span class="text-lg leading-20 font-medium text-text">{{ paymentDate }}</span>
+          </div>
+
+          <div class="flex items-center justify-between gap-8">
+            <span class="shrink-0 text-base leading-20 font-normal text-text">
+              {{ $t('checkout.paymentMethodLabel') }}
+            </span>
+            <!-- La maquette ajoute « ...4242 » : l'API ne renvoie aucune
+                 information de carte, la mention est donc retirée. -->
+            <span class="flex flex-wrap items-center justify-end gap-6">
+              <span
+                class="rounded-md bg-stripe-bg px-8 py-2 text-exact-10-5 font-bold tracking-[0.525px] text-stripe italic"
+              >stripe</span>
+              <span class="text-base leading-20 font-medium text-slate">{{ $t('checkout.cardMethod') }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bienvenue -->
+      <div class="py-20">
+        <div class="flex items-start gap-16 rounded-xl border border-welcome-border bg-welcome-bg px-10 py-21">
+          <QIcon name="ic-gift" :size="44" />
+          <div class="min-w-0">
+            <p class="m-0 text-base leading-20 font-bold text-text">
+              {{ $t('checkout.success.welcomeTitle') }}
+            </p>
+            <p class="mt-4 mb-0 text-sm leading-16 font-normal text-text">
+              {{ $t('checkout.success.welcomeDescription') }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Et maintenant ? -->
+      <div>
+        <h2 class="m-0 text-xl leading-16 font-semibold tracking-wider text-text">
+          {{ $t('checkout.success.stepsHeading') }}
+        </h2>
+
+        <div class="relative flex min-h-205 items-start pt-10">
+          <!-- Séparateurs posés en absolu aux quarts, pas entre les colonnes :
+               ils restent alignés quel que soit le retour à la ligne des textes. -->
+          <QIcon
+            v-for="position in ['left-[calc(25%-10px)]', 'left-[calc(50%-10px)]', 'left-[calc(75%-10px)]']"
+            :key="position"
+            name="ic-step-divider"
+            :size="20"
+            :height="8"
+            :class="['pointer-events-none absolute top-30', position]"
+          />
+
+          <div v-for="(step, index) in steps" :key="step.icon" class="flex min-w-0 flex-1 flex-col items-center gap-11">
+            <div class="flex w-88 flex-col items-center gap-18">
+              <QIcon :name="step.icon" :size="50" />
+              <span
+                :class="[
+                  'flex h-20 w-21 items-center justify-center rounded-full text-md leading-20 font-semibold text-white',
+                  step.tone,
+                ]"
+              >{{ index + 1 }}</span>
+            </div>
+
+            <div class="flex w-full flex-col items-center gap-5 text-center">
+              <p class="m-0 text-sm leading-14 font-bold text-text">{{ $t(step.titleKey) }}</p>
+              <p class="m-0 min-h-32 text-2xs leading-normal font-medium text-text">{{ $t(step.descKey) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Une question ? -->
+      <div class="pt-20">
+        <div class="relative flex min-h-91 items-center justify-between gap-8 rounded-xl bg-surface-2 p-9">
+          <!-- `padding-right: 120px` réserve la place du bouton, qui est en
+               absolu. Sous 375px il passe dessous, d'où la bascule. -->
+          <div class="flex min-w-0 flex-1 items-start gap-11 pr-120 max-[375.02px]:pr-0 max-[375.02px]:pb-44">
+            <span class="flex size-44 shrink-0 items-center justify-center rounded-full bg-primary-soft">
+              <QIcon name="ic-headset2" :size="24" />
+            </span>
+            <div class="min-w-0">
+              <p class="m-0 text-md leading-20 font-bold text-text">{{ $t('checkout.success.helpTitle') }}</p>
+              <p class="mt-4 mb-0 text-sm leading-16 font-normal whitespace-pre-line text-text">
+                {{ $t('checkout.success.helpDescription') }}
+              </p>
+            </div>
+          </div>
+
+          <SupportLink
+            class="absolute top-1/2 right-9 inline-flex shrink-0 -translate-y-1/2 items-center gap-6 rounded-lg bg-primary-btn px-14 py-8 text-sm leading-16 font-medium whitespace-nowrap text-white no-underline max-[375.02px]:top-auto max-[375.02px]:bottom-9 max-[375.02px]:translate-y-0"
+          >
+            {{ $t('checkout.success.helpCta') }}
+            <QIcon name="ic-btn-arrow" :size="8" :height="7" />
+          </SupportLink>
+        </div>
+      </div>
+    </PageState>
+  </div>
+</template>

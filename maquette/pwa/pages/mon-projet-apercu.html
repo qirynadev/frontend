@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Mon projet (aperçu) — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-mon-projet">
+
+    <div class="projet-header">
+      <div class="projet-main">
+
+        <!-- Header 495:26 — logo + cloche (pas de status bar) -->
+        <header class="projet-topbar">
+          <span class="projet-topbar-spacer" aria-hidden="true"></span>
+          <div class="projet-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="projet-notif" aria-label="Notifications, 3 non lues">
+            <img src="../assets/icons/ic-bell.svg" alt="" width="25" height="25" />
+            <span class="projet-notif-badge">3</span>
+          </div>
+        </header>
+
+        <!-- Hero 470:22 -->
+        <section class="projet-hero" aria-labelledby="projet-title">
+          <div class="projet-hero-copy">
+            <h1 id="projet-title">Mon projet</h1>
+            <p>Tous vos échanges avec nos conseillers et notre équipe au même endroit.</p>
+          </div>
+          <div class="projet-hero-illus" aria-hidden="true">
+            <img src="../assets/images/hero-mon-projet.png" alt="" />
+          </div>
+        </section>
+
+        <!-- Aperçu général 497:875 -->
+        <section class="projet-apercu" aria-labelledby="apercu-title">
+          <div class="projet-apercu-head">
+            <h2 id="apercu-title">Aperçu général</h2>
+            <span class="projet-apercu-updated">Mis à jour aujourd'hui</span>
+          </div>
+
+          <!-- Progress chart 65% (Figma 514:2) -->
+          <div class="projet-progress-row">
+            <div class="projet-progress-anchor" aria-label="Progression 65 pour cent">
+              <div class="projet-progress-chart" data-progress="65" role="img" aria-label="65% de progression">
+                <svg class="projet-chart-svg" viewBox="0 0 74 74" width="74" height="74" aria-hidden="true">
+                  <circle class="projet-chart-track" cx="37" cy="37" r="34.5" />
+                  <circle class="projet-chart-bar" cx="37" cy="37" r="34.5" />
+                </svg>
+              </div>
+              <p class="projet-ring-pct">65%</p>
+              <p class="projet-ring-label">de progression</p>
+            </div>
+
+            <div class="projet-progress-copy">
+              <p class="projet-progress-title">Vous avancez bien !</p>
+              <p class="projet-progress-desc">
+                Continuez vos démarches, vous êtes sur<br />
+                la bonne voie.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stats grid 514:11 -->
+          <div class="projet-stats">
+            <div class="projet-stat">
+              <span class="projet-stat-icon"><img src="../assets/icons/ic-stat-done.svg" alt="" width="15" height="15" /></span>
+              <div class="projet-stat-text">
+                <span class="projet-stat-value">2</span>
+                <span class="projet-stat-label">Terminés</span>
+              </div>
+            </div>
+            <div class="projet-stat-divider" aria-hidden="true">
+              <img src="../assets/icons/ic-stat-divider.svg" alt="" />
+            </div>
+            <div class="projet-stat">
+              <span class="projet-stat-icon"><img src="../assets/icons/ic-stat-progress.svg" alt="" width="15" height="15" /></span>
+              <div class="projet-stat-text">
+                <span class="projet-stat-value projet-stat-value--orange">1</span>
+                <span class="projet-stat-label">En cours</span>
+              </div>
+            </div>
+            <div class="projet-stat-divider" aria-hidden="true">
+              <img src="../assets/icons/ic-stat-divider.svg" alt="" />
+            </div>
+            <div class="projet-stat">
+              <span class="projet-stat-icon projet-stat-icon--soon">
+                <span class="projet-stat-icon-inset"><img src="../assets/icons/ic-stat-soon.svg" alt="" /></span>
+              </span>
+              <div class="projet-stat-text">
+                <span class="projet-stat-value">1</span>
+                <span class="projet-stat-label">À venir</span>
+              </div>
+            </div>
+            <div class="projet-stat-divider" aria-hidden="true">
+              <img src="../assets/icons/ic-stat-divider.svg" alt="" />
+            </div>
+            <div class="projet-stat projet-stat--rdv">
+              <span class="projet-stat-icon projet-stat-icon--rdv">
+                <span class="projet-stat-icon-inset projet-stat-icon-inset--rdv"><img src="../assets/icons/ic-stat-rdv.svg" alt="" /></span>
+              </span>
+              <div class="projet-stat-text">
+                <span class="projet-stat-date">12 mai 2026</span>
+                <span class="projet-stat-label projet-stat-label--bold">Prochain RDV</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mes services 514:60 -->
+        <section class="projet-services" aria-labelledby="services-title">
+          <div class="projet-services-head">
+            <h2 id="services-title">Mes services</h2>
+            <a href="#" class="projet-services-link">
+              <span>Voir tout</span>
+              <span class="projet-services-chevron">
+                <img src="../assets/icons/ic-chevron-voir-tout.svg" alt="" width="5" height="9" />
+              </span>
+            </a>
+          </div>
+
+          <div class="projet-service-list">
+
+            <!-- Orientation Terminé 514:72 h105 -->
+            <article class="projet-service-card projet-service-card--h105">
+              <div class="projet-service-main">
+                <span class="projet-service-icon"><img src="../assets/icons/ic-service-orientation-bg.svg" alt="" width="44" height="44" /></span>
+                <div class="projet-service-body">
+                  <h3>Orientation</h3>
+                  <p>Faites le point sur votre profil&nbsp; et découvrez les parcours qui vous correspondent</p>
+                  <span class="projet-pack projet-pack--essentiel">Pack Essentiel</span>
+                </div>
+              </div>
+              <div class="projet-service-aside">
+                <span class="projet-status projet-status--done">
+                  <span>Terminé</span>
+                  <img src="../assets/icons/ic-status-done-check.svg" alt="" width="15" height="15" />
+                </span>
+                <span class="projet-chevron"><img src="../assets/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" /></span>
+              </div>
+            </article>
+
+            <!-- Orientation Premium En cours 515:195 h103 -->
+            <article class="projet-service-card projet-service-card--h103">
+              <div class="projet-service-main">
+                <span class="projet-service-icon projet-service-icon--premium">
+                  <img src="../assets/icons/ic-service-orientation-premium.svg" alt="" width="24" height="24" />
+                </span>
+                <div class="projet-service-body">
+                  <h3>Orientation</h3>
+                  <p>Nous vous accompagnons pour intégrer l'école de vos rêves.</p>
+                  <span class="projet-pack projet-pack--premium">Pack Premuim</span>
+                </div>
+              </div>
+              <div class="projet-service-aside projet-service-aside--stack">
+                <div class="projet-service-aside-col">
+                  <span class="projet-status projet-status--progress">
+                    <span>En cours</span>
+                    <span class="projet-status-dot"><img src="../assets/icons/ic-status-progress-dot.svg" alt="" /></span>
+                  </span>
+                  <div class="projet-mini-progress">
+                    <span class="projet-mini-progress-label">70% complété</span>
+                    <div class="projet-mini-progress-track">
+                      <span class="projet-mini-progress-fill"></span>
+                    </div>
+                  </div>
+                </div>
+                <span class="projet-chevron"><img src="../assets/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" /></span>
+              </div>
+            </article>
+
+            <!-- Langue À venir 515:261 -->
+            <article class="projet-service-card projet-service-card--h103">
+              <div class="projet-service-main">
+                <span class="projet-service-icon"><img src="../assets/icons/ic-service-langue-bg.svg" alt="" width="44" height="44" /></span>
+                <div class="projet-service-body">
+                  <h3>Apprendre une langue</h3>
+                  <p>Apprenez une nouvelle langue et ouvrez les portes du monde.</p>
+                  <span class="projet-pack projet-pack--langues">Pack Langues</span>
+                </div>
+              </div>
+              <div class="projet-service-aside projet-service-aside--stack">
+                <div class="projet-service-aside-col">
+                  <span class="projet-status projet-status--soon">
+                    <span>À venir</span>
+                    <span class="projet-status-dot"><img src="../assets/icons/ic-status-soon-dot.svg" alt="" /></span>
+                  </span>
+                  <span class="projet-start-date">Démarre le 15/05/2026</span>
+                </div>
+                <span class="projet-chevron"><img src="../assets/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" /></span>
+              </div>
+            </article>
+
+            <!-- Logement Commencer 515:299 -->
+            <article class="projet-service-card projet-service-card--h103">
+              <div class="projet-service-main">
+                <span class="projet-service-icon"><img src="../assets/icons/ic-service-logement-bg.svg" alt="" width="44" height="44" /></span>
+                <div class="projet-service-body">
+                  <h3>Trouver mon logement</h3>
+                  <p>Trouvez le logement idéal, en toute<br />sérénité.</p>
+                  <span class="projet-pack projet-pack--logement">Pack Logement</span>
+                </div>
+              </div>
+              <div class="projet-service-aside projet-service-aside--stack">
+                <button type="button" class="projet-btn-start">Commencer</button>
+                <span class="projet-chevron"><img src="../assets/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" /></span>
+              </div>
+            </article>
+
+          </div>
+
+          <!-- RDV CTA 515:346 -->
+          <aside class="projet-rdv-cta">
+            <div class="projet-rdv-left">
+              <span class="projet-rdv-icon"><img src="../assets/icons/ic-rdv-calendar.svg" alt="" width="44" height="44" /></span>
+              <div class="projet-rdv-copy">
+                <p class="projet-rdv-title">Besoin d'un accompagnement ?</p>
+                <p class="projet-rdv-desc">
+                  Réservez un rendez-vous avec un<br />
+                  conseiller pour avancer.
+                </p>
+              </div>
+            </div>
+            <a href="#" class="projet-rdv-btn">Prendre rendez-vous</a>
+          </aside>
+        </section>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="#" class="nav-item nav-item--orientation">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="connexion.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+
+  /* Circular progress chart — stroke-dasharray from data-progress */
+  document.querySelectorAll('.projet-progress-chart[data-progress]').forEach((chart) => {
+    const value = Math.min(100, Math.max(0, Number(chart.dataset.progress) || 0));
+    const bar = chart.querySelector('.projet-chart-bar');
+    if (!bar) return;
+    const r = Number(bar.getAttribute('r')) || 34.5;
+    const c = 2 * Math.PI * r;
+    bar.style.strokeDasharray = `${(value / 100) * c} ${c}`;
+  });
+</script>
+</body>
+</html>

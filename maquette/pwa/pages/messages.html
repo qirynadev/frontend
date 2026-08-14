@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Mes messages — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-msg">
+
+    <div class="msg-header">
+      <div class="msg-main">
+
+        <header class="home-topbar">
+          <a href="home.html" class="home-menu-btn" aria-label="Accueil">
+            <img src="../assets/icons/messages/ic-msg-menu.svg" alt="" width="24" height="24" />
+          </a>
+          <div class="home-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="home-notif">
+            <img src="../assets/icons/messages/ic-msg-bell.svg" alt="" width="25" height="25" />
+            <span class="home-notif-badge">3</span>
+          </div>
+        </header>
+
+        <section class="msg-hero">
+          <div class="msg-hero-copy">
+            <h1>Mes messages</h1>
+            <p>Tous vos échanges avec nos conseillers et notre équipe au même endroit.</p>
+          </div>
+          <div class="msg-hero-illus" aria-hidden="true">
+            <img src="../assets/images/messages/hero.png" alt="" width="211" height="167" />
+          </div>
+        </section>
+
+        <div class="msg-tabs" role="tablist" aria-label="Type d’échanges">
+          <button type="button" class="msg-tab is-active" role="tab" aria-selected="true" data-msg-tab="messages">
+            <span class="msg-tab-inner">
+              <img src="../assets/icons/messages/ic-msg-tab-chat.svg" alt="" width="14" height="13" />
+              <span>Messages</span>
+              <span class="msg-tab-badge">2</span>
+            </span>
+          </button>
+          <button type="button" class="msg-tab" role="tab" aria-selected="false" data-msg-tab="notification">
+            <span class="msg-tab-inner">
+              <img src="../assets/icons/messages/ic-msg-tab-bell.svg" alt="" width="16" height="16" />
+              <span>Notification</span>
+            </span>
+          </button>
+        </div>
+
+        <div class="msg-toolbar">
+          <label class="msg-search">
+            <img src="../assets/icons/messages/ic-msg-search.svg" alt="" width="18" height="18" />
+            <input type="search" placeholder="Rechercher une conversation" data-msg-search autocomplete="off" />
+          </label>
+          <button type="button" class="msg-filter" aria-label="Filtrer">
+            <img src="../assets/icons/messages/ic-msg-filter.svg" alt="" width="15" height="14" />
+            <span>Filtrer</span>
+          </button>
+        </div>
+
+        <div class="msg-panel" data-msg-panel="messages">
+          <div class="msg-list" data-msg-list>
+
+            <article class="msg-card" data-msg-item>
+              <div class="msg-avatar">
+                <img src="../assets/images/messages/avatar-orientation.png" alt="" width="48" height="48" />
+                <span class="msg-online" aria-hidden="true">
+                  <img src="../assets/icons/messages/ic-msg-online.svg" alt="" width="6" height="6" />
+                </span>
+              </div>
+              <div class="msg-body">
+                <div class="msg-identity">
+                  <h2 class="msg-name">Conseillère orientation</h2>
+                  <span class="msg-tag msg-tag--purple">Conseillère</span>
+                </div>
+                <p class="msg-preview">Bonjour ! J’ai bien reçu vos réponses au test d’orientation. On peut en discuter ?</p>
+              </div>
+              <div class="msg-aside">
+                <time class="msg-time">10:30</time>
+                <span class="msg-unread msg-unread--count" aria-label="2 non lus">2</span>
+              </div>
+            </article>
+
+            <article class="msg-card" data-msg-item>
+              <div class="msg-avatar">
+                <img src="../assets/images/messages/avatar-langues.png" alt="" width="48" height="48" />
+                <span class="msg-online" aria-hidden="true">
+                  <img src="../assets/icons/messages/ic-msg-online.svg" alt="" width="6" height="6" />
+                </span>
+              </div>
+              <div class="msg-body">
+                <div class="msg-identity">
+                  <h2 class="msg-name">Conseiller Langues</h2>
+                  <span class="msg-tag msg-tag--green">Conseiller</span>
+                </div>
+                <p class="msg-preview">Découvrez nos nouvelles formations en langues et trouvez celle qui vous correspond.</p>
+              </div>
+              <div class="msg-aside">
+                <time class="msg-time">Hier</time>
+                <span class="msg-unread" aria-label="Non lu"></span>
+              </div>
+            </article>
+
+            <article class="msg-card" data-msg-item>
+              <div class="msg-avatar msg-avatar--icon" style="background:#f4f7fe">
+                <img src="../assets/icons/messages/ic-msg-home.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="msg-body">
+                <div class="msg-identity">
+                  <h2 class="msg-name">Conseiller logement</h2>
+                  <span class="msg-tag msg-tag--orange">Conseiller</span>
+                </div>
+                <p class="msg-preview">De nouvelles résidences sont disponibles près de votre campus.</p>
+              </div>
+              <div class="msg-aside">
+                <time class="msg-time">12/05/2024</time>
+                <span class="msg-unread" aria-label="Non lu"></span>
+              </div>
+            </article>
+
+            <article class="msg-card" data-msg-item>
+              <div class="msg-avatar">
+                <img src="../assets/images/messages/avatar-admission.png" alt="" width="48" height="48" />
+              </div>
+              <div class="msg-body">
+                <div class="msg-identity">
+                  <h2 class="msg-name">Conseiller admission</h2>
+                  <span class="msg-tag msg-tag--pink">Conseiller</span>
+                </div>
+                <p class="msg-preview">Votre dossier est en cours d’examen. Je reste à votre disposition pour toute question.</p>
+              </div>
+              <div class="msg-aside">
+                <time class="msg-time">10/05/2024</time>
+                <span class="msg-unread" aria-label="Non lu"></span>
+              </div>
+            </article>
+
+            <article class="msg-card" data-msg-item>
+              <div class="msg-avatar msg-avatar--icon" style="background:#efedfe">
+                <img src="../assets/icons/messages/ic-msg-target.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="msg-body">
+                <div class="msg-identity">
+                  <h2 class="msg-name">Support Qiryna</h2>
+                  <span class="msg-tag msg-tag--violet">Équipe Qiryna</span>
+                </div>
+                <p class="msg-preview">Votre bilan d’orientation est maintenant disponible. N’hésitez pas si vous avez des…</p>
+              </div>
+              <div class="msg-aside">
+                <time class="msg-time">08/05/2024</time>
+                <span class="msg-unread" aria-label="Non lu"></span>
+              </div>
+            </article>
+
+            <article class="msg-card" data-msg-item>
+              <div class="msg-avatar msg-avatar--support">
+                <img src="../assets/icons/messages/ic-msg-support.svg" alt="" width="48" height="48" />
+              </div>
+              <div class="msg-body">
+                <div class="msg-identity">
+                  <h2 class="msg-name">Support client</h2>
+                  <span class="msg-tag msg-tag--blue">Service client</span>
+                </div>
+                <p class="msg-preview">Merci pour votre message. Nous revenons vers vous rapidement.</p>
+              </div>
+              <div class="msg-aside">
+                <time class="msg-time">03/05/2024</time>
+                <span class="msg-unread" aria-label="Non lu"></span>
+              </div>
+            </article>
+
+          </div>
+
+          <div data-pagination data-pages="4" data-current="1"></div>
+        </div>
+
+        <div class="msg-panel" data-msg-panel="notification" hidden>
+          <div class="msg-empty">
+            <p class="msg-empty-title">Aucune notification</p>
+            <p class="msg-empty-desc">Vos alertes Qiryna apparaîtront ici.</p>
+          </div>
+        </div>
+
+        <aside class="msg-secure">
+          <div class="msg-secure-left">
+            <span class="msg-secure-icon">
+              <img src="../assets/icons/messages/ic-msg-shield.svg" alt="" width="44" height="44" />
+            </span>
+            <div class="msg-secure-copy">
+              <p class="msg-secure-title">Vos échanges sont sécurisés</p>
+              <p class="msg-secure-desc">Vos conversations avec nos conseillers sont confidentielles et sécurisées.</p>
+            </div>
+          </div>
+          <img class="msg-secure-illus" src="../assets/images/messages/secure-lock.png" alt="" width="116" height="78" />
+        </aside>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item active" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages-active.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="orientation-scolaire.html" class="nav-item nav-item--orientation">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="connexion.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  import { mountComponents } from '../js/components.js';
+  mountComponents();
+
+  const tabs = document.querySelectorAll('[data-msg-tab]');
+  const panels = document.querySelectorAll('[data-msg-panel]');
+  const search = document.querySelector('[data-msg-search]');
+  const items = document.querySelectorAll('[data-msg-item]');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const id = tab.getAttribute('data-msg-tab');
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach((p) => {
+        p.hidden = p.getAttribute('data-msg-panel') !== id;
+      });
+    });
+  });
+
+  if (search) {
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      items.forEach((item) => {
+        const text = item.textContent.toLowerCase();
+        item.hidden = q !== '' && !text.includes(q);
+      });
+    });
+  }
+</script>
+</body>
+</html>

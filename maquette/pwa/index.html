@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Qiryna — Orientation scolaire et professionnelle</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/app.css" />
+  <style>
+    .hub {
+      max-width: 768px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100dvh;
+      padding: 20px 16px 120px;
+      box-sizing: border-box;
+    }
+    .hub-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .hub-logo img {
+      width: 130px;
+      height: 41px;
+      object-fit: contain;
+    }
+    .hub-sub {
+      text-align: center;
+      font-size: 12px;
+      color: #7371a2;
+      margin: 0 0 20px;
+      font-family: 'Jost', sans-serif;
+    }
+    .hub-accords {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .hub-accord {
+      border: 1px solid #e6e5f2;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(13, 27, 62, 0.06);
+      overflow: hidden;
+    }
+    .hub-accord-summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+      font-family: 'Jost', sans-serif;
+    }
+    .hub-accord-summary::-webkit-details-marker {
+      display: none;
+    }
+    .hub-accord-summary-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .hub-accord-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .hub-accord-icon img {
+      display: block;
+    }
+    .hub-accord-copy {
+      min-width: 0;
+    }
+    .hub-accord-title {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #191919;
+    }
+    .hub-accord-count {
+      margin: 2px 0 0;
+      font-size: 11px;
+      font-weight: 500;
+      color: #7371a2;
+    }
+    .hub-accord-chevron {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: block;
+      transition: transform 0.2s ease;
+      transform: rotate(90deg);
+    }
+    .hub-accord[open] .hub-accord-chevron {
+      transform: rotate(-90deg);
+    }
+    .hub-accord-body {
+      padding: 0 12px 12px;
+      border-top: 1px solid #f1f0f8;
+    }
+    .hub-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 12px;
+    }
+    .hub-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #faf9fe;
+      border: 1px solid #eceaf6;
+      border-radius: 10px;
+      padding: 14px;
+      text-decoration: none;
+    }
+    .hub-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .hub-card-copy {
+      min-width: 0;
+      flex: 1 1 0;
+    }
+    .hub-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #191919;
+      margin: 0;
+      font-family: 'Jost', sans-serif;
+    }
+    .hub-card-desc {
+      font-size: 11px;
+      color: #7371a2;
+      margin: 2px 0 0;
+      font-family: 'Jost', sans-serif;
+    }
+    .hub-card-chevron {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: block;
+    }
+  </style>
+</head>
+<body style="background:#eef0f5; min-height:100dvh;">
+
+  <div class="hub">
+    <div class="hub-logo">
+      <img src="./assets/images/logo.png" alt="Qiryna" />
+    </div>
+    <p class="hub-sub">Maquette PWA — écrans regroupés par parcours</p>
+
+    <div class="hub-accords">
+
+      <details class="hub-accord" open>
+        <summary class="hub-accord-summary">
+          <span class="hub-accord-summary-main">
+            <span class="hub-accord-icon" style="background:#fef4f5;">
+              <img src="./assets/icons/nav-home-active.svg" alt="" width="20" height="20" />
+            </span>
+            <span class="hub-accord-copy">
+              <p class="hub-accord-title">Commun</p>
+              <p class="hub-accord-count">14 écrans</p>
+            </span>
+          </span>
+          <img class="hub-accord-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+        </summary>
+        <div class="hub-accord-body">
+          <div class="hub-list">
+            <a class="hub-card" href="./pages/home.html">
+              <div class="hub-card-icon" style="background:#fef4f5;">
+                <img src="./assets/icons/nav-home-active.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Accueil</p>
+                <p class="hub-card-desc">Hub des parcours Qiryna</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/connexion.html">
+              <div class="hub-card-icon" style="background:#f2effd;">
+                <img src="./assets/icons/nav-compte-active.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Connexion</p>
+                <p class="hub-card-desc">Authentification</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/mot-de-passe.html">
+              <div class="hub-card-icon" style="background:#f2effd;">
+                <img src="./assets/icons/ic-lock.svg" alt="" width="13" height="16" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Mot de passe oublié</p>
+                <p class="hub-card-desc">Réinitialisation</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/inscription.html">
+              <div class="hub-card-icon" style="background:#f2effd;">
+                <img src="./assets/icons/ic-user.svg" alt="" width="14" height="18" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Inscription</p>
+                <p class="hub-card-desc">Créer un compte</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/reglages.html">
+              <div class="hub-card-icon" style="background:#f2effd;">
+                <img src="./assets/icons/reglages/ic-rg-person.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Réglages</p>
+                <p class="hub-card-desc">Compte · préférences · déconnexion</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/reglages-theme.html">
+              <div class="hub-card-icon" style="background:#faf7fd;">
+                <img src="./assets/icons/reglages-theme/ic-rt-sun.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Réglages thème</p>
+                <p class="hub-card-desc">Clair · Sombre · Système</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/reglages-mdp.html">
+              <div class="hub-card-icon" style="background:#f5f3ff;">
+                <img src="./assets/icons/reglages-mdp/ic-rm-lock.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Réglages mot de passe</p>
+                <p class="hub-card-desc">Changer · force · confirmation</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/reglages-langues.html">
+              <div class="hub-card-icon" style="background:#f7f5fe;">
+                <img src="./assets/icons/reglages/ic-rg-globe.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Réglages langues</p>
+                <p class="hub-card-desc">Français · English</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/reglages-mentions.html">
+              <div class="hub-card-icon" style="background:#f5f3ff;">
+                <img src="./assets/icons/reglages/ic-rg-legal.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Mentions légales</p>
+                <p class="hub-card-desc">CGU · Confidentialité · RGPD</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/mon-projet.html">
+              <div class="hub-card-icon" style="background:#f2effd;">
+                <img src="./assets/icons/nav-projet.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Mon projet</p>
+                <p class="hub-card-desc">Mes accompagnements</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/mon-projet-admission.html">
+              <div class="hub-card-icon" style="background:#f3efff;">
+                <img src="./assets/icons/mon-projet/ic-mp-admission.png" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Mon projet admission</p>
+                <p class="hub-card-desc">Étapes · Mon projet → Admission</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/mon-projet-logement.html">
+              <div class="hub-card-icon" style="background:#ffe5ee;">
+                <img src="./assets/icons/mon-projet/ic-mp-logement.png" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Ma progression logement</p>
+                <p class="hub-card-desc">Timeline · Mon projet → Logement</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/mon-projet-orientation.html">
+              <div class="hub-card-icon" style="background:#fff7ed;">
+                <img src="./assets/icons/mon-projet/ic-mp-orientation.png" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Ma progression orientation</p>
+                <p class="hub-card-desc">Profil prêt · Mon projet → Orientation</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/mon-projet-apercu.html">
+              <div class="hub-card-icon" style="background:#f8fafc;">
+                <img src="./assets/icons/nav-projet.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">Mon projet (aperçu)</p>
+                <p class="hub-card-desc">Ancien écran — retiré de la nav</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+          </div>
+        </div>
+      </details>
+
+      <details class="hub-accord">
+        <summary class="hub-accord-summary">
+          <span class="hub-accord-summary-main">
+            <span class="hub-accord-icon" style="background:#ebe7ff;">
+              <img src="./assets/icons/ic-home-cat-metier.svg" alt="" width="20" height="20" />
+            </span>
+            <span class="hub-accord-copy">
+              <p class="hub-accord-title">Choisir mon métier</p>
+              <p class="hub-accord-count">3 écrans</p>
+            </span>
+          </span>
+          <img class="hub-accord-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+        </summary>
+        <div class="hub-accord-body">
+          <div class="hub-list">
+            <a class="hub-card" href="./pages/orientation-scolaire.html">
+              <div class="hub-card-icon" style="background:#ebe7ff;">
+                <img src="./assets/icons/ic-home-cat-metier.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">1 · Orientation Scolaire et Professionnelle</p>
+                <p class="hub-card-desc">Intro · parcours · bilan 199 €</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/orientation-formules.html?path=moi">
+              <div class="hub-card-icon" style="background:#eef9f0;">
+                <img src="./assets/icons/orientation-formules/ic-of-jordan.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">2 · Orientation Formules</p>
+                <p class="hub-card-desc">Jordan · Tyson · Pelé</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/orientation-post-paiement.html?path=moi&formule=jordan">
+              <div class="hub-card-icon" style="background:#ecfdf5;">
+                <img src="./assets/icons/orientation-post/ic-opp-check.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">3 · Orientation post paiement</p>
+                <p class="hub-card-desc">Confirmation · prochaines étapes</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+          </div>
+        </div>
+      </details>
+
+      <details class="hub-accord">
+        <summary class="hub-accord-summary">
+          <span class="hub-accord-summary-main">
+            <span class="hub-accord-icon" style="background:#fff8e8;">
+              <img src="./assets/icons/ic-home-cat-langue.svg" alt="" width="20" height="20" />
+            </span>
+            <span class="hub-accord-copy">
+              <p class="hub-accord-title">Apprendre une langue</p>
+              <p class="hub-accord-count">4 écrans</p>
+            </span>
+          </span>
+          <img class="hub-accord-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+        </summary>
+        <div class="hub-accord-body">
+          <div class="hub-list">
+            <a class="hub-card" href="./pages/langue-apprentissage.html">
+              <div class="hub-card-icon" style="background:#fff8e8;">
+                <img src="./assets/icons/ic-home-cat-langue.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">1 · Langue d'apprentissage</p>
+                <p class="hub-card-desc">Choix de la langue</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/objectifs.html">
+              <div class="hub-card-icon" style="background:#ebe7ff;">
+                <img src="./assets/icons/ic-obj-exam.svg" alt="" width="22" height="22" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">2 · Objectifs</p>
+                <p class="hub-card-desc">Objectif principal</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/formule.html">
+              <div class="hub-card-icon" style="background:#eaf8eb;">
+                <img src="./assets/icons/ic-formule-kili.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">3 · Formules</p>
+                <p class="hub-card-desc">Kilimandjaro · Aconcagua · Everest</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/langues-post-payment.html?formule=acon">
+              <div class="hub-card-icon" style="background:#ebe7ff;">
+                <img src="./assets/icons/ic-lpp-check.svg" alt="" width="22" height="22" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">4 · Post-paiement</p>
+                <p class="hub-card-desc">Confirmation · prochaines étapes</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+          </div>
+        </div>
+      </details>
+
+      <details class="hub-accord">
+        <summary class="hub-accord-summary">
+          <span class="hub-accord-summary-main">
+            <span class="hub-accord-icon" style="background:#fef4f5;">
+              <img src="./assets/icons/ic-home-cat-school.svg" alt="" width="20" height="20" />
+            </span>
+            <span class="hub-accord-copy">
+              <p class="hub-accord-title">Intégrer une école</p>
+              <p class="hub-accord-count">6 écrans</p>
+            </span>
+          </span>
+          <img class="hub-accord-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+        </summary>
+        <div class="hub-accord-body">
+          <div class="hub-list">
+            <a class="hub-card" href="./pages/destination-etude.html">
+              <div class="hub-card-icon" style="background:#fef4f5;">
+                <img src="./assets/icons/ic-home-cat-school.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">1 · Destination d'étude</p>
+                <p class="hub-card-desc">Choix du pays</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/domaines-etude.html?pays=france">
+              <div class="hub-card-icon" style="background:#f5f3ff;">
+                <img src="./assets/icons/ic-dom-stat-uni.svg" alt="" width="22" height="22" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">2 · Domaines d'étude</p>
+                <p class="hub-card-desc">Architecture · Management · …</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/liste-ecole.html?pays=france&domaine=architecture">
+              <div class="hub-card-icon" style="background:#eef0ff;">
+                <img src="./assets/icons/ic-le-chip-arch.svg" alt="" width="18" height="18" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">3 · Liste école</p>
+                <p class="hub-card-desc">Domaines · écoles disponibles</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/ecole-detail.html?ecole=esa&pays=france&domaine=architecture">
+              <div class="hub-card-icon" style="background:#fef4f5;">
+                <img src="./assets/icons/ic-ed-form-1.svg" alt="" width="22" height="22" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">4 · Fiche école</p>
+                <p class="hub-card-desc">ESA · Présentation · Formations</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/offre-orientation.html?ecole=esa&formation=0&pays=france&domaine=architecture">
+              <div class="hub-card-icon" style="background:#eef0ff;">
+                <img src="./assets/icons/ic-oo-feature-1.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">5 · Offre d'Orientation</p>
+                <p class="hub-card-desc">899 € · Accompagnement école</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/paiement-reussi.html">
+              <div class="hub-card-icon" style="background:#eaf8eb;">
+                <img src="./assets/icons/ic-gift.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">6 · Paiement réussi (école)</p>
+                <p class="hub-card-desc">Confirmation accompagnement école</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+          </div>
+        </div>
+      </details>
+
+      <details class="hub-accord">
+        <summary class="hub-accord-summary">
+          <span class="hub-accord-summary-main">
+            <span class="hub-accord-icon" style="background:#f3f1fe;">
+              <img src="./assets/icons/nav-messages.svg" alt="" width="20" height="20" />
+            </span>
+            <span class="hub-accord-copy">
+              <p class="hub-accord-title">Mes messages</p>
+              <p class="hub-accord-count">1 écran</p>
+            </span>
+          </span>
+          <img class="hub-accord-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+        </summary>
+        <div class="hub-accord-body">
+          <div class="hub-list">
+            <a class="hub-card" href="./pages/messages.html">
+              <div class="hub-card-icon" style="background:#f3f1fe;">
+                <img src="./assets/icons/nav-messages.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">1 · Mes messages</p>
+                <p class="hub-card-desc">Conversations · recherche · onglets</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+          </div>
+        </div>
+      </details>
+
+      <details class="hub-accord">
+        <summary class="hub-accord-summary">
+          <span class="hub-accord-summary-main">
+            <span class="hub-accord-icon" style="background:#eaf8eb;">
+              <img src="./assets/icons/ic-home-cat-logement.svg" alt="" width="20" height="20" />
+            </span>
+            <span class="hub-accord-copy">
+              <p class="hub-accord-title">Trouver mon logement</p>
+              <p class="hub-accord-count">3 écrans</p>
+            </span>
+          </span>
+          <img class="hub-accord-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+        </summary>
+        <div class="hub-accord-body">
+          <div class="hub-list">
+            <a class="hub-card" href="./pages/logement.html">
+              <div class="hub-card-icon" style="background:#eaf8eb;">
+                <img src="./assets/icons/ic-home-cat-logement.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">1 · Logement</p>
+                <p class="hub-card-desc">Choix du pays · 350+ logements</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/offres-logement.html?pays=france">
+              <div class="hub-card-icon" style="background:#edf8eb;">
+                <img src="./assets/icons/logement-offres/ic-ol-comoe.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">2 · Offres de Logement</p>
+                <p class="hub-card-desc">Comoé · Volga · Yukon</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+            <a class="hub-card" href="./pages/logement-post-paiement.html?pays=france&formule=volga">
+              <div class="hub-card-icon" style="background:#f3f1fe;">
+                <img src="./assets/icons/logement-offres/ic-ol-volga.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="hub-card-copy">
+                <p class="hub-card-title">3 · Reglages (post paiement)</p>
+                <p class="hub-card-desc">Progression · formule · infos</p>
+              </div>
+              <img class="hub-card-chevron" src="./assets/icons/ic-menu-chevron.svg" alt="" width="16" height="16" />
+            </a>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+
+</body>
+</html>

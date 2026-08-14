@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Objectifs — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-objectifs">
+
+    <div class="objectifs-header">
+      <div class="objectifs-main">
+
+        <header class="objectifs-topbar">
+          <a href="langue-apprentissage.html" class="objectifs-back" aria-label="Retour">
+            <img src="../assets/icons/ic-lang-back.svg" alt="" width="24" height="24" />
+          </a>
+          <div class="objectifs-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="objectifs-notif">
+            <img src="../assets/icons/ic-bell.svg" alt="" width="25" height="25" />
+            <span class="objectifs-notif-badge">3</span>
+          </div>
+        </header>
+
+        <div class="objectifs-intro">
+          <h1>Quel est votre objectif principal&nbsp;?</h1>
+          <p>Nous personnaliserons votre accompagnement en fonction<br />de vos objectifs.&nbsp;</p>
+        </div>
+
+        <div class="objectifs-list" role="listbox" aria-label="Objectifs">
+          <button type="button" class="objectifs-card is-selected" role="option" aria-selected="true" data-objectif="examens">
+            <span class="objectifs-card-main">
+              <span class="objectifs-icon objectifs-icon--exam">
+                <img src="../assets/icons/ic-obj-exam.svg" alt="" width="20" height="20" />
+              </span>
+              <span class="objectifs-copy">
+                <span class="objectifs-title-row">
+                  <span class="objectifs-title">Examens internationaux</span>
+                  <span class="objectifs-badge">Populaire</span>
+                </span>
+                <span class="objectifs-desc">Préparez-vous aux examens tels que IELTS, TOEFL, TOEIC, Cambridge...&nbsp;</span>
+              </span>
+            </span>
+            <span class="objectifs-radio" aria-hidden="true">
+              <img src="../assets/icons/ic-lang-check.svg" alt="" width="14" height="14" />
+            </span>
+          </button>
+
+          <button type="button" class="objectifs-card" role="option" aria-selected="false" data-objectif="conversation">
+            <span class="objectifs-card-main">
+              <span class="objectifs-icon objectifs-icon--conversation">
+                <img src="../assets/icons/ic-obj-conversation.svg" alt="" width="20" height="20" />
+              </span>
+              <span class="objectifs-copy">
+                <span class="objectifs-title">Conversation</span>
+                <span class="objectifs-desc">Améliorez votre aisance à l'oral et parlez avec confiance au quotidien.&nbsp;</span>
+              </span>
+            </span>
+            <span class="objectifs-radio" aria-hidden="true"></span>
+          </button>
+
+          <button type="button" class="objectifs-card" role="option" aria-selected="false" data-objectif="pro">
+            <span class="objectifs-card-main">
+              <span class="objectifs-icon objectifs-icon--pro">
+                <img src="../assets/icons/ic-obj-pro.svg" alt="" width="20" height="20" />
+              </span>
+              <span class="objectifs-copy">
+                <span class="objectifs-title">Anglais professionnel</span>
+                <span class="objectifs-desc">Développez votre anglais pour évoluer dans votre carrière.&nbsp;</span>
+              </span>
+            </span>
+            <span class="objectifs-radio" aria-hidden="true"></span>
+          </button>
+
+          <button type="button" class="objectifs-card" role="option" aria-selected="false" data-objectif="niveau">
+            <span class="objectifs-card-main">
+              <span class="objectifs-icon objectifs-icon--niveau">
+                <img src="../assets/icons/ic-obj-niveau.svg" alt="" width="20" height="20" />
+              </span>
+              <span class="objectifs-copy">
+                <span class="objectifs-title">Remise à niveau</span>
+                <span class="objectifs-desc">Renforcez vos bases et progressez à votre rythme.&nbsp;</span>
+              </span>
+            </span>
+            <span class="objectifs-radio" aria-hidden="true"></span>
+          </button>
+
+          <button type="button" class="objectifs-card" role="option" aria-selected="false" data-objectif="admission">
+            <span class="objectifs-card-main">
+              <span class="objectifs-icon objectifs-icon--admission">
+                <img src="../assets/icons/ic-obj-admission.svg" alt="" width="20" height="20" />
+              </span>
+              <span class="objectifs-copy">
+                <span class="objectifs-title">Admission internationale</span>
+                <span class="objectifs-desc">Améliorez votre anglais pour intégrer une université à l'étranger.&nbsp;</span>
+              </span>
+            </span>
+            <span class="objectifs-radio" aria-hidden="true"></span>
+          </button>
+
+          <button type="button" class="objectifs-card" role="option" aria-selected="false" data-objectif="autre">
+            <span class="objectifs-card-main">
+              <span class="objectifs-icon objectifs-icon--autre">
+                <img src="../assets/icons/ic-obj-autre.svg" alt="" width="20" height="20" />
+              </span>
+              <span class="objectifs-copy">
+                <span class="objectifs-title">Autre objectif</span>
+                <span class="objectifs-desc">Un objectif spécifique&nbsp;? Dites-nous en plus.&nbsp;</span>
+              </span>
+            </span>
+            <span class="objectifs-radio" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="objectifs-help-wrap">
+          <div class="objectifs-help">
+            <div class="objectifs-help-main">
+              <span class="objectifs-help-icon">
+                <img src="../assets/icons/ic-obj-help.svg" alt="" width="24" height="24" />
+              </span>
+              <div class="objectifs-help-copy">
+                <p class="objectifs-help-title">Besoin d'aide pour choisir?</p>
+                <p class="objectifs-help-desc">Répondez à quelques questions et nous vous guidons.</p>
+              </div>
+            </div>
+            <button type="button" class="objectifs-help-btn">Obtenir des conseils</button>
+          </div>
+        </div>
+
+        <div class="objectifs-cta-wrap">
+          <a href="formule.html" class="objectifs-cta">
+            <span>Commencer mon orientation</span>
+            <img src="../assets/icons/ic-obj-check.svg" alt="" width="20" height="20" />
+          </a>
+        </div>
+
+        <div data-trust-bar></div>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="#" class="nav-item nav-item--orientation" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="connexion.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  import { mountComponents } from '../js/components.js';
+  mountComponents();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+
+  const cards = document.querySelectorAll('.objectifs-card');
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      cards.forEach((c) => {
+        c.classList.remove('is-selected');
+        c.setAttribute('aria-selected', 'false');
+        const radio = c.querySelector('.objectifs-radio');
+        if (radio) radio.innerHTML = '';
+      });
+      card.classList.add('is-selected');
+      card.setAttribute('aria-selected', 'true');
+      const radio = card.querySelector('.objectifs-radio');
+      if (radio) {
+        radio.innerHTML = '<img src="../assets/icons/ic-lang-check.svg" alt="" width="14" height="14" />';
+      }
+    });
+  });
+</script>
+</body>
+</html>

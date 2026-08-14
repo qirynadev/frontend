@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Langue — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-rl">
+
+    <div class="rl-header">
+      <div class="rl-main">
+
+        <header class="home-topbar">
+          <a href="reglages.html" class="home-menu-btn" aria-label="Retour">
+            <img src="../assets/icons/reglages/ic-rg-back.svg" alt="" width="24" height="24" />
+          </a>
+          <div class="home-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="home-notif">
+            <img src="../assets/icons/reglages/ic-rg-bell.svg" alt="" width="25" height="25" />
+            <span class="home-notif-badge">3</span>
+          </div>
+        </header>
+
+        <section class="rl-intro">
+          <h1>Langue</h1>
+          <p>Choisissez la langue d’affichage de l’application.</p>
+        </section>
+
+        <section class="rl-card">
+          <h2 class="rl-card-title">Langue de l’application</h2>
+
+          <div class="rl-options" role="radiogroup" aria-label="Langue de l’application">
+            <button type="button" class="rl-option is-selected" role="radio" aria-checked="true" data-lang="fr">
+              <span class="rl-option-main">
+                <span class="rl-flag">
+                  <img src="../assets/images/reglages-langues/flag-fr.png" alt="" width="40" height="40" />
+                </span>
+                <span class="rl-option-copy">
+                  <span class="rl-option-title">Français</span>
+                  <span class="rl-option-desc" data-lang-desc>Langue actuelle</span>
+                </span>
+              </span>
+              <span class="rl-radio" aria-hidden="true"><span class="rl-radio-dot"></span></span>
+            </button>
+
+            <button type="button" class="rl-option" role="radio" aria-checked="false" data-lang="en">
+              <span class="rl-option-main">
+                <span class="rl-flag">
+                  <img src="../assets/images/reglages-langues/flag-en.png" alt="" width="40" height="40" />
+                </span>
+                <span class="rl-option-copy">
+                  <span class="rl-option-title">English</span>
+                  <span class="rl-option-desc" data-lang-desc>English language</span>
+                </span>
+              </span>
+              <span class="rl-radio" aria-hidden="true"><span class="rl-radio-dot"></span></span>
+            </button>
+          </div>
+        </section>
+
+        <aside class="rl-banner">
+          <span class="rl-banner-illus">
+            <img src="../assets/images/reglages-langues/banner-globe.png" alt="" width="90" height="78" />
+          </span>
+          <div class="rl-banner-copy">
+            <p class="rl-banner-title">Une expérience adaptée</p>
+            <p class="rl-banner-desc">Le changement de langue sera appliqué instantanément dans toute l’application.</p>
+          </div>
+        </aside>
+
+        <button type="button" class="rl-cta" data-rl-save>Enregistrer ma préférence</button>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="orientation-scolaire.html" class="nav-item nav-item--orientation">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="reglages.html" class="nav-item active" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte-active.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  const KEY = 'qiryna-lang';
+  const META = {
+    fr: { label: 'Français', desc: 'Langue actuelle', current: 'Langue actuelle', other: 'Français' },
+    en: { label: 'English', desc: 'English language', current: 'Current language', other: 'English language' },
+  };
+  const options = [...document.querySelectorAll('[data-lang]')];
+  let selected = localStorage.getItem(KEY) || 'fr';
+  if (!META[selected]) selected = 'fr';
+
+  function applySelection(value) {
+    selected = value;
+    options.forEach((btn) => {
+      const lang = btn.getAttribute('data-lang');
+      const on = lang === value;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-checked', on ? 'true' : 'false');
+      const desc = btn.querySelector('[data-lang-desc]');
+      if (!desc) return;
+      if (lang === 'fr') desc.textContent = on ? 'Langue actuelle' : 'Français';
+      else desc.textContent = on ? 'Current language' : 'English language';
+    });
+  }
+
+  applySelection(selected);
+  options.forEach((btn) => {
+    btn.addEventListener('click', () => applySelection(btn.getAttribute('data-lang')));
+  });
+
+  document.querySelector('[data-rl-save]')?.addEventListener('click', () => {
+    localStorage.setItem(KEY, selected);
+    window.location.href = 'reglages.html';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Langue d'apprentissage — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-langue">
+
+    <div class="langue-header">
+      <div class="langue-main">
+
+        <!-- Topbar (422:20) -->
+        <header class="langue-topbar">
+          <a href="home.html" class="langue-back" aria-label="Retour">
+            <img src="../assets/icons/ic-lang-back.svg" alt="" width="24" height="24" />
+          </a>
+          <div class="langue-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="langue-notif">
+            <img src="../assets/icons/ic-bell.svg" alt="" width="25" height="25" />
+            <span class="langue-notif-badge">3</span>
+          </div>
+        </header>
+
+        <!-- Title (422:173) -->
+        <div class="langue-intro">
+          <h1>Quelle langue souhaitez-vous apprendre&nbsp;?</h1>
+          <p>Choisissez la langue qui correspond à vos objectifs.&nbsp;</p>
+        </div>
+
+        <!-- Language grid (422:536) — 2 cols -->
+        <div class="langue-grid" role="listbox" aria-label="Langues">
+          <div class="langue-col">
+            <button type="button" class="langue-card is-selected" role="option" aria-selected="true" data-lang="anglais">
+              <img src="../assets/icons/flags/flag-uk.svg" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Anglais</span>
+                <span class="langue-tag langue-tag--demandee">La plus demandée&nbsp;</span>
+                <span class="langue-check" aria-hidden="true">
+                  <img src="../assets/icons/ic-lang-check.svg" alt="" width="14" height="14" />
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="langue-card" role="option" aria-selected="false" data-lang="allemand">
+              <img src="../assets/icons/flags/flag-de.svg" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Allemand</span>
+                <span class="langue-tag langue-tag--populaire">Populaire&nbsp;</span>
+              </span>
+            </button>
+
+            <button type="button" class="langue-card" role="option" aria-selected="false" data-lang="francais">
+              <img src="../assets/icons/flags/flag-fr.svg" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Français</span>
+                <span class="langue-tag langue-tag--populaire-soft">Populaire&nbsp;</span>
+              </span>
+            </button>
+
+            <button type="button" class="langue-card" role="option" aria-selected="false" data-lang="arabe">
+              <img src="../assets/icons/flags/flag-ae.svg" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Arabe</span>
+                <span class="langue-tag langue-tag--croissance">En forte croissance&nbsp;</span>
+              </span>
+            </button>
+          </div>
+
+          <div class="langue-col">
+            <button type="button" class="langue-card" role="option" aria-selected="false" data-lang="espagnol">
+              <img src="../assets/icons/flags/flag-es.png" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Espagnol</span>
+                <span class="langue-tag langue-tag--tres">Très populaire&nbsp;</span>
+              </span>
+            </button>
+
+            <button type="button" class="langue-card" role="option" aria-selected="false" data-lang="mandarin">
+              <img src="../assets/icons/flags/flag-cn.svg" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Mandarin</span>
+                <span class="langue-tag langue-tag--croissance-soft">En forte croissance&nbsp;</span>
+              </span>
+            </button>
+
+            <button type="button" class="langue-card" role="option" aria-selected="false" data-lang="japonais">
+              <img src="../assets/icons/flags/flag-jp.svg" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Japonais</span>
+                <span class="langue-tag langue-tag--tendance">Tendance&nbsp;</span>
+              </span>
+            </button>
+
+            <button type="button" class="langue-card" role="option" aria-selected="false" data-lang="coreen">
+              <img src="../assets/icons/flags/flag-kr.svg" alt="" class="langue-flag" width="32" height="32" />
+              <span class="langue-card-body">
+                <span class="langue-card-name">Coréen</span>
+                <span class="langue-tag langue-tag--tendance">Tendance&nbsp;</span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Other language CTA (422:764) -->
+        <div class="langue-other-wrap">
+          <div class="langue-other">
+            <div class="langue-other-main">
+              <img src="../assets/icons/ic-lang-globe.svg" alt="" class="langue-other-globe" width="44" height="44" />
+              <div class="langue-other-copy">
+                <p class="langue-other-title">Une autre langue en tête ?</p>
+                <p class="langue-other-desc">Dites-nous laquelle, nous l'ajouterons<br />bientôt pour vous&nbsp;!</p>
+              </div>
+            </div>
+            <button type="button" class="langue-other-btn">Demander&nbsp;</button>
+          </div>
+        </div>
+
+        <!-- Continuer (422:790) → Objectifs -->
+        <div class="langue-cta-wrap">
+          <a href="objectifs.html" class="langue-cta" id="langue-cta">
+            <span>Continuer</span>
+            <img src="../assets/icons/ic-lang-arrow.svg" alt="" width="20" height="20" />
+          </a>
+        </div>
+
+        <!-- Trust row (422:838) -->
+        <div data-trust-bar></div>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="#" class="nav-item nav-item--orientation" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="connexion.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  import { mountComponents } from '../js/components.js';
+  mountComponents();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+
+  const cards = document.querySelectorAll('.langue-card');
+  const cta = document.getElementById('langue-cta');
+
+  function selectedLang() {
+    return document.querySelector('.langue-card.is-selected')?.dataset.lang || 'anglais';
+  }
+
+  function syncCta() {
+    if (cta) cta.href = `objectifs.html?lang=${encodeURIComponent(selectedLang())}`;
+  }
+
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      cards.forEach((c) => {
+        c.classList.remove('is-selected');
+        c.setAttribute('aria-selected', 'false');
+        c.querySelector('.langue-check')?.remove();
+      });
+      card.classList.add('is-selected');
+      card.setAttribute('aria-selected', 'true');
+      if (!card.querySelector('.langue-check')) {
+        const body = card.querySelector('.langue-card-body');
+        const check = document.createElement('span');
+        check.className = 'langue-check';
+        check.setAttribute('aria-hidden', 'true');
+        check.innerHTML = '<img src="../assets/icons/ic-lang-check.svg" alt="" width="14" height="14" />';
+        body?.appendChild(check);
+      }
+      syncCta();
+    });
+  });
+  syncCta();
+</script>
+</body>
+</html>

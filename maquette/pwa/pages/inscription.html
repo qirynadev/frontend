@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Inscription — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-inscription">
+
+    <div class="inscription-header">
+      <div class="inscription-main">
+
+        <!-- Logo (453:2184) pb 20px -->
+        <div class="logo-wrap">
+          <div class="inscription-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+        </div>
+
+        <!-- Hero (453:2186) pt 30 / pb 97 / gap 10 -->
+        <div class="inscription-hero">
+          <div class="inscription-hero-copy">
+            <h1>Créer mon compte</h1>
+            <div class="intro">
+              <p>Rejoignez Qiryna et faites le premier pas vers la bonne orientation.</p>
+            </div>
+          </div>
+          <div class="inscription-hero-illus">
+            <img src="../assets/images/hero-inscription.png" alt="Illustration orientation" />
+          </div>
+        </div>
+
+        <!-- Toggle (453:2403) -->
+        <div class="inscription-toggle-wrap">
+          <div class="auth-toggle">
+            <a href="connexion.html">Se connecter&nbsp;</a>
+            <button type="button" class="active">S'inscrire&nbsp;</button>
+          </div>
+        </div>
+
+        <!-- Form wrap (453:2197) pt 15 -->
+        <div class="inscription-form-wrap">
+          <div class="inscription-form-card">
+            <div class="inscription-fields">
+
+              <!-- Prénom (453:2200) -->
+              <div class="input-group inscription-field">
+                <label for="prenom">Prénom</label>
+                <div class="input-field-offset">
+                  <div class="input-field">
+                    <span class="field-icon field-icon--user"><img src="../assets/icons/ic-user.svg" alt="" /></span>
+                    <input id="prenom" type="text" placeholder="Votre prénom" autocomplete="given-name" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nom (453:2312) -->
+              <div class="input-group inscription-field">
+                <label for="nom">Nom</label>
+                <div class="input-field-offset">
+                  <div class="input-field">
+                    <span class="field-icon field-icon--user"><img src="../assets/icons/ic-user.svg" alt="" /></span>
+                    <input id="nom" type="text" placeholder="Votre nom" autocomplete="family-name" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email (453:2321) -->
+              <div class="input-group inscription-field inscription-email-field">
+                <label for="email">Adresse e-mail</label>
+                <div class="input-field-offset">
+                  <div class="input-field">
+                    <span class="field-icon field-icon--email"><img src="../assets/icons/ic-email.svg" alt="" /></span>
+                    <input id="email" type="email" placeholder="exemple@email.com" autocomplete="email" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mot de passe (453:2330) -->
+              <div class="input-group inscription-field inscription-password-field">
+                <label for="password">Mot de passe</label>
+                <div class="input-field-offset input-field-offset--password">
+                  <div class="input-field">
+                    <span class="field-icon field-icon--lock"><img src="../assets/icons/ic-lock.svg" alt="" /></span>
+                    <input id="password" type="password" placeholder="••••••••••••••••" autocomplete="new-password" />
+                    <button class="eye-btn" type="button" aria-label="Afficher le mot de passe">
+                      <img src="../assets/icons/ic-eye.svg" alt="" width="20" height="20" />
+                    </button>
+                  </div>
+                </div>
+                <div class="password-strength" data-password-strength>
+                  <div class="password-strength-bars" aria-hidden="true">
+                    <span class="password-strength-bar" data-strength-bar></span>
+                    <span class="password-strength-bar" data-strength-bar></span>
+                    <span class="password-strength-bar" data-strength-bar></span>
+                  </div>
+                  <p class="password-strength-hint" data-password-hint>
+                    Utilisez au moins 8 caractères avec une majuscule, un chiffre et un symbole.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Confirmer + CGU (453:2338) -->
+              <div class="inscription-confirm-block">
+                <div class="input-group inscription-password-field">
+                  <label for="password-confirm">Confirmer le mot de passe</label>
+                  <div class="input-field-offset">
+                    <div class="input-field">
+                      <span class="field-icon field-icon--lock"><img src="../assets/icons/ic-lock.svg" alt="" /></span>
+                      <input id="password-confirm" type="password" placeholder="••••••••••••••••" autocomplete="new-password" />
+                      <button class="eye-btn" type="button" aria-label="Afficher le mot de passe">
+                        <img src="../assets/icons/ic-eye.svg" alt="" width="20" height="20" />
+                      </button>
+                    </div>
+                  </div>
+                  <p class="password-match-hint" data-password-match hidden></p>
+                </div>
+
+                <label class="cgu-row">
+                  <input type="checkbox" class="cgu-checkbox" />
+                  <span class="cgu-text">
+                    J'accepte les <a href="#">Conditions générales d'utilisation</a> et la <a href="#">Politique de confidentialité</a>
+                  </span>
+                </label>
+              </div>
+
+            </div>
+
+            <!-- Submit (453:2208) pt 5 -->
+            <div class="inscription-submit-wrap">
+              <button class="btn-primary" type="button">Créer mon compte</button>
+            </div>
+          </div>
+
+          <!-- OR (453:2363) py 14 -->
+          <div class="divider-or"><span>OU CONTINUER AVEC</span></div>
+
+          <!-- Social (453:2370) gap 5 — logos + noms uniquement -->
+          <div class="social-row">
+            <button class="social-btn social-btn--name" type="button">
+              <img src="../assets/icons/ic-google.svg" alt="" width="16" height="16" />
+              <span class="social-name">Google</span>
+            </button>
+            <button class="social-btn social-btn--name" type="button">
+              <img src="../assets/icons/ic-apple.svg" alt="" width="16" height="16" />
+              <span class="social-name">Apple</span>
+            </button>
+            <button class="social-btn social-btn--name" type="button">
+              <img src="../assets/icons/ic-facebook.svg" alt="" width="16" height="16" />
+              <span class="social-name">Facebook</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Help box (453:2261) h 86 -->
+        <div class="inscription-help-box">
+          <div class="help-icon-wrap">
+            <img src="../assets/icons/ic-headset.svg" alt="" />
+          </div>
+          <div class="help-text">
+            <p class="help-title">Besoin d'aide ?</p>
+            <p class="help-desc">Notre équipe est là pour vous accompagner.</p>
+          </div>
+          <a href="#" class="btn-help-outline">Nous contacter</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Nav (470:155) gap 8 / py 10 -->
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-orientation.svg" alt="" width="24" height="24" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="inscription.html" class="nav-item active" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte-active.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+
+  document.querySelectorAll('.eye-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const input = btn.closest('.input-field')?.querySelector('input');
+      if (!input) return;
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.setAttribute('aria-label', show ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+    });
+  });
+
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('password-confirm');
+  const bars = [...document.querySelectorAll('[data-strength-bar]')];
+  const hint = document.querySelector('[data-password-hint]');
+  const matchHint = document.querySelector('[data-password-match]');
+  const submitBtn = document.querySelector('.inscription-submit-wrap .btn-primary');
+  const DEFAULT_HINT = 'Utilisez au moins 8 caractères avec une majuscule, un chiffre et un symbole.';
+
+  function evaluatePassword(value) {
+    return {
+      length: value.length >= 8,
+      upper: /[A-ZÀ-Ÿ]/.test(value),
+      digit: /\d/.test(value),
+      symbol: /[^A-Za-zÀ-ÿ0-9\s]/.test(value),
+    };
+  }
+
+  function strengthLevel(checks) {
+    const score = Object.values(checks).filter(Boolean).length;
+    if (score === 0) return { bars: 0, tone: '' };
+    if (score <= 2) return { bars: 1, tone: 'is-weak' };
+    if (score === 3) return { bars: 2, tone: 'is-medium' };
+    return { bars: 3, tone: 'is-strong' };
+  }
+
+  function missingMessage(checks) {
+    const missing = [];
+    if (!checks.length) missing.push('8 caractères');
+    if (!checks.upper) missing.push('une majuscule');
+    if (!checks.digit) missing.push('un chiffre');
+    if (!checks.symbol) missing.push('un symbole');
+    if (!missing.length) return 'Mot de passe valide.';
+    if (missing.length === 4) return DEFAULT_HINT;
+    return `Il manque : ${missing.join(', ')}.`;
+  }
+
+  function setFieldState(input, state) {
+    const field = input?.closest('.input-field');
+    if (!field) return;
+    field.classList.toggle('is-invalid', state === 'invalid');
+    field.classList.toggle('is-valid', state === 'valid');
+  }
+
+  function updatePasswordUI() {
+    const value = passwordInput?.value || '';
+    const checks = evaluatePassword(value);
+    const valid = Object.values(checks).every(Boolean);
+    const { bars: active, tone } = strengthLevel(value ? checks : { length: false, upper: false, digit: false, symbol: false });
+
+    bars.forEach((bar, i) => {
+      bar.classList.remove('is-weak', 'is-medium', 'is-strong');
+      if (i < active && tone) bar.classList.add(tone);
+    });
+
+    if (hint) {
+      hint.textContent = value ? missingMessage(checks) : DEFAULT_HINT;
+      hint.classList.toggle('is-error', Boolean(value) && !valid);
+      hint.classList.toggle('is-ok', valid);
+    }
+
+    if (passwordInput) {
+      setFieldState(passwordInput, !value ? '' : valid ? 'valid' : 'invalid');
+    }
+
+    updateMatchUI(valid);
+    return valid;
+  }
+
+  function updateMatchUI(passwordValid) {
+    if (!confirmInput || !matchHint) return false;
+    const confirm = confirmInput.value;
+    if (!confirm) {
+      matchHint.hidden = true;
+      matchHint.textContent = '';
+      matchHint.classList.remove('is-ok');
+      setFieldState(confirmInput, '');
+      return false;
+    }
+
+    const match = confirm === (passwordInput?.value || '');
+    matchHint.hidden = false;
+    if (match && passwordValid) {
+      matchHint.textContent = 'Les mots de passe correspondent.';
+      matchHint.classList.add('is-ok');
+      setFieldState(confirmInput, 'valid');
+      return true;
+    }
+    if (match && !passwordValid) {
+      matchHint.textContent = 'Le mot de passe ne respecte pas encore les critères.';
+      matchHint.classList.remove('is-ok');
+      setFieldState(confirmInput, 'invalid');
+      return false;
+    }
+    matchHint.textContent = 'Les mots de passe ne correspondent pas.';
+    matchHint.classList.remove('is-ok');
+    setFieldState(confirmInput, 'invalid');
+    return false;
+  }
+
+  passwordInput?.addEventListener('input', updatePasswordUI);
+  confirmInput?.addEventListener('input', () => {
+    const checks = evaluatePassword(passwordInput?.value || '');
+    updateMatchUI(Object.values(checks).every(Boolean));
+  });
+
+  submitBtn?.addEventListener('click', (e) => {
+    const passwordValid = updatePasswordUI();
+    const matchValid = updateMatchUI(passwordValid);
+    if (!passwordValid || !matchValid) {
+      e.preventDefault();
+      (passwordValid ? confirmInput : passwordInput)?.focus();
+      return;
+    }
+    window.location.href = 'reglages.html';
+  });
+</script>
+</body>
+</html>

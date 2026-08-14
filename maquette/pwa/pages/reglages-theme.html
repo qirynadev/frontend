@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Thème — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-rt">
+
+    <div class="rt-header">
+      <div class="rt-main">
+
+        <header class="home-topbar">
+          <a href="reglages.html" class="home-menu-btn" aria-label="Retour">
+            <img src="../assets/icons/reglages/ic-rg-back.svg" alt="" width="24" height="24" />
+          </a>
+          <div class="home-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="home-notif">
+            <img src="../assets/icons/reglages/ic-rg-bell.svg" alt="" width="25" height="25" />
+            <span class="home-notif-badge">3</span>
+          </div>
+        </header>
+
+        <section class="rt-intro">
+          <h1>Thème</h1>
+          <p>Personnalisez l’apparence de l’application.</p>
+        </section>
+
+        <p class="rt-pick-label">Choisissez votre thème</p>
+
+        <div class="rt-options" role="radiogroup" aria-label="Thème de l’application">
+          <button type="button" class="rt-option is-selected" role="radio" aria-checked="true" data-theme="clair">
+            <span class="rt-option-main">
+              <span class="rt-option-preview">
+                <img src="../assets/images/reglages-theme/preview-clair.png" alt="" width="86" height="86" />
+              </span>
+              <span class="rt-option-body">
+                <span class="rt-option-icon"><img src="../assets/icons/reglages-theme/ic-rt-sun.svg" alt="" width="36" height="36" /></span>
+                <span class="rt-option-copy">
+                  <span class="rt-option-title">Clair</span>
+                  <span class="rt-option-desc">Un thème lumineux idéal pour une utilisation en journée.</span>
+                </span>
+              </span>
+            </span>
+            <span class="rt-radio" aria-hidden="true"><span class="rt-radio-dot"></span></span>
+          </button>
+
+          <button type="button" class="rt-option" role="radio" aria-checked="false" data-theme="sombre">
+            <span class="rt-option-main">
+              <span class="rt-option-preview">
+                <img src="../assets/images/reglages-theme/preview-sombre.png" alt="" width="86" height="84" />
+              </span>
+              <span class="rt-option-body">
+                <span class="rt-option-icon"><img src="../assets/icons/reglages-theme/ic-rt-moon.svg" alt="" width="36" height="36" /></span>
+                <span class="rt-option-copy">
+                  <span class="rt-option-title">Sombre</span>
+                  <span class="rt-option-desc">Un thème sombre qui réduit la fatigue visuelle la nuit.</span>
+                </span>
+              </span>
+            </span>
+            <span class="rt-radio" aria-hidden="true"><span class="rt-radio-dot"></span></span>
+          </button>
+
+          <button type="button" class="rt-option" role="radio" aria-checked="false" data-theme="systeme">
+            <span class="rt-option-main">
+              <span class="rt-option-preview">
+                <img src="../assets/images/reglages-theme/preview-systeme.png" alt="" width="86" height="86" />
+              </span>
+              <span class="rt-option-body">
+                <span class="rt-option-icon"><img src="../assets/icons/reglages-theme/ic-rt-system.svg" alt="" width="36" height="36" /></span>
+                <span class="rt-option-copy">
+                  <span class="rt-option-title">Système</span>
+                  <span class="rt-option-desc">Adapte automatiquement le thème selon les paramètres de votre appareil.</span>
+                </span>
+              </span>
+            </span>
+            <span class="rt-radio" aria-hidden="true"><span class="rt-radio-dot"></span></span>
+          </button>
+        </div>
+
+        <aside class="rt-info">
+          <span class="rt-info-icon">
+            <img src="../assets/icons/reglages-theme/ic-rt-info.svg" alt="" width="44" height="44" />
+          </span>
+          <p>Le thème choisi sera appliqué sur l’ensemble de l’application</p>
+        </aside>
+
+        <button type="button" class="rt-cta" data-rt-save>Enregistrer mon thème</button>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="orientation-scolaire.html" class="nav-item nav-item--orientation">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="reglages.html" class="nav-item active" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte-active.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  const KEY = 'qiryna-theme';
+  const LABELS = { clair: 'Clair', sombre: 'Sombre', systeme: 'Système' };
+  const options = [...document.querySelectorAll('[data-theme]')];
+  let selected = localStorage.getItem(KEY) || 'clair';
+  if (!LABELS[selected]) selected = 'clair';
+
+  function applySelection(value) {
+    selected = value;
+    options.forEach((btn) => {
+      const on = btn.getAttribute('data-theme') === value;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  }
+
+  applySelection(selected);
+
+  options.forEach((btn) => {
+    btn.addEventListener('click', () => applySelection(btn.getAttribute('data-theme')));
+  });
+
+  document.querySelector('[data-rt-save]')?.addEventListener('click', () => {
+    localStorage.setItem(KEY, selected);
+    window.location.href = 'reglages.html';
+  });
+</script>
+</body>
+</html>

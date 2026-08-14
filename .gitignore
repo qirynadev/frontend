@@ -1,0 +1,34 @@
+# Nuxt
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+
+# Node
+node_modules
+*.log*
+.npmrc
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Ã‰diteurs / OS
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Copie locale de la maquette, utilisée pour la comparaison visuelle en dev
+public/_maquette/
+
+# Archives
+*.zip
+*.tar.gz
+
+# Ancien front Vue/Vite : reference seule (a porter, jamais edite). 67 Mo.
+# Reste sur disque pour consultation, hors du versionnement.
+legacy/

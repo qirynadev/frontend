@@ -1,0 +1,391 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════════
+   QIRYNA — Design tokens
+   Source : maquette/pwa/css/app.css (bloc :root + valeurs relevées).
+   Règle : aucune valeur de couleur / espacement / rayon / taille de
+   police ne doit exister ailleurs que dans ce fichier.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ─── Typographie ─────────────────────────────────────────────── */
+  --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
+
+  /* Échelle déduite des tailles réellement employées dans la maquette.
+     Fréquences relevées : 12px (57×), 10px (44×), 14px (43×), 11px (27×),
+     9px (21×), 20px (10×), 13px (9×), 8px (8×). Les valeurs orphelines
+     (10.5 / 12.5 / 15.5 / 17 / 19 / 22 / 29px) sont ramenées au barreau
+     le plus proche — cf. DESIGN-SYSTEM.md § Normalisations. */
+  --text-4xs: 6px;
+  --text-4xs--line-height: 9px;
+  --text-3xs: 7px;
+  --text-3xs--line-height: 11px;
+  --text-2xs: 8px;
+  --text-2xs--line-height: 12px;
+  --text-xs: 9px;
+  --text-xs--line-height: 16px;
+  --text-sm: 10px;
+  --text-sm--line-height: 16px;
+  --text-md: 11px;
+  --text-md--line-height: 16px;
+  --text-base: 12px;
+  --text-base--line-height: 20px;
+  --text-lg: 13px;
+  --text-lg--line-height: 20px;
+  --text-xl: 14px;
+  --text-xl--line-height: 20px;
+  --text-2xl: 15px;
+  --text-2xl--line-height: 24px;
+  /* ─── Tailles hors échelle ────────────────────────────────────────
+     Valeurs orphelines de la maquette que le Lot 1 ramenait au barreau
+     voisin (DESIGN-SYSTEM.md § 4.2). L'exigence de fidélité au pixel les a
+     rendues **mesurables** : 15,5px rendu en 15px décale le titre du
+     récapitulatif de commande de 6px, et 10,5px en 11px élargit l'étiquette
+     Stripe de 1,1px.
+
+     Elles sont donc rétablies telles quelles, sous un préfixe qui dit ce
+     qu'elles sont : des valeurs exactes, hors de la suite `4xs…6xl`.
+     Insérer des barreaux dans la suite aurait obligé à renuméroter tout ce
+     qui est au-dessus.                                                     */
+  --text-exact-10-5: 10.5px;
+  --text-exact-10-5--line-height: 20px;
+  --text-exact-15-5: 15.5px;
+  --text-exact-15-5--line-height: 15.5px;
+  /* 16px n'apparaît que dans le `@media (max-width: 400px)` de
+     `langues-post-payment.html`, hors du corpus analysé au Lot 1. */
+  --text-exact-16: 16px;
+  --text-exact-16--line-height: 24px;
+  --text-3xl: 18px;
+  --text-3xl--line-height: 28px;
+  --text-4xl: 20px;
+  --text-4xl--line-height: 25px;
+  --text-5xl: 24px;
+  --text-5xl--line-height: 30px;
+  --text-6xl: 28px;
+  --text-6xl--line-height: 36px;
+
+  /* La maquette écrit `line-height: normal` là où elle laisse le navigateur
+     décider (titres de section, boutons). `leading-normal` rend donc la valeur
+     CSS `normal`, et non le 1.5 par défaut de Tailwind. */
+  --leading-normal: normal;
+
+  /* Graisses réellement utilisées : 400 (52×), 500 (77×), 600 (76×), 700 (29×) */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Interlettrage : titres resserrés, libellés capitales espacés */
+  --tracking-tight: -0.65px;
+  --tracking-snug: -0.45px;
+  --tracking-normal: 0px;
+  --tracking-wide: 0.3px;
+  --tracking-wider: 0.6px;
+  --tracking-widest: 0.8px;
+
+  /* ─── Couleurs de marque ──────────────────────────────────────── */
+  --color-primary: #582cfd;
+  --color-primary-dark: #3b2cf2;
+  --color-primary-btn: #5d2afb;
+  --color-primary-link: #450ff2;
+  /* Bordure d'une carte sélectionnée (langues, objectifs). */
+  --color-primary-select: #4b0ffb;
+  /* Fond des grands appels à l'action pleine largeur. */
+  --color-primary-cta: #4309fc;
+  /* Violet de l'onglet actif de la barre basse. Diffère de `--color-primary`
+     d'une unité (#5825fd vs #582cfd) : écart présent dans la maquette, conservé
+     pour rester fidèle au rendu. */
+  --color-nav-active: #5825fd;
+  --color-navy: #0d1b3e;
+  --color-navy-2: #0d153e;
+  --color-text: #191919;
+  --color-muted: #9c9ac6;
+  --color-muted-2: #7371a2;
+  --color-border: #e6e5f2;
+  /* Séparateurs du bandeau de réassurance. Écart d'une unité avec
+     `--color-border` (#e6e5f5 vs #e6e5f2), présent dans la maquette. */
+  --color-border-2: #e6e5f5;
+  --color-border-soft: #f1f5f9;
+  /* Bord des boutons de connexion tierce (`.social-btn`), séparateurs de la
+     liste d'écoles et de la fiche école — un cran plus soutenu que `-soft`. */
+  --color-border-slate: #e2e8f0;
+  --color-surface: #f7f6fe;
+  --color-surface-2: #f5f3ff;
+  --color-surface-3: #f9f8fe;
+  --color-backdrop: #eef0f5;
+  /* Bord de l'encart d'arguments des écrans d'authentification
+     (`.connexion-info-box`) — une unité au-dessus de `--color-surface`. */
+  --color-surface-border: #f8f6fe;
+  /* Liens de formulaire. La maquette emploie deux violets voisins :
+     #4920fc pour « Mot de passe oublié ? » (`connexion.html`), #4f20fc pour les
+     liens des conditions générales (`inscription.html`). Écart conservé. */
+  --color-link-forgot: #4920fc;
+  --color-link-cgu: #4f20fc;
+
+  /* ─── Couleurs d'état (paire fond / texte par tonalité) ───────── */
+  --color-success: #16aa59;
+  --color-success-bg: #eaf8eb;
+  --color-success-soft: #def5e3;
+  --color-warning: #fe7812;
+  --color-warning-bg: #fff3e0;
+  --color-danger: #ee163e;
+  --color-danger-bg: #ffedf0;
+  --color-info: #003ef3;
+  --color-info-bg: #eaf1fd;
+  --color-neutral: #6b679d;
+  --color-neutral-bg: #f5f3fc;
+  --color-primary-bg: #ebe7ff;
+  --color-primary-soft: #e8e2fd;
+
+  /* Trait pointillé des frises d'étapes */
+  --color-dash: #c4b5fd;
+  /* Frise « Le saviez-vous ? » (`mot-de-passe.html`). Les deux premières
+     pastilles sont violettes, la troisième verte : la troisième étape est
+     l'aboutissement. */
+  --color-step-circle-violet: #f2effd;
+  --color-step-badge: #5121fc;
+  --color-step-badge-done: #0ca62f;
+  /* Barre vide de l'indicateur de robustesse (`inscription.html`). Voisine de
+     `--color-border-soft` (#f1f5f9) mais distincte : #f1f0fa. */
+  --color-strength-track: #f1f0fa;
+
+  /* ─── Teintes d'écran relevées dans la maquette ───────────────────
+     Ces valeurs n'appartiennent à aucune échelle : ce sont des choix de
+     composition propres à un écran. Les nommer ici évite qu'elles finissent
+     écrites en dur dans un template.                                      */
+  --color-tint-pink: #fff5f6;
+  --color-tint-green: #f0fdf4;
+  --color-tint-yellow: #fffbeb;
+  /* Carte « Continuez votre parcours » (accueil) */
+  --color-progress-bg: #fef4f5;
+  --color-progress-value: #ef2344;
+  --color-progress-text: #353f6b;
+  --color-progress-btn: #ff1f3f;
+  /* Étiquette « Article » (accueil) */
+  --color-tag-bg: #f1effd;
+  --color-tag-text: #4c29f3;
+  /* ─── Paliers tarifaires (`formule.html`) ─────────────────────────
+     La maquette donne un accent par palier, du moins cher au plus cher :
+     vert (Kilimandjaro), violet (Aconcagua), rouge (Everest).            */
+  --color-tier-1: #00a31c;
+  --color-tier-1-price: #10b141;
+  --color-tier-1-line: #08b534;
+  --color-tier-2: #570bfd;
+  --color-tier-3: #f6071a;
+  --color-tier-3-border: #fa838c;
+  --color-tier-3-bg: #fef2f2;
+  /* Carrousel de paliers */
+  --color-slider-arrow: #94a3b8;
+  --color-slider-arrow-bg: #f3f0ff;
+  --color-slider-dot: #d8d5e8;
+  /* Cartes de palier */
+  --color-tier-border: #e5e7eb;
+  --color-tier-period: #7f7979;
+
+  /* ─── Étiquettes de langue (`langue-apprentissage.html`) ──────────
+     Sept variantes `.langue-tag--*` pour quatre couleurs de texte : la
+     maquette alterne deux fonds très proches (`populaire` / `populaire-soft`,
+     `croissance` / `croissance-soft`) pour éviter que deux cartes voisines
+     portent exactement la même étiquette. Écart conservé.
+     Le texte de `croissance` est `#003ef3`, déjà nommé `--color-info`.       */
+  --color-lang-demandee-bg: #ebe7fd;
+  --color-lang-demandee: #4f46e5;
+  --color-lang-populaire-bg: #e4f7e7;
+  --color-lang-populaire-soft-bg: #ecf9ee;
+  --color-lang-populaire: #059669;
+  --color-lang-croissance-bg: #eaf1fd;
+  --color-lang-croissance-soft-bg: #e5edfe;
+  --color-lang-tendance-bg: #feefe6;
+  --color-lang-tendance: #ff4600;
+
+  /* Cartes d'objectif (`objectifs.html`) */
+  --color-goal-border: #f3f3f7;
+  --color-goal-selected: #440af6;
+  --color-goal-radio: #cbd5e1;
+  --color-goal-check: #4f18f6;
+  --color-goal-exam: #ebe7ff;
+  --color-goal-conversation: #eaf9ed;
+  --color-goal-pro: #fffbeb;
+  --color-goal-level: #edf3fe;
+  --color-goal-admission: #ffedf0;
+  --color-goal-other: #f1f5f9;
+
+  /* ─── Confirmation de commande (`langues-post-payment.html`) ──────
+     Seul écran de la maquette à teinter la totalité du shell, et seul à
+     employer cette gamme indigo — distincte du violet de marque.          */
+  --color-shell-tint: #faf9fe;
+  --color-order-title: #0f172a;
+  /* `.lpp-step-title--bold` — une unité de bleu d'écart avec le précédent
+     (#0f172b vs #0f172a). Écart présent dans la maquette, conservé, comme
+     `--color-nav-active` face à `--color-primary`. */
+  --color-step-title-bold: #0f172b;
+  --color-order-name: #6323fd;
+  --color-order-tag-bg: #f3effd;
+  --color-order-price: #5715fb;
+  --color-order-meta-label: #94a3b8;
+  --color-order-meta-value: #1e293b;
+  --color-order-mail-bg: #f5f4fa;
+  --color-order-card-border: rgb(241 245 249 / 0.8);
+  /* Frise verticale reliant les cinq étapes. */
+  --color-step-line: #cfc0fa;
+  --color-step-num: #4f46e5;
+  --color-step-mail-bg: #ecfdf5;
+  --color-step-icon-bg: #f5f2fd;
+  --color-step-done-bg: #edf9ef;
+  --color-step-done: #11b13a;
+  --color-step-todo-bg: #f5f3fe;
+  /* Halo et étincelles autour de la coche de réussite. */
+  --color-glow: rgb(199 210 254 / 0.5);
+  --color-spark-1: #818cf8;
+  --color-spark-2: #a5b4fc;
+  --color-spark-3: #c084fc;
+
+  /* ─── Paiement réussi (`paiement-reussi.html`) ────────────────────
+     Écran de succès du tunnel « domaines d'étude ». Sa frise est
+     **horizontale** et ses quatre étapes portent chacune leur couleur, là où
+     la confirmation du parcours langue empile cinq étapes indigo.          */
+  --color-slate: #64748b;
+  --color-stripe-bg: rgb(99 91 255 / 0.1);
+  --color-stripe: #492cfb;
+  --color-welcome-bg: #f4f9f6;
+  --color-welcome-border: #f3f9f5;
+  --color-paiement-step-1: #f53541;
+  --color-paiement-step-2: #6627f5;
+  --color-paiement-step-4: #0154f5;
+
+  /* Menu latéral (accueil) */
+  --color-menu-backdrop: rgb(18 17 17 / 0.7);
+  --color-menu-close-bg: #f3f1fc;
+  --color-menu-avatar-bg: #f2effb;
+  --color-menu-title: #020617;
+  --color-menu-btn: #4211f8;
+  --color-menu-btn-outline: #2605f3;
+  --color-menu-sep: #e3e0f4;
+  --color-menu-label: #94a3b8;
+  --color-menu-header-border: rgb(248 250 252 / 0.5);
+
+  /* ─── Espacement ──────────────────────────────────────────────────
+     Base volontairement fixée à 1px : la maquette est une spécification
+     Figma au pixel (valeurs 5, 7, 9, 11, 13, 17, 21, 22, 25…). Une base
+     à 4px obligerait à écrire `p-4.25` pour 17px. Ici `p-17` = 17px.
+     ⚠️ Déviation assumée par rapport au défaut Tailwind (0.25rem).      */
+  --spacing: 1px;
+  --spacing-gutter: clamp(16px, 4vw, 24px);
+  --spacing-nav-inset: 15px;
+  /* Nav ≈ 75px (pad 10+10, icône 34, gap 1, libellé 20) + 24px d'air */
+  --spacing-content-bottom: calc(75px + 24px + env(safe-area-inset-bottom, 0px));
+  --spacing-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --spacing-safe-top: env(safe-area-inset-top, 0px);
+  /* Décollement de la barre basse : la zone sûre iOS, avec un plancher de 12px
+     pour que la barre ne colle pas au bord sur un écran sans encoche. */
+  --spacing-nav-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+
+  /* ─── Rayons ──────────────────────────────────────────────────────
+     Relevés : 10px (68×, rayon dominant cartes/boutons/champs),
+     9999px (46×), 8px (10×), 6px, 4px, 12px, 16px, 50px (dôme d'en-tête).
+     5px et 7px sont ramenés à 4px et 8px — cf. DESIGN-SYSTEM.md.        */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  /* 7px — vignette de commande de `paiement-reussi.html`. Le Lot 1 le
+     ramenait à 8px ; l'écart est visible sur un cadre de 64×48. */
+  --radius-exact-7: 7px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --radius-3xl: 16px;
+  /* Bord arrondi du panneau latéral. */
+  --radius-panel: 30px;
+  --radius-dome: 50px;
+
+  /* ─── Ombres ──────────────────────────────────────────────────── */
+  --shadow-card: 0 0 3.5px rgb(0 0 0 / 0.1);
+  /* `.auth-toggle .active`, `.lpp-step-card`, `.projet-*` — flou 1px, pas 2. */
+  --shadow-2xs: 0 1px 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 0 2px rgb(0 0 0 / 0.1);
+  --shadow-soft: 0 2px 4px rgb(241 245 249 / 0.5);
+  --shadow-drawer: 15px 0 40px rgb(0 0 0 / 0.15);
+  /* Carte de récapitulatif de commande (`.lpp-order-card`). */
+  --shadow-order: 0 4px 20px rgb(0 0 0 / 0.03);
+  /* Pastille de réussite (`.lpp-success-circle`). */
+  --shadow-glow: 0 10px 25px rgb(99 102 241 / 0.2);
+  --shadow-none: none;
+
+  /* ─── Rupture d'affichage ─────────────────────────────────────────
+     Le shell mobile est plafonné à 768px ; au-delà, le desktop (Lot 3)
+     prendra le relais via le variant `shell:`.                          */
+  /* Ruptures étroites de la maquette (`@media (max-width: …)`).
+     ⚠️ **Le `.02px` n'est pas une coquille.** La maquette écrit
+     `@media (max-width: 360px)`, qui **inclut** 360. Le variant `max-*` de
+     Tailwind v4, lui, génère `@media (width < 360px)`, qui l'**exclut** : à
+     exactement 360px de large, la règle s'appliquait dans la maquette et pas
+     chez nous — les quatre raccourcis de l'accueil restaient sur une rangée au
+     lieu de passer en 2×2. Décaler la borne de 0,02px rend `max-*`
+     équivalent à `<=` sur toute largeur réelle.
+     Aucun variant `min-` n'est employé sur ces trois ruptures : le décalage
+     est donc sans autre effet. */
+  --breakpoint-3xs: 360.02px;
+  --breakpoint-2xs: 380.02px;
+  --breakpoint-xs: 400.02px;
+  --breakpoint-shell: 768px;
+  --container-shell: 768px;
+
+  /* ─── Durées ──────────────────────────────────────────────────── */
+  --ease-out-quick: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Base
+   ═══════════════════════════════════════════════════════════════════ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* La maquette laisse l'interligne à `normal` ; le preflight Tailwind
+       impose 1.5. Sans ce retour, tout texte sans `leading-*` explicite est
+       plus aéré que dans la maquette. */
+    line-height: normal;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-weight: var(--font-weight-normal);
+    background: var(--color-backdrop);
+    color: var(--color-text);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Les défauts UA (bouton/champ) ne doivent pas retomber sur system-ui */
+  button,
+  input,
+  select,
+  textarea,
+  optgroup {
+    font-family: inherit;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Focus visible homogène sur tout le produit */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

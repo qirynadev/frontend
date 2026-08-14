@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Mot de passe oublié — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-mdp">
+
+    <div class="connexion-header">
+      <div class="connexion-main">
+
+        <!-- Logo (453:1773) pb 20px -->
+        <div class="logo-wrap">
+          <div class="connexion-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+        </div>
+
+        <!-- Hero (453:1775) pt 30 / pb 97 -->
+        <div class="mdp-hero">
+          <div class="mdp-hero-copy">
+            <h1>Mot de passe oublié</h1>
+            <p>Pas de souci ! Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.</p>
+          </div>
+          <div class="mdp-hero-illus" aria-hidden="true">
+            <img src="../assets/images/hero-mot-de-passe.png" alt="" />
+          </div>
+        </div>
+
+        <!-- Form (453:1786) pt 15 / pb 20 -->
+        <div class="connexion-form-wrap mdp-form-wrap">
+          <div class="connexion-form-card">
+            <div class="mdp-form-fields">
+              <div class="input-group">
+                <label for="email">Adresse e-mail</label>
+                <div class="input-field-offset">
+                  <div class="input-field">
+                    <span class="field-icon field-icon--email"><img src="../assets/icons/ic-email.svg" alt="" /></span>
+                    <input id="email" type="email" placeholder="exemple@email.com" autocomplete="email" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="connexion-submit-wrap">
+              <button class="btn-primary" type="button" data-mdp-submit>Envoyer le lien de réinitialisation</button>
+            </div>
+
+            <div class="divider-or"><span>ou</span></div>
+
+            <a href="connexion.html" class="btn-outline">
+              <img src="../assets/icons/ic-back.svg" alt="" width="20" height="20" />
+              Retour à la connexion
+            </a>
+          </div>
+        </div>
+
+        <!-- Steps (453:1918) -->
+        <div class="mdp-steps-section">
+          <h2 class="mdp-steps-heading">Le saviez-vous ?</h2>
+
+          <div class="mdp-steps-list">
+            <div class="mdp-step">
+              <div class="mdp-step-rails" aria-hidden="true">
+                <div class="mdp-step-rail mdp-step-rail--icons">
+                  <div class="step-icon-circle violet">
+                    <span class="mdp-step-icon mdp-step-icon--email"><img src="../assets/icons/ic-step-email.svg" alt="" /></span>
+                  </div>
+                </div>
+                <div class="mdp-step-rail mdp-step-rail--nums">
+                  <div class="step-num mdp-step-num--1">1</div>
+                </div>
+              </div>
+              <div class="step-text-item">
+                <p class="step-title">Vérifiez votre boîte e-mail</p>
+                <p class="step-desc">Vous allez recevoir un e-mail avec un lien de réinitialisation.</p>
+              </div>
+            </div>
+
+            <div class="mdp-step">
+              <div class="mdp-step-rails" aria-hidden="true">
+                <div class="mdp-step-rail mdp-step-rail--icons">
+                  <div class="step-icon-circle violet">
+                    <span class="mdp-step-icon mdp-step-icon--link"><img src="../assets/icons/ic-step-link.svg" alt="" /></span>
+                  </div>
+                </div>
+                <div class="mdp-step-rail mdp-step-rail--nums">
+                  <div class="step-num mdp-step-num--2">2</div>
+                </div>
+              </div>
+              <div class="step-text-item">
+                <p class="step-title">Cliquez sur le lien</p>
+                <p class="step-desc">Le lien vous redirigera vers une page sécurisée pour créer un nouveau mot de passe.</p>
+              </div>
+            </div>
+
+            <div class="mdp-step">
+              <div class="mdp-step-rails" aria-hidden="true">
+                <div class="mdp-step-rail mdp-step-rail--icons">
+                  <div class="step-icon-circle green">
+                    <span class="mdp-step-icon mdp-step-icon--check"><img src="../assets/icons/ic-step-check.svg" alt="" /></span>
+                  </div>
+                </div>
+                <div class="mdp-step-rail mdp-step-rail--nums">
+                  <div class="step-num mdp-step-num--3">3</div>
+                </div>
+              </div>
+              <div class="step-text-item">
+                <p class="step-title">Choisissez un nouveau mot de passe</p>
+                <p class="step-desc">Votre nouveau mot de passe vous permettra de vous connecter à votre compte.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Help box (453:1986) pt 24 -->
+        <div class="mdp-help-wrap">
+          <div class="help-box mdp-help-box">
+            <div class="mdp-help-main">
+              <div class="help-icon-wrap">
+                <img src="../assets/icons/ic-headset.svg" alt="" width="24" height="24" />
+              </div>
+              <div class="help-text">
+                <p class="help-title">Besoin d'aide ?</p>
+                <p class="help-desc">Notre équipe est là pour vous accompagner.</p>
+              </div>
+            </div>
+            <a href="#" class="btn-help-outline">Nous contacter</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Nav (455:4850) gap 8 / py 10 -->
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-orientation.svg" alt="" width="24" height="24" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="connexion.html" class="nav-item active" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte-active.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+
+  const emailInput = document.getElementById('email');
+  const submitBtn = document.querySelector('[data-mdp-submit]');
+
+  submitBtn?.addEventListener('click', () => {
+    const email = (emailInput?.value || '').trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailInput?.focus();
+      return;
+    }
+    submitBtn.textContent = 'Lien envoyé — vérifiez vos e-mails';
+    submitBtn.disabled = true;
+  });
+</script>
+</body>
+</html>

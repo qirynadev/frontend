@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Logement — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-dest">
+
+    <div class="dest-header">
+      <div class="dest-main">
+
+        <header class="dest-topbar">
+          <a href="home.html" class="dest-back" aria-label="Retour">
+            <img src="../assets/icons/ic-lang-back.svg" alt="" width="24" height="24" />
+          </a>
+          <div class="dest-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="dest-notif">
+            <img src="../assets/icons/ic-bell.svg" alt="" width="25" height="25" />
+            <span class="dest-notif-badge">3</span>
+          </div>
+        </header>
+
+        <div class="dest-intro">
+          <h1>Choisissez votre destination d'étude&nbsp;</h1>
+          <p>Trouvez un logement dans plusieurs pays&nbsp;</p>
+        </div>
+
+        <div class="dest-grid" role="listbox" aria-label="Destinations logement">
+          <button type="button" class="dest-card is-selected" role="option" aria-selected="true" data-pays="france">
+            <div class="dest-card-media">
+              <img src="../assets/images/logement/france.png" alt="" class="dest-card-photo" width="103" height="112" />
+              <img src="../assets/images/logement/flag-fr.png" alt="" class="dest-card-flag" width="31" height="31" />
+            </div>
+            <div class="dest-card-body">
+              <p class="dest-card-name">France</p>
+              <div class="dest-card-meta">
+                <span class="dest-card-meta-left">
+                  <img src="../assets/icons/logement/ic-log-home.svg" alt="" width="9" height="9" />
+                  <span>350+ logements</span>
+                </span>
+                <img src="../assets/icons/logement/ic-log-chevron.svg" alt="" width="9" height="9" />
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="dest-card" role="option" aria-selected="false" data-pays="canada">
+            <div class="dest-card-media">
+              <img src="../assets/images/logement/canada.png" alt="" class="dest-card-photo" width="103" height="112" />
+              <img src="../assets/images/logement/flag-ca.png" alt="" class="dest-card-flag" width="31" height="31" />
+            </div>
+            <div class="dest-card-body">
+              <p class="dest-card-name">Canada</p>
+              <div class="dest-card-meta">
+                <span class="dest-card-meta-left">
+                  <img src="../assets/icons/logement/ic-log-home.svg" alt="" width="9" height="9" />
+                  <span>350+ logements</span>
+                </span>
+                <img src="../assets/icons/logement/ic-log-chevron.svg" alt="" width="9" height="9" />
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="dest-card" role="option" aria-selected="false" data-pays="allemagne">
+            <div class="dest-card-media">
+              <img src="../assets/images/logement/allemagne.png" alt="" class="dest-card-photo" width="103" height="112" />
+              <img src="../assets/images/logement/flag-de.png" alt="" class="dest-card-flag" width="31" height="31" />
+            </div>
+            <div class="dest-card-body">
+              <p class="dest-card-name">Allemagne</p>
+              <div class="dest-card-meta">
+                <span class="dest-card-meta-left">
+                  <img src="../assets/icons/logement/ic-log-home.svg" alt="" width="9" height="9" />
+                  <span>350+ logements</span>
+                </span>
+                <img src="../assets/icons/logement/ic-log-chevron.svg" alt="" width="9" height="9" />
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="dest-card" role="option" aria-selected="false" data-pays="chine">
+            <div class="dest-card-media">
+              <img src="../assets/images/logement/chine.png" alt="" class="dest-card-photo" width="103" height="112" />
+              <img src="../assets/images/logement/flag-cn.png" alt="" class="dest-card-flag" width="31" height="31" />
+            </div>
+            <div class="dest-card-body">
+              <p class="dest-card-name">Chine</p>
+              <div class="dest-card-meta">
+                <span class="dest-card-meta-left">
+                  <img src="../assets/icons/logement/ic-log-home.svg" alt="" width="9" height="9" />
+                  <span>350+ logements</span>
+                </span>
+                <img src="../assets/icons/logement/ic-log-chevron.svg" alt="" width="9" height="9" />
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="dest-card" role="option" aria-selected="false" data-pays="angleterre">
+            <div class="dest-card-media">
+              <img src="../assets/images/logement/angleterre.png" alt="" class="dest-card-photo" width="103" height="112" />
+              <img src="../assets/images/logement/flag-gb.png" alt="" class="dest-card-flag" width="31" height="31" />
+            </div>
+            <div class="dest-card-body">
+              <p class="dest-card-name">Angleterre</p>
+              <div class="dest-card-meta">
+                <span class="dest-card-meta-left">
+                  <img src="../assets/icons/logement/ic-log-home.svg" alt="" width="9" height="9" />
+                  <span>350+ logements</span>
+                </span>
+                <img src="../assets/icons/logement/ic-log-chevron.svg" alt="" width="9" height="9" />
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="dest-card" role="option" aria-selected="false" data-pays="usa">
+            <div class="dest-card-media">
+              <img src="../assets/images/logement/usa.png" alt="" class="dest-card-photo" width="103" height="112" />
+              <img src="../assets/images/logement/flag-us.png" alt="" class="dest-card-flag" width="31" height="31" />
+            </div>
+            <div class="dest-card-body">
+              <p class="dest-card-name">Etats-Unis</p>
+              <div class="dest-card-meta">
+                <span class="dest-card-meta-left">
+                  <img src="../assets/icons/logement/ic-log-home.svg" alt="" width="9" height="9" />
+                  <span>350+ logements</span>
+                </span>
+                <img src="../assets/icons/logement/ic-log-chevron.svg" alt="" width="9" height="9" />
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="dest-help-wrap">
+          <div class="dest-help">
+            <img src="../assets/icons/logement/ic-log-help.svg" alt="" class="dest-help-icon" width="44" height="44" />
+            <div class="dest-help-copy">
+              <p class="dest-help-title">Un accompagnement à chaque étape</p>
+              <p class="dest-help-desc">De la sélection de votre école jusqu'à votre installation, nos experts vous accompagnent pour maximiser vos chances de réussite.&nbsp;</p>
+            </div>
+          </div>
+        </div>
+
+        <div data-trust-bar></div>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="#" class="nav-item nav-item--orientation" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="connexion.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  import { mountComponents } from '../js/components.js';
+  mountComponents();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+
+  const cards = [...document.querySelectorAll('.dest-card')];
+  const params = new URLSearchParams(window.location.search);
+  const selected = params.get('pays');
+
+  const selectCard = (card) => {
+    cards.forEach((c) => {
+      const on = c === card;
+      c.classList.toggle('is-selected', on);
+      c.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  };
+
+  cards.forEach((card) => {
+    if (selected && card.dataset.pays === selected) {
+      selectCard(card);
+    }
+
+    card.addEventListener('click', () => {
+      selectCard(card);
+      const pays = card.dataset.pays || 'france';
+      window.location.href = `offres-logement.html?pays=${encodeURIComponent(pays)}`;
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#582cfd" />
+  <title>Admission école — Qiryna</title>
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/app.css" />
+</head>
+<body>
+<div class="screen-shell">
+  <div class="screen page-mpa">
+
+    <div class="mpa-header">
+      <div class="mpa-main">
+
+        <header class="home-topbar">
+          <a href="mon-projet.html" class="home-menu-btn" aria-label="Retour">
+            <img src="../assets/icons/reglages/ic-rg-back.svg" alt="" width="24" height="24" />
+          </a>
+          <div class="home-logo-frame">
+            <img src="../assets/images/logo.png" alt="Qiryna" />
+          </div>
+          <div class="home-notif">
+            <img src="../assets/icons/reglages/ic-rg-bell.svg" alt="" width="25" height="25" />
+            <span class="home-notif-badge">3</span>
+          </div>
+        </header>
+
+        <section class="mpa-school" aria-label="Dossier admission">
+          <div class="mpa-school-top">
+            <span class="mpa-school-icon">
+              <img src="../assets/icons/mon-projet/ic-mp-admission.png" alt="" width="30" height="30" />
+            </span>
+            <div class="mpa-school-copy">
+              <div class="mpa-school-title-row">
+                <h1>ESA Paris</h1>
+                <span class="mpa-school-badge">En cours</span>
+              </div>
+              <p class="mpa-school-program">MBA Management International</p>
+              <p class="mpa-school-date">
+                <img src="../assets/icons/mon-projet-admission/ic-mpa-calendar.svg" alt="" width="9" height="10" />
+                <span>Rentrée : Septembre 2026</span>
+              </p>
+              <div class="mpa-school-progress">
+                <span class="mpa-school-track"><span class="mpa-school-fill" style="width:80%"></span></span>
+                <span class="mpa-school-pct">80%</span>
+              </div>
+              <div class="mpa-school-meta">
+                <span class="mpa-school-advisor">
+                  <img src="../assets/icons/ic-user.svg" alt="" width="11" height="11" />
+                  <span>Conseillère : <strong>Sarah Kouamé</strong></span>
+                </span>
+                <span class="mpa-school-updated">Mise à jour : Hier</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="mpa-tabs" role="tablist" aria-label="Sections admission">
+          <button type="button" class="mpa-tab is-active" role="tab" aria-selected="true" data-mpa-tab="apercu">
+            <img class="mpa-tab-icon" src="../assets/icons/mon-projet-admission/ic-mpa-tab-apercu.svg" alt="" width="15" height="14" />
+            <span>Aperçu</span>
+          </button>
+          <button type="button" class="mpa-tab" role="tab" aria-selected="false" data-mpa-tab="document">
+            <img class="mpa-tab-icon" src="../assets/icons/mon-projet-admission/ic-mpa-tab-document.svg" alt="" width="13" height="17" />
+            <span>Document</span>
+          </button>
+          <button type="button" class="mpa-tab" role="tab" aria-selected="false" data-mpa-tab="suivi">
+            <img class="mpa-tab-icon" src="../assets/icons/mon-projet-admission/ic-mpa-tab-suivi.svg" alt="" width="13" height="13" />
+            <span>Suivi &amp; échanges</span>
+          </button>
+        </div>
+
+        <div class="mpa-panel" data-mpa-panel="apercu">
+          <section class="mpa-steps-card">
+            <div class="mpa-steps-head">
+              <h2>Mes étapes d'admission</h2>
+              <a href="#" class="mpa-steps-link">
+                <span>Voir le détail</span>
+                <img src="../assets/icons/reglages/ic-rg-chevron.svg" alt="" width="7" height="10" />
+              </a>
+            </div>
+
+            <div class="mpa-steps">
+              <div class="mpa-steps-lines" aria-hidden="true">
+                <span class="mpa-steps-line mpa-steps-line--purple" data-mpa-line-purple></span>
+                <span class="mpa-steps-line mpa-steps-line--grey" data-mpa-line-grey></span>
+              </div>
+
+              <article class="mpa-step">
+                <span class="mpa-step-marker mpa-step-marker--done"><img src="../assets/icons/mon-projet-admission/ic-mpa-step-check.svg" alt="" width="10" height="10" /></span>
+                <div class="mpa-step-main">
+                  <h3>Paiement confirmé</h3>
+                  <p>Votre paiement a été reçu.</p>
+                </div>
+                <div class="mpa-step-side">
+                  <span class="mpa-step-badge mpa-step-badge--done">Terminé</span>
+                  <span class="mpa-step-date">10/05/2024</span>
+                </div>
+              </article>
+
+              <article class="mpa-step">
+                <span class="mpa-step-marker mpa-step-marker--done"><img src="../assets/icons/mon-projet-admission/ic-mpa-step-check.svg" alt="" width="10" height="10" /></span>
+                <div class="mpa-step-main">
+                  <h3>Dépôt des documents</h3>
+                  <p>Documents reçus et vérifiés.</p>
+                </div>
+                <div class="mpa-step-side">
+                  <span class="mpa-step-badge mpa-step-badge--done">Terminé</span>
+                  <span class="mpa-step-date">12/05/2024</span>
+                </div>
+              </article>
+
+              <article class="mpa-step">
+                <span class="mpa-step-marker mpa-step-marker--done"><img src="../assets/icons/mon-projet-admission/ic-mpa-step-check.svg" alt="" width="10" height="10" /></span>
+                <div class="mpa-step-main">
+                  <h3>Analyse du dossier</h3>
+                  <p>Votre dossier est en cours d'analyse.</p>
+                </div>
+                <div class="mpa-step-side">
+                  <span class="mpa-step-badge mpa-step-badge--done">Terminé</span>
+                  <span class="mpa-step-date">15/05/2024</span>
+                </div>
+              </article>
+
+              <article class="mpa-step mpa-step--current">
+                <span class="mpa-step-marker mpa-step-marker--current">4</span>
+                <div class="mpa-step-main">
+                  <h3>Choix des écoles</h3>
+                  <p>Nous sélectionnons les meilleures écoles adaptées à votre profil.</p>
+                </div>
+                <div class="mpa-step-side">
+                  <span class="mpa-step-badge mpa-step-badge--current">En cours</span>
+                </div>
+              </article>
+
+              <article class="mpa-step">
+                <span class="mpa-step-marker mpa-step-marker--upcoming">5</span>
+                <div class="mpa-step-main">
+                  <h3>Candidatures envoyées</h3>
+                  <p>Nous soumettrons vos candidatures.</p>
+                </div>
+                <div class="mpa-step-side">
+                  <span class="mpa-step-badge mpa-step-badge--soon">À venir</span>
+                </div>
+              </article>
+
+              <article class="mpa-step">
+                <span class="mpa-step-marker mpa-step-marker--upcoming">6</span>
+                <div class="mpa-step-main">
+                  <h3>Entretiens</h3>
+                  <p>Préparez-vous aux entretiens.</p>
+                </div>
+                <div class="mpa-step-side">
+                  <span class="mpa-step-badge mpa-step-badge--soon">À venir</span>
+                </div>
+              </article>
+
+              <article class="mpa-step mpa-step--last">
+                <span class="mpa-step-marker mpa-step-marker--upcoming">7</span>
+                <div class="mpa-step-main">
+                  <h3>Admission obtenue</h3>
+                  <p>Vous recevrez votre lettre d'admission.</p>
+                </div>
+                <div class="mpa-step-side">
+                  <span class="mpa-step-badge mpa-step-badge--soon">À venir</span>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <div class="mpa-panel" data-mpa-panel="document" hidden>
+          <section class="mpa-docs-card" aria-label="Mes documents">
+            <h2 class="mpa-docs-title">Mes documents</h2>
+
+            <div class="mpa-docs-banner">
+              <span class="mpa-docs-banner-icon">
+                <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-info.svg" alt="" width="44" height="44" />
+              </span>
+              <div class="mpa-docs-banner-copy">
+                <h3>Téléchargez tous les documents requis</h3>
+                <p>Les documents validés par notre équipe sont marqués en vert.</p>
+              </div>
+            </div>
+
+            <ul class="mpa-docs-list">
+              <li class="mpa-doc-row">
+                <div class="mpa-doc-main">
+                  <span class="mpa-doc-icon">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-passport.png" alt="" width="40" height="40" />
+                  </span>
+                  <div class="mpa-doc-copy">
+                    <h4>Passeport <span class="mpa-doc-required">*</span></h4>
+                    <p>Fichier PDF</p>
+                  </div>
+                </div>
+                <div class="mpa-doc-status">
+                  <span class="mpa-doc-badge mpa-doc-badge--validated">
+                    <span>Validé</span>
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-badge-check.png" alt="" width="11" height="11" />
+                  </span>
+                  <button type="button" class="mpa-doc-action" aria-label="Télécharger le passeport">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-download.svg" alt="" width="12" height="12" />
+                  </button>
+                </div>
+              </li>
+
+              <li class="mpa-doc-row">
+                <div class="mpa-doc-main">
+                  <span class="mpa-doc-icon">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-diploma.png" alt="" width="40" height="40" />
+                  </span>
+                  <div class="mpa-doc-copy">
+                    <h4>Diplôme le plus élevé <span class="mpa-doc-required">*</span></h4>
+                    <p>Fichier PDF</p>
+                  </div>
+                </div>
+                <div class="mpa-doc-status">
+                  <span class="mpa-doc-badge mpa-doc-badge--validated">
+                    <span>Validé</span>
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-badge-check.png" alt="" width="11" height="11" />
+                  </span>
+                  <button type="button" class="mpa-doc-action" aria-label="Télécharger le diplôme">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-download.svg" alt="" width="12" height="12" />
+                  </button>
+                </div>
+              </li>
+
+              <li class="mpa-doc-row">
+                <div class="mpa-doc-main">
+                  <span class="mpa-doc-icon">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-grades.png" alt="" width="40" height="40" />
+                  </span>
+                  <div class="mpa-doc-copy">
+                    <h4>Relevés de notes <span class="mpa-doc-required">*</span></h4>
+                    <p>2 fichiers PDF</p>
+                  </div>
+                </div>
+                <div class="mpa-doc-status">
+                  <span class="mpa-doc-badge mpa-doc-badge--validated">
+                    <span>Validé</span>
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-badge-check.png" alt="" width="11" height="11" />
+                  </span>
+                  <button type="button" class="mpa-doc-action" aria-label="Télécharger les relevés de notes">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-download.svg" alt="" width="12" height="12" />
+                  </button>
+                </div>
+              </li>
+
+              <li class="mpa-doc-row">
+                <div class="mpa-doc-main">
+                  <span class="mpa-doc-icon">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-language.png" alt="" width="40" height="40" />
+                  </span>
+                  <div class="mpa-doc-copy">
+                    <h4>Certificat de langue (TOEFL/IELTS)</h4>
+                    <p>Fichier PDF</p>
+                  </div>
+                </div>
+                <div class="mpa-doc-status">
+                  <span class="mpa-doc-badge mpa-doc-badge--pending">
+                    <span>En attente</span>
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-badge-clock.png" alt="" width="10" height="10" />
+                  </span>
+                  <span class="mpa-doc-chevron" aria-hidden="true">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-chevron.png" alt="" width="12" height="16" />
+                  </span>
+                </div>
+              </li>
+
+              <li class="mpa-doc-row">
+                <div class="mpa-doc-main">
+                  <span class="mpa-doc-icon">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-letter.png" alt="" width="40" height="40" />
+                  </span>
+                  <div class="mpa-doc-copy">
+                    <h4>Lettre de motivation</h4>
+                    <p>Fichier PDF</p>
+                  </div>
+                </div>
+                <div class="mpa-doc-status">
+                  <span class="mpa-doc-badge mpa-doc-badge--upload">
+                    <span>À télécharger</span>
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-badge-upload.png" alt="" width="12" height="12" />
+                  </span>
+                  <span class="mpa-doc-chevron" aria-hidden="true">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-chevron.png" alt="" width="12" height="16" />
+                  </span>
+                </div>
+              </li>
+
+              <li class="mpa-doc-row">
+                <div class="mpa-doc-main">
+                  <span class="mpa-doc-icon">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-recommendation.png" alt="" width="40" height="40" />
+                  </span>
+                  <div class="mpa-doc-copy">
+                    <h4>Lettres de recommandation</h4>
+                    <p>Fichier PDF</p>
+                  </div>
+                </div>
+                <div class="mpa-doc-status">
+                  <span class="mpa-doc-badge mpa-doc-badge--upload">
+                    <span>À télécharger</span>
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-badge-upload.png" alt="" width="12" height="12" />
+                  </span>
+                  <span class="mpa-doc-chevron" aria-hidden="true">
+                    <img src="../assets/icons/mon-projet-admission/ic-mpa-doc-chevron.png" alt="" width="12" height="16" />
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="mpa-panel" data-mpa-panel="suivi" hidden>
+          <div class="mpa-placeholder">
+            <p class="mpa-placeholder-title">Suivi &amp; échanges</p>
+            <p class="mpa-placeholder-desc">Consultez l'historique de vos échanges avec votre conseillère.</p>
+          </div>
+        </div>
+
+        <section class="mpa-help">
+          <div class="mpa-help-main">
+            <span class="mpa-help-icon">
+              <img src="../assets/icons/mon-projet-admission/ic-mpa-headset.svg" alt="" width="24" height="24" />
+            </span>
+            <div class="mpa-help-copy">
+              <h3>Besoin d'aide ?</h3>
+              <p>Votre conseillère est là pour vous accompagner à chaque étape.</p>
+            </div>
+          </div>
+          <a href="#" class="mpa-help-btn">Contacter ma conseillère</a>
+        </section>
+
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <a href="home.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
+        <span>Accueil</span>
+      </a>
+      <a href="messages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-messages.svg" alt="" width="24" height="24" /></span>
+        <span>Messages</span>
+      </a>
+      <a href="orientation-scolaire.html" class="nav-item nav-item--orientation">
+        <span class="nav-item__icon"><img src="../assets/icons/ic-orientation-logo.png" alt="" class="nav-orientation-logo" width="36" height="34" /></span>
+        <span>Orientation</span>
+      </a>
+      <a href="mon-projet.html" class="nav-item active" aria-current="page">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-projet-active.svg" alt="" width="24" height="24" /></span>
+        <span>Mon projet</span>
+      </a>
+      <a href="reglages.html" class="nav-item">
+        <span class="nav-item__icon"><img src="../assets/icons/nav-compte.svg" alt="" width="24" height="24" /></span>
+        <span>Compte</span>
+      </a>
+    </nav>
+
+  </div>
+</div>
+
+<script type="module">
+  const setMpaTab = (id) => {
+    document.querySelectorAll('[data-mpa-tab]').forEach((t) => {
+      const on = t.dataset.mpaTab === id;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-mpa-panel]').forEach((panel) => {
+      panel.hidden = panel.dataset.mpaPanel !== id;
+    });
+    updateMpaLines();
+  };
+
+  document.querySelectorAll('[data-mpa-tab]').forEach((tab) => {
+    tab.addEventListener('click', () => setMpaTab(tab.dataset.mpaTab));
+  });
+
+  const tabFromQuery = new URLSearchParams(window.location.search).get('tab');
+  if (tabFromQuery && document.querySelector(`[data-mpa-tab="${tabFromQuery}"]`)) {
+    setMpaTab(tabFromQuery);
+  }
+
+  const updateMpaLines = () => {
+    const steps = document.querySelector('.mpa-steps');
+    const purple = document.querySelector('[data-mpa-line-purple]');
+    const grey = document.querySelector('[data-mpa-line-grey]');
+    const markers = [...document.querySelectorAll('.mpa-step-marker')];
+    if (!steps || !purple || !grey || markers.length < 2) return;
+    if (steps.offsetParent === null) return;
+
+    const box = steps.getBoundingClientRect();
+    const first = markers[0].getBoundingClientRect();
+    const split = markers[3].getBoundingClientRect();
+    const last = markers[markers.length - 1].getBoundingClientRect();
+
+    const top = first.top + first.height / 2 - box.top;
+    const splitY = split.top + split.height / 2 - box.top;
+    const bottom = box.bottom - (last.top + last.height / 2);
+
+    purple.style.top = `${top}px`;
+    purple.style.height = `${Math.max(0, splitY - top)}px`;
+    grey.style.top = `${splitY}px`;
+    grey.style.bottom = `${bottom}px`;
+  };
+
+  updateMpaLines();
+  window.addEventListener('resize', updateMpaLines);
+  if (document.fonts?.ready) document.fonts.ready.then(updateMpaLines);
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

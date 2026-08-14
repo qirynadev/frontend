@@ -1,0 +1,8 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Container">
+<path d="M0 24C0 10.7452 10.7452 0 24 0V0C37.2548 0 48 10.7452 48 24V24C48 37.2548 37.2548 48 24 48V48C10.7452 48 0 37.2548 0 24V24Z" fill="#F3F1FD"/>
+<g id="Icon">
+</g>
+<path id="Vector" d="M23 25H23.01M27 19V17C27 16.4696 26.7893 15.9609 26.4142 15.5858C26.0391 15.2107 25.5304 15 25 15H21C20.4696 15 19.9609 15.2107 19.5858 15.5858C19.2107 15.9609 19 16.4696 19 17V19M33 26C30.0328 27.959 26.5555 29.0033 23 29.0033C19.4445 29.0033 15.9672 27.959 13 26M15 19H31C32.1046 19 33 19.8954 33 21V31C33 32.1046 32.1046 33 31 33H15C13.8954 33 13 32.1046 13 31V21C13 19.8954 13.8954 19 15 19Z" stroke="#3514ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

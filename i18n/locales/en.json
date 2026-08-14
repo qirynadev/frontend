@@ -1,0 +1,480 @@
+{
+  "auth": {
+    "emailLabel": "Email address",
+    "emailPlaceholder": "example{'@'}email.com",
+    "error": {
+      "credentials": "Incorrect email address or password.",
+      "emailInvalid": "This email address is not valid.",
+      "emailRequired": "Enter your email address.",
+      "generic": "Something went wrong. Please try again in a moment.",
+      "network": "We can’t reach our servers. Check your connection.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Your password must be at least 8 characters long.",
+      "paymentFailed": "You’re signed in, but the payment could not start. Please try again from the plan page.",
+      "title": "We can’t continue"
+    },
+    "forgotPassword": "Forgot your password?",
+    "login": {
+      "infoPersonalDesc": "Recommendations tailored to your profile.",
+      "infoPersonalTitle": "Guidance made for you",
+      "infoSecureDesc": "Your data is protected and never shared.",
+      "infoSecureTitle": "Secure and confidential",
+      "infoTimeDesc": "Find your path faster, with peace of mind.",
+      "infoTimeTitle": "Save time",
+      "introLine1": "Your future starts with",
+      "introLine2": "the right guidance.",
+      "seoDescription": "Sign in to Qiryna: guidance, schools, languages and your project at a glance.",
+      "seoTitle": "Sign in",
+      "title": "Welcome to Qiryna"
+    },
+    "or": "or",
+    "orContinueWith": "Or continue with",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••••••••••",
+    "register": {
+      "cguError": "You need to accept the terms to create an account.",
+      "cguPrefix": "I accept the",
+      "cguPrivacy": "Privacy Policy",
+      "cguSeparator": "and the",
+      "cguTerms": "Terms of Use",
+      "codeLabel": "Confirmation code",
+      "codePlaceholder": "6 digits",
+      "codeSent": "A confirmation code has just been sent to {email}.",
+      "codeSubmit": "Confirm my account",
+      "confirmLabel": "Confirm password",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Your first name",
+      "helpCta": "Contact us",
+      "helpDescription": "Our team is here to help you.",
+      "helpTitle": "Need help?",
+      "intro": "Join Qiryna and take the first step towards the right path.",
+      "lastNameLabel": "Last name",
+      "lastNamePlaceholder": "Your last name",
+      "matchKo": "The passwords don’t match.",
+      "matchOk": "The passwords match.",
+      "matchWeak": "This password doesn’t meet the criteria yet.",
+      "missing": "Still missing: {list}.",
+      "missingDigit": "a digit",
+      "missingLength": "8 characters",
+      "missingSymbol": "a symbol",
+      "missingUpper": "an uppercase letter",
+      "resend": "Resend the code",
+      "resent": "A new code has just been sent.",
+      "seoDescription": "Create your Qiryna account and start your study-abroad project.",
+      "seoTitle": "Create my account",
+      "strengthHint": "Use at least 8 characters with an uppercase letter, a digit and a symbol.",
+      "strengthOk": "Password accepted.",
+      "submit": "Create my account",
+      "title": "Create my account"
+    },
+    "reset": {
+      "backToLogin": "Back to sign in",
+      "codeLabel": "Verification code",
+      "codePlaceholder": "6 digits",
+      "helpCta": "Contact us",
+      "helpDescription": "Our team is here to help you.",
+      "helpTitle": "Need help?",
+      "intro": "No worries! Enter your email address and we’ll send you a link to reset your password.",
+      "newPasswordLabel": "New password",
+      "sent": "If an account exists for {email}, a code has just been sent to it.",
+      "seoDescription": "Reset the password of your Qiryna account.",
+      "seoTitle": "Forgot password",
+      "step1Desc": "You’ll receive an email with a reset link.",
+      "step1Title": "Check your inbox",
+      "step2Desc": "The link takes you to a secure page to create a new password.",
+      "step2Title": "Click the link",
+      "step3Desc": "Your new password will let you sign in to your account.",
+      "step3Title": "Choose a new password",
+      "stepsHeading": "Did you know?",
+      "submit": "Send the reset link",
+      "submitNew": "Save my new password",
+      "success": "Your password has been changed. You can now sign in.",
+      "title": "Forgot password"
+    },
+    "resume": {
+      "cta": "Resume payment",
+      "description": "Your order is waiting: {label}",
+      "title": "A payment is pending"
+    },
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "social": {
+      "error": {
+        "cancelled": "Sign-in cancelled.",
+        "csrf": "We couldn’t verify the provider’s response. Please try again.",
+        "denied": "You didn’t grant access to your information.",
+        "generic": "Signing in with this service failed. Please try again.",
+        "notConfigured": "This sign-in method isn’t available yet.",
+        "sdk": "The sign-in service couldn’t load. A content blocker may be the cause."
+      },
+      "link": {
+        "cancel": "Cancel",
+        "confirm": "Link my account",
+        "description": "An account already exists for {email}. Would you like to link {provider} to it?",
+        "title": "This account already exists"
+      }
+    }
+  },
+  "checkout": {
+    "cardMethod": "Bank card",
+    "error": {
+      "generic": "The payment could not start. Please try again in a moment.",
+      "network": "We can’t reach our servers. Check your connection.",
+      "noRedirect": "The payment service didn’t respond. Try again or get in touch."
+    },
+    "paymentDateLabel": "Payment date",
+    "paymentMethodLabel": "Payment method",
+    "success": {
+      "helpCta": "Contact my adviser",
+      "helpDescription": "Our team is here to support you\nat every step",
+      "helpTitle": "A question?",
+      "orderTitle": "Your order summary",
+      "seoDescription": "Your Qiryna support is confirmed — here are the next steps.",
+      "seoTitle": "Payment successful",
+      "step1Desc": "Open the email we’ve just sent you.",
+      "step1Title": "Check your email",
+      "step2Desc": "Click the secure link to complete your profile.",
+      "step2Title": "Open your space",
+      "step3Desc": "CV, career plan and any other details we need.",
+      "step3Title": "Upload your documents",
+      "step4Desc": "Our advisers review your file to tailor your support.",
+      "step4Title": "We review your profile",
+      "stepsHeading": "What happens now?",
+      "subtitle": "Thank you for your trust.\nYour support to join your school\nis now confirmed",
+      "title": "Payment successful!",
+      "welcomeDescription": "You’ll receive a confirmation email with all the details of your support",
+      "welcomeTitle": "Welcome to Qiryna support!"
+    }
+  },
+  "confirmation": {
+    "emailNotice": "A confirmation email has just been sent to",
+    "failedDescription": "No amount was charged. You can restart the payment from the plan page.",
+    "failedTitle": "The payment didn’t go through",
+    "hours": "{count} one-hour sessions a month",
+    "missingOrder": "We couldn’t find your order. Open it from “My project” or get in touch.",
+    "orderDateLabel": "Order date",
+    "orderNumberLabel": "Order number",
+    "orderTitle": "Your order summary",
+    "pendingDescription": "Your bank hasn’t confirmed the payment yet. We’ll email you as soon as it does.",
+    "pendingTitle": "Payment awaiting confirmation",
+    "seoDescription": "Your Qiryna language journey starts here — see the next steps.",
+    "seoTitle": "Payment successful",
+    "status": {
+      "done": "Done",
+      "soon": "Upcoming",
+      "todo": "To do"
+    },
+    "step1Desc": "You’ll receive an email with the details of your journey.",
+    "step1Title": "Check your inbox",
+    "step2Desc": "Take the placement test so we can assess your current level.",
+    "step2Title": "Take your tests",
+    "step3Desc": "Pick the teacher who best matches your goals.",
+    "step3Title": "Choose a teacher",
+    "step4Desc": "Pick your lesson slots with your teacher.",
+    "step4Title": "Schedule your lessons",
+    "step5Desc": "Join your first video lesson and start learning.",
+    "step5Title": "Start your lesson (video)",
+    "stepsHeading": "the next steps",
+    "subtitle": "Thank you for your trust.\nYour guidance journey starts now.",
+    "supportCta": "Contact support",
+    "supportDescription": "Our team is here to help you.\nReach out at any time",
+    "supportTitle": "Need help?",
+    "title": "Payment successful!"
+  },
+  "course": {
+    "badge": {
+      "growing": "Fast growing",
+      "mostRequested": "Most requested",
+      "popular": "Popular",
+      "trending": "Trending",
+      "veryPopular": "Very popular"
+    },
+    "levelCount": "no levels | 1 level | {count} levels",
+    "list": {
+      "continue": "Continue",
+      "emptyDescription": "Our languages are being published. Check back soon.",
+      "emptyTitle": "No languages available",
+      "otherCta": "Request",
+      "otherDescription": "Tell us which one and we'll add it\nfor you soon!",
+      "otherTitle": "Another language in mind?",
+      "seoDescription": "English, French, German, Spanish — progress with certified teachers.",
+      "seoTitle": "Learn a foreign language",
+      "subtitle": "Pick the language that matches your goals.",
+      "title": "Which language would you like to learn?"
+    },
+    "notFound": "Language not found"
+  },
+  "destination": {
+    "detail": {
+      "bannerTitle": "{country}, a destination of excellence",
+      "domainsEmpty": "No fields of study published yet.",
+      "domainsSubtitle": "Our support packages by specialism",
+      "domainsTitle": "Choose a field of study",
+      "fallbackTitle": "Destination",
+      "notFound": "Destination not found",
+      "seeSchools": "View schools | View the school | View all {count} schools",
+      "statCountry": "Country code",
+      "statSchools": "Partner schools"
+    },
+    "list": {
+      "emptyDescription": "Our destinations are being published. Check back soon.",
+      "emptyTitle": "No destinations available",
+      "helpDescription": "From picking your school to settling in, our experts support you to maximise your chances.",
+      "helpTitle": "Support at every step",
+      "seoDescription": "France, Canada, Germany, China, the UK, the USA — choose where to continue your studies.",
+      "seoTitle": "Choose your study destination",
+      "subtitle": "Discover our partner schools in each country.",
+      "title": "Choose your study destination"
+    },
+    "schoolCount": "no schools | 1 school | {count} schools"
+  },
+  "ds": {
+    "alert": {
+      "dismiss": "Dismiss message"
+    },
+    "carousel": {
+      "next": "Next item",
+      "previous": "Previous item"
+    },
+    "input": {
+      "hidePassword": "Hide password",
+      "showPassword": "Show password"
+    },
+    "nav": {
+      "main": "Main navigation"
+    },
+    "pager": {
+      "goTo": "Go to page {page}",
+      "label": "Pagination",
+      "next": "Next page",
+      "previous": "Previous page"
+    },
+    "sheet": {
+      "close": "Close"
+    },
+    "topbar": {
+      "back": "Back"
+    }
+  },
+  "goal": {
+    "admission": "International admission",
+    "admissionDesc": "Improve your English to join a university abroad.",
+    "conversation": "Conversation",
+    "conversationDesc": "Build fluency and speak with confidence every day.",
+    "cta": "Start my guidance",
+    "exams": "International exams",
+    "examsDesc": "Prepare for exams such as IELTS, TOEFL, TOEIC, Cambridge...",
+    "helpCta": "Get advice",
+    "helpDescription": "Answer a few questions and we will guide you.",
+    "helpTitle": "Need help choosing?",
+    "level": "Back to basics",
+    "levelDesc": "Strengthen your foundations and progress at your own pace.",
+    "other": "Another goal",
+    "otherDesc": "Something specific? Tell us more.",
+    "popular": "Popular",
+    "professional": "Business English",
+    "professionalDesc": "Develop your English to move your career forward.",
+    "seoDescription": "Choose the goal that will shape your language support.",
+    "seoTitle": "Your goal in {language}",
+    "subtitle": "We will tailor your support\nto your goals.",
+    "title": "What is your main goal?"
+  },
+  "home": {
+    "category": {
+      "career1": "Find",
+      "career2": "my career",
+      "housing1": "Find",
+      "housing2": "housing",
+      "language1": "Learn",
+      "language2": "a language",
+      "school1": "Join",
+      "school2": "a school",
+      "soon": "Soon"
+    },
+    "news": {
+      "emptyDescription": "Our advisors are writing the first articles. Check back soon.",
+      "emptyTitle": "No articles yet",
+      "placeholderTitle": "A world of possibilities\nis opening up",
+      "readingTime": "{count} min read",
+      "tag": "Article",
+      "title": "News & advice"
+    },
+    "orientation": {
+      "cardDescription": "Clarify your plans and discover the schools that genuinely fit you.",
+      "cardTitle": "Your Qiryna guidance",
+      "cta": "Explore our support",
+      "title": "Start your journey"
+    },
+    "progress": {
+      "cta": "Continue",
+      "desc1": "Complete your guidance to",
+      "desc2": "discover the careers that truly",
+      "desc3": "match you.",
+      "sectionTitle": "Continue your journey",
+      "title": "Your Qiryna guidance"
+    },
+    "seoDescription": "Qiryna supports you at every step of studying abroad: choosing a destination, admission, languages and settling in.",
+    "seoTitle": "Study abroad with Qiryna"
+  },
+  "menu": {
+    "account": "My account",
+    "helpText": "Contact our support",
+    "helpTitle": "Need help?",
+    "housing": "Find housing",
+    "language": "Learn a language",
+    "orientation": "Guidance",
+    "other": "Other",
+    "school": "Join a school",
+    "services": "Our services",
+    "settings": "Settings",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signUp": "Sign up",
+    "welcomeBack": "Hello {name}!",
+    "welcomeBackText": "Pick up your project and\nyour active services.",
+    "welcomeText": "Sign in to access\nall our services.",
+    "welcomeTitle": "Welcome!"
+  },
+  "nav": {
+    "account": "Account",
+    "home": "Home",
+    "mainLabel": "Main navigation",
+    "menu": "Menu",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "notificationsCount": "{count} notification | {count} notification | {count} notifications",
+    "orientation": "Guidance",
+    "project": "My project"
+  },
+  "offer": {
+    "choose": "Choose this plan",
+    "emptyDescription": "Pricing for this offer hasn’t been published yet.",
+    "emptyTitle": "No plans available",
+    "fallbackTitle": "Our plans",
+    "feature": {
+      "certified": "Certified teachers",
+      "certifiedSub": "and vetted",
+      "tailored": "Tailored lessons",
+      "tailoredSub": "to your goals",
+      "visio": "Live video lessons",
+      "visioSub": "100% interactive"
+    },
+    "fromPrice": "From {price}",
+    "hoursPerMonth": "{count} h per month",
+    "notFound": "Offer not found",
+    "oneOff": "One-off payment",
+    "perMonth": "per month",
+    "subtitle": "Clear plans, tailored to your needs.",
+    "tagline1": "To get started and progress at your own pace",
+    "tagline2": "A good balance to make steady progress",
+    "tagline3": "For fast and lasting progress",
+    "tiersLabel": "Available plans",
+    "title": "Choose the plan that fits you"
+  },
+  "orientation": {
+    "cta": "Start my guidance",
+    "emptyDescription": "This offer is being prepared. Check back soon.",
+    "emptyTitle": "Offer unavailable",
+    "fallbackTitle": "Guidance support",
+    "featuresEmpty": "The details of this offer are being published.",
+    "heroText": "We support you at every step towards the best schools.",
+    "includedTitle": "What’s included in your offer",
+    "priceBadge": "One-off offer",
+    "priceOnRequest": "Pricing shared by our advisors.",
+    "secure": "100% secure payment • No subscription"
+  },
+  "page": {
+    "fallbackTitle": "Information",
+    "notFound": "Page not found"
+  },
+  "placeholder": {
+    "description": "This screen will be built in Lot 5, from the mockup and the Lot 2 API layer.",
+    "title": "Screen coming soon"
+  },
+  "school": {
+    "detail": {
+      "ctaButton": "Get support",
+      "ctaDescription": "Our advisors guide you through every step of your application.",
+      "ctaTitle": "Would you like support joining this school?",
+      "emptyDescription": "This school has no published content yet. Our team is working on it.",
+      "emptyTitle": "Profile being written",
+      "fallbackTitle": "School profile",
+      "favourite": "Add to favourites",
+      "founded": "Founded in",
+      "notFound": "School not found",
+      "sections": "Profile sections",
+      "students": "Students",
+      "tabFormations": "Programmes",
+      "tabPresentation": "Overview",
+      "tabStrengths": "Highlights"
+    },
+    "formationCount": "no programmes | 1 programme | {count} programmes",
+    "list": {
+      "clearSearch": "Clear search",
+      "count": "no schools available | 1 school available | {count} schools available",
+      "emptyDescription": "Broaden your search or remove a filter to see more results.",
+      "emptyTitle": "No matching schools",
+      "searchLabel": "Search for a school",
+      "searchPlaceholder": "A school name, a city…",
+      "seoDescription": "Browse our partner schools and find the one that fits your plans.",
+      "seoTitle": "Schools in {destination}",
+      "title": "Available schools",
+      "titleIn": "Schools in {destination}"
+    }
+  },
+  "state": {
+    "empty": {
+      "description": "Check back shortly — this content is on its way.",
+      "title": "Nothing to show yet"
+    },
+    "error": {
+      "forbidden": "This content isn’t available from your connection.",
+      "network": "We couldn’t reach our servers. Please check your connection.",
+      "notFound": "This content doesn’t exist or is no longer available.",
+      "retry": "Try again",
+      "server": "Something went wrong on our side. We’re on it.",
+      "title": "Couldn’t load this"
+    }
+  },
+  "trust": {
+    "label": "Our guarantees",
+    "payment": "Secure payment",
+    "payment1": "Secure",
+    "payment2": "payment",
+    "satisfaction": "Satisfaction guaranteed",
+    "satisfaction1": "Satisfaction",
+    "satisfaction2": "guaranteed",
+    "support": "Guided every step",
+    "support1": "Guided",
+    "support2": "end to end"
+  },
+  "myProject": {
+    "bookAppointment": "Book an appointment",
+    "completedPct": "{pct}% completed",
+    "emptyDescription": "You haven’t subscribed to a plan or guidance service yet.",
+    "emptyTitle": "No active services",
+    "intro": "All your messages with our advisors and team in one place.",
+    "myServices": "My services",
+    "nextAppointment": "Next meeting",
+    "overviewTitle": "General overview",
+    "progressGood": "You’re making great progress!",
+    "progressGoodDesc": "Keep going, you’re on the right track.",
+    "progressLabel": "progress",
+    "progressPct": "{pct}%",
+    "seeAll": "See all",
+    "seoDescription": "All your advisor exchanges and project tracking in one place.",
+    "seoTitle": "My project — Qiryna",
+    "serviceDone": "Completed",
+    "serviceInProgress": "In progress",
+    "serviceUpcoming": "Upcoming",
+    "startBtn": "Start",
+    "startsOn": "Starts on {date}",
+    "statDone": "Completed",
+    "statInProgress": "In progress",
+    "statUpcoming": "Upcoming",
+    "supportDesc": "Book a meeting with an advisor to move forward.",
+    "supportTitle": "Need guidance?",
+    "title": "My project",
+    "updatedToday": "Updated today"
+  }
+}
