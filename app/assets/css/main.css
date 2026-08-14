@@ -49,6 +49,16 @@
      qui est au-dessus.                                                     */
   --text-exact-10-5: 10.5px;
   --text-exact-10-5--line-height: 20px;
+  /* `mon-projet-admission.html` : 11,5px rendu en 11px raccourcit la ligne
+     « Conseillère » de 1,1px et lui fait perdre son retour à la ligne ;
+     13,5px rendu en 13px rétrécit le programme et le pourcentage. */
+  --text-exact-11-5: 11.5px;
+  --text-exact-11-5--line-height: 17.25px;
+  /* `mon-projet.html` : sous-titre de carte d'accompagnement. */
+  --text-exact-12-5: 12.5px;
+  --text-exact-12-5--line-height: 15.625px;
+  --text-exact-13-5: 13.5px;
+  --text-exact-13-5--line-height: 16.875px;
   --text-exact-15-5: 15.5px;
   --text-exact-15-5--line-height: 15.5px;
   /* 16px n'apparaît que dans le `@media (max-width: 400px)` de
@@ -266,6 +276,45 @@
   --color-menu-sep: #e3e0f4;
   --color-menu-label: #94a3b8;
   --color-menu-header-border: rgb(248 250 252 / 0.5);
+
+  /* ─── Mon projet admission (`mon-projet-admission.html`) ───────── */
+  --color-mpa-badge: #f0ebfe;
+  --color-mpa-badge-text: #2400fd;
+  --color-mpa-fill: #3909fd;
+  --color-mpa-step-done: #4f18f6;
+  --color-mpa-step-badge-done-bg: #e2f4e5;
+  --color-mpa-step-badge-done: #079b12;
+  --color-mpa-tab-active-bg: #f8f7ff;
+  --color-mpa-tab-active-border: #e2dff5;
+  --color-mpa-tab-active: #2d00fc;
+  --color-mpa-doc-validated-bg: #e2f8ee;
+  --color-mpa-doc-validated: #1ab540;
+  --color-mpa-doc-pending-bg: #fef3eb;
+  --color-mpa-doc-pending: #fe650a;
+  --color-mpa-doc-upload-bg: #f3efff;
+  --color-mpa-doc-upload: #4f18f6;
+  --color-mpa-help-btn-bg: #450ffd;
+  --color-mpa-required: #ff1f47;
+
+  /* ─── Mon projet — accompagnements (`mon-projet.html`) ─────────
+     Le violet du lien reprend la valeur de `--color-mpa-step-done`, sous un
+     nom qui dit son emploi ici (lien « + Nouveau projet »). */
+  --color-mp-link: #4f18f6;
+  --color-mp-sub: #141414;
+  --color-mp-updated: #1d1d1d;
+  --color-mp-card-border: rgb(226 232 240 / 0.8);
+  --color-mp-divider: rgb(241 245 249 / 0.8);
+  --color-mp-cta-bg: #450ffd;
+  --color-mp-cta-border: #450ff2;
+  --color-mp-badge-purple-bg: #f3efff;
+  --color-mp-badge-purple: #4f18f6;
+  --color-mp-badge-green-bg: #e8f9ea;
+  --color-mp-badge-green: #059669;
+  --color-mp-badge-pink-bg: #fdf2f8;
+  --color-mp-badge-pink: #db2777;
+  --color-mp-badge-orange-bg: #fff7ed;
+  --color-mp-badge-orange: #ea580c;
+
 
   /* ─── Espacement ──────────────────────────────────────────────────
      Base volontairement fixée à 1px : la maquette est une spécification
