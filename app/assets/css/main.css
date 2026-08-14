@@ -245,6 +245,9 @@
      **horizontale** et ses quatre étapes portent chacune leur couleur, là où
      la confirmation du parcours langue empile cinq étapes indigo.          */
   --color-slate: #64748b;
+  /* « Mis à jour aujourd'hui » de `mon-projet.html` — gris neutre, distinct du
+     violet `--color-muted-2`. */
+  --color-slate-400: #9ca3af;
   --color-stripe-bg: rgb(99 91 255 / 0.1);
   --color-stripe: #492cfb;
   --color-welcome-bg: #f4f9f6;
