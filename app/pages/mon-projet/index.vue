@@ -19,6 +19,7 @@
  * classes `.projet-*`) est une **maquette distincte** : il a sa propre route à
  * cadrer, il ne s'agit pas de la même page.
  */
+import { NuxtLink } from '#components'
 import type { ProjetBadgeTone } from '~/core/contracts/projet'
 
 definePageMeta({ middleware: 'auth' })
@@ -94,8 +95,13 @@ usePageSeo(() => ({
 
         <!-- Liste des accompagnements -->
         <div class="mp-list flex w-full flex-col gap-14 pt-16" aria-labelledby="accompagnements-title">
+          <!-- `NuxtLink` vient de `#components` : `resolveComponent('NuxtLink')`
+               dans cette expression ne résout pas et rend un élément inconnu
+               `<nuxtlink>`, sans `href` ni clic. Les accompagnements sans écran
+               de détail retombent sur un `div`, comme le `href="#"` de la
+               maquette. -->
           <component
-            :is="item.to ? resolveComponent('NuxtLink') : 'div'"
+            :is="item.to ? NuxtLink : 'div'"
             v-for="item in accompagnements"
             :key="item.id"
             :to="item.to ? localePath(item.to) : undefined"
