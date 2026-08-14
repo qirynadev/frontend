@@ -13,7 +13,7 @@ export interface LanguageGoal {
   id: string
   labelKey: string
   descriptionKey: string
-  /** Fichier de `public/icons/`, sans extension. Affiché en 20×20. */
+  /** Fichier de `public/img/icons/`, sans extension. Affiché en 20×20. */
   icon: string
   /** Classe de fond de la pastille, adossée à un token. */
   tint: string

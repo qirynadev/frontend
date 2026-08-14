@@ -4,7 +4,7 @@
  * La maquette répète le même bloc `<nav class="bottom-nav">` dans ses 15 pages,
  * avec la classe `active` déplacée à la main. Ici, une seule liste.
  *
- * Les icônes sont les fichiers de la maquette (`public/icons/`). Elle fournit
+ * Les icônes sont les fichiers de la maquette (`public/img/icons/`). Elle fournit
  * une variante `-active` pour trois des cinq onglets ; `iconActive` reste
  * indéfini pour les autres, et l'onglet actif se distingue alors par la seule
  * couleur du libellé — exactement comme dans `home.html`.
@@ -17,7 +17,7 @@ export interface NavEntry {
   to: string
   /** Clé i18n du libellé — jamais de texte en dur. */
   labelKey: string
-  /** Fichier de `public/icons/`, sans extension. */
+  /** Fichier de `public/img/icons/`, sans extension. */
   icon: string
   /** Variante fournie par la maquette pour l'état actif. */
   iconActive?: string

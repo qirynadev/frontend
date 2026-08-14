@@ -9,7 +9,7 @@ import type { IconName } from './icons'
 
 /**
  * Nom d'icône accepté par `QIcon` et par toutes les primitives qui en portent
- * une : soit une clé du registre interne, soit un fichier de `public/icons/`
+ * une : soit une clé du registre interne, soit un fichier de `public/img/icons/`
  * repris de la maquette (`ic-bell`, `nav-home`, `flag-fr`…).
  */
 export type AnyIconName = IconName | (string & {})
@@ -38,7 +38,7 @@ export interface StepItem {
 
 /** Entrée de `QTrustBar`. */
 export interface TrustItem {
-  /** Fichier de `public/icons/`, sans extension. */
+  /** Fichier de `public/img/icons/`, sans extension. */
   icon: string
   /** Première ligne du libellé — la maquette force le retour à la ligne. */
   label: string
@@ -55,7 +55,7 @@ export interface NavItem {
   to: string
   /** Libellé déjà traduit : la primitive ne connaît pas i18n. */
   label: string
-  /** Fichier de `public/icons/`, sans extension. */
+  /** Fichier de `public/img/icons/`, sans extension. */
   icon: string
   /** Variante fournie par la maquette pour l'état actif. */
   iconActive?: string

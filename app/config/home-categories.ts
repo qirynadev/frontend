@@ -14,7 +14,7 @@ export interface HomeCategory {
   /** Deux clés i18n : la maquette impose le retour à la ligne. */
   labelKey1: string
   labelKey2: string
-  /** Fichiers de `public/icons/`, sans extension. */
+  /** Fichiers de `public/img/icons/`, sans extension. */
   icon: string
   buttonIcon: string
   /** Classe de fond, adossée à un token. */

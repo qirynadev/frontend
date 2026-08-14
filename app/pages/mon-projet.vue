@@ -139,7 +139,7 @@ usePageSeo(() => ({
             </div>
 
             <div class="projet-stat-divider flex h-52 w-0 shrink-0 items-center justify-center" aria-hidden="true">
-              <img src="/icons/ic-stat-divider.svg" alt="" width="52" height="1" class="block h-1 w-52 max-w-none rotate-90">
+              <img src="/img/icons/ic-stat-divider.svg" alt="" width="52" height="1" class="block h-1 w-52 max-w-none rotate-90">
             </div>
 
             <!-- En cours -->
@@ -154,7 +154,7 @@ usePageSeo(() => ({
             </div>
 
             <div class="projet-stat-divider flex h-52 w-0 shrink-0 items-center justify-center" aria-hidden="true">
-              <img src="/icons/ic-stat-divider.svg" alt="" width="52" height="1" class="block h-1 w-52 max-w-none rotate-90">
+              <img src="/img/icons/ic-stat-divider.svg" alt="" width="52" height="1" class="block h-1 w-52 max-w-none rotate-90">
             </div>
 
             <!-- À venir -->
@@ -171,7 +171,7 @@ usePageSeo(() => ({
             </div>
 
             <div class="projet-stat-divider flex h-52 w-0 shrink-0 items-center justify-center" aria-hidden="true">
-              <img src="/icons/ic-stat-divider.svg" alt="" width="52" height="1" class="block h-1 w-52 max-w-none rotate-90">
+              <img src="/img/icons/ic-stat-divider.svg" alt="" width="52" height="1" class="block h-1 w-52 max-w-none rotate-90">
             </div>
 
             <!-- Prochain RDV -->
@@ -198,7 +198,7 @@ usePageSeo(() => ({
             <NuxtLink :to="localePath('/orientation')" class="projet-services-link flex items-center text-base leading-16 font-semibold text-[#1600f3] no-underline">
               <span>{{ $t('myProject.seeAll') }}</span>
               <span class="projet-services-chevron flex h-12 w-16 shrink-0 items-center justify-center pl-4">
-                <img src="/icons/ic-chevron-voir-tout.svg" alt="" width="5" height="9" class="block h-[8.75px] w-5 max-w-none">
+                <img src="/img/icons/ic-chevron-voir-tout.svg" alt="" width="5" height="9" class="block h-[8.75px] w-5 max-w-none">
               </span>
             </NuxtLink>
           </div>
@@ -208,7 +208,7 @@ usePageSeo(() => ({
             <article class="projet-service-card projet-service-card--h105 flex h-105 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
-                  <img src="/icons/ic-service-orientation-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
+                  <img src="/img/icons/ic-service-orientation-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
                   <h3 class="m-0 text-base leading-16 font-semibold text-text">Orientation</h3>
@@ -223,10 +223,10 @@ usePageSeo(() => ({
               <div class="projet-service-aside flex shrink-0 items-center pl-8">
                 <span class="projet-status projet-status--done inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-[#e5f7e7] px-7 py-4 text-xs leading-[13.5px] font-medium text-[#1fad36]">
                   <span>{{ $t('myProject.serviceDone') }}</span>
-                  <img src="/icons/ic-status-done-check.svg" alt="" width="15" height="15" class="block size-15 shrink-0 max-w-none">
+                  <img src="/img/icons/ic-status-done-check.svg" alt="" width="15" height="15" class="block size-15 shrink-0 max-w-none">
                 </span>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -235,7 +235,7 @@ usePageSeo(() => ({
             <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon projet-service-icon--premium relative flex size-44 shrink-0 items-center justify-center rounded-full bg-[#e9f0fe]">
-                  <img src="/icons/ic-service-orientation-premium.svg" alt="" width="24" height="24" class="block size-24">
+                  <img src="/img/icons/ic-service-orientation-premium.svg" alt="" width="24" height="24" class="block size-24">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
                   <h3 class="m-0 text-base leading-16 font-semibold text-text">Orientation</h3>
@@ -252,7 +252,7 @@ usePageSeo(() => ({
                   <span class="projet-status projet-status--progress inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-[#fff3e0] px-7 py-4 text-xs leading-[13.5px] font-medium text-[#fe7812]">
                     <span>{{ $t('myProject.serviceInProgress') }}</span>
                     <span class="projet-status-dot relative h-[7.5px] w-[7.5px] shrink-0 overflow-visible">
-                      <img src="/icons/ic-status-progress-dot.svg" alt="" width="8" height="8" class="absolute top-1/2 left-1/2 block size-[8.3px] max-w-none -translate-x-1/2 -translate-y-1/2">
+                      <img src="/img/icons/ic-status-progress-dot.svg" alt="" width="8" height="8" class="absolute top-1/2 left-1/2 block size-[8.3px] max-w-none -translate-x-1/2 -translate-y-1/2">
                     </span>
                   </span>
                   <div class="projet-mini-progress flex h-31 w-61 flex-col items-center gap-2">
@@ -265,7 +265,7 @@ usePageSeo(() => ({
                   </div>
                 </div>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -274,7 +274,7 @@ usePageSeo(() => ({
             <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
-                  <img src="/icons/ic-service-langue-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
+                  <img src="/img/icons/ic-service-langue-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
                   <h3 class="m-0 text-base leading-16 font-semibold text-text">Apprendre une langue</h3>
@@ -291,7 +291,7 @@ usePageSeo(() => ({
                   <span class="projet-status projet-status--soon inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-[#f5f3fc] px-7 py-4 text-xs leading-[13.5px] font-medium text-[#6b679d]">
                     <span>{{ $t('myProject.serviceUpcoming') }}</span>
                     <span class="projet-status-dot relative h-[7.5px] w-[7.5px] shrink-0 overflow-visible">
-                      <img src="/icons/ic-status-soon-dot.svg" alt="" width="8" height="8" class="absolute top-1/2 left-1/2 block size-[8.3px] max-w-none -translate-x-1/2 -translate-y-1/2">
+                      <img src="/img/icons/ic-status-soon-dot.svg" alt="" width="8" height="8" class="absolute top-1/2 left-1/2 block size-[8.3px] max-w-none -translate-x-1/2 -translate-y-1/2">
                     </span>
                   </span>
                   <span class="projet-start-date flex h-17 w-61 items-start justify-center whitespace-nowrap text-4xs leading-15 font-medium text-muted-2">
@@ -299,7 +299,7 @@ usePageSeo(() => ({
                   </span>
                 </div>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -308,7 +308,7 @@ usePageSeo(() => ({
             <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
-                  <img src="/icons/ic-service-logement-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
+                  <img src="/img/icons/ic-service-logement-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
                   <h3 class="m-0 text-base leading-16 font-semibold text-text">Trouver un logement</h3>
@@ -325,7 +325,7 @@ usePageSeo(() => ({
                   {{ $t('myProject.startBtn') }}
                 </NuxtLink>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -335,7 +335,7 @@ usePageSeo(() => ({
           <aside class="projet-rdv-cta relative mt-4 flex h-91 w-full items-center rounded-xl bg-[#f5f3ff] px-9">
             <div class="projet-rdv-left flex min-w-0 flex-1 items-start gap-11 pr-140">
               <span class="projet-rdv-icon relative block size-44 shrink-0">
-                <img src="/icons/ic-rdv-calendar.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
+                <img src="/img/icons/ic-rdv-calendar.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
               </span>
               <div class="projet-rdv-copy min-w-0 flex-1">
                 <p class="projet-rdv-title m-0 text-md leading-20 font-bold text-text">

@@ -9,7 +9,7 @@ export interface SideMenuEntry {
   id: string
   to: string
   labelKey: string
-  /** Fichier de `public/icons/`, sans extension. Affiché en 40×40. */
+  /** Fichier de `public/img/icons/`, sans extension. Affiché en 40×40. */
   icon: string
 }
 
