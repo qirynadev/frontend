@@ -32,3 +32,6 @@ public/_maquette/
 # Ancien front Vue/Vite : reference seule (a porter, jamais edite). 67 Mo.
 # Reste sur disque pour consultation, hors du versionnement.
 legacy/
+
+# Cache du script de synchro de la maquette (clone du depot UzaLab/qiryna)
+.cache/

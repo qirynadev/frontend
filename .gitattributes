@@ -1,0 +1,14 @@
+# Fins de ligne normalisees en LF pour tout le texte du depot.
+# Sans cela, la maquette (importee d'un depot GitHub en LF) diverge en CRLF
+# sur Windows et fait apparaitre des centaines de fichiers "modifies" a tort.
+* text=auto eol=lf
+
+# Binaires : jamais touches.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
