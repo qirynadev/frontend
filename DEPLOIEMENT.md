@@ -321,6 +321,40 @@ journal (**Node.js → Logs**).
 Autre symptôme classique : une erreur `Cannot find module` au démarrage signifie
 que `npm run build` n'a pas tourné, ou a tourné **avant** le dernier `git pull`.
 
+### g bis. `/icons/` est un alias Apache réservé — déjà contourné
+
+Symptôme rencontré en production : `/img/logo.webp` répond 200 mais
+`/icons/ic-bell.svg` répond **404**, alors que le fichier existe sur le disque.
+
+**Cause :** sous Apache — donc sous Plesk — `/icons/` est un **alias système
+réservé par défaut** :
+
+```apache
+Alias /icons/ "/usr/share/apache2/icons/"
+```
+
+Il sert les pictogrammes d'indexation d'Apache. Toute requête `/icons/*` est
+donc détournée vers ce dossier système **avant** d'atteindre les fichiers du
+site : le répertoire existe (403 sur le listing), mais nos SVG n'y sont pas
+(404). Aucun `chmod` ni build n'y change quoi que ce soit — c'est le **préfixe
+d'URL** qui est capturé.
+
+**C'est déjà réglé dans le code.** `QIcon` et les rares `<img>` en dur servent
+les icônes sous **`/img/icons/`** — un préfixe qu'aucun alias ne réserve, et
+qui est prouvé fonctionnel sur ce serveur (`/img/logo.webp` répond 200). La
+source unique est `public/img/icons/` (378 fichiers). Il n'y a donc **rien à
+faire côté serveur** : le simple dépôt du `public/` (ou le build) suffit.
+
+> Historique : deux tentatives antérieures — une route Node servant `/icons/`,
+> puis une copie partielle sous `/img/icons/` — ont été retirées. La première
+> ne s'exécutait jamais (Apache intercepte avant Node) ; la seconde était
+> incomplète (208 icônes sur 378, 170 en 404). La migration est désormais
+> **complète et unique**.
+
+> ⚠️ **Ne jamais reservir d'assets sous `/icons/`.** Le même piège vaut pour
+> tout autre alias Apache par défaut (`/error/`, `/doc/`). En cas de doute,
+> nichez sous `/img/` ou `/assets/`.
+
 ### h. Mettre à jour
 
 **Git → Pull maintenant**, puis **NPM install**, **Run script → build**,

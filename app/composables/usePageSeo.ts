@@ -59,12 +59,21 @@ export function usePageSeo(input: MaybeRefOrGetter<PageSeoInput>): void {
     robots: () => (toValue(input).noindex ? 'noindex, nofollow' : 'index, follow'),
   })
 
-  // Étape 6.2 : Canonical et Alternates (hreflang)
+  // Canonical + alternates (hreflang).
   useHead(() => {
+    // Union par variante plutôt qu'un `hreflang?` optionnel : l'optionnel
+    // injecterait `string | undefined`, qu'unhead refuse pour cet attribut. La
+    // canonique n'a pas de `hreflang` (clé absente) ; l'alternate l'a toujours.
+    const links: Array<
+      | { rel: 'canonical', href: string }
+      | { rel: 'alternate', hreflang: string, href: string }
+    > = []
     const seoVal = toValue(input)
-    if (seoVal.noindex) return {}
+    // Un écran `noindex` n'annonce ni canonique ni alternates : forme constante
+    // (`{ link: [] }`) plutôt qu'un `{}` — sans quoi l'union de types que TS en
+    // déduit ne satisfait plus `UseHeadInput`.
+    if (seoVal.noindex) return { link: links }
 
-    const links: Array<{ rel: string; hreflang?: string; href: string }> = []
     const canonicalUrl = requestUrl.href.split('?')[0] ?? requestUrl.href
     links.push({ rel: 'canonical', href: canonicalUrl })
 

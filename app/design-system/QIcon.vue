@@ -5,7 +5,7 @@ import { icons, type IconDefinition, type IconName } from './icons'
  * Pictogramme, avec **deux sources**.
  *
  * 1. **Les icônes de la maquette** — tout nom commençant par `ic-`, `nav-` ou
- *    `flag-` désigne un fichier de `public/icons/`, repris tel quel du dossier
+ *    `flag-` désigne un fichier de `public/img/icons/`, repris tel quel du dossier
  *    `maquette/pwa/assets/icons` (206 SVG, 175 Ko au total). Elles portent
  *    leurs propres couleurs : c'est ce qui garantit la fidélité au pixel.
  *    Elles sont rendues en `<img>`, donc mises en cache par le navigateur et
@@ -35,6 +35,12 @@ const props = withDefaults(
 const isAsset = computed(() => /^(ic-|nav-|flag-|status-)/.test(props.name))
 
 const assetSrc = computed(() => {
+  // ⚠️ Servi sous `/img/icons/`, **jamais `/icons/`**. Sur un serveur Apache
+  // (le cas de Plesk), `/icons/` est un **alias système réservé** —
+  // `Alias /icons/ "/usr/share/apache2/icons/"`, présent par défaut : toute
+  // requête `/icons/*` est détournée vers le dossier d'icônes d'Apache, jamais
+  // vers les fichiers du site. D'où des 404 en production alors que les fichiers
+  // existent. Source unique : `public/img/icons/`, 378 fichiers.
   // `flag-es` est le seul drapeau que la maquette fournit en raster.
   if (props.name === 'flag-es') return '/img/icons/flags/flag-es.webp'
   if (props.name === 'ic-orientation-logo') return '/img/icons/ic-orientation-logo.webp'

@@ -68,7 +68,7 @@ const badgeClass = computed(() =>
     ]"
     @click="$emit('select', course.slug)"
   >
-    <!-- Drapeau rond de la maquette. `QIcon` le sert depuis `public/icons/flags/`. -->
+    <!-- Drapeau rond de la maquette. `QIcon` le sert depuis `public/img/icons/flags/`. -->
     <QIcon v-if="flagName" :name="flagName" :size="32" class="rounded-xs object-cover" />
     <img
       v-else-if="course.flag"

@@ -11,13 +11,17 @@
 export function useSchemaOrg(schema: MaybeRefOrGetter<Record<string, unknown> | null | undefined>): void {
   useHead(() => {
     const val = toValue(schema)
-    if (!val) return {}
+    // Forme de retour constante (`{ script: [] }`), jamais `{}` : l'union de
+    // types que TS déduirait sinon ne satisfait plus `UseHeadInput`.
+    if (!val) return { script: [] }
 
     return {
       script: [
         {
           type: 'application/ld+json',
-          children: JSON.stringify({
+          // `innerHTML` est la clé qu'unhead reconnaît pour du contenu brut de
+          // balise ; `children` ne fait pas partie de son type `Script`.
+          innerHTML: JSON.stringify({
             '@context': 'https://schema.org',
             ...val,
           }),

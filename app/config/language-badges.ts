@@ -40,7 +40,7 @@ export type LanguageBadgeTone
 export interface LanguagePresentation {
   /** Slug de la langue côté API. */
   slug: string
-  /** Code pays du drapeau de la maquette (`public/icons/flags/flag-<code>.svg`). */
+  /** Code pays du drapeau de la maquette (`public/img/icons/flags/flag-<code>.svg`). */
   flag: string
   labelKey: string
   tone: LanguageBadgeTone
