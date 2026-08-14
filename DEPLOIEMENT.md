@@ -321,6 +321,37 @@ journal (**Node.js → Logs**).
 Autre symptôme classique : une erreur `Cannot find module` au démarrage signifie
 que `npm run build` n'a pas tourné, ou a tourné **avant** le dernier `git pull`.
 
+### g bis. Icônes en 404 alors que les fichiers sont là
+
+Symptôme observé en production : `/img/logo.webp` répond 200 mais
+`/icons/ic-bell.svg` répond **404**, alors que le fichier existe sur le disque.
+
+Ce n'est ni un problème de chemin, ni de build. La preuve tient en une ligne :
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://VOTRE-DOMAINE/icons/       # 403
+curl -s -o /dev/null -w "%{http_code}\n" https://VOTRE-DOMAINE/icons/ic-bell.svg  # 404
+```
+
+Un **403 sur le dossier** signifie que nginx l'a trouvé mais **n'a pas le droit
+d'en lire le contenu** : les fichiers appartiennent à votre compte SSH, pas à
+l'utilisateur du serveur web. C'est fréquent après une extraction `tar`/`unzip`
+avec un `umask` restrictif. Le correctif :
+
+```bash
+cd /var/www/vhosts/<parent>/<domaine>/httpdocs
+# aligne le propriétaire et les droits de `icons` sur ceux de `img`, qui marche
+chown -R "$(stat -c '%U:%G' public/img)" public/icons .output/public/icons
+chmod -R a+rX public/icons .output/public/icons
+```
+
+> ⚠️ **Ne pas contourner ce problème** en servant les icônes par une route
+> Node, ni en les recopiant sous `/img/icons/`. Ces deux détours ont été
+> tentés puis retirés : ils créent une **seconde source de vérité** qui diverge
+> (170 icônes des nouveaux écrans manquaient sous `/img/icons/`). La source
+> unique est `public/icons/` ; le vrai problème est un droit de lecture, pas un
+> chemin.
+
 ### h. Mettre à jour
 
 **Git → Pull maintenant**, puis **NPM install**, **Run script → build**,

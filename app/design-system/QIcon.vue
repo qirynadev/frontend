@@ -35,11 +35,14 @@ const props = withDefaults(
 const isAsset = computed(() => /^(ic-|nav-|flag-|status-)/.test(props.name))
 
 const assetSrc = computed(() => {
+  // Source unique : `public/icons/` — 378 fichiers, complète, celle qu'emploient
+  // aussi les `<img>` en dur de `mon-projet.vue`. Le détour par `/img/icons/`
+  // (208 fichiers, incomplet) est abandonné : il laissait 170 icônes en 404.
   // `flag-es` est le seul drapeau que la maquette fournit en raster.
-  if (props.name === 'flag-es') return '/img/icons/flags/flag-es.webp'
-  if (props.name === 'ic-orientation-logo') return '/img/icons/ic-orientation-logo.webp'
-  if (props.name.startsWith('flag-')) return `/img/icons/flags/${props.name}.svg`
-  return `/img/icons/${props.name}.svg`
+  if (props.name === 'flag-es') return '/icons/flags/flag-es.webp'
+  if (props.name === 'ic-orientation-logo') return '/icons/ic-orientation-logo.webp'
+  if (props.name.startsWith('flag-')) return `/icons/flags/${props.name}.svg`
+  return `/icons/${props.name}.svg`
 })
 
 const icon = computed<IconDefinition | null>(() => icons[props.name as IconName] ?? null)
