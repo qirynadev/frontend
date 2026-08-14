@@ -55,13 +55,14 @@ usePageSeo(() => ({
 
 <template>
   <PageState :loading="isInitialLoading" :error="apiError" :empty="false" :on-retry="() => refresh()">
-    <div class="page-mon-projet pt-16 pb-24">
+    <!-- Le retrait supérieur (16px) vient du layout mobile ; ne pas le doubler. -->
+    <div class="page-mon-projet">
       <div class="projet-main">
         <!-- Topbar : Logo + Cloche de notifications -->
         <AppTopBar :notifications="3" />
 
         <!-- Hero : Titre + Illustration -->
-        <section class="projet-hero relative flex w-full items-flex-start gap-10 pt-30 pb-70" aria-labelledby="projet-title">
+        <section class="projet-hero relative flex w-full items-start gap-10 pt-30 pb-70" aria-labelledby="projet-title">
           <div class="projet-hero-copy relative z-1 min-w-0 flex-1">
             <h1 id="projet-title" class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] whitespace-nowrap text-text">
               {{ $t('myProject.title') }}
@@ -70,13 +71,19 @@ usePageSeo(() => ({
               {{ $t('myProject.intro') }}
             </p>
           </div>
-          <div class="projet-hero-illus pointer-events-none absolute top-28 left-165 z-0 h-197 w-205" aria-hidden="true">
+          <!-- Sous 390px, la maquette recale l'illustration à droite et la
+               rétrécit (`@media (max-width: 390px)`). C'est le cas du viewport
+               de référence (375px), pas un cas limite. -->
+          <div
+            class="projet-hero-illus pointer-events-none absolute top-28 left-165 z-0 h-197 w-205 max-[390.02px]:left-auto max-[390.02px]:-right-8 max-[390.02px]:w-180"
+            aria-hidden="true"
+          >
             <img
               src="/img/hero-mon-projet.webp"
               alt=""
               width="211"
               height="167"
-              class="absolute top-0 -left-6 h-167 w-211 max-w-none object-contain"
+              class="absolute top-0 -left-6 h-167 w-211 max-w-none object-contain max-[390.02px]:left-0 max-[390.02px]:h-150 max-[390.02px]:w-190"
             >
           </div>
         </section>
@@ -87,7 +94,7 @@ usePageSeo(() => ({
             <h2 id="apercu-title" class="m-0 text-xl leading-16 font-semibold text-text">
               {{ $t('myProject.overviewTitle') }}
             </h2>
-            <span class="projet-apercu-updated text-sm leading-15 font-medium whitespace-nowrap text-muted-2">
+            <span class="projet-apercu-updated text-sm leading-15 font-medium whitespace-nowrap text-slate-400">
               {{ $t('myProject.updatedToday') }}
             </span>
           </div>
@@ -211,12 +218,12 @@ usePageSeo(() => ({
                   <img src="/img/icons/ic-service-orientation-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
-                  <h3 class="m-0 text-base leading-16 font-semibold text-text">Orientation</h3>
+                  <h3 class="m-0 text-base leading-16 font-semibold text-text">{{ $t('myProject.cardOrientationTitle') }}</h3>
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
-                    Faites le point sur votre profil et découvrez les parcours qui vous correspondent
+                    {{ $t('myProject.cardOrientationDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--essentiel inline-flex w-fit items-center rounded-xs bg-[#efecfe] px-8 py-2 text-2xs leading-12 font-semibold text-[#2f00ff]">
-                    Pack Essentiel
+                  <span class="projet-pack projet-pack--essentiel inline-flex w-fit items-center rounded-sm bg-[#efecfe] px-8 py-2 text-2xs leading-12 font-semibold text-[#2f00ff]">
+                    {{ $t('myProject.packEssentiel') }}
                   </span>
                 </div>
               </div>
@@ -238,12 +245,12 @@ usePageSeo(() => ({
                   <img src="/img/icons/ic-service-orientation-premium.svg" alt="" width="24" height="24" class="block size-24">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
-                  <h3 class="m-0 text-base leading-16 font-semibold text-text">Orientation</h3>
+                  <h3 class="m-0 text-base leading-16 font-semibold text-text">{{ $t('myProject.cardOrientationTitle') }}</h3>
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
-                    Nous vous accompagnons pour intégrer l'école de vos rêves.
+                    {{ $t('myProject.cardPremiumDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--premium inline-flex w-fit items-center rounded-xs bg-[#e9f0fe] px-8 py-2 text-2xs leading-12 font-semibold text-[#004ffc]">
-                    Pack Premium
+                  <span class="projet-pack projet-pack--premium inline-flex w-fit items-center rounded-sm bg-[#e9f0fe] px-8 py-2 text-2xs leading-12 font-semibold text-[#004ffc]">
+                    {{ $t('myProject.packPremium') }}
                   </span>
                 </div>
               </div>
@@ -277,12 +284,12 @@ usePageSeo(() => ({
                   <img src="/img/icons/ic-service-langue-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
-                  <h3 class="m-0 text-base leading-16 font-semibold text-text">Apprendre une langue</h3>
+                  <h3 class="m-0 text-base leading-16 font-semibold text-text">{{ $t('myProject.cardLangueTitle') }}</h3>
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
-                    Apprenez une nouvelle langue et ouvrez les portes du monde.
+                    {{ $t('myProject.cardLangueDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--langues inline-flex w-fit items-center rounded-xs bg-[#e9f8ec] px-8 py-2 text-2xs leading-12 font-semibold text-[#05b72d]">
-                    Pack Langues
+                  <span class="projet-pack projet-pack--langues inline-flex w-fit items-center rounded-sm bg-[#e9f8ec] px-8 py-2 text-2xs leading-12 font-semibold text-[#05b72d]">
+                    {{ $t('myProject.packLangues') }}
                   </span>
                 </div>
               </div>
@@ -311,12 +318,12 @@ usePageSeo(() => ({
                   <img src="/img/icons/ic-service-logement-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
-                  <h3 class="m-0 text-base leading-16 font-semibold text-text">Trouver un logement</h3>
+                  <h3 class="m-0 text-base leading-16 font-semibold text-text">{{ $t('myProject.cardLogementTitle') }}</h3>
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
-                    Trouvez le logement idéal, en toute sérénité.
+                    {{ $t('myProject.cardLogementDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--logement inline-flex w-fit items-center rounded-xs bg-[#fef0e4] px-8 py-2 text-2xs leading-12 font-semibold text-[#f16f02]">
-                    Pack Logement
+                  <span class="projet-pack projet-pack--logement inline-flex w-fit items-center rounded-sm bg-[#fef0e4] px-8 py-2 text-2xs leading-12 font-semibold text-[#f16f02]">
+                    {{ $t('myProject.packLogement') }}
                   </span>
                 </div>
               </div>
@@ -331,9 +338,11 @@ usePageSeo(() => ({
             </article>
           </div>
 
-          <!-- RDV CTA -->
-          <aside class="projet-rdv-cta relative mt-4 flex h-91 w-full items-center rounded-xl bg-[#f5f3ff] px-9">
-            <div class="projet-rdv-left flex min-w-0 flex-1 items-start gap-11 pr-140">
+          <!-- RDV CTA. Sous 390px, la maquette casse la disposition : le bloc
+               passe en hauteur auto, le bouton quitte l'absolu pour se caler à
+               droite sous le texte (`@media (max-width: 390px)`). -->
+          <aside class="projet-rdv-cta relative mt-4 flex h-91 w-full items-center rounded-xl bg-[#f5f3ff] px-9 max-[390.02px]:h-auto max-[390.02px]:min-h-91 max-[390.02px]:gap-10 max-[390.02px]:py-14">
+            <div class="projet-rdv-left flex min-w-0 flex-1 items-start gap-11 pr-140 max-[390.02px]:pr-0">
               <span class="projet-rdv-icon relative block size-44 shrink-0">
                 <img src="/img/icons/ic-rdv-calendar.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
               </span>
@@ -341,12 +350,12 @@ usePageSeo(() => ({
                 <p class="projet-rdv-title m-0 text-md leading-20 font-bold text-text">
                   {{ $t('myProject.supportTitle') }}
                 </p>
-                <p class="projet-rdv-desc m-0 pt-4 text-sm leading-16 font-normal text-text">
+                <p class="projet-rdv-desc m-0 pt-4 text-sm leading-16 font-normal whitespace-pre-line text-text">
                   {{ $t('myProject.supportDesc') }}
                 </p>
               </div>
             </div>
-            <NuxtLink :to="localePath('/orientation')" class="projet-rdv-btn absolute top-30 right-9 rounded-lg border border-[#450ff2] bg-transparent px-15 py-9 text-sm leading-16 font-medium text-[#450ff2] no-underline">
+            <NuxtLink :to="localePath('/orientation')" class="projet-rdv-btn absolute top-30 right-9 rounded-lg border border-[#450ff2] bg-transparent px-15 py-9 text-sm leading-16 font-medium text-[#450ff2] no-underline max-[390.02px]:static">
               {{ $t('myProject.bookAppointment') }}
             </NuxtLink>
           </aside>
