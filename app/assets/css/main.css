@@ -339,6 +339,28 @@
   --color-mpo-check-border: #0805fe;
   --color-mpo-support-bg: #fff6f8;
 
+  /* ─── Mon projet — logement (`mon-projet-logement.html`) ───────
+     Reprend le bandeau de progression rose de l'orientation, mais sur fond
+     lilas, avec une chronologie en 9 étapes. */
+  --color-mpl-progress-bg: #faf9fd;
+  --color-mpl-tabs-border: #efeff7;
+  --color-mpl-tabs-bg: #f8f8fd;
+  --color-mpl-tab-bg: #f7f6fb;
+  --color-mpl-tab-active-bg: #f5f4fd;
+  --color-mpl-tab-active-border: #ebebf5;
+  --color-mpl-tab-active-underline: #4b32f9;
+  --color-mpl-tab-active-text: #4329f7;
+  --color-mpl-desc: #475569;
+  --color-mpl-apercu-border: #e7e7f3;
+  --color-mpl-apercu-bg: #fbfbfe;
+  --color-mpl-line-pink: #fdcadc;
+  --color-mpl-line-grey: #e7e7f5;
+  --color-mpl-step-border: #f2f2f8;
+  --color-mpl-marker-done: #f05;
+  --color-mpl-marker-upcoming: #4f46e5;
+  --color-mpl-status: #9ca3af;
+  --color-mpl-status-done: #22c55e;
+
 
   /* ─── Espacement ──────────────────────────────────────────────────
      Base volontairement fixée à 1px : la maquette est une spécification
