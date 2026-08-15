@@ -66,8 +66,7 @@ export function useProjetData(): { data: Ref<ProjetAccompagnement[]> } {
       advisorName: 'Marie Konan',
       updatedKey: 'myProject.updated5Days',
       icon: '/img/icons/ic-mp-orientation.png',
-      // Idem : `mon-projet/orientation` reste à construire.
-      to: null,
+      to: '/mon-projet/orientation',
     },
   ])
 
