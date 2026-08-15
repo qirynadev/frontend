@@ -383,6 +383,9 @@
   --color-rt-radio-border: #8383b6;
   --color-rt-radio-selected-border: #3f11fe;
 
+  /* ─── Réglages — mentions légales (`reglages-mentions.html`) ───── */
+  --color-rml-card-border: rgb(226 232 240 / 0.7);
+
 
   /* ─── Espacement ──────────────────────────────────────────────────
      Base volontairement fixée à 1px : la maquette est une spécification
