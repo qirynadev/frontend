@@ -610,6 +610,21 @@
       "titleIn": "Schools in {destination}"
     }
   },
+  "settingsLanguage": {
+    "bannerDesc": "The language change will be applied instantly across the application.",
+    "bannerTitle": "A tailored experience",
+    "cardTitle": "Application language",
+    "currentLanguage": "Current language",
+    "english": "English",
+    "englishDesc": "English language",
+    "french": "Français",
+    "frenchDesc": "French language",
+    "intro": "Choose the display language of the application.",
+    "save": "Save my preference",
+    "seoDescription": "Choose the display language of the application.",
+    "seoTitle": "Language",
+    "title": "Language"
+  },
   "state": {
     "empty": {
       "description": "Check back shortly — this content is on its way.",

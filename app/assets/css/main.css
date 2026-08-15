@@ -84,6 +84,8 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  /* `reglages-langues.html` : titre d'option en 800. */
+  --font-weight-extrabold: 800;
 
   /* Interlettrage : titres resserrés, libellés capitales espacés */
   --tracking-tight: -0.65px;
@@ -360,6 +362,17 @@
   --color-mpl-marker-upcoming: #4f46e5;
   --color-mpl-status: #9ca3af;
   --color-mpl-status-done: #22c55e;
+
+  /* ─── Réglages — langue (`reglages-langues.html`) ──────────────
+     Motif d'options radio repris ensuite par l'écran de thème. */
+  --color-rl-option-border: #f2f2fa;
+  --color-rl-option-selected-border: #8a6bfd;
+  --color-rl-option-selected-bg: #f7f5fe;
+  --color-rl-option-title: #141414;
+  --color-rl-radio-border: #8b8ab9;
+  --color-rl-radio-selected-border: #4114fb;
+  --color-rl-radio-dot: #4f18f6;
+  --color-rl-cta: #4309fc;
 
 
   /* ─── Espacement ──────────────────────────────────────────────────

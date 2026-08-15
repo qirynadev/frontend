@@ -610,6 +610,21 @@
       "titleIn": "Écoles en {destination}"
     }
   },
+  "settingsLanguage": {
+    "bannerDesc": "Le changement de langue sera appliqué instantanément dans toute l’application.",
+    "bannerTitle": "Une expérience adaptée",
+    "cardTitle": "Langue de l’application",
+    "currentLanguage": "Langue actuelle",
+    "english": "English",
+    "englishDesc": "English language",
+    "french": "Français",
+    "frenchDesc": "Langue française",
+    "intro": "Choisissez la langue d’affichage de l’application.",
+    "save": "Enregistrer ma préférence",
+    "seoDescription": "Choisissez la langue d’affichage de l’application.",
+    "seoTitle": "Langue",
+    "title": "Langue"
+  },
   "state": {
     "empty": {
       "description": "Revenez un peu plus tard, ce contenu arrive.",
