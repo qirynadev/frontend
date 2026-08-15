@@ -2,6 +2,13 @@
 /**
  * Pagination. `numbered` reprend `q-pager`, `dots` reprend `le-dots` et
  * `formule-slider-dots` : même état, deux rendus.
+ *
+ * `.q-pager` porte `padding: 15px 20px` — 60px de haut avec ses boutons de
+ * 30px. Sans ce retrait, le bloc n'en faisait que 32.
+ *
+ * Les flèches passent par `QIconButton size="sm"`, qui rend 32px : la valeur
+ * arbitraire `size-[30px]` est nécessaire, `size-30` perdant contre le
+ * `size-32` du composant, de même famille d'utilitaires.
  */
 
 const props = withDefaults(
@@ -33,12 +40,13 @@ function go(page: number) {
 </script>
 
 <template>
-  <nav :aria-label="ariaLabel ?? $t('ds.pager.label')" class="flex w-full items-center justify-center gap-15">
+  <nav :aria-label="ariaLabel ?? $t('ds.pager.label')" class="flex w-full items-center justify-center gap-15 px-20 py-15 box-border">
     <template v-if="variant === 'numbered'">
       <QIconButton
         icon="chevron-left"
         variant="surface"
         size="sm"
+        class="size-[30px]"
         :label="$t('ds.pager.previous')"
         :disabled="page <= 1"
         @click="go(page - 1)"
@@ -62,6 +70,7 @@ function go(page: number) {
         icon="chevron-right"
         variant="surface"
         size="sm"
+        class="size-[30px]"
         :label="$t('ds.pager.next')"
         :disabled="page >= total"
         @click="go(page + 1)"

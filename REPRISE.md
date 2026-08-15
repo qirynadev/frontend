@@ -4,8 +4,8 @@
 > nouvelle session Claude Code. Complète — ne remplace pas — `LOT-5.md`,
 > `DESIGN-SYSTEM.md`, `ARCHITECTURE-API.md`, `DEPLOIEMENT.md`.
 
-Dernière mise à jour : après `mon-projet` (4 écrans), `logement` et
-`reglages` (5 écrans), tous mesurés au pixel.
+Dernière mise à jour : après `mon-projet` (4 écrans), `logement`,
+`reglages` (5 écrans) et `messages`, tous mesurés au pixel.
 
 ---
 
@@ -57,8 +57,8 @@ arrière.
 | `logement.html` | `logement/index` | ✅ refait et mesuré |
 | `reglages.html` | `reglages/index` | ✅ refait et mesuré |
 | `reglages-langues/mdp/theme/mentions.html` | `reglages/{langues,mot-de-passe,theme,mentions}` | ✅ mesurés |
-| **`messages.html`** | `messages.vue` (placeholder) | ❌ **prochain chantier** |
-| `offres-logement.html` | route à cadrer (`logement/[slug]` ?) | ❌ |
+| `messages.html` | `messages.vue` | ✅ mesuré, 2 onglets |
+| **`offres-logement.html`** | route à cadrer (`logement/[slug]` ?) | ❌ **prochain chantier** |
 | `orientation-scolaire.html`, `orientation-formules.html` | à cadrer | ❌ |
 | `orientation-post-paiement.html` | `orientation/paiement-reussi` | ❌ |
 | `logement-post-paiement.html` | `logement/paiement-reussi` | ❌ |
@@ -148,6 +148,11 @@ le DOM des deux versions côte à côte.
 - `text-base leading-12` : `text-base` impose sa paire d'interligne. Forcer
   avec `leading-[12px]`.
 - `rounded-2xl` vaut **12px** dans ce thème, pas 16.
+- Deux utilitaires de **même famille** se départagent par l'ordre de la
+  feuille, pas par l'ordre d'écriture : `size-30` perd contre le `size-32`
+  d'un composant. Une valeur arbitraire (`size-[30px]`) tranche.
+- Le preflight supprime le `padding: 1px` que le navigateur applique aux
+  `input` : 2px de moins sur un champ de recherche.
 - Une graisse non déclarée dans `@theme` ne produit rien (`font-extrabold`
   était muet avant l'ajout de `--font-weight-extrabold`).
 - `<component :is>` : importer `NuxtLink` depuis `#components`.

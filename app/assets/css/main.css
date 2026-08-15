@@ -403,6 +403,28 @@
   --color-rg-danger-bg: #fef2f2;
   --color-rg-danger-desc: #2b2b2b;
 
+  /* ─── Messages (`messages.html`) ────────────────────────────────
+     Six teintes d'étiquette, une par type d'interlocuteur. */
+  --color-msg-tab-active: #3b2cf2;
+  --color-msg-unread: #4318ff;
+  --color-msg-time: #9ca3af;
+  --color-msg-preview: #6b7280;
+  --color-msg-online: #22c55e;
+  --color-msg-tag-purple-bg: #eef2f6;
+  --color-msg-tag-purple: #4318ff;
+  --color-msg-tag-green-bg: #e2fbe9;
+  --color-msg-tag-green: #10b981;
+  --color-msg-tag-orange-bg: #fff3e0;
+  --color-msg-tag-orange: #ff9800;
+  --color-msg-tag-pink-bg: #ffebee;
+  --color-msg-tag-pink: #e91e63;
+  --color-msg-tag-violet-bg: #ede7f6;
+  --color-msg-tag-violet: #673ab7;
+  --color-msg-tag-blue-bg: #e3f2fd;
+  --color-msg-tag-blue: #2196f3;
+  --color-msg-avatar-home: #f4f7fe;
+  --color-msg-avatar-target: #efedfe;
+
 
   /* ─── Espacement ──────────────────────────────────────────────────
      Base volontairement fixée à 1px : la maquette est une spécification
