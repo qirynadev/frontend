@@ -70,13 +70,13 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    langDir: 'locales',
     locales: [
       { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' },
       { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
     ],
     defaultLocale: 'fr',
     strategy: 'prefix_except_default',
-    lazy: true,
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'qiryna_locale',

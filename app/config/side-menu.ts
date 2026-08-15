@@ -25,9 +25,7 @@ export const sideMenuSections: SideMenuSection[] = [
     entries: [
       { id: 'school', to: '/destinations', labelKey: 'menu.school', icon: 'ic-menu-ecole' },
       { id: 'orientation', to: '/orientation', labelKey: 'menu.orientation', icon: 'ic-menu-orientation' },
-      // L'écran « logement » n'existe pas encore : on renvoie vers l'orientation
-      // plutôt que vers un 404.
-      { id: 'housing', to: '/orientation', labelKey: 'menu.housing', icon: 'ic-menu-logement' },
+      { id: 'housing', to: '/logement', labelKey: 'menu.housing', icon: 'ic-menu-logement' },
       { id: 'language', to: '/langues', labelKey: 'menu.language', icon: 'ic-menu-langue' },
     ],
   },

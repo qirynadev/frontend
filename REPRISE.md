@@ -4,7 +4,8 @@
 > nouvelle session Claude Code. Complète — ne remplace pas — `LOT-5.md`,
 > `DESIGN-SYSTEM.md`, `ARCHITECTURE-API.md`, `DEPLOIEMENT.md`.
 
-Dernière mise à jour : après la mesure au pixel de `mon-projet` (aperçu).
+Dernière mise à jour : après `mon-projet` (4 écrans), `logement` et
+`reglages` (5 écrans), tous mesurés au pixel.
 
 ---
 
@@ -12,7 +13,7 @@ Dernière mise à jour : après la mesure au pixel de `mon-projet` (aperçu).
 
 ```bash
 npm run dev          # http://localhost:3000
-npm test             # 186 tests, ~1,3 s
+npm test             # 193 tests, ~1,5 s
 npm run typecheck    # 0 erreur hors nuxt.config (voir § 5)
 npm run maquette:sync   # met la maquette de référence à jour depuis GitHub
 ```
@@ -45,38 +46,46 @@ arrière.
 
 ## 2. Le travail décidé : **B puis A**
 
-### B — Produire les sous-pages manquantes (priorité)
+### B — Produire les sous-pages manquantes
 
-La maquette « mon projet », « orientation », « logement » et « réglages » ont
-éclaté en tunnels complets. Ces écrans **n'existent pas** encore dans l'app :
-
-| Maquette | Route à créer | Notes |
+| Maquette | Route | État |
 |---|---|---|
-| `mon-projet-admission.html` | `mon-projet/admission` (ou onglet) | **onglets** (3), le plus gros |
-| `mon-projet-logement.html` | `mon-projet/logement` | onglets (2) |
-| `mon-projet-orientation.html` | `mon-projet/orientation` | — |
-| `orientation-scolaire.html` | à cadrer | — |
-| `orientation-formules.html` | à cadrer | — |
-| `orientation-post-paiement.html` | `orientation/paiement-reussi` | un écran de succès par tunnel (cf. LOT-5 § 7 quinquies) |
-| `logement.html`, `offres-logement.html` | à mesurer vs `logement/index` existant | — |
-| `logement-post-paiement.html` | `logement/paiement-reussi` | — |
-| `reglages-langues/mdp/theme/mentions.html` | sous-pages de `reglages/` | — |
-| `messages.html` | `messages.vue` (placeholder aujourd'hui) | — |
+| `mon-projet.html` | `mon-projet/index` | ✅ mesuré |
+| `mon-projet-admission.html` | `mon-projet/admission` | ✅ mesuré, 3 onglets |
+| `mon-projet-logement.html` | `mon-projet/logement` | ✅ mesuré, 2 onglets |
+| `mon-projet-orientation.html` | `mon-projet/orientation` | ✅ mesuré |
+| `logement.html` | `logement/index` | ✅ refait et mesuré |
+| `reglages.html` | `reglages/index` | ✅ refait et mesuré |
+| `reglages-langues/mdp/theme/mentions.html` | `reglages/{langues,mot-de-passe,theme,mentions}` | ✅ mesurés |
+| **`messages.html`** | `messages.vue` (placeholder) | ❌ **prochain chantier** |
+| `offres-logement.html` | route à cadrer (`logement/[slug]` ?) | ❌ |
+| `orientation-scolaire.html`, `orientation-formules.html` | à cadrer | ❌ |
+| `orientation-post-paiement.html` | `orientation/paiement-reussi` | ❌ |
+| `logement-post-paiement.html` | `logement/paiement-reussi` | ❌ |
+| `mon-projet-apercu.html` | route à cadrer — **maquette distincte** | ❌ |
 
-⚠️ **Cadrer les routes avec le responsable avant de coder** : onglets d'une
-même page vs pages séparées, ce n'est pas tranché. `mon-projet.vue` est
-aujourd'hui l'aperçu ; les 3 détails sont des drill-downs.
+`mon-projet-apercu.html` (classes `.projet-*`, blocs aperçu / statistiques /
+RDV) n'est **pas** `mon-projet.html`. L'ancienne implémentation reste dans
+l'historique, sur `app/pages/mon-projet.vue` avant le commit `ef4f94e`.
+
+Le responsable a indiqué qu'il repasserait sur **les URL et la précision de
+chaque parcours** : les entrées sans écran restent des `div`, jamais des liens
+morts, comme le `#` des maquettes.
 
 ### A — Mesurer les pages Antigravity déjà là
 
-Après B, repasser au pixel les écrans qu'Antigravity a construits sans mesure :
-`logement/index.vue`, `reglages/index.vue`, `orientation.vue`. La mesure de
-`mon-projet` (aperçu) a montré 5 écarts réels sur une page qui « semblait
-finie » — **présumer que les autres en ont aussi**.
+`logement/index` et `reglages/index` sont faits. **Restent** : `orientation.vue`,
+et les écrans du Lot 4 jamais mesurés — `destinations/[slug]`, `.../ecoles`, la
+fiche école, `/offres/[slug]` (18px d'écart déjà repéré sur la carte de palier
+à 380px).
 
-Écrans du Lot 4 jamais mesurés au pixel, également suspects :
-`destinations/[slug]`, `.../ecoles`, la fiche école, `/offres/[slug]`
-(18px d'écart déjà repéré sur la carte de palier à 380px).
+Ce qu'a donné la mesure de ces deux pages, à titre d'ordre de grandeur : elles
+n'employaient **aucune** classe de la maquette, des préfixes `sm:` absents du
+gabarit mobile, et `logement/index` affichait un contenu sans rapport avec sa
+maquette. Présumer la même chose des suivantes.
+
+⚠️ `destination-etude.html` n'a **plus** de sous-titre, `destinations/index` en
+affiche encore un. Signalé, non corrigé : c'est du contenu visible.
 
 ---
 
@@ -97,8 +106,53 @@ le DOM des deux versions côte à côte.
    > 390px et oublie ces règles. **Toujours lire les média queries de la page
    dans `app.css` avant de coder.**
 5. Faux positifs à ignorer : `rounded-full` mesuré `2.68e7px` vs `9999px` ;
-   `font-size: 13.33px` sur un `<button>` UA ; différences de longueur de
-   texte dues aux données réelles.
+   `font-size: 13.33px` et `color: rgb(0,0,0)` sur un `<button>` UA ;
+   `box-shadow` composé par Tailwind (la liste se termine par la bonne ombre,
+   le reste est transparent) ; différences de longueur de texte dues aux
+   données réelles.
+
+### Cinq artefacts d'environnement qui font perdre des heures
+
+- **Régénérer la feuille Tailwind avant de mesurer.** Après ajout d'un token
+  ou d'une classe inédite, le serveur de dev ne les intègre pas tout de suite :
+  on mesure alors des « écarts » qui n'existent pas. Redémarrer le serveur.
+- **Service worker de la maquette** (scope `/_maquette/`) : il sert des copies
+  périmées de `app.css` et des pages. Le désenregistrer et vider `caches`
+  **à chaque** chargement d'iframe — il se réenregistre tout seul.
+- **Barre de défilement.** Une iframe de 375px donne un `clientWidth` de 360 —
+  soit le seuil de `@media (max-width: 360px)`. Compenser la largeur. Et
+  plusieurs maquettes posent `scrollbar-gutter: stable` ou font défiler un
+  conteneur interne : 15px de moins, inexistants sur mobile où les barres se
+  superposent. Neutraliser avant de conclure.
+- **Transitions figées.** Le panneau navigateur ne compose pas d'images : une
+  `transition` reste bloquée sur sa valeur de départ et les états actifs
+  paraissent inversés. Injecter `transition: none !important` des deux côtés.
+- **Vérifier quel serveur répond.** Un serveur de dev peut se rabattre sur le
+  port prévu pour la production. Signature d'un serveur de dev : des URL
+  `/_nuxt/@fs/…` et `@nuxt/devtools` dans le réseau.
+
+### Trois pièges de cascade, invisibles à la lecture
+
+- Une règle peut être **inerte** : `.mpl-step:first-child` ne s'applique jamais,
+  le premier enfant étant un conteneur de traits. Reproduire l'**effet** mesuré,
+  pas l'intention lue.
+- Un sélecteur positionnel compte ce qu'on ne croit pas :
+  `.rg-section:nth-of-type(n+3)` inclut `.rg-intro`, qui est aussi une
+  `<section>`.
+- Une classe peut battre un attribut : `.rm-match { display: block }` l'emporte
+  sur `hidden`, et la ligne « masquée » occupe bel et bien sa marge.
+
+### Utilitaires Tailwind qui ne font pas ce qu'on croit
+
+- `m-0 mb-12` : à spécificité égale, `m-0` gagne. Écrire `mt-0 mb-12`.
+- `text-base leading-12` : `text-base` impose sa paire d'interligne. Forcer
+  avec `leading-[12px]`.
+- `rounded-2xl` vaut **12px** dans ce thème, pas 16.
+- Une graisse non déclarée dans `@theme` ne produit rien (`font-extrabold`
+  était muet avant l'ajout de `--font-weight-extrabold`).
+- `<component :is>` : importer `NuxtLink` depuis `#components`.
+  `resolveComponent('NuxtLink')` rend un élément inconnu `<nuxtlink>`, sans
+  `href` ni clic — et la mesure au pixel ne le voit pas.
 
 Pour mesurer un écran **protégé par `auth`** : commenter temporairement
 `definePageMeta({ middleware: 'auth' })` (marqueur `// MESURE-TEMP`), mesurer,
@@ -117,6 +171,12 @@ avant tout commit.
 - **Aucune chaîne visible en dur** : i18n fr **et** en, clés triées
   alphabétiquement, parité vérifiée. `mon-projet` en avait 11 (piège
   Antigravity : il traduit les libellés de statut mais oublie le contenu).
+- **Aucune balise HTML dans un message i18n.** Le plugin rejette alors le
+  **fichier de locale entier** : le client démarre sans aucun namespace et
+  toutes les pages affichent leurs clés brutes après hydratation, le rendu
+  serveur restant correct. Une coupure de ligne ou un fragment en gras se
+  traitent au gabarit, avec des clés séparées.
+  `tests/i18n-locales.spec.ts` le vérifie, avec la parité et le tri.
 - **Aucun `$fetch` hors de `app/core/http/`.**
 - **Icônes → `/img/icons/`** via `QIcon`, jamais `/icons/`.
 - **Quatre états par vue** : chargement (squelettes), vide, erreur, nominal
@@ -166,7 +226,7 @@ Tout est dans `DEPLOIEMENT.md`. Les points qui ont coûté du temps :
 
 ```bash
 npm run typecheck 2>&1 | grep -E "error TS" | grep -v nuxt.config   # doit être vide
-npm test                                                            # 186 verts
+npm test                                                            # 193 verts
 grep -rn "MESURE-TEMP\|query.demo" app/                             # doit être vide
 git checkout -b <chantier> && git add -A && git commit              # jamais sur main directement
 ```

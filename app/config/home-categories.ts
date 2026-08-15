@@ -3,10 +3,6 @@
  *
  * Contenu **éditorial fixe** : aucun endpoint ne le décrit. Icônes, teintes de
  * fond et libellés sur deux lignes sont repris de `home.html` à l'identique.
- *
- * `available: false` marque un service dont l'écran n'existe pas encore : la
- * carte reste visible — elle porte l'offre commerciale — mais mène à l'offre
- * d'orientation plutôt qu'à un 404.
  */
 export interface HomeCategory {
   id: string
@@ -19,7 +15,6 @@ export interface HomeCategory {
   buttonIcon: string
   /** Classe de fond, adossée à un token. */
   tint: string
-  available: boolean
 }
 
 export const homeCategories: HomeCategory[] = [
@@ -31,7 +26,6 @@ export const homeCategories: HomeCategory[] = [
     icon: 'ic-home-cat-school',
     buttonIcon: 'ic-home-cat-school-btn',
     tint: 'bg-tint-pink',
-    available: true,
   },
   {
     id: 'career',
@@ -41,17 +35,15 @@ export const homeCategories: HomeCategory[] = [
     icon: 'ic-home-cat-metier',
     buttonIcon: 'ic-home-cat-metier-btn',
     tint: 'bg-surface-2',
-    available: true,
   },
   {
     id: 'housing',
-    to: '/orientation',
+    to: '/logement',
     labelKey1: 'home.category.housing1',
     labelKey2: 'home.category.housing2',
     icon: 'ic-home-cat-logement',
     buttonIcon: 'ic-home-cat-logement-btn',
     tint: 'bg-tint-green',
-    available: false,
   },
   {
     id: 'language',
@@ -61,6 +53,5 @@ export const homeCategories: HomeCategory[] = [
     icon: 'ic-home-cat-langue',
     buttonIcon: 'ic-home-cat-langue-btn',
     tint: 'bg-tint-yellow',
-    available: true,
   },
 ]

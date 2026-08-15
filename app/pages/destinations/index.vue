@@ -5,9 +5,9 @@
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
  * | barre supérieure | `.dest-topbar` `padding-bottom: 30px` |
- * | introduction | `.dest-intro` `padding-bottom: 45px` · h1 20px `-0.65px` · p 14px/22,75px |
+ * | introduction | `.dest-intro` `padding-bottom: var(--dest-block-gap)` = 22px · h1 20px `-0.65px` · p 14px/22,75px |
  * | grille | `.dest-grid` 3 colonnes, **2 sous 400px**, `gap: 10px` |
- * | encart d'aide | `.dest-help-wrap` `padding: 24px 0` · `.dest-help` fond `#f5f3ff`, `padding: 20px 9px`, `gap: 16px`, icône 44×44 |
+ * | encart d'aide | `.dest-help-wrap` `padding: 22px 0` · `.dest-help` fond `#f5f3ff`, `padding: 20px 9px`, `gap: 16px`, icône 44×44 |
  * | réassurance | `data-trust-bar` |
  */
 import { destinationRepo } from '~/core/repositories'
@@ -32,7 +32,7 @@ usePageSeo(() => ({
   <div>
     <AppTopBar back back-to="/" />
 
-    <div class="w-full pb-45">
+    <div class="w-full pb-22">
       <h1 class="m-0 text-4xl leading-normal font-semibold tracking-tight text-text">
         {{ $t('destination.list.title') }}
       </h1>
@@ -64,7 +64,7 @@ usePageSeo(() => ({
       </div>
 
       <!-- Encart d'accompagnement -->
-      <div class="w-full py-24">
+      <div class="w-full py-22">
         <div class="flex w-full items-start gap-16 rounded-xl bg-surface-2 px-9 py-20">
           <QIcon name="ic-dest-help" :size="44" />
           <div>

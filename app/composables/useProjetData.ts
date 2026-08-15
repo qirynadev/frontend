@@ -35,9 +35,7 @@ export function useProjetData(): { data: Ref<ProjetAccompagnement[]> } {
       advisorName: 'Idriss Traoré',
       updatedKey: 'myProject.updated2Days',
       icon: '/img/icons/ic-mp-logement.png',
-      // `mon-projet/logement` n'est pas encore construit : laisser le lien
-      // actif mènerait à un 404. Rebrancher en même temps que l'écran.
-      to: null,
+      to: '/mon-projet/logement',
     },
     {
       id: 'langues',
@@ -66,8 +64,7 @@ export function useProjetData(): { data: Ref<ProjetAccompagnement[]> } {
       advisorName: 'Marie Konan',
       updatedKey: 'myProject.updated5Days',
       icon: '/img/icons/ic-mp-orientation.png',
-      // Idem : `mon-projet/orientation` reste à construire.
-      to: null,
+      to: '/mon-projet/orientation',
     },
   ])
 

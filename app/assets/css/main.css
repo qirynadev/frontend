@@ -84,6 +84,8 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  /* `reglages-langues.html` : titre d'option en 800. */
+  --font-weight-extrabold: 800;
 
   /* Interlettrage : titres resserrés, libellés capitales espacés */
   --tracking-tight: -0.65px;
@@ -315,6 +317,92 @@
   --color-mp-badge-orange-bg: #fff7ed;
   --color-mp-badge-orange: #ea580c;
 
+  /* ─── Mon projet — orientation (`mon-projet-orientation.html`) ──
+     Écran à dominante rose, seul de ce ton dans l'application. */
+  --color-mpo-heading: #0a142f;
+  --color-mpo-heading-soft: rgb(10 20 47 / 0.7);
+  --color-mpo-text: #4b5563;
+  --color-mpo-info-text: #121212;
+  --color-mpo-pink: #fc037f;
+  --color-mpo-dot: #fb027d;
+  --color-mpo-btn: #f05;
+  --color-mpo-support: #fe448b;
+  --color-mpo-bar-bg: #e8e8ff;
+  --color-mpo-line: #bbb3f4;
+  --color-mpo-card-border: #f3f4f6;
+  --color-mpo-card-bg: #fefefe;
+  --color-mpo-profile-border: #ffe5ee;
+  --color-mpo-profile-bg: #fff6f9;
+  --color-mpo-test-border: #f6f7fb;
+  --color-mpo-test-bg: #fbfbfe;
+  --color-mpo-test-btn: #4545f7;
+  --color-mpo-info-bg: #f4f7fb;
+  --color-mpo-info-title: #0000f9;
+  --color-mpo-check-border: #0805fe;
+  --color-mpo-support-bg: #fff6f8;
+
+  /* ─── Mon projet — logement (`mon-projet-logement.html`) ───────
+     Reprend le bandeau de progression rose de l'orientation, mais sur fond
+     lilas, avec une chronologie en 9 étapes. */
+  --color-mpl-progress-bg: #faf9fd;
+  --color-mpl-tabs-border: #efeff7;
+  --color-mpl-tabs-bg: #f8f8fd;
+  --color-mpl-tab-bg: #f7f6fb;
+  --color-mpl-tab-active-bg: #f5f4fd;
+  --color-mpl-tab-active-border: #ebebf5;
+  --color-mpl-tab-active-underline: #4b32f9;
+  --color-mpl-tab-active-text: #4329f7;
+  --color-mpl-desc: #475569;
+  --color-mpl-apercu-border: #e7e7f3;
+  --color-mpl-apercu-bg: #fbfbfe;
+  --color-mpl-line-pink: #fdcadc;
+  --color-mpl-line-grey: #e7e7f5;
+  --color-mpl-step-border: #f2f2f8;
+  --color-mpl-marker-done: #f05;
+  --color-mpl-marker-upcoming: #4f46e5;
+  --color-mpl-status: #9ca3af;
+  --color-mpl-status-done: #22c55e;
+
+  /* ─── Réglages — langue (`reglages-langues.html`) ──────────────
+     Motif d'options radio repris ensuite par l'écran de thème. */
+  --color-rl-option-border: #f2f2fa;
+  --color-rl-option-selected-border: #8a6bfd;
+  --color-rl-option-selected-bg: #f7f5fe;
+  --color-rl-option-title: #141414;
+  --color-rl-radio-border: #8b8ab9;
+  --color-rl-radio-selected-border: #4114fb;
+  --color-rl-radio-dot: #4f18f6;
+  --color-rl-cta: #4309fc;
+
+  /* ─── Réglages — thème (`reglages-theme.html`) ─────────────────
+     Même motif d'options que l'écran de langue, teintes distinctes. */
+  --color-rt-option-border: rgb(226 232 240 / 0.8);
+  --color-rt-option-selected-border: #4f18f6;
+  --color-rt-option-selected-bg: #faf7fd;
+  --color-rt-option-desc: #070707;
+  --color-rt-radio-border: #8383b6;
+  --color-rt-radio-selected-border: #3f11fe;
+
+  /* ─── Réglages — mentions légales (`reglages-mentions.html`) ───── */
+  --color-rml-card-border: rgb(226 232 240 / 0.7);
+
+  /* ─── Réglages — mot de passe (`reglages-mdp.html`) ────────────── */
+  --color-rm-placeholder: #94a3b8;
+  --color-rm-rule-dot-border: #cbd5e1;
+  --color-rm-weak: #ef4444;
+  --color-rm-medium: #f59e0b;
+
+  /* ─── Réglages — accueil (`reglages.html`) ─────────────────────── */
+  --color-rg-card-border: #e5e7eb;
+  --color-rg-card-bg: rgb(249 250 251 / 0.3);
+  --color-rg-row-border: rgb(229 231 235 / 0.5);
+  --color-rg-row-desc: #242424;
+  --color-rg-row-indigo: #1e1b4b;
+  --color-rg-row-value: #6b7280;
+  --color-rg-danger: #e71816;
+  --color-rg-danger-bg: #fef2f2;
+  --color-rg-danger-desc: #2b2b2b;
+
 
   /* ─── Espacement ──────────────────────────────────────────────────
      Base volontairement fixée à 1px : la maquette est une spécification
@@ -354,6 +442,8 @@
   --shadow-card: 0 0 3.5px rgb(0 0 0 / 0.1);
   /* `.auth-toggle .active`, `.lpp-step-card`, `.projet-*` — flou 1px, pas 2. */
   --shadow-2xs: 0 1px 1px rgb(0 0 0 / 0.05);
+  /* Carte des réglages (`reglages.html`). */
+  --shadow-rg: 0 2px 10px -3px rgb(6 81 237 / 0.05);
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
   --shadow-sm: 0 0 2px rgb(0 0 0 / 0.1);
   --shadow-soft: 0 2px 4px rgb(241 245 249 / 0.5);
