@@ -6,7 +6,7 @@ import type { DestinationSummary } from '~/core/contracts'
  *
  * | Élément | Maquette |
  * |---|---|
- * | carte | `min-height: 217px` (0 sous 400px), `padding: 7px 7px 10px`, rayon 10, ombre `0 0 3.5px`, `gap: 32px` |
+ * | carte | `min-height: 217px` (0 sous 400px), `padding: 7px 7px 10px`, rayon 10, ombre `0 0 3.5px`, `gap: 22px` |
  * | photo | 100 % × 112px, `object-fit: cover`, rayon 4 |
  * | drapeau | 31×31 rond, centré, `bottom: -15.5px` |
  * | nom | 12px / 20px, `font-weight: 700` |
@@ -23,7 +23,7 @@ const localePath = useLocalePath()
 <template>
   <NuxtLink
     :to="localePath(`/destinations/${destination.slug}`)"
-    class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-32 rounded-xl border border-transparent bg-white px-7 pt-7 pb-10 text-left text-text no-underline shadow-card"
+    class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-white px-7 pt-7 pb-10 text-left text-text no-underline shadow-card"
   >
     <div class="relative h-112 w-full shrink-0">
       <NuxtImg

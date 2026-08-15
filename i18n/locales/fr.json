@@ -367,6 +367,22 @@
     "seoDescription": "Qiryna vous accompagne à chaque étape de vos études à l’étranger : choix de la destination, admission, langues et installation.",
     "seoTitle": "Étudier à l’étranger avec Qiryna"
   },
+  "housing": {
+    "countLabel": "350+ logements",
+    "countryCanada": "Canada",
+    "countryChina": "Chine",
+    "countryEngland": "Angleterre",
+    "countryFrance": "France",
+    "countryGermany": "Allemagne",
+    "countryUsa": "Etats-Unis",
+    "gridLabel": "Destinations logement",
+    "helpDescription": "De la sélection de votre école jusqu’à votre installation, nos experts vous accompagnent pour maximiser vos chances de réussite.",
+    "helpTitle": "Un accompagnement à chaque étape",
+    "seoDescription": "Trouvez un logement étudiant dans plusieurs pays.",
+    "seoTitle": "Trouver mon logement",
+    "subtitle": "Trouvez un logement dans plusieurs pays",
+    "title": "Choisissez votre destination d’étude"
+  },
   "menu": {
     "account": "Mon compte",
     "helpText": "Contactez notre support",

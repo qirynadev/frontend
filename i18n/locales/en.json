@@ -367,6 +367,22 @@
     "seoDescription": "Qiryna supports you at every step of studying abroad: choosing a destination, admission, languages and settling in.",
     "seoTitle": "Study abroad with Qiryna"
   },
+  "housing": {
+    "countLabel": "350+ homes",
+    "countryCanada": "Canada",
+    "countryChina": "China",
+    "countryEngland": "England",
+    "countryFrance": "France",
+    "countryGermany": "Germany",
+    "countryUsa": "United States",
+    "gridLabel": "Housing destinations",
+    "helpDescription": "From choosing your school to settling in, our experts support you to maximise your chances of success.",
+    "helpTitle": "Support at every step",
+    "seoDescription": "Find student housing in several countries.",
+    "seoTitle": "Find my housing",
+    "subtitle": "Find housing in several countries",
+    "title": "Choose your study destination"
+  },
   "menu": {
     "account": "My account",
     "helpText": "Contact our support",
