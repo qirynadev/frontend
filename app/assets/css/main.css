@@ -386,6 +386,12 @@
   /* ─── Réglages — mentions légales (`reglages-mentions.html`) ───── */
   --color-rml-card-border: rgb(226 232 240 / 0.7);
 
+  /* ─── Réglages — mot de passe (`reglages-mdp.html`) ────────────── */
+  --color-rm-placeholder: #94a3b8;
+  --color-rm-rule-dot-border: #cbd5e1;
+  --color-rm-weak: #ef4444;
+  --color-rm-medium: #f59e0b;
+
 
   /* ─── Espacement ──────────────────────────────────────────────────
      Base volontairement fixée à 1px : la maquette est une spécification
