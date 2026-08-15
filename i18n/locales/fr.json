@@ -334,7 +334,7 @@
     "category": {
       "career1": "Identifier",
       "career2": "mon métier",
-      "housing1": "Trouver un",
+      "housing1": "Trouver mon",
       "housing2": "logement",
       "language1": "Apprendre",
       "language2": "une langue",
@@ -371,7 +371,7 @@
     "account": "Mon compte",
     "helpText": "Contactez notre support",
     "helpTitle": "Besoin d'aide ?",
-    "housing": "Trouver un logement",
+    "housing": "Trouver mon logement",
     "language": "Apprendre une langue",
     "orientation": "Orientation",
     "other": "Autre",
