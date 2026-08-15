@@ -374,6 +374,15 @@
   --color-rl-radio-dot: #4f18f6;
   --color-rl-cta: #4309fc;
 
+  /* ─── Réglages — thème (`reglages-theme.html`) ─────────────────
+     Même motif d'options que l'écran de langue, teintes distinctes. */
+  --color-rt-option-border: rgb(226 232 240 / 0.8);
+  --color-rt-option-selected-border: #4f18f6;
+  --color-rt-option-selected-bg: #faf7fd;
+  --color-rt-option-desc: #070707;
+  --color-rt-radio-border: #8383b6;
+  --color-rt-radio-selected-border: #3f11fe;
+
 
   /* ─── Espacement ──────────────────────────────────────────────────
      Base volontairement fixée à 1px : la maquette est une spécification

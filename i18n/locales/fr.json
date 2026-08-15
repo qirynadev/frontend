@@ -625,6 +625,21 @@
     "seoTitle": "Langue",
     "title": "Langue"
   },
+  "settingsTheme": {
+    "darkDesc": "Un thème sombre qui réduit la fatigue visuelle la nuit.",
+    "darkTitle": "Sombre",
+    "infoText": "Le thème choisi sera appliqué sur l’ensemble de l’application",
+    "intro": "Personnalisez l’apparence de l’application.",
+    "lightDesc": "Un thème lumineux idéal pour une utilisation en journée.",
+    "lightTitle": "Clair",
+    "pickLabel": "Choisissez votre thème",
+    "save": "Enregistrer mon thème",
+    "seoDescription": "Personnalisez l’apparence de l’application.",
+    "seoTitle": "Thème",
+    "systemDesc": "Adapte automatiquement le thème selon les paramètres de votre appareil.",
+    "systemTitle": "Système",
+    "title": "Thème"
+  },
   "state": {
     "empty": {
       "description": "Revenez un peu plus tard, ce contenu arrive.",

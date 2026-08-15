@@ -625,6 +625,21 @@
     "seoTitle": "Language",
     "title": "Language"
   },
+  "settingsTheme": {
+    "darkDesc": "A dark theme that reduces eye strain at night.",
+    "darkTitle": "Dark",
+    "infoText": "The chosen theme will be applied across the whole application",
+    "intro": "Customise the appearance of the application.",
+    "lightDesc": "A bright theme, ideal for daytime use.",
+    "lightTitle": "Light",
+    "pickLabel": "Choose your theme",
+    "save": "Save my theme",
+    "seoDescription": "Customise the appearance of the application.",
+    "seoTitle": "Theme",
+    "systemDesc": "Automatically matches the theme to your device settings.",
+    "systemTitle": "System",
+    "title": "Theme"
+  },
   "state": {
     "empty": {
       "description": "Check back shortly — this content is on its way.",
