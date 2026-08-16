@@ -421,6 +421,15 @@
   --color-dom-card-mgmt-bg: #fdeff0;
   --color-dom-card-meta: #94a3b8;
 
+  /* ─── Liste d'écoles (`liste-ecole.html`) ─────────────────────────
+     `--le-block-gap: 22px` — même valeur que `--dom-block-gap`, préfixe
+     distinct dans la maquette. Rendu par `gap-22`/`mt-22` directs. */
+  --color-le-chip-border: #f5f5f5;
+  --color-le-chip-selected-bg: #f8f8fd;
+  --color-le-chip-selected-border: #5a2ef1;
+  --color-le-dot-active: #5c20fc;
+  --shadow-le-chip: 0 0 3.5px rgb(0 0 0 / 0.12);
+
   /* ─── Messages (`messages.html`) ────────────────────────────────
      Six teintes d'étiquette, une par type d'interlocuteur. */
   --color-msg-tab-active: #3b2cf2;

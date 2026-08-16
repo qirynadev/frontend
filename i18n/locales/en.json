@@ -628,12 +628,21 @@
     "list": {
       "clearSearch": "Clear search",
       "count": "no schools available | 1 school available | {count} schools available",
+      "domainArchitecture": "Architecture",
+      "domainEngineering": "Engineering",
+      "domainManagement": "Management",
+      "domainMedicine": "Medicine",
+      "domainPoliticalScience": "Political science",
+      "domainScience": "Science",
       "emptyDescription": "Broaden your search or remove a filter to see more results.",
       "emptyTitle": "No matching schools",
+      "foundedYear": "Founded: {year}",
+      "nextDomains": "Next fields",
       "searchLabel": "Search for a school",
       "searchPlaceholder": "A school name, a city…",
       "seoDescription": "Browse our partner schools and find the one that fits your plans.",
       "seoTitle": "Schools in {destination}",
+      "students": "{count} students",
       "title": "Available schools",
       "titleIn": "Schools in {destination}"
     }
