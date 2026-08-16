@@ -108,6 +108,29 @@ Corollaire fréquent : la maquette porte souvent son rythme vertical par un
 avec des blocs à **zéro retrait**. Reproduire cela avec des `pb-*` sur les blocs
 donne des positions fausses même si la hauteur finale tombe juste.
 
+## Quand l'appariement par nom de classe ne marche pas
+
+Plusieurs pages de l'application n'emploient **aucune** classe de la maquette :
+elles sont écrites en utilitaires Tailwind. Sur l'accueil, comparer les 66
+sélecteurs `.home-*` ne rapporte que des « absent dans l'app » — et **zéro
+écart réel détecté**, alors qu'il y en avait sept.
+
+Dans ce cas, parcourir les **deux arbres en parallèle** : à chaque niveau,
+apparier les enfants visibles par leur index et comparer `width`, `height`,
+`top`, `left`. Descendre tant que la géométrie coïncide, s'arrêter et signaler
+dès qu'elle diverge.
+
+```js
+const visibles = p => [...p.children].filter(e => {
+  const r = e.getBoundingClientRect(); return r.width > 0.5 || r.height > 0.5;
+});
+// puis walk(blocMaquette, blocApp) en comparant box() à chaque niveau
+```
+
+Vérifier d'abord que le **nombre d'enfants visibles** correspond : une
+différence de structure invalide l'appariement par index, et doit être
+signalée telle quelle.
+
 ## Trois pièges de cascade, invisibles à la lecture du HTML
 
 - Une règle peut être **inerte** : `.mpl-step:first-child` ne s'applique jamais,
@@ -175,7 +198,8 @@ conformes.
 | **A4** | `orientation.vue` | écran Antigravity **jamais mesuré** |
 | **A5** | `destinations/[slug]`, `destinations/[slug]/ecoles` | Lot 4, **jamais mesurés** |
 | **A6** | `destinations/[slug]/ecoles/[school]`, `offres/[slug]` | **jamais mesurés** (18px déjà repérés sur la carte de palier) |
-| **A7** | `index.vue` (accueil) | **jamais conforme** — diagnostic chiffré fourni |
+| ~~A7~~ | `index.vue` (accueil) | ✅ rythme et cartes conformes — **sections non traitées** |
+| **A7 bis** | `index.vue` — les deux sections | 7 écarts mesurés, listés au § 3 |
 
 ### Chantier B — écrans à créer
 
@@ -461,6 +485,62 @@ manquent, avec un commentaire disant d'où elles viennent.
 Un tableau comparant, pour chaque enfant de `.home-main` : position absolue,
 hauteur, intervalle. Les trois colonnes doivent coïncider avec la maquette.
 Puis zéro écart réel sur l'ensemble des classes `.home-*`.
+````
+
+---
+
+### Lot A7 bis — accueil, les deux sections
+
+````markdown
+[COLLER ICI LE BRIEF COMMUN § 1]
+
+# Ta mission
+
+Terminer la conformité de `app/pages/index.vue` ← `maquette/pwa/pages/home.html`.
+
+Le lot A7 a corrigé le **rythme vertical** et les **cartes de catégorie** : les
+cinq blocs de `.home-main` coïncident désormais exactement en position, hauteur
+et intervalle. **N'y touche pas.**
+
+Il n'a pas traité les **deux sections**, qui restent à ta charge.
+
+## Méthode obligatoire ici
+
+Cette page n'emploie **aucune** classe de la maquette. Comparer par nom de
+classe ne rapporte que des « absent dans l'app » et **rate les sept écarts
+ci-dessous**. Utilise le parcours d'arbre en parallèle décrit dans le brief
+commun.
+
+## Les sept écarts déjà mesurés
+
+| Chemin | Maquette | Application |
+|---|---|---|
+| `home-news-card > home-news-arrow` (×2) | 16×16, `padding: 8px` | **30×30**, décalée de 14px à gauche, 7px en haut |
+| `home-news-card > home-news-body` (×2) | largeur 166, `padding-right: 4px` | largeur **152** |
+| `home-progress-card … home-progress-btn` | largeur 83,1 | 79,5 |
+| `home-topbar > home-menu-btn > IMG` | 31 | 30 |
+| `home-logo-frame > IMG` | 170,9×113,1, **rognée** par un cadre 145×45 en `overflow: hidden` | 145×45, cadre en `overflow: visible` |
+
+Le cadre du logo fait bien 145×45 des deux côtés : c'est le **traitement de
+l'image** qui diffère — cadrage resserré contre réduction. Tranche en faveur de
+la maquette.
+
+Cette liste est un point de départ vérifié, **pas un inventaire**. Descends dans
+les deux sections jusqu'à ce que le parcours parallèle ne signale plus rien.
+
+## Contenu venant de l'API
+
+Les deux sections affichent des données réelles. Une différence de hauteur peut
+venir d'un **texte plus long**, pas d'une erreur de mise en page. Distingue les
+deux : un écart de donnée se signale, il ne se corrige pas en tordant le CSS.
+Compare les retraits et marges calculés plutôt que les hauteurs quand tu doutes.
+
+## Hors périmètre
+
+`AppSideMenu.vue` et `side-menu.ts` ont été modifiés par A7 sans être dans son
+lot. La correction est juste — la maquette pointe bien `reglages.html` — mais le
+menu latéral **n'a jamais été mesuré**. Ne l'élargis pas ici : signale-le, il
+fera son propre lot.
 ````
 
 ---
