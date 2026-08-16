@@ -8,15 +8,6 @@ import type { AdmissionData } from '~/core/contracts/admission'
  */
 export function useAdmissionData(): { data: Ref<AdmissionData> } {
   const data = ref<AdmissionData>({
-    school: {
-      name: 'ESA Paris',
-      program: 'MBA Management International',
-      statusKey: 'admission.statusCurrent',
-      entryDate: 'Septembre 2026',
-      progressPercent: 80,
-      advisorName: 'Sarah Kouamé',
-      lastUpdateKey: 'admission.updatedYesterday',
-    },
     steps: [
       {
         id: '1',

@@ -163,14 +163,11 @@
     }
   },
   "checkout": {
-    "cardMethod": "Bank card",
     "error": {
       "generic": "The payment could not start. Please try again in a moment.",
       "network": "We can’t reach our servers. Check your connection.",
       "noRedirect": "The payment service didn’t respond. Try again or get in touch."
     },
-    "paymentDateLabel": "Payment date",
-    "paymentMethodLabel": "Payment method",
     "success": {
       "helpCta": "Contact my adviser",
       "helpDescription": "Our team is here to support you\nat every step",
@@ -194,13 +191,9 @@
     }
   },
   "confirmation": {
-    "emailNotice": "A confirmation email has just been sent to",
     "failedDescription": "No amount was charged. You can restart the payment from the plan page.",
     "failedTitle": "The payment didn’t go through",
-    "hours": "{count} one-hour sessions a month",
     "missingOrder": "We couldn’t find your order. Open it from “My project” or get in touch.",
-    "orderDateLabel": "Order date",
-    "orderNumberLabel": "Order number",
     "orderTitle": "Your order summary",
     "pendingDescription": "Your bank hasn’t confirmed the payment yet. We’ll email you as soon as it does.",
     "pendingTitle": "Payment awaiting confirmation",

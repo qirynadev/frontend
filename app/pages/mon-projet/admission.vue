@@ -47,51 +47,12 @@ usePageSeo(() => ({
   <div class="page-mpa flex min-h-screen flex-1 flex-col bg-white">
     <!-- Les gouttières (16px latéraux) et le retrait supérieur viennent du
          layout mobile ; ne pas les doubler ici (cf. `mon-projet/index.vue`). -->
-    <div class="mpa-main flex flex-col pb-[var(--spacing-content-bottom)] box-border">
+    <div class="mpa-main flex flex-col gap-22 pb-[var(--spacing-content-bottom)] box-border">
       <!-- Topbar : Retour + Logo + Cloche de notifications -->
-      <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" />
-
-      <!-- Carte d'en-tête de l'école -->
-      <section class="mpa-school mt-25 w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-white p-17 box-border shadow-xs" :aria-label="$t('admission.schoolFolder')">
-        <div class="mpa-school-top flex items-start gap-14">
-          <span class="mpa-school-icon flex size-56 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f3efff]">
-            <img src="/img/icons/ic-mp-admission.png" alt="" width="30" height="30" class="block size-30 object-contain">
-          </span>
-          <div class="mpa-school-copy min-w-0 flex-1">
-            <div class="mpa-school-title-row flex flex-wrap items-center gap-8">
-              <h1 class="m-0 text-4xl leading-[25px] font-bold text-[#0f1011]">{{ admissionData.school.name }}</h1>
-              <span class="mpa-school-badge rounded-md bg-[#f0ebfe] px-10 py-2 text-md leading-[16.5px] font-semibold text-[#2400fd]">
-                {{ $t(admissionData.school.statusKey) }}
-              </span>
-            </div>
-            <p class="mpa-school-program m-0 mt-4 text-exact-13-5 font-normal text-[#0f1011]">
-              {{ admissionData.school.program }}
-            </p>
-            <p class="mpa-school-date mt-6 flex items-center gap-6 text-base leading-18 text-black">
-              <img src="/img/icons/ic-mpa-calendar.svg" alt="" width="9" height="10" class="block h-10 w-9 shrink-0">
-              <span>{{ $t('admission.entry', { date: admissionData.school.entryDate }) }}</span>
-            </p>
-            <div class="mpa-school-progress mt-12 flex items-center gap-12">
-              <span class="mpa-school-track h-4 max-w-185 flex-1 overflow-hidden rounded-full bg-[#f1f5f9]">
-                <span class="mpa-school-fill block h-full rounded-full bg-[#3909fd]" :style="{ width: `${admissionData.school.progressPercent}%` }" />
-              </span>
-              <span class="mpa-school-pct text-exact-13-5 leading-[20.25px] font-bold text-black">{{ admissionData.school.progressPercent }}%</span>
-            </div>
-            <div class="mpa-school-meta mt-5 flex items-center justify-between gap-8 border-t border-[rgba(241,245,249,0.8)] pt-5">
-              <span class="mpa-school-advisor flex items-center gap-6 text-exact-11-5 font-medium text-[#64748b]">
-                <img src="/img/icons/ic-user.svg" alt="" width="11" height="11" class="block size-11">
-                <span>{{ $t('admission.advisor') }}<strong class="font-medium text-[#1b1b1b]">{{ admissionData.school.advisorName }}</strong></span>
-              </span>
-              <span class="mpa-school-updated whitespace-nowrap text-sm leading-[17.25px] font-medium text-[#2c2c2c]">
-                {{ $t(admissionData.school.lastUpdateKey) }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />
 
       <!-- Onglets de section -->
-      <div class="mpa-tabs mt-16 flex min-h-66 w-full rounded-[14px] border border-[#f8f8fc] bg-[#fdfdfd] p-1 box-border" role="tablist" :aria-label="$t('admission.tabsLabel')">
+      <div class="mpa-tabs flex min-h-66 w-full rounded-[14px] border border-[#f8f8fc] bg-[#fdfdfd] p-1 box-border" role="tablist" :aria-label="$t('admission.tabsLabel')">
         <button
           type="button"
           :class="[
@@ -142,17 +103,17 @@ usePageSeo(() => ({
       </div>
 
       <!-- Panneau Aperçu (actif par défaut) -->
-      <div v-show="activeTab === 'apercu'" class="mpa-panel mt-10 w-full">
+      <div v-show="activeTab === 'apercu'" class="mpa-panel w-full">
         <MpaStepsCard :steps="admissionData.steps" />
       </div>
 
       <!-- Panneau Document -->
-      <div v-show="activeTab === 'document'" class="mpa-panel mt-10 w-full">
+      <div v-show="activeTab === 'document'" class="mpa-panel w-full">
         <MpaDocsCard :documents="admissionData.documents" />
       </div>
 
       <!-- Panneau Suivi & échanges -->
-      <div v-show="activeTab === 'suivi'" class="mpa-panel mt-10 w-full">
+      <div v-show="activeTab === 'suivi'" class="mpa-panel w-full">
         <div class="mpa-placeholder rounded-xl border border-[#e7e7f3] bg-[#fbfbfe] p-20 px-16">
           <!-- La maquette ne fixe pas d'interligne ici : `normal` (20,8px à
                14px de Jost), pas le barreau 20px. -->
@@ -162,7 +123,7 @@ usePageSeo(() => ({
       </div>
 
       <!-- Section Besoin d'aide -->
-      <section class="mpa-help mt-20 flex w-full items-center justify-between gap-8 rounded-xl bg-[#f5f3ff] p-9 box-border">
+      <section class="mpa-help flex w-full items-center justify-between gap-8 rounded-xl bg-[#f5f3ff] p-9 box-border">
         <div class="mpa-help-main flex min-w-0 flex-1 items-start gap-11">
           <span class="mpa-help-icon flex size-44 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8e2fd]">
             <img src="/img/icons/ic-mpa-headset.svg" alt="" width="24" height="24" class="block size-24">

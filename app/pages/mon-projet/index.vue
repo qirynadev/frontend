@@ -6,10 +6,11 @@
  *
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
- * | en-tête | `.page-mp .home-topbar` `padding-bottom: 30px`, `margin-bottom: -7px` |
- * | accroche | `.mp-hero` `padding: 30px 0 70px` · copie plafonnée à 166px · illustration 220×155 ancrée en haut à droite |
- * | titre de section | `.mp-section-head` `padding-top: 24px` · h2 14px/27,5px · lien 11,5px/20,25px |
- * | liste | `.mp-list` `gap: 14px`, `padding-top: 16px` · cartes `padding: 17px`, rayon 10 |
+ * | rythme | `.page-mp .mp-main` `gap: 22px` (`--mp-block-gap`) entre tous les blocs — plus de marges/paddings individuels depuis la resynchronisation `f9ca05c` |
+ * | en-tête | `.page-mp .home-topbar` `padding-bottom: 0`, `margin-bottom: 0` |
+ * | accroche | `.page-mp .mp-hero` `padding: 0`, `min-height: 130px` · copie plafonnée à 166px · illustration 220×155 ancrée en haut à droite (`top: 0`) |
+ * | titre de section | `.mp-section-head` h2 14px/27,5px |
+ * | liste | `.mp-list` `gap: 14px` · cartes `padding: 17px`, rayon 10 |
  * | carte | icône ronde 44×44 · pastille 10px · sous-titre 12,5px/15,625px · chevron 18×16 opacité 0,7 |
  * | progression | piste 4px `#f1f5f9` · remplissage propre à chaque accompagnement · pourcentage 13px/19,5px |
  * | méta | filet `rgba(241,245,249,0.8)` · conseiller 11,5px/17,25px |
@@ -53,12 +54,12 @@ usePageSeo(() => ({
     <!-- Les gouttières (16px) et le retrait supérieur viennent du layout
          mobile ; ne pas les doubler ici. -->
     <div class="page-mp flex min-h-screen flex-1 flex-col bg-white">
-      <div class="mp-main flex w-full max-w-full flex-col pb-[var(--spacing-content-bottom)] box-border">
+      <div class="mp-main flex w-full max-w-full flex-col gap-22 pb-[var(--spacing-content-bottom)] box-border">
         <!-- Topbar : Retour + Logo + Cloche -->
-        <AppTopBar :back="true" back-to="/" :notifications="3" class="-mb-7" />
+        <AppTopBar :back="true" back-to="/" :notifications="3" :gap="0" />
 
         <!-- Accroche -->
-        <section class="mp-hero relative flex w-full items-start gap-10 pt-30 pb-70" aria-labelledby="projet-title">
+        <section class="mp-hero relative flex w-full min-h-130 items-start gap-10" aria-labelledby="projet-title">
           <div class="mp-hero-copy relative z-1 min-w-0 max-w-166 flex-1">
             <h1 id="projet-title" class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] text-text">
               {{ $t('myProject.title') }}
@@ -70,7 +71,7 @@ usePageSeo(() => ({
           <!-- `width: min(220px, 58%)` : l'illustration se rogne par la droite
                plutôt que de pousser la copie. -->
           <div
-            class="mp-hero-illus pointer-events-none absolute top-28 right-0 flex h-155 w-[min(220px,58%)] items-start justify-end overflow-hidden"
+            class="mp-hero-illus pointer-events-none absolute top-0 right-0 flex h-155 w-[min(220px,58%)] items-start justify-end overflow-hidden"
             aria-hidden="true"
           >
             <img
@@ -84,17 +85,14 @@ usePageSeo(() => ({
         </section>
 
         <!-- Titre de section -->
-        <div class="mp-section-head flex w-full items-center justify-between pt-24 box-border">
+        <div class="mp-section-head flex w-full items-center justify-between box-border">
           <h2 id="accompagnements-title" class="m-0 text-xl leading-[27.5px] font-bold text-navy-2">
             {{ $t('myProject.accompaniementsTitle') }}
           </h2>
-          <NuxtLink :to="localePath('/orientation')" class="mp-new-link inline-flex items-center gap-4 text-exact-11-5 leading-[20.25px] font-semibold text-mp-link no-underline">
-            {{ $t('myProject.newProject') }}
-          </NuxtLink>
         </div>
 
         <!-- Liste des accompagnements -->
-        <div class="mp-list flex w-full flex-col gap-14 pt-16" aria-labelledby="accompagnements-title">
+        <div class="mp-list flex w-full flex-col gap-14" aria-labelledby="accompagnements-title">
           <!-- `NuxtLink` vient de `#components` : `resolveComponent('NuxtLink')`
                dans cette expression ne résout pas et rend un élément inconnu
                `<nuxtlink>`, sans `href` ni clic. Les accompagnements sans écran
@@ -143,7 +141,7 @@ usePageSeo(() => ({
         </div>
 
         <!-- Encart d'encouragement -->
-        <aside class="mp-cta mt-20 flex h-86 min-h-86 w-full items-center justify-between gap-8 rounded-xl bg-surface-2 px-9 box-border">
+        <aside class="mp-cta flex h-86 min-h-86 w-full items-center justify-between gap-8 rounded-xl bg-surface-2 px-9 box-border">
           <div class="mp-cta-main flex min-w-0 flex-1 items-start gap-11">
             <span class="mp-cta-icon size-44 shrink-0 overflow-hidden">
               <img src="/img/icons/ic-mp-trophy.svg" alt="" width="44" height="44" class="block size-44">

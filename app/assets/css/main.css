@@ -280,9 +280,6 @@
   --color-menu-header-border: rgb(248 250 252 / 0.5);
 
   /* ─── Mon projet admission (`mon-projet-admission.html`) ───────── */
-  --color-mpa-badge: #f0ebfe;
-  --color-mpa-badge-text: #2400fd;
-  --color-mpa-fill: #3909fd;
   --color-mpa-step-done: #4f18f6;
   --color-mpa-step-badge-done-bg: #e2f4e5;
   --color-mpa-step-badge-done: #079b12;
@@ -298,10 +295,7 @@
   --color-mpa-help-btn-bg: #450ffd;
   --color-mpa-required: #ff1f47;
 
-  /* ─── Mon projet — accompagnements (`mon-projet.html`) ─────────
-     Le violet du lien reprend la valeur de `--color-mpa-step-done`, sous un
-     nom qui dit son emploi ici (lien « + Nouveau projet »). */
-  --color-mp-link: #4f18f6;
+  /* ─── Mon projet — accompagnements (`mon-projet.html`) ───────── */
   --color-mp-sub: #141414;
   --color-mp-updated: #1d1d1d;
   --color-mp-card-border: rgb(226 232 240 / 0.8);

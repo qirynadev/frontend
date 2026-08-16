@@ -163,14 +163,11 @@
     }
   },
   "checkout": {
-    "cardMethod": "Carte bancaire",
     "error": {
       "generic": "Le paiement n'a pas pu démarrer. Réessayez dans un instant.",
       "network": "Impossible de joindre nos serveurs. Vérifiez votre connexion.",
       "noRedirect": "Le service de paiement n'a pas répondu. Réessayez ou contactez-nous."
     },
-    "paymentDateLabel": "Date de paiement",
-    "paymentMethodLabel": "Méthode de paiement",
     "success": {
       "helpCta": "Contacter mon conseiller",
       "helpDescription": "Notre équipe est là pour vous\naccompagner à chaque étape",
@@ -194,13 +191,9 @@
     }
   },
   "confirmation": {
-    "emailNotice": "Un email de confirmation vient de vous être envoyé à",
     "failedDescription": "Aucun montant n'a été prélevé. Vous pouvez relancer le paiement depuis la page de l'offre.",
     "failedTitle": "Le paiement n'a pas abouti",
-    "hours": "{count} séances de 1H/mois",
     "missingOrder": "Nous n'avons pas retrouvé votre commande. Ouvrez-la depuis « Mon projet » ou contactez-nous.",
-    "orderDateLabel": "Date de commande",
-    "orderNumberLabel": "N° de commande",
     "orderTitle": "Récapitulatif de votre commande",
     "pendingDescription": "Votre banque n'a pas encore confirmé le paiement. Vous recevrez un e-mail dès que ce sera fait.",
     "pendingTitle": "Paiement en cours de confirmation",

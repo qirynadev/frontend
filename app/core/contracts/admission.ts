@@ -20,18 +20,7 @@ export interface AdmissionDocument {
   icon: string
 }
 
-export interface AdmissionSchool {
-  name: string
-  program: string
-  statusKey: string
-  entryDate: string
-  progressPercent: number
-  advisorName: string
-  lastUpdateKey: string
-}
-
 export interface AdmissionData {
-  school: AdmissionSchool
   steps: AdmissionStep[]
   documents: AdmissionDocument[]
 }
