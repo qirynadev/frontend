@@ -13,9 +13,10 @@
  * texte fixe est affiché pour toutes. Signalé, pas tranché : à reconsidérer
  * si l'API expose un jour ces champs sur la liste.
  *
- * La barre de recherche n'a pas d'équivalent dans la maquette (`.le-list-block`
- * ne contient que la liste et la pagination) : ajout au-delà du portage,
- * conservé car `schoolRepo.list` la supporte déjà côté API.
+ * Pas de recherche : `.le-list-block` ne contient que la liste et la
+ * pagination, aucun champ de filtre dans la maquette.
+ *
+ * Cinq écoles par page.
  */
 import { catalogRepo, schoolRepo } from '~/core/repositories'
 import type { SchoolSummary } from '~/core/contracts'
@@ -27,7 +28,6 @@ const localePath = useLocalePath()
 
 const slug = computed(() => String(route.params.slug ?? ''))
 const page = computed(() => Math.max(1, Number(route.query.page ?? 1) || 1))
-const search = ref(String(route.query.q ?? ''))
 const selectedDomain = ref(String(route.query.domaine ?? 'architecture'))
 
 /** Icône à taille fixe par domaine (`.le-chip-icon--*`), pas une taille unique. */
@@ -39,11 +39,6 @@ const domains = [
   { id: 'sciences-politiques', labelKey: 'school.list.domainPoliticalScience', icon: 'ic-dom-pol', width: 18, height: 18 },
   { id: 'sciences', labelKey: 'school.list.domainScience', icon: 'ic-dom-sci', width: 18, height: 18 },
 ]
-
-const debouncedSearch = refDebounced(search, 350)
-watch(debouncedSearch, (value) => {
-  router.replace({ query: { ...route.query, q: value || undefined, page: undefined } })
-})
 
 const chipsRef = ref<HTMLDivElement | null>(null)
 
@@ -70,14 +65,14 @@ const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
   async () => {
     const [result, catalog] = await Promise.all([
       schoolRepo.list(
-        { destination: slug.value, search: String(route.query.q ?? ''), page: page.value, perPage: 10 },
+        { destination: slug.value, page: page.value, perPage: 5 },
         locale.value,
       ),
       catalogRepo.load(locale.value),
     ])
     return { result, destination: catalog.destinations.find((item) => item.slug === slug.value) ?? null }
   },
-  { watch: [slug, page, locale, () => route.query.q] },
+  { watch: [slug, page, locale] },
 )
 
 const result = computed(() => data.value?.result ?? null)
@@ -138,17 +133,6 @@ usePageSeo(() => ({
     </div>
   </div>
 
-  <!-- Recherche : sans équivalent maquette, voir le commentaire du script -->
-  <div class="mt-22 w-full">
-    <QInput
-      v-model="search"
-      type="search"
-      icon="search"
-      :label="$t('school.list.searchLabel')"
-      :placeholder="$t('school.list.searchPlaceholder')"
-    />
-  </div>
-
   <!-- Liste des écoles (.le-list-block) -->
   <PageState
     :loading="isInitialLoading"
@@ -169,11 +153,7 @@ usePageSeo(() => ({
         icon="search"
         :title="$t('school.list.emptyTitle')"
         :description="$t('school.list.emptyDescription')"
-      >
-        <template v-if="search" #action>
-          <QButton variant="outline" @click="search = ''">{{ $t('school.list.clearSearch') }}</QButton>
-        </template>
-      </QEmptyState>
+      />
     </template>
 
     <template v-if="result">

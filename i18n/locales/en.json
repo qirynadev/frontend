@@ -627,7 +627,6 @@
     },
     "formationCount": "no programmes | 1 programme | {count} programmes",
     "list": {
-      "clearSearch": "Clear search",
       "count": "no schools available | 1 school available | {count} schools available",
       "domainArchitecture": "Architecture",
       "domainEngineering": "Engineering",
@@ -639,8 +638,6 @@
       "emptyTitle": "No matching schools",
       "foundedYear": "Founded: {year}",
       "nextDomains": "Next fields",
-      "searchLabel": "Search for a school",
-      "searchPlaceholder": "A school name, a city…",
       "seoDescription": "Browse our partner schools and find the one that fits your plans.",
       "seoTitle": "Schools in {destination}",
       "students": "{count} students",
