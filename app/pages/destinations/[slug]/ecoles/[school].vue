@@ -1,13 +1,25 @@
 <script setup lang="ts">
 /**
- * Fiche école — portage direct de `maquette/pwa/pages/ecole-detail.html`.
+ * Fiche école ← `maquette/pwa/pages/ecole-detail.html` (`.ed-*`).
  *
- * Éléments 100% fidèles au prototype Vercel (qiryna.vercel.app/pages/ecole-detail.html) :
- * - Bloc Héro (`.ed-hero-block`) avec visuel de couverture, badge superposé et boutons Favoris / Partager ;
- * - Titre et localisation (`.ed-title-block`) ;
- * - Onglets interactifs (`.ed-tabs`) *Présentation*, *Formations*, *Points forts* ;
- * - Cartes de formations (`.ed-form-card`) avec métas Grade et Durée ;
- * - Appel conseiller d'accompagnement (`.ed-cta`).
+ * ⚠️ `.ed-title-block { display: none }` dans la maquette : le titre et la
+ * localisation ne sont **pas visibles** — l'identité de l'école tient
+ * entièrement dans le badge superposé au héros (logo, ou à défaut son nom
+ * découpé en lignes sur fond marine). Rendu ici en `sr-only` plutôt qu'en
+ * `display: none` littéral : même résultat visuel, accessible aux lecteurs
+ * d'écran plutôt que masqué pour tout le monde — la maquette n'a pas de
+ * bonne raison de vouloir l'inverse.
+ *
+ * Le badge sans logo (`.ed-badge.is-text`) affiche jusqu'à 4 lignes
+ * pré-écrites par école (`js/schools.js`) — un champ que le contrat `School`
+ * n'a pas. Faute de donnée dédiée, les lignes sont dérivées du nom réel
+ * (découpé en mots) et de la ville : signalé, pas inventé de toutes pièces.
+ *
+ * `.ed-form-card` porte l'icône **propre à la formation** (`f.icon`, 44×44,
+ * sans cercle de fond) et des méta Grade/Durée qui varient par formation.
+ * `SchoolFormation` n'a ni l'un ni l'autre (juste `title`/`description`) et
+ * l'API ne les alimente pour aucune école : une icône générique et un texte
+ * fixe remplacent la donnée absente, comme sur la liste d'écoles voisine.
  */
 import { schoolRepo } from '~/core/repositories'
 
@@ -35,46 +47,35 @@ function toggleFavourite() {
 
 function shareSchool() {
   if (navigator.share) {
-    navigator.share({
-      title: school.value?.title || 'École Qiryna',
-      url: window.location.href,
-    }).catch(() => {})
-  } else {
+    navigator.share({ title: school.value?.title || '', url: window.location.href }).catch(() => {})
+  }
+  else {
     navigator.clipboard?.writeText(window.location.href)
   }
 }
 
-/** Formations de secours pour garantir un affichage conforme au prototype */
-const defaultFormations = [
-  {
-    title: 'Architecte Diplômé d\'État (ADE)',
-    grade: 'Grade de Master (Bac +5)',
-    duration: '5 ans',
-    description: 'Formation fondamentale et habilitation à la maîtrise d\'œuvre en son nom propre.',
-  },
-  {
-    title: 'Master Spécialisé Architecture et Design',
-    grade: 'Bac +6',
-    duration: '1 an',
-    description: 'Spécialisation avancée sur les projets d\'innovation urbaine et écologique.',
-  },
-]
-
-const formationsList = computed(() => {
-  if (school.value && school.value.formations.length > 0) {
-    return school.value.formations.map((f) => ({
-      title: f.title,
-      grade: 'Grade de Master (Bac +5)',
-      duration: '3 à 5 ans',
-      description: f.description,
-    }))
+/** Lignes du badge sans logo : nom découpé en mots (3 lignes), puis la ville. */
+const badgeLines = computed(() => {
+  const value = school.value
+  if (!value) return []
+  const words = value.title.split(/\s+/).filter(Boolean)
+  const lines: string[] = []
+  let current = ''
+  for (const word of words) {
+    if (lines.length >= 2) {
+      current = current ? `${current} ${word}` : word
+      continue
+    }
+    if (current) { lines.push(current); current = word }
+    else current = word
   }
-  return defaultFormations
+  if (current) lines.push(current)
+  if (value.city) lines.push(value.city)
+  return lines.slice(0, 4)
 })
 
 const tabs = computed(() => {
-  const value = school.value
-  if (!value) return []
+  if (!school.value) return []
   return [
     { value: 'presentation', label: t('school.detail.tabPresentation') },
     { value: 'formations', label: t('school.detail.tabFormations') },
@@ -89,21 +90,21 @@ useSchoolSchemaOrg(school)
 </script>
 
 <template>
-  <div class="flex flex-col gap-22 pb-24">
-    <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" />
+  <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" :notifications="3" :gap="0" />
 
-    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
-      <template #loading>
-        <div class="flex flex-col gap-16">
-          <QSkeleton variant="rect" :height="180" />
-          <QSkeleton variant="text" :lines="2" />
-          <QSkeleton variant="rect" :height="120" />
-        </div>
-      </template>
+  <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
+    <template #loading>
+      <div class="mt-22 flex flex-col gap-16">
+        <QSkeleton variant="rect" :height="175" />
+        <QSkeleton variant="text" :lines="2" />
+        <QSkeleton variant="rect" :height="120" />
+      </div>
+    </template>
 
-      <div v-if="school" class="flex flex-col gap-22">
-        <!-- Hero Block (.ed-hero-block) -->
-        <div class="relative w-full overflow-hidden rounded-xl bg-slate-900">
+    <template v-if="school">
+      <!-- Héros + badge (.ed-hero-block) -->
+      <div class="relative mt-22 h-175 w-full shrink-0">
+        <div class="relative h-140 w-full overflow-hidden rounded-xl bg-border-soft shadow-xs">
           <NuxtImg
             v-if="school.image"
             :src="school.image"
@@ -112,17 +113,43 @@ useSchoolSchemaOrg(school)
             height="220"
             format="webp"
             sizes="100vw shell:720px"
-            class="h-200 w-full object-cover opacity-90"
+            class="pointer-events-none absolute top-0 left-0 h-[105%] w-full max-w-none object-cover object-center"
           />
-          <div v-else class="flex h-200 w-full items-center justify-center bg-surface-2">
+          <div v-else class="flex h-full w-full items-center justify-center">
             <QIcon name="building" :size="48" class="text-muted" />
           </div>
+        </div>
 
-          <!-- Hero Actions (Favoris / Partager) -->
-          <div class="absolute right-12 top-12 z-2 flex gap-8">
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-140 overflow-visible">
+          <!-- Badge (.ed-badge) -->
+          <div
+            class="pointer-events-auto absolute -bottom-23 left-15 box-border flex size-102 flex-col items-center justify-center overflow-hidden rounded-3xl border border-ed-badge-border bg-white p-12 shadow-ed-badge"
+            :class="!school.logo && 'bg-ed-badge-text-bg p-0 border-0'"
+          >
+            <NuxtImg
+              v-if="school.logo"
+              :src="school.logo"
+              :alt="school.title"
+              width="78"
+              height="78"
+              format="webp"
+              class="block size-78 object-contain object-center"
+            />
+            <div v-else class="box-border flex h-full w-full flex-col items-start justify-center gap-0 p-12 px-9 font-jakarta text-xs leading-[12.5px] font-medium tracking-[0.5px] text-white">
+              <span
+                v-for="(line, i) in badgeLines"
+                :key="i"
+                class="block w-full min-h-[12.5px] overflow-hidden text-ellipsis whitespace-nowrap uppercase"
+                :class="i === badgeLines.length - 1 && badgeLines.length > 1 && 'pt-2 opacity-80'"
+              >{{ line }}</span>
+            </div>
+          </div>
+
+          <!-- Favoris / partage (.ed-hero-actions) -->
+          <div class="pointer-events-auto absolute right-14 bottom-0 flex translate-y-1/2 items-center gap-8">
             <button
               type="button"
-              class="flex size-36 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-xs transition-transform active:scale-95"
+              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0 shadow-ed-icon-btn"
               :aria-label="$t('school.detail.favourite')"
               @click="toggleFavourite"
             >
@@ -130,89 +157,74 @@ useSchoolSchemaOrg(school)
             </button>
             <button
               type="button"
-              class="flex size-36 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-xs transition-transform active:scale-95"
-              aria-label="Partager"
+              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0 shadow-ed-icon-btn"
+              :aria-label="$t('school.detail.share')"
               @click="shareSchool"
             >
               <QIcon name="ic-ed-share" :size="18" class="text-navy" />
             </button>
           </div>
+        </div>
+      </div>
 
-          <!-- Badge Overlay (.ed-badge) -->
-          <div
-            v-if="school.logo"
-            class="absolute bottom-12 left-12 z-2 flex items-center gap-10 rounded-xl bg-white p-8 shadow-md"
+      <!-- Titre & localisation : invisibles dans la maquette (voir le commentaire du script) -->
+      <div class="sr-only">
+        <h1>{{ school.title }}</h1>
+        <p v-if="school.city || school.country.name">{{ [school.city, school.country.name].filter(Boolean).join(', ') }}</p>
+      </div>
+
+      <!-- Contenu & onglets (.ed-content) -->
+      <div class="mt-22 flex w-full flex-col">
+        <div class="box-border flex w-full items-stretch border-b border-border-soft px-24 max-2xs:px-8">
+          <button
+            v-for="tb in tabs"
+            :key="tb.value"
+            type="button"
+            class="relative flex-1 border-0 bg-transparent pb-12 text-xl max-2xs:text-base leading-21 font-medium whitespace-nowrap text-text"
+            :class="activeTab === tb.value && 'text-le-chip-selected-border'"
+            @click="activeTab = tb.value"
           >
-            <NuxtImg
-              :src="school.logo"
-              :alt="school.title"
-              width="48"
-              height="48"
-              format="webp"
-              class="size-48 object-contain"
+            {{ tb.label }}
+            <span
+              v-if="activeTab === tb.value"
+              class="absolute bottom-0 left-1/2 h-1 w-[min(108px,90%)] -translate-x-1/2 rounded-full bg-le-chip-selected-border"
             />
-          </div>
+          </button>
         </div>
 
-        <!-- Title & Location (.ed-title-block) -->
-        <div class="flex flex-col gap-4">
-          <h1 class="m-0 text-xl font-bold tracking-tight text-navy">{{ school.title }}</h1>
-          <p v-if="school.city || school.country.name" class="m-0 flex items-center gap-4 text-xs font-medium text-text">
-            <QIcon name="ic-ed-pin" :size="12" />
-            <span>{{ [school.city, school.country.name].filter(Boolean).join(', ') }}</span>
-          </p>
-        </div>
-
-        <!-- Content & Tabs (.ed-content) -->
-        <div class="flex w-full flex-col gap-16">
-          <div class="flex w-full border-b border-slate-200">
-            <button
-              v-for="t in tabs"
-              :key="t.value"
-              type="button"
-              class="flex-1 py-10 text-center text-xs font-semibold transition-colors border-b-2"
-              :class="activeTab === t.value ? 'border-[#582cfd] text-[#582cfd]' : 'border-transparent text-muted-2'"
-              @click="activeTab = t.value"
-            >
-              {{ t.label }}
-            </button>
-          </div>
-
-          <!-- Tab Panels -->
+        <div class="pt-22 w-full">
           <div v-if="activeTab === 'presentation'" class="w-full">
             <RichText v-if="school.presentation" :content="school.presentation" />
-            <p v-else class="m-0 text-xs text-muted-2">
-              Présentation détaillée et cadre d'études d'excellence.
-            </p>
+            <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
           </div>
 
-          <div v-else-if="activeTab === 'formations'" class="flex w-full flex-col gap-12">
+          <div v-else-if="activeTab === 'formations'" class="flex w-full flex-col gap-16">
             <NuxtLink
-              v-for="(f, i) in formationsList"
-              :key="i"
+              v-for="formation in school.formations"
+              :key="formation.title"
               :to="localePath('/orientation')"
-              class="flex w-full items-start gap-12 rounded-xl bg-white p-14 text-text no-underline shadow-card transition-shadow hover:shadow-md"
+              class="box-border flex w-full items-start gap-16 rounded-xl bg-white p-20 text-text no-underline shadow-card"
             >
-              <div class="flex size-44 shrink-0 items-center justify-center rounded-lg bg-[#f5f3ff]">
-                <QIcon name="ic-ed-grad" :size="24" />
+              <div class="flex size-44 shrink-0 items-center justify-center overflow-hidden">
+                <QIcon name="ic-ed-grad" :size="44" class="text-primary" />
               </div>
 
-              <div class="flex flex-1 min-w-0 flex-col gap-4">
-                <h3 class="m-0 text-xs font-bold text-navy">{{ f.title }}</h3>
-                
-                <div class="flex items-center gap-6 text-3xs text-muted-2">
-                  <span class="flex items-center gap-3">
-                    <QIcon name="ic-ed-grad" :size="10" />
-                    <span>{{ f.grade }}</span>
+              <div class="min-w-0 flex-1">
+                <h3 class="m-0 text-base leading-[19.938px] font-semibold text-navy">{{ formation.title }}</h3>
+
+                <div class="flex flex-wrap items-center gap-12 pt-6">
+                  <span class="flex items-center gap-6 text-md leading-[16.5px] font-medium whitespace-nowrap text-text">
+                    <QIcon name="ic-ed-grad" :size="12" :height="9" />
+                    <span>{{ $t('school.detail.founded') }}</span>
                   </span>
-                  <span>|</span>
-                  <span class="flex items-center gap-3">
-                    <QIcon name="ic-ed-clock" :size="10" />
-                    <span>{{ f.duration }}</span>
+                  <span class="text-md leading-[16.5px] font-bold text-border-slate">|</span>
+                  <span class="flex items-center gap-6 text-md leading-[16.5px] font-medium whitespace-nowrap text-text">
+                    <QIcon name="ic-ed-clock" :size="9" :height="9" />
+                    <span>{{ $t('school.detail.students') }}</span>
                   </span>
                 </div>
 
-                <p v-if="f.description" class="m-0 pt-2 text-3xs text-text line-clamp-2">{{ f.description }}</p>
+                <RichText v-if="formation.description" :content="formation.description" class="mt-6" />
               </div>
 
               <QIcon name="ic-ed-chevron" :size="16" class="mt-4 shrink-0 text-muted" />
@@ -220,46 +232,34 @@ useSchoolSchemaOrg(school)
           </div>
 
           <div v-else class="w-full">
-            <ul v-if="school.details.length > 0" class="m-0 flex list-none flex-col gap-10 p-0">
-              <li v-for="d in school.details" :key="d.title" class="flex items-start gap-8">
-                <QIcon name="check-circle" :size="16" class="mt-2 shrink-0 text-success" />
-                <span class="text-xs font-medium text-navy">{{ d.title }}</span>
-              </li>
+            <ul v-if="school.details.length > 0" class="m-0 flex list-disc flex-col gap-12 pl-18">
+              <li v-for="d in school.details" :key="d.title" class="text-lg leading-21 text-text">{{ d.title }}</li>
             </ul>
-            <ul v-else class="m-0 flex list-none flex-col gap-10 p-0">
-              <li class="flex items-start gap-8">
-                <QIcon name="check-circle" :size="16" class="mt-2 shrink-0 text-success" />
-                <span class="text-xs font-medium text-navy">Diplômes reconnus au niveau international</span>
-              </li>
-              <li class="flex items-start gap-8">
-                <QIcon name="check-circle" :size="16" class="mt-2 shrink-0 text-success" />
-                <span class="text-xs font-medium text-navy">Réseau d'entreprises et partenariats mondiaux</span>
-              </li>
-              <li class="flex items-start gap-8">
-                <QIcon name="check-circle" :size="16" class="mt-2 shrink-0 text-success" />
-                <span class="text-xs font-medium text-navy">Accompagnement personnalisé pour l'insertion</span>
-              </li>
-            </ul>
+            <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
           </div>
-        </div>
-
-        <!-- Bottom CTA (.ed-cta) -->
-        <div class="flex w-full items-center justify-between gap-12 rounded-xl bg-[#f5f3ff] p-14">
-          <div class="flex items-center gap-10 min-w-0">
-            <div class="flex size-40 shrink-0 items-center justify-center rounded-full bg-white shadow-2xs">
-              <QIcon name="ic-ed-cta-headset" :size="24" />
-            </div>
-            <div class="flex flex-col min-w-0">
-              <p class="m-0 text-xs font-bold text-navy">Souhaitez-vous être accompagné ?</p>
-              <p class="m-0 text-3xs text-text truncate">Nos conseillers vous guident à chaque étape.</p>
-            </div>
-          </div>
-
-          <QButton :to="localePath('/orientation')" size="sm" icon-end="arrow-right">
-            Être accompagné(e)
-          </QButton>
         </div>
       </div>
-    </PageState>
-  </div>
+
+      <!-- Appel conseiller (.ed-cta) -->
+      <div class="relative mt-22 box-border flex min-h-120 w-full items-center rounded-xl bg-surface-2 py-20 px-9 max-2xs:flex-col max-2xs:items-stretch max-2xs:gap-12">
+        <div class="flex min-w-0 flex-1 items-start gap-11 pr-110 max-2xs:flex-col max-2xs:pr-0">
+          <span class="flex size-44 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-soft">
+            <QIcon name="ic-ed-cta-headset" :size="24" />
+          </span>
+          <div class="min-w-0">
+            <p class="m-0 text-base leading-20 font-bold text-text">{{ $t('school.detail.ctaTitle') }}</p>
+            <p class="m-0 mt-4 text-sm leading-16 whitespace-pre-line text-text">{{ $t('school.detail.ctaDescription') }}</p>
+          </div>
+        </div>
+
+        <NuxtLink
+          :to="localePath('/orientation')"
+          class="absolute right-9 bottom-20 inline-flex items-center justify-center gap-5 rounded-xl border border-primary-link bg-transparent py-9 px-15 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline max-2xs:static max-2xs:self-end"
+        >
+          <span>{{ $t('school.detail.ctaButton') }}</span>
+          <img src="/img/icons/ic-oo-cta-arrow.svg" alt="" width="8" height="7" class="block shrink-0">
+        </NuxtLink>
+      </div>
+    </template>
+  </PageState>
 </template>

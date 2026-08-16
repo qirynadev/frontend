@@ -430,6 +430,14 @@
   --color-le-dot-active: #5c20fc;
   --shadow-le-chip: 0 0 3.5px rgb(0 0 0 / 0.12);
 
+  /* ─── Fiche école (`ecole-detail.html`) ───────────────────────────
+     `--ed-block-gap: 22px` — même mécanisme que `--le-block-gap` (`gap`
+     sur `.ed-main`, pas un padding par bloc). */
+  --color-ed-badge-border: #fcfdff;
+  --color-ed-badge-text-bg: #001962;
+  --shadow-ed-badge: 0 10px 15px rgb(0 0 0 / 0.1), 0 4px 6px rgb(0 0 0 / 0.1);
+  --shadow-ed-icon-btn: 0 4px 6px rgb(0 0 0 / 0.1), 0 2px 4px rgb(0 0 0 / 0.1);
+
   /* ─── Messages (`messages.html`) ────────────────────────────────
      Six teintes d'étiquette, une par type d'interlocuteur. */
   --color-msg-tab-active: #3b2cf2;
