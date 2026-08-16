@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="../js/theme-init.js"></script>
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
@@ -24,9 +25,9 @@
           <a href="offre-orientation.html" class="paiement-back" data-pr-back aria-label="Retour">
             <img src="../assets/icons/ic-back-dark.svg" alt="" width="24" height="24" />
           </a>
-          <div class="paiement-logo-frame">
+          <a href="home.html" class="paiement-logo-frame" aria-label="Accueil">
             <img src="../assets/images/logo.png" alt="Qiryna" />
-          </div>
+          </a>
           <div class="notif-wrap">
             <img src="../assets/icons/ic-bell.svg" alt="Notifications" width="25" height="25" />
             <span class="notif-badge">3</span>
@@ -43,41 +44,6 @@
             <p>Merci pour votre confiance.&nbsp;</p>
             <p>Votre accompagnement pour intégrer votre école</p>
             <p>est désormais confirmé</p>
-          </div>
-        </div>
-
-        <!-- Order Summary Card (516:1466) -->
-        <div class="paiement-order-card">
-          <p class="paiement-order-title">Récapitulatif de votre commande</p>
-
-          <div class="paiement-order-item">
-            <div class="paiement-order-item-main">
-              <div class="paiement-order-thumb">
-                <img data-pr-thumb src="../assets/images/ecole-thumb.png" alt="" width="64" height="48" />
-              </div>
-              <div class="paiement-order-info">
-                <p class="paiement-order-school" data-pr-school>Ecole Spéciale d'Architecture - Paris</p>
-                <p class="paiement-order-sub" data-pr-sub>Plus de garanties</p>
-              </div>
-            </div>
-            <p class="paiement-order-price" data-pr-price>899 €</p>
-          </div>
-
-          <div class="paiement-order-sep"></div>
-
-          <div class="paiement-order-meta">
-            <div class="paiement-meta-row">
-              <span class="paiement-meta-label">Date de paiement</span>
-              <span class="paiement-meta-value" data-pr-date>2 juillet 2026 à 17:31</span>
-            </div>
-            <div class="paiement-meta-row">
-              <span class="paiement-meta-label">Méthode de paiement</span>
-              <span class="paiement-meta-payment">
-                <span class="paiement-stripe-badge">stripe</span>
-                <span class="paiement-card-type">Carte bancaire</span>
-                <span class="paiement-card-last">...4242</span>
-              </span>
-            </div>
           </div>
         </div>
 
@@ -220,39 +186,10 @@
   const pays = params.get('pays') || 'france';
   const domaine = params.get('domaine') || school.domaine || 'architecture';
   const formationIdx = Number(params.get('formation') || 0);
-  const formation = school.formations?.[formationIdx] || school.formations?.[0];
 
   const back = document.querySelector('[data-pr-back]');
   if (back) {
     back.href = `offre-orientation.html?ecole=${encodeURIComponent(school.id)}&pays=${encodeURIComponent(pays)}&domaine=${encodeURIComponent(domaine)}&formation=${encodeURIComponent(String(formationIdx))}`;
-  }
-
-  const thumb = document.querySelector('[data-pr-thumb]');
-  if (thumb) {
-    thumb.src = school.thumb || school.hero || thumb.src;
-    thumb.alt = school.name;
-  }
-
-  const schoolEl = document.querySelector('[data-pr-school]');
-  if (schoolEl) schoolEl.textContent = school.name;
-
-  const subEl = document.querySelector('[data-pr-sub]');
-  if (subEl) subEl.textContent = formation?.title || 'Offre d’Orientation';
-
-  const priceEl = document.querySelector('[data-pr-price]');
-  if (priceEl) priceEl.textContent = '899 €';
-
-  const dateEl = document.querySelector('[data-pr-date]');
-  if (dateEl) {
-    const now = new Date();
-    const formatted = new Intl.DateTimeFormat('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(now);
-    dateEl.textContent = formatted.replace(',', ' à');
   }
 </script>
 </body>

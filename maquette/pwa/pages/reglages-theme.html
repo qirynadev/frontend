@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="../js/theme-init.js"></script>
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
@@ -23,9 +24,9 @@
           <a href="reglages.html" class="home-menu-btn" aria-label="Retour">
             <img src="../assets/icons/reglages/ic-rg-back.svg" alt="" width="24" height="24" />
           </a>
-          <div class="home-logo-frame">
+          <a href="home.html" class="home-logo-frame" aria-label="Accueil">
             <img src="../assets/images/logo.png" alt="Qiryna" />
-          </div>
+          </a>
           <div class="home-notif">
             <img src="../assets/icons/reglages/ic-rg-bell.svg" alt="" width="25" height="25" />
             <span class="home-notif-badge">3</span>
@@ -49,7 +50,7 @@
                 <span class="rt-option-icon"><img src="../assets/icons/reglages-theme/ic-rt-sun.svg" alt="" width="36" height="36" /></span>
                 <span class="rt-option-copy">
                   <span class="rt-option-title">Clair</span>
-                  <span class="rt-option-desc">Un thème lumineux idéal pour une utilisation en journée.</span>
+                  <span class="rt-option-desc">Luminosité idéale pour une utilisation en journée</span>
                 </span>
               </span>
             </span>
@@ -81,7 +82,7 @@
                 <span class="rt-option-icon"><img src="../assets/icons/reglages-theme/ic-rt-system.svg" alt="" width="36" height="36" /></span>
                 <span class="rt-option-copy">
                   <span class="rt-option-title">Système</span>
-                  <span class="rt-option-desc">Adapte automatiquement le thème selon les paramètres de votre appareil.</span>
+                  <span class="rt-option-desc">Adapte le thème selon les paramètres de l’appareil</span>
                 </span>
               </span>
             </span>
@@ -128,11 +129,15 @@
 </div>
 
 <script type="module">
-  const KEY = 'qiryna-theme';
-  const LABELS = { clair: 'Clair', sombre: 'Sombre', systeme: 'Système' };
+  import {
+    applyTheme,
+    getStoredPreference,
+    initTheme,
+    THEME_LABELS,
+  } from '../js/theme.js';
+
   const options = [...document.querySelectorAll('[data-theme]')];
-  let selected = localStorage.getItem(KEY) || 'clair';
-  if (!LABELS[selected]) selected = 'clair';
+  let selected = getStoredPreference();
 
   function applySelection(value) {
     selected = value;
@@ -141,16 +146,18 @@
       btn.classList.toggle('is-selected', on);
       btn.setAttribute('aria-checked', on ? 'true' : 'false');
     });
+    applyTheme(value, { persist: false });
   }
 
   applySelection(selected);
+  initTheme();
 
   options.forEach((btn) => {
     btn.addEventListener('click', () => applySelection(btn.getAttribute('data-theme')));
   });
 
   document.querySelector('[data-rt-save]')?.addEventListener('click', () => {
-    localStorage.setItem(KEY, selected);
+    applyTheme(selected, { persist: true });
     window.location.href = 'reglages.html';
   });
 </script>

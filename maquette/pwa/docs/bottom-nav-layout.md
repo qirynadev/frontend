@@ -1,7 +1,7 @@
 # Bottom nav — espacement et layout (proposition)
 
 > **Statut :** documenté, **non appliqué** (décision du 12 août 2026).  
-> Conserver ce fichier comme référence avant une migration globale.
+> Un essai sur `page-dest` (flex shell + `--q-nav-gap`) a été **retiré** — `destination-etude.html` / `logement.html` utilisent à nouveau le modèle standard (`--q-content-pad-bottom` + nav `fixed`).
 
 ## Problème actuel
 

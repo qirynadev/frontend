@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="../js/theme-init.js"></script>
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
@@ -23,9 +24,9 @@
           <a href="formule.html" class="lpp-back" aria-label="Retour">
             <img src="../assets/icons/ic-lang-back.svg" alt="" width="24" height="24" />
           </a>
-          <div class="lpp-logo-frame">
+          <a href="home.html" class="lpp-logo-frame" aria-label="Accueil">
             <img src="../assets/images/logo.png" alt="Qiryna" />
-          </div>
+          </a>
           <div class="lpp-notif">
             <img src="../assets/icons/ic-bell.svg" alt="" width="25" height="25" />
             <span class="lpp-notif-badge">3</span>
@@ -47,50 +48,6 @@
           <div class="lpp-success-copy">
             <h1>Paiement réussi&nbsp;!</h1>
             <p>Merci pour votre confiance.&nbsp;<br />Votre parcours d’orientation démarre maintenant.&nbsp;</p>
-          </div>
-        </div>
-
-        <!-- Order recap (810:55) -->
-        <div class="lpp-order-wrap">
-          <div class="lpp-order-card">
-            <h2 class="lpp-order-title">Récapitulatif de votre commande&nbsp;</h2>
-
-            <div class="lpp-order-body">
-              <div class="lpp-order-product">
-                <div class="lpp-order-thumb" data-lpp-thumb>
-                  <img src="../assets/icons/ic-lpp-formule.svg" alt="" width="56" height="56" data-lpp-icon />
-                </div>
-                <div class="lpp-order-info">
-                  <p class="lpp-order-name" data-lpp-name>Formule Aconcagua</p>
-                  <span class="lpp-order-tag" data-lpp-tag1>Equilibre &amp; progression</span>
-                  <span class="lpp-order-tag" data-lpp-tag2>15 séances de 1H/mois</span>
-                  <p class="lpp-order-price" data-lpp-price>300 €&nbsp;</p>
-                </div>
-              </div>
-
-              <div class="lpp-order-divider" aria-hidden="true"></div>
-
-              <div class="lpp-order-meta">
-                <div class="lpp-meta-block">
-                  <p class="lpp-meta-label">Date de commande</p>
-                  <p class="lpp-meta-value" data-lpp-date>21 mai 2024 à 18:45</p>
-                </div>
-                <div class="lpp-meta-block">
-                  <p class="lpp-meta-label">N° de commande</p>
-                  <p class="lpp-meta-value" data-lpp-order>QRY-20240521-4587</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="lpp-order-email">
-              <div class="lpp-order-email-icon">
-                <img src="../assets/icons/ic-lpp-mail-confirm.svg" alt="" width="16" height="16" />
-              </div>
-              <p>
-                Un email de confirmation vient de vous être envoyé à
-                <strong>doungnan.coulibaly@example.com</strong>
-              </p>
-            </div>
           </div>
         </div>
 
@@ -234,96 +191,6 @@
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('../sw.js').catch(() => {});
     });
-  }
-
-  const FORMULES = {
-    kili: {
-      name: 'Formule Kilimandjaro',
-      tag1: 'Démarrer à votre rythme',
-      tag2: '10 séances de 1H/mois',
-      price: '200 €',
-      color: '#00a31c',
-      icon: '../assets/icons/ic-formule-kili.svg',
-      iconMode: 'wrap',
-    },
-    acon: {
-      name: 'Formule Aconcagua',
-      tag1: 'Equilibre & progression',
-      tag2: '15 séances de 1H/mois',
-      price: '300 €',
-      color: '#6323fd',
-      icon: '../assets/icons/ic-lpp-formule.svg',
-      iconMode: 'full',
-    },
-    everest: {
-      name: 'Formule Everest',
-      tag1: 'Progrès rapides & durables',
-      tag2: '10 séances de 1H/mois',
-      price: '400 €',
-      color: '#f6071a',
-      icon: '../assets/icons/ic-formule-everest.svg',
-      iconMode: 'wrap',
-    },
-  };
-
-  const params = new URLSearchParams(window.location.search);
-  const key = params.get('formule') || 'acon';
-  const data = FORMULES[key] || FORMULES.acon;
-
-  const nameEl = document.querySelector('[data-lpp-name]');
-  const tag1El = document.querySelector('[data-lpp-tag1]');
-  const tag2El = document.querySelector('[data-lpp-tag2]');
-  const priceEl = document.querySelector('[data-lpp-price]');
-  const iconEl = document.querySelector('[data-lpp-icon]');
-  const thumbEl = document.querySelector('[data-lpp-thumb]');
-
-  if (nameEl) nameEl.textContent = data.name;
-  if (tag1El) tag1El.textContent = data.tag1;
-  if (tag2El) tag2El.textContent = data.tag2;
-  if (priceEl) {
-    priceEl.textContent = `${data.price}\u00a0`;
-    priceEl.style.color = data.color;
-  }
-  if (nameEl) nameEl.style.color = data.color;
-  if (tag1El) {
-    tag1El.style.color = data.color;
-    tag1El.style.background = key === 'kili' ? '#eaf9ed' : key === 'everest' ? '#ffedf0' : '#f3effd';
-  }
-  if (tag2El) {
-    tag2El.style.color = data.color;
-    tag2El.style.background = key === 'kili' ? '#eaf9ed' : key === 'everest' ? '#ffedf0' : '#f3effd';
-  }
-
-  if (iconEl && thumbEl) {
-    if (data.iconMode === 'full') {
-      iconEl.src = data.icon;
-      iconEl.width = 56;
-      iconEl.height = 56;
-      thumbEl.classList.remove('lpp-order-thumb--wrap');
-    } else {
-      iconEl.src = data.icon;
-      iconEl.width = 28;
-      iconEl.height = 28;
-      thumbEl.classList.add('lpp-order-thumb--wrap');
-      thumbEl.style.background = key === 'kili' ? '#eaf9ed' : '#ffedf0';
-    }
-  }
-
-  const now = new Date();
-  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  const dateEl = document.querySelector('[data-lpp-date]');
-  const orderEl = document.querySelector('[data-lpp-order]');
-  if (dateEl) {
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    dateEl.textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} à ${h}:${m}`;
-  }
-  if (orderEl) {
-    const y = now.getFullYear();
-    const mo = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    const rnd = String(Math.floor(1000 + Math.random() * 9000));
-    orderEl.textContent = `QRY-${y}${mo}${d}-${rnd}`;
   }
 
   const updateLppLine = () => {
