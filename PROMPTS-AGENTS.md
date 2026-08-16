@@ -195,9 +195,9 @@ conformes.
 | ~~A1~~ | `mon-projet/index`, `mon-projet/admission` | ✅ livré et vérifié |
 | ~~A2~~ | `reglages/index`, `reglages/theme` | ✅ livré et vérifié |
 | ~~A3~~ | `paiement-reussi`, `langues/[slug]/paiement-reussi` | ✅ livré, **repris** (rythme porté par les blocs au lieu du conteneur) |
-| **A4** | `orientation.vue` | écran Antigravity **jamais mesuré** |
-| **A5** | `destinations/[slug]`, `destinations/[slug]/ecoles` | Lot 4, **jamais mesurés** |
-| **A6** | `destinations/[slug]/ecoles/[school]`, `offres/[slug]` | **jamais mesurés** (18px déjà repérés sur la carte de palier) |
+| ~~A4~~ | `orientation.vue` | ✅ refait et vérifié — écrit sur des composants génériques mal calibrés |
+| ~~A5~~ | `destinations/[slug]`, `destinations/[slug]/ecoles` | ✅ livré et vérifié |
+| ~~A6~~ | `destinations/[slug]/ecoles/[school]`, `offres/[slug]` | ✅ livré et vérifié — les 18px de la carte de palier viennent d'une donnée réelle plus courte que la démo maquette |
 | ~~A7~~ | `index.vue` (accueil) | ✅ rythme et cartes conformes — **sections non traitées** |
 | ~~A7 bis~~ | `index.vue` — les deux sections | ✅ livré et vérifié |
 | ~~A8~~ | `AppSideMenu.vue`, `side-menu.ts` (menu latéral) | ✅ mesuré — **déjà conforme, aucun correctif nécessaire** |
