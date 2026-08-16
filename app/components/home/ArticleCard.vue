@@ -39,6 +39,6 @@ defineProps<{ article: Article }>()
       >{{ article.title }}</p>
     </div>
 
-    <QIcon name="ic-chevron-right-sm" :size="14" class="shrink-0 p-8 box-content" />
+    <QIcon name="ic-chevron-right-sm" :size="14" class="shrink-0 p-8" />
   </article>
 </template>

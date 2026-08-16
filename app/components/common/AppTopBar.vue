@@ -63,7 +63,7 @@ function goBack() {
       :aria-label="$t('nav.menu')"
       @click="emit('openMenu')"
     >
-      <QIcon name="ic-menu" :size="30" />
+      <QIcon name="ic-menu" :size="31" />
     </button>
 
     <button
