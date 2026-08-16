@@ -32,7 +32,7 @@ export const sideMenuSections: SideMenuSection[] = [
   {
     labelKey: 'menu.other',
     entries: [
-      { id: 'settings', to: '/compte', labelKey: 'menu.settings', icon: 'ic-menu-settings' },
+      { id: 'settings', to: '/reglages', labelKey: 'menu.settings', icon: 'ic-menu-settings' },
     ],
   },
 ]

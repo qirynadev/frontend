@@ -6,9 +6,9 @@
  *
  * | Bloc | Règles reprises |
  * |---|---|
- * | bandeau | `.home-banner-wrap` `padding-top: 30px` · `.home-banner` `aspect-ratio: 1819/865`, rayon 10 |
- * | raccourcis | `.home-categories` `gap: 12px`, `padding-top: 22px`, une seule rangée (2×2 sous 360px) |
- * | sections | `.home-section` `padding-top: 32px` · titre 18px/28px, `letter-spacing: -0.45px` |
+ * | bandeau | `.home-banner-wrap` `padding-top: 16px`, `margin-bottom: 24px` · `.home-banner` `aspect-ratio: 1819/865`, rayon 10 |
+ * | raccourcis | `.home-categories` `gap: 12px`, `padding-top: 0`, une seule rangée (2×2 sous 360px) |
+ * | sections | `.home-section` `padding-top: 16px` · titre 18px/28px, `letter-spacing: -0.45px` · enfant non-titre `margin-top: 16px` |
  * | carte parcours | `.home-progress-card` fond `#fef4f5`, `padding: 20px`, `min-height: 154px`, illustration en absolu `right: -20px` |
  * | actualités | `.home-news-scroll` défilement horizontal, `gap: 16px`, cartes de 322px |
  *
@@ -76,7 +76,7 @@ usePageSeo(() => ({
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
       <template #loading>
-        <div class="flex flex-col gap-24 pt-30">
+        <div class="flex flex-col gap-24 pt-16">
           <QSkeleton variant="rect" :height="160" />
           <QSkeleton variant="row" />
           <QSkeleton variant="card" :height="120" />
@@ -84,7 +84,7 @@ usePageSeo(() => ({
       </template>
 
       <!-- Bandeau éditorial -->
-      <div class="w-full pt-30">
+      <div class="w-full pt-16 mb-24">
         <NuxtImg
           :src="bannerSrc"
           :alt="home?.slides[0]?.description || ''"
@@ -97,17 +97,17 @@ usePageSeo(() => ({
       </div>
 
       <!-- Raccourcis de service -->
-      <div class="flex w-full items-stretch gap-12 pt-22 max-3xs:flex-wrap">
+      <div class="flex w-full items-stretch gap-12 max-3xs:flex-wrap">
         <HomeCategoryCard v-for="category in homeCategories" :key="category.id" :category="category" />
       </div>
 
       <!-- Continuez votre parcours -->
-      <section class="pt-32">
+      <section class="pt-16">
         <h2 class="m-0 text-3xl leading-28 font-semibold tracking-snug text-text">
           {{ $t('home.progress.sectionTitle') }}
         </h2>
 
-        <div class="relative mt-10 min-h-154 overflow-hidden rounded-xl bg-progress-bg p-20 shadow-xs">
+        <div class="relative mt-16 min-h-154 overflow-hidden rounded-xl bg-progress-bg p-20 shadow-xs">
           <div class="relative z-1 flex max-w-[calc(100%-100px)] items-start gap-16 max-3xs:max-w-full">
             <!-- Anneau : les deux SVG de la maquette, superposés -->
             <div class="relative size-56 shrink-0">
@@ -148,12 +148,12 @@ usePageSeo(() => ({
       </section>
 
       <!-- Nouveautés & conseils -->
-      <section class="pt-32">
+      <section class="pt-16">
         <h2 class="m-0 text-3xl leading-28 font-semibold tracking-snug text-text">
           {{ $t('home.news.title') }}
         </h2>
 
-        <div class="-mx-3 flex gap-16 overflow-x-auto px-3 pt-11 pb-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div class="-mx-3 mt-16 flex gap-16 overflow-x-auto px-3 pb-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
         </div>
       </section>

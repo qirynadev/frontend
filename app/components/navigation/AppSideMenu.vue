@@ -59,11 +59,11 @@ async function onLogout() {
   <DialogRoot v-model:open="open">
     <DialogPortal to="#q-shell">
       <DialogOverlay
-        class="absolute inset-0 z-100 bg-menu-backdrop data-[state=closed]:opacity-0 data-[state=open]:opacity-100 motion-safe:transition-opacity motion-safe:duration-[280ms]"
+        class="absolute inset-0 z-100 bg-menu-backdrop transition-opacity duration-[280ms] ease-out data-[state=closed]:opacity-0 data-[state=open]:opacity-100"
       />
 
       <DialogContent
-        class="absolute inset-y-0 left-0 z-100 flex w-[min(331px,82.34%)] flex-col items-center gap-5 overflow-auto rounded-r-panel bg-white shadow-drawer data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0 motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+        class="absolute inset-y-0 left-0 z-100 flex max-h-dvh w-[min(331px,82.34%)] flex-col items-center gap-0 overflow-hidden rounded-r-panel bg-white shadow-drawer will-change-transform transition-transform duration-300 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0"
         @click="($event.target as HTMLElement).closest('a') && close()"
       >
         <!-- En-tête : logo + fermeture -->
@@ -82,9 +82,9 @@ async function onLogout() {
           </DialogClose>
         </div>
 
-        <div class="flex w-full flex-col items-center pb-24">
+        <div class="flex w-full flex-1 min-h-0 flex-col items-center overflow-y-auto overscroll-contain pb-[calc(24px+env(safe-area-inset-bottom,0px))] [webkit-overflow-scrolling:touch]">
           <!-- Bienvenue -->
-          <div class="flex w-full items-center px-24 pt-9 pb-20">
+          <div class="flex w-full shrink-0 items-center px-24 pt-9 pb-20">
             <span class="flex size-59 shrink-0 items-center justify-center rounded-full bg-menu-avatar-bg">
               <QIcon name="ic-menu-user" :size="28" />
             </span>
@@ -99,7 +99,7 @@ async function onLogout() {
           </div>
 
           <!-- Connexion / inscription — ou compte / déconnexion. -->
-          <div class="flex w-full flex-col gap-10 px-24 pb-24">
+          <div class="flex w-full shrink-0 flex-col gap-10 px-24 pb-24">
             <template v-if="session.isAuthenticated">
               <NuxtLink
                 :to="localePath('/compte')"
@@ -137,11 +137,11 @@ async function onLogout() {
             <!-- La maquette place un filet avant chaque section. -->
             <span aria-hidden="true" class="mx-24 h-1 w-[calc(100%-48px)] shrink-0 bg-menu-sep" />
 
-            <p class="m-0 w-full px-24 pt-10 pb-[10.5px] text-sm leading-15 font-medium tracking-[1px] text-menu-label uppercase">
+            <p class="m-0 w-full shrink-0 px-24 pt-10 pb-[10.5px] text-sm leading-15 font-medium tracking-[1px] text-menu-label uppercase">
               {{ $t(section.labelKey) }}
             </p>
 
-            <nav class="flex w-full flex-col px-16">
+            <nav class="flex w-full shrink-0 flex-col px-16">
               <NuxtLink
                 v-for="entry in section.entries"
                 :key="entry.id"
@@ -159,7 +159,7 @@ async function onLogout() {
 
           <!-- Besoin d'aide ? -->
           <SupportLink
-            class="mt-28 flex w-281 max-w-[calc(100%-50px)] items-center gap-11 rounded-xl bg-surface-2 px-9 py-10 text-text no-underline"
+            class="mt-18 flex w-281 max-w-[calc(100%-50px)] shrink-0 items-center gap-11 rounded-xl bg-surface-2 px-9 py-10 text-text no-underline"
           >
             <span class="flex size-44 shrink-0 items-center justify-center rounded-full bg-primary-soft">
               <QIcon name="ic-menu-help" :size="24" />
