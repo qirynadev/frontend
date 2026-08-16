@@ -92,6 +92,22 @@ deux versions côte à côte.
   port prévu pour la production. Signature : des URL `/_nuxt/@fs/…` et
   `@nuxt/devtools` dans le réseau.
 
+## Mesurer les positions, pas seulement les hauteurs
+
+**Une hauteur totale juste ne prouve rien.** Sur les deux écrans de paiement,
+la page se terminait à 789,3px contre 787,3 attendus — 2px, l'air conforme.
+En réalité chaque bloc était mal placé et les erreurs se compensaient : bandeau
+8px trop bas, encart d'aide 18px trop haut.
+
+Comparer donc, pour chaque enfant du conteneur principal : **position absolue,
+hauteur, et intervalle avec le bloc suivant**. Un tableau de positions révèle
+immédiatement une dérive qu'une hauteur globale masque.
+
+Corollaire fréquent : la maquette porte souvent son rythme vertical par un
+`gap` sur le conteneur (`--pr-block-gap`, `--lpp-block-gap`, `--mp-block-gap`…)
+avec des blocs à **zéro retrait**. Reproduire cela avec des `pb-*` sur les blocs
+donne des positions fausses même si la hauteur finale tombe juste.
+
 ## Trois pièges de cascade, invisibles à la lecture du HTML
 
 - Une règle peut être **inerte** : `.mpl-step:first-child` ne s'applique jamais,
@@ -153,12 +169,13 @@ conformes.
 
 | Lot | Pages | État |
 |---|---|---|
-| **A1** | `mon-projet/index`, `mon-projet/admission` | mesurées, **maquette modifiée depuis** |
-| **A2** | `reglages/index`, `reglages/theme` | mesurées, **maquette modifiée depuis** |
-| **A3** | `paiement-reussi`, `langues/[slug]/paiement-reussi` | **maquette allégée de ~139 et ~69 lignes** |
+| ~~A1~~ | `mon-projet/index`, `mon-projet/admission` | ✅ livré et vérifié |
+| ~~A2~~ | `reglages/index`, `reglages/theme` | ✅ livré et vérifié |
+| ~~A3~~ | `paiement-reussi`, `langues/[slug]/paiement-reussi` | ✅ livré, **repris** (rythme porté par les blocs au lieu du conteneur) |
 | **A4** | `orientation.vue` | écran Antigravity **jamais mesuré** |
 | **A5** | `destinations/[slug]`, `destinations/[slug]/ecoles` | Lot 4, **jamais mesurés** |
 | **A6** | `destinations/[slug]/ecoles/[school]`, `offres/[slug]` | **jamais mesurés** (18px déjà repérés sur la carte de palier) |
+| **A7** | `index.vue` (accueil) | **jamais conforme** — diagnostic chiffré fourni |
 
 ### Chantier B — écrans à créer
 
@@ -362,6 +379,88 @@ second sans être corrigé : c'est un point de départ, pas la liste complète.
 
 Rappel : `formule.html` a des `@media` qui **s'appliquent à 375px**. Les lire
 dans `app.css` avant toute correction.
+````
+
+---
+
+### Lot A7 — page d'accueil
+
+````markdown
+[COLLER ICI LE BRIEF COMMUN § 1]
+
+# Ta mission
+
+Rendre `app/pages/index.vue` conforme à `maquette/pwa/pages/home.html`.
+
+Cette page **n'a jamais été conforme** — ce n'est pas une régression : aucune
+des règles concernées n'a bougé lors de la resynchronisation de la maquette.
+Un diagnostic chiffré a déjà été fait, reproduis-le pour le confirmer avant de
+corriger, puis va au-delà : il n'est pas exhaustif.
+
+## Ce qui est déjà mesuré
+
+### Rythme vertical
+
+La maquette déclare `--home-block-gap: 16px` et `--home-hero-cats-gap: 24px`.
+`.home-main` n'a **pas** de `gap` : l'espacement vient des blocs.
+
+| Bloc | Maquette | Application |
+|---|---|---|
+| `.home-banner-wrap` | `padding-top: 16px`, `margin-bottom: 24px` | `pt-30`, **aucune marge basse** |
+| `.home-categories` | `padding-top: 0` | `pt-22` |
+| `.home-section` (×2) | `padding-top: 16px` | `pt-32` |
+
+Noter aussi `.home-section > :not(.home-section-title) { margin-top: 16px }` —
+une règle d'enfant, facile à manquer.
+
+Conséquence : la seconde section démarre à **746px au lieu de 674**.
+
+### Cartes de catégorie
+
+`.home-cat` fait **128px** de haut dans la maquette, **178,3px** dans
+l'application, à largeur identique (76,8px).
+
+| Élément | Maquette | Application |
+|---|---|---|
+| `.home-cat` | `padding: 2px` | `p-16` |
+| `.home-cat-icon` | 40×40, `margin-bottom: 6px`, image 22×22 | 48×48, marge 9 |
+| `.home-cat-label` | 11px/**13px**, `flex: 1 1 auto`, largeur 72,8 | 11px/13,75px, largeur **44,8** |
+| `.home-cat-btn` | 28×28, `margin: 12px 0` | 32×32, `mt-auto` |
+
+Le libellé trop étroit passe à **trois lignes au lieu de deux** : c'est l'écart
+le plus visible à l'œil.
+
+## Ce qui reste à ta charge
+
+Le diagnostic ci-dessus couvre le rythme et les cartes. **Il ne couvre pas** :
+
+- l'intérieur de la bannière (`.home-banner-*`) ;
+- les deux sections et leur contenu — cartes d'articles, carte de progression ;
+- la barre supérieure et la barre de navigation basse.
+
+Mesure-les toi-même, avec la même rigueur.
+
+## Attention particulière
+
+**Contenu venant de l'API.** Les deux sections affichent des données réelles
+(articles, catalogue). Une différence de hauteur peut donc venir d'un **texte
+plus long**, pas d'une erreur de mise en page. Distingue les deux : un écart de
+donnée se signale, il ne se corrige pas en tordant le CSS. En cas de doute,
+compare les **retraits et marges calculés** plutôt que les hauteurs.
+
+**Fichiers partagés.** `app/config/home-categories.ts` porte les quatre
+raccourcis. Si tu touches à `AppTopBar`, `QIcon` ou un composant de
+`app/design-system/`, **signale-le** : d'autres pages en dépendent.
+
+**Ne pas régler `--home-block-gap` en dur.** Ces valeurs sont des tokens de la
+maquette : ajoute-les à `@theme` dans `app/assets/css/main.css` si elles
+manquent, avec un commentaire disant d'où elles viennent.
+
+## Critère de fin
+
+Un tableau comparant, pour chaque enfant de `.home-main` : position absolue,
+hauteur, intervalle. Les trois colonnes doivent coïncider avec la maquette.
+Puis zéro écart réel sur l'ensemble des classes `.home-*`.
 ````
 
 ---
