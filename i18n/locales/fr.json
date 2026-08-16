@@ -246,15 +246,19 @@
   },
   "destination": {
     "detail": {
-      "bannerTitle": "{country}, une destination d’excellence",
+      "bannerTitle": "{country}, une destination d’excellence ",
       "domainsEmpty": "Aucun domaine d’étude publié pour l’instant.",
       "domainsSubtitle": "Nos formules d’accompagnement par spécialité",
-      "domainsTitle": "Choisissez un domaine d’étude",
+      "domainsTitle": "Choisissez un domaine d’étude ",
       "fallbackTitle": "Destination",
       "notFound": "Destination introuvable",
       "seeSchools": "Voir les écoles | Voir l’école | Voir les {count} écoles",
       "statCountry": "Code pays",
-      "statSchools": "Écoles partenaires"
+      "statNobel": "Prix Nobel\nen 2023",
+      "statRanking": "destination d’études dans le monde",
+      "statSchools": "Écoles partenaires",
+      "statStudents": "Étudiants internationaux",
+      "statUniversities": "Universités et\ngrandes écoles"
     },
     "list": {
       "emptyDescription": "Nos destinations sont en cours de publication. Revenez très vite.",

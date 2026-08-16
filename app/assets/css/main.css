@@ -408,6 +408,19 @@
   --color-oo-price-bg: #4f31eb;
   --color-oo-price-badge-bg: #4029c7;
 
+  /* ─── Domaines d'étude (`domaines-etude.html`) ────────────────────
+     `--dom-block-gap: 22px` de la maquette pilote le rythme vertical
+     (topbar → bandeau → section) : rendu par des `gap-22`/`pt-22` directs,
+     pas par un nouveau token — la base d'espacement (`--spacing: 1px`) le
+     permet déjà, comme ailleurs dans l'application. */
+  --color-dom-banner-bg: #f7f6fc;
+  --color-dom-stat-uni-bg: #e8e1fe;
+  --color-dom-stat-globe-bg: #def5e3;
+  --color-dom-stat-podium-bg: #fdf3e4;
+  --color-dom-stat-nobel-bg: #fde8eb;
+  --color-dom-card-mgmt-bg: #fdeff0;
+  --color-dom-card-meta: #94a3b8;
+
   /* ─── Messages (`messages.html`) ────────────────────────────────
      Six teintes d'étiquette, une par type d'interlocuteur. */
   --color-msg-tab-active: #3b2cf2;

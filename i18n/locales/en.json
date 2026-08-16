@@ -254,7 +254,11 @@
       "notFound": "Destination not found",
       "seeSchools": "View schools | View the school | View all {count} schools",
       "statCountry": "Country code",
-      "statSchools": "Partner schools"
+      "statNobel": "Nobel prizes\nin 2023",
+      "statRanking": "study destination worldwide",
+      "statSchools": "Partner schools",
+      "statStudents": "International students",
+      "statUniversities": "Universities and\ntop schools"
     },
     "list": {
       "emptyDescription": "Our destinations are being published. Check back soon.",

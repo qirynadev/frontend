@@ -29,15 +29,16 @@ const props = withDefaults(
     /**
      * Espace sous la barre, en px.
      *
-     * 30 sur la plupart des écrans, 16 sur la liste d'écoles — valeurs relevées
-     * dans `app.css` (`.dest-topbar`, `.le-topbar`…).
+     * 30 sur la plupart des écrans, 16 sur la liste d'écoles, 22 sur les
+     * écrans de domaines/écoles (`--dom-block-gap`, `--le-block-gap`…) —
+     * valeurs relevées dans `app.css` (`.dest-topbar`, `.le-topbar`…).
      */
-    gap?: 0 | 16 | 30
+    gap?: 0 | 16 | 22 | 30
   }>(),
   { back: false, backTo: '/', menu: false, notifications: 0, gap: 30 },
 )
 
-const gapClass: Record<number, string> = { 0: 'pb-0', 16: 'pb-16', 30: 'pb-30' }
+const gapClass: Record<number, string> = { 0: 'pb-0', 16: 'pb-16', 22: 'pb-22', 30: 'pb-30' }
 
 const emit = defineEmits<{ openMenu: [] }>()
 
