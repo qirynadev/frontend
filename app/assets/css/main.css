@@ -397,6 +397,17 @@
   --color-rg-danger-bg: #fef2f2;
   --color-rg-danger-desc: #2b2b2b;
 
+  /* ─── Offre d'orientation (`offre-orientation.html`) ─────────────
+     Le prix affiche `font-family: 'Plus Jakarta Sans', 'Jost', sans-serif` —
+     seul écran de la maquette à sortir de la police de marque. */
+  --font-jakarta: 'Plus Jakarta Sans', 'Jost', sans-serif;
+  --color-oo-hero-1: rgb(238 242 255 / 0.8);
+  --color-oo-hero-2: rgb(250 245 255 / 0.5);
+  --color-oo-hero-3: rgb(238 242 255 / 0.4);
+  --color-oo-feature-border: rgb(241 245 249 / 0.9);
+  --color-oo-price-bg: #4f31eb;
+  --color-oo-price-badge-bg: #4029c7;
+
   /* ─── Messages (`messages.html`) ────────────────────────────────
      Six teintes d'étiquette, une par type d'interlocuteur. */
   --color-msg-tab-active: #3b2cf2;
