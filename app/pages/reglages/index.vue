@@ -44,15 +44,12 @@ const sections: { titleKey: string, rows: Row[] }[] = [
     titleKey: 'settings.sectionAccount',
     rows: [
       { id: 'personal', icon: 'ic-rg-person', titleKey: 'settings.personalTitle', descKey: 'settings.personalDesc' },
-      { id: 'contact', icon: 'ic-rg-email', titleKey: 'settings.contactTitle', descKey: 'settings.contactDesc' },
       { id: 'password', icon: 'ic-rg-lock', titleKey: 'settings.passwordTitle', descKey: 'settings.passwordDesc', to: '/reglages/mot-de-passe' },
-      { id: 'security', icon: 'ic-rg-shield', titleKey: 'settings.securityTitle', descKey: 'settings.securityDesc' },
     ],
   },
   {
     titleKey: 'settings.sectionPreferences',
     rows: [
-      { id: 'notifications', icon: 'ic-rg-bell-pref', titleKey: 'settings.notificationsTitle', descKey: 'settings.notificationsDesc', indigo: true },
       { id: 'language', icon: 'ic-rg-globe', titleKey: 'settings.languageTitle', descKey: 'settings.languageDesc', to: '/reglages/langues', indigo: true },
       { id: 'theme', icon: 'ic-rg-theme', titleKey: 'settings.themeTitle', valueKey: 'settings.themeValue', to: '/reglages/theme', indigo: true, theme: true },
     ],
@@ -77,10 +74,10 @@ usePageSeo(() => ({
 <template>
   <div class="page-rg flex min-h-screen flex-1 flex-col">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
-    <div class="rg-main flex w-full max-w-full flex-col pb-[var(--spacing-content-bottom)] box-border">
+    <div class="rg-main flex w-full max-w-full flex-col gap-15 pb-[var(--spacing-content-bottom)] box-border">
       <AppTopBar :back="true" back-to="/" :notifications="3" />
 
-      <section class="rg-intro mb-28 w-full">
+      <section class="rg-intro w-full">
         <h1 class="m-0 text-4xl leading-normal font-semibold tracking-[-0.65px] text-text">
           {{ $t('settings.title') }}
         </h1>
@@ -89,8 +86,8 @@ usePageSeo(() => ({
         </p>
       </section>
 
-      <section v-for="section in sections" :key="section.titleKey" class="rg-section mb-24 w-full">
-        <h2 class="rg-section-title mt-0 mb-12 px-4 text-xl leading-20 font-semibold tracking-[0.7px] text-black">
+      <section v-for="section in sections" :key="section.titleKey" class="rg-section flex flex-col gap-15 w-full">
+        <h2 class="rg-section-title m-0 px-4 text-xl leading-20 font-semibold tracking-[0.7px] text-black">
           {{ $t(section.titleKey) }}
         </h2>
 

@@ -1,6 +1,5 @@
 {
   "admission": {
-    "advisor": "Conseillère : ",
     "contactAdvisor": "Contacter ma conseillère",
     "docDiploma": "Diplôme le plus élevé",
     "docGrades": "Relevés de notes",
@@ -12,12 +11,10 @@
     "docsBannerTitle": "Téléchargez tous les documents requis",
     "docsTitle": "Mes documents",
     "downloadDoc": "Télécharger le document",
-    "entry": "Rentrée : {date}",
     "fileTypePdf": "Fichier PDF",
     "fileTypePdfs": "{count} fichiers PDF",
     "helpDesc": "Votre conseillère est là pour vous accompagner à chaque étape.",
     "helpTitle": "Besoin d'aide ?",
-    "schoolFolder": "Dossier admission",
     "seoDescription": "Suivez l'avancement de votre dossier d'admission — Qiryna",
     "seoTitle": "Admission école — Qiryna",
     "statusCurrent": "En cours",
@@ -47,8 +44,7 @@
     "tabApercu": "Aperçu",
     "tabDocument": "Document",
     "tabSuivi": "Suivi & échanges",
-    "tabsLabel": "Sections admission",
-    "updatedYesterday": "Mise à jour : Hier"
+    "tabsLabel": "Sections admission"
   },
   "auth": {
     "emailLabel": "Adresse e-mail",
@@ -466,7 +462,6 @@
     "emptyTitle": "Aucun service actif",
     "intro": "Tous vos accompagnements au même endroit.",
     "myServices": "Mes services",
-    "newProject": "+ Nouveau projet",
     "nextAppointment": "Prochain RDV",
     "overviewTitle": "Aperçu général",
     "packEssentiel": "Pack Essentiel",
@@ -647,8 +642,6 @@
     }
   },
   "settings": {
-    "contactDesc": "Mettez à jour vos coordonnées",
-    "contactTitle": "Email et téléphone",
     "helpDesc": "FAQ et contact support",
     "helpTitle": "Centre d’aide",
     "intro": "Gérez votre compte et vos préférences.",
@@ -658,8 +651,6 @@
     "legalTitle": "Mentions légales",
     "logoutDesc": "Quitter votre compte",
     "logoutTitle": "Se déconnecter",
-    "notificationsDesc": "Choisissez vos préférences de notification",
-    "notificationsTitle": "Notifications",
     "passwordDesc": "Changez votre mot de passe",
     "passwordTitle": "Mot de passe",
     "personalDesc": "Modifiez vos informations personnelles",
@@ -667,8 +658,6 @@
     "sectionAccount": "Compte",
     "sectionOther": "Autres",
     "sectionPreferences": "Préférences",
-    "securityDesc": "Gérez la sécurité de votre compte",
-    "securityTitle": "Sécurité",
     "seoDescription": "Gérez votre compte et vos préférences.",
     "seoTitle": "Réglages",
     "themeTitle": "Thème",
@@ -746,13 +735,13 @@
     "darkTitle": "Sombre",
     "infoText": "Le thème choisi sera appliqué sur l’ensemble de l’application",
     "intro": "Personnalisez l’apparence de l’application.",
-    "lightDesc": "Un thème lumineux idéal pour une utilisation en journée.",
+    "lightDesc": "Luminosité idéale pour une utilisation en journée",
     "lightTitle": "Clair",
     "pickLabel": "Choisissez votre thème",
     "save": "Enregistrer mon thème",
     "seoDescription": "Personnalisez l’apparence de l’application.",
     "seoTitle": "Thème",
-    "systemDesc": "Adapte automatiquement le thème selon les paramètres de votre appareil.",
+    "systemDesc": "Adapte le thème selon les paramètres de l’appareil",
     "systemTitle": "Système",
     "title": "Thème"
   },

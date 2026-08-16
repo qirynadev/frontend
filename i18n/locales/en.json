@@ -1,6 +1,5 @@
 {
   "admission": {
-    "advisor": "Advisor: ",
     "contactAdvisor": "Contact my advisor",
     "docDiploma": "Highest diploma",
     "docGrades": "Transcripts",
@@ -12,12 +11,10 @@
     "docsBannerTitle": "Download all required documents",
     "docsTitle": "My documents",
     "downloadDoc": "Download document",
-    "entry": "Start date: {date}",
     "fileTypePdf": "PDF file",
     "fileTypePdfs": "{count} PDF files",
     "helpDesc": "Your advisor is here to support you at every step.",
     "helpTitle": "Need help?",
-    "schoolFolder": "Admission file",
     "seoDescription": "Track your school admission progress — Qiryna",
     "seoTitle": "School admission — Qiryna",
     "statusCurrent": "In progress",
@@ -47,8 +44,7 @@
     "tabApercu": "Overview",
     "tabDocument": "Document",
     "tabSuivi": "Tracking & exchanges",
-    "tabsLabel": "Admission sections",
-    "updatedYesterday": "Updated: Yesterday"
+    "tabsLabel": "Admission sections"
   },
   "auth": {
     "emailLabel": "Email address",
@@ -466,7 +462,6 @@
     "emptyTitle": "No active services",
     "intro": "All your support programmes in one place.",
     "myServices": "My services",
-    "newProject": "+ New project",
     "nextAppointment": "Next meeting",
     "overviewTitle": "General overview",
     "packEssentiel": "Essential Pack",
@@ -647,8 +642,6 @@
     }
   },
   "settings": {
-    "contactDesc": "Update your contact details",
-    "contactTitle": "Email and phone",
     "helpDesc": "FAQ and support contact",
     "helpTitle": "Help centre",
     "intro": "Manage your account and preferences.",
@@ -658,8 +651,6 @@
     "legalTitle": "Legal notice",
     "logoutDesc": "Leave your account",
     "logoutTitle": "Log out",
-    "notificationsDesc": "Choose your notification preferences",
-    "notificationsTitle": "Notifications",
     "passwordDesc": "Change your password",
     "passwordTitle": "Password",
     "personalDesc": "Edit your personal information",
@@ -667,8 +658,6 @@
     "sectionAccount": "Account",
     "sectionOther": "Other",
     "sectionPreferences": "Preferences",
-    "securityDesc": "Manage your account security",
-    "securityTitle": "Security",
     "seoDescription": "Manage your account and preferences.",
     "seoTitle": "Settings",
     "themeTitle": "Theme",
@@ -746,13 +735,13 @@
     "darkTitle": "Dark",
     "infoText": "The chosen theme will be applied across the whole application",
     "intro": "Customise the appearance of the application.",
-    "lightDesc": "A bright theme, ideal for daytime use.",
+    "lightDesc": "Ideal brightness for daytime use",
     "lightTitle": "Light",
     "pickLabel": "Choose your theme",
     "save": "Save my theme",
     "seoDescription": "Customise the appearance of the application.",
     "seoTitle": "Theme",
-    "systemDesc": "Automatically matches the theme to your device settings.",
+    "systemDesc": "Matches the theme to device settings",
     "systemTitle": "System",
     "title": "Theme"
   },

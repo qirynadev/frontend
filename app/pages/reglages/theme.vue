@@ -39,10 +39,10 @@ usePageSeo(() => ({
 <template>
   <div class="page-rt flex min-h-screen flex-1 flex-col">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
-    <div class="rt-main flex w-full max-w-full flex-col pb-[var(--spacing-content-bottom)] box-border">
+    <div class="rt-main flex w-full max-w-full flex-col gap-15 pb-[var(--spacing-content-bottom)] box-border">
       <AppTopBar :back="true" back-to="/reglages" :notifications="3" />
 
-      <section class="rt-intro mb-20 w-full">
+      <section class="rt-intro w-full">
         <h1 class="m-0 text-4xl leading-normal font-semibold tracking-[-0.65px] text-text">
           {{ $t('settingsTheme.title') }}
         </h1>
@@ -51,11 +51,11 @@ usePageSeo(() => ({
         </p>
       </section>
 
-      <p class="rt-pick-label mt-0 mb-12 text-xl leading-24 font-semibold text-text">
+      <p class="rt-pick-label m-0 text-xl leading-24 font-semibold text-text">
         {{ $t('settingsTheme.pickLabel') }}
       </p>
 
-      <div class="rt-options flex w-full flex-col gap-14" role="radiogroup" :aria-label="$t('settingsTheme.pickLabel')">
+      <div class="rt-options flex w-full flex-col gap-15" role="radiogroup" :aria-label="$t('settingsTheme.pickLabel')">
         <button
           v-for="option in options"
           :key="option.id"
@@ -94,7 +94,7 @@ usePageSeo(() => ({
         </button>
       </div>
 
-      <aside class="rt-info mt-20 flex min-h-61 w-full items-center gap-11 rounded-xl bg-surface-2 px-9 py-8 box-border">
+      <aside class="rt-info flex min-h-61 w-full items-center gap-11 rounded-xl bg-surface-2 px-9 py-8 box-border">
         <span class="rt-info-icon size-44 shrink-0 overflow-hidden">
           <QIcon name="ic-rt-info" :size="44" />
         </span>
@@ -103,7 +103,7 @@ usePageSeo(() => ({
 
       <button
         type="button"
-        class="rt-cta mt-28 flex w-full cursor-pointer items-center justify-center rounded-xl border-0 bg-rl-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white box-border"
+        class="rt-cta flex w-full cursor-pointer items-center justify-center rounded-xl border-0 bg-rl-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white box-border"
       >
         {{ $t('settingsTheme.save') }}
       </button>
