@@ -73,8 +73,10 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
-    <AppTopBar back back-to="/" />
+  <!-- Rythme vertical porté par le conteneur (`gap: var(--pr-block-gap)` = 22px
+       dans la maquette) : les blocs ne portent aucun retrait propre. -->
+  <div class="flex flex-col gap-22">
+    <AppTopBar back back-to="/" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"
@@ -106,18 +108,16 @@ usePageSeo(() => ({
         tone="danger"
         :title="$t('confirmation.failedTitle')"
         :message="$t('confirmation.failedDescription')"
-        class="mb-20"
-      />
+        />
       <QAlert
         v-else-if="!confirmed"
         tone="warning"
         :title="$t('confirmation.pendingTitle')"
         :message="$t('confirmation.pendingDescription')"
-        class="mb-20"
       />
 
       <!-- Réussite -->
-      <div class="flex flex-col items-center pb-20">
+      <div class="flex flex-col items-center">
         <div class="h-123 w-276 shrink-0 overflow-hidden">
           <img
             src="/img/hero-paiement.webp"
@@ -140,7 +140,7 @@ usePageSeo(() => ({
       </div>
 
       <!-- Bienvenue -->
-      <div class="pb-20">
+      <div>
         <div class="flex items-start gap-16 rounded-xl border border-welcome-border bg-welcome-bg px-10 py-21">
           <QIcon name="ic-gift" :size="44" />
           <div class="min-w-0">
@@ -192,7 +192,7 @@ usePageSeo(() => ({
       </div>
 
       <!-- Une question ? -->
-      <div class="pt-20">
+      <div>
         <div class="relative flex min-h-91 items-center justify-between gap-8 rounded-xl bg-surface-2 p-9">
           <!-- `padding-right: 120px` réserve la place du bouton, qui est en
                absolu. Sous 375px il passe dessous, d'où la bascule. -->

@@ -150,8 +150,10 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
-    <AppTopBar back :back-to="`/offres/${slug}`" />
+  <!-- Rythme vertical porté par le conteneur (`gap: var(--lpp-block-gap)` = 22px
+       dans la maquette) : les blocs ne portent aucun retrait propre. -->
+  <div class="flex flex-col gap-22">
+    <AppTopBar back :back-to="`/offres/${slug}`" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"
@@ -180,18 +182,16 @@ usePageSeo(() => ({
         tone="danger"
         :title="$t('confirmation.failedTitle')"
         :message="$t('confirmation.failedDescription')"
-        class="mb-20"
       />
       <QAlert
         v-else-if="!confirmed"
         tone="warning"
         :title="$t('confirmation.pendingTitle')"
         :message="$t('confirmation.pendingDescription')"
-        class="mb-20"
       />
 
       <!-- Réussite -->
-      <div class="flex w-full items-center pt-8 pl-26 max-xs:items-start max-xs:pl-0">
+      <div class="flex w-full items-center pl-26 max-xs:items-start max-xs:pl-0">
         <div class="relative size-96 shrink-0" aria-hidden="true">
           <span class="absolute -top-4 -left-4 text-base leading-16 text-spark-1">✦</span>
           <span class="absolute top-8 left-[94.48px] text-base leading-16 text-spark-2">✦</span>
@@ -218,7 +218,7 @@ usePageSeo(() => ({
       </div>
 
       <!-- Prochaines étapes -->
-      <div class="flex w-full flex-col gap-10 py-20">
+      <div class="flex w-full flex-col gap-10">
         <h2 class="m-0 text-xl leading-24 font-semibold text-text">{{ $t('confirmation.stepsHeading') }}</h2>
 
         <div ref="stepsList" class="relative flex w-full flex-col gap-10">
