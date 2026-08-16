@@ -199,7 +199,8 @@ conformes.
 | **A5** | `destinations/[slug]`, `destinations/[slug]/ecoles` | Lot 4, **jamais mesurés** |
 | **A6** | `destinations/[slug]/ecoles/[school]`, `offres/[slug]` | **jamais mesurés** (18px déjà repérés sur la carte de palier) |
 | ~~A7~~ | `index.vue` (accueil) | ✅ rythme et cartes conformes — **sections non traitées** |
-| **A7 bis** | `index.vue` — les deux sections | 7 écarts mesurés, listés au § 3 |
+| ~~A7 bis~~ | `index.vue` — les deux sections | ✅ livré et vérifié |
+| ~~A8~~ | `AppSideMenu.vue`, `side-menu.ts` (menu latéral) | ✅ mesuré — **déjà conforme, aucun correctif nécessaire** |
 
 ### Chantier B — écrans à créer
 
@@ -542,6 +543,28 @@ lot. La correction est juste — la maquette pointe bien `reglages.html` — mai
 menu latéral **n'a jamais été mesuré**. Ne l'élargis pas ici : signale-le, il
 fera son propre lot.
 ````
+
+---
+
+### Lot A8 — menu latéral (résultat)
+
+Mesuré par le superviseur directement, sur `main`, sans agent dédié — décision
+prise avec le responsable pour traiter le menu pendant que le contexte de
+l'accueil (structure `.home-*`, technique de parcours parallèle) était frais.
+
+**Résultat : conforme au pixel sans aucun correctif.** Panneau (306,3×1196,8 à
+375px, `min(331px, 82,34%)`), en-tête (logo 125×39, fermeture 36×36), bloc
+bienvenue (avatar 59×59), boutons, séparateurs, intertitres, cinq entrées
+(4 « NOS SERVICES » + 1 « AUTRE ») et encart d'aide coïncident au pixel —
+position, taille, couleur, rayon, `letter-spacing`. Deux faux positifs
+écartés : la géométrie brute de l'`<img>` du logo (même cause que sur la barre
+supérieure de l'accueil, invisible car clippée par un cadre identique des deux
+côtés) et un `<br>` de maquette contre un retour à la ligne littéral +
+`white-space: pre-line` côté app (même texte, même rendu).
+
+Aucune modification de code n'a donc été nécessaire : la correction faite par
+A7 (`overflow-hidden` du `DialogContent`, cible `/reglages`, `mt-18` de l'aide)
+suffisait déjà à la conformité.
 
 ---
 

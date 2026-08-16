@@ -5,7 +5,9 @@
 > `DESIGN-SYSTEM.md`, `ARCHITECTURE-API.md`, `DEPLOIEMENT.md`.
 
 Dernière mise à jour : après `mon-projet` (4 écrans), `logement`,
-`reglages` (5 écrans) et `messages`, tous mesurés au pixel.
+`reglages` (5 écrans), `messages` et l'accueil (rythme, cartes, sections,
+barre supérieure, menu latéral), tous mesurés au pixel. Détail des lots
+d'accueil dans `PROMPTS-AGENTS.md` § 2 (A7, A7 bis, A8).
 
 ---
 
