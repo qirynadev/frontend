@@ -11,22 +11,15 @@
  * |---|---|
  * | barre supérieure | `padding-bottom: 30px`, retour 24×24, logo 145×45, cloche 49×49 |
  * | réussite | illustration 276×123 `object-fit: cover` · titre 24px / 31,25px `-0.625px` insécable · sous-titre 8px au-dessus, centré |
- * | récapitulatif | carte `padding: 17px 15px`, `gap: 20px`, bord `#f1f5f9`, ombre `0 0 3.5px` |
- * | vignette | 64×48, rayon 7, image à `112,5%` décalée de `-6,25%` |
- * | méta | `gap: 14px`, `padding-top: 4px` · étiquette 12px / 20px · valeur 13px alignée à droite |
- * | Stripe | fond `rgb(99 91 255 / .1)`, rayon 6, 10,5px **italique**, `letter-spacing: .525px` |
- * | bienvenue | `padding: 20px 0` · encart `#f4f9f6`, bord `#f3f9f5`, `padding: 21px 10px`, `gap: 16px` |
+ * | bienvenue | `padding-bottom: 20px` · encart `#f4f9f6`, bord `#f3f9f5`, `padding: 21px 10px`, `gap: 16px` |
  * | frise | rangée `min-height: 205px`, `padding-top: 10px` · séparateurs **absolus** à 25 / 50 / 75 % |
  * | étapes | icône 50×50, pastille 21×20 — une couleur par rang · description `min-height: 32px` |
  * | aide | `min-height: 91px`, bouton **absolu** à droite, centré verticalement |
  * | sous 375px | titre enroulable · le bouton d'aide passe **sous** le texte |
  *
- * ### Deux écarts de donnée
- *
- * | Maquette | Réel | Décision |
- * |---|---|---|
- * | « ...4242 » (4 derniers chiffres) | `/payment/validate` ne renvoie aucune information de carte | la mention est retirée ; « stripe » et « Carte bancaire » restent, qui sont exacts |
- * | « Plus de garanties » sous le nom de l'école | `offer.description` — vide sur les huit formules du catalogue | la ligne n'est rendue que si elle est renseignée |
+ * Le récapitulatif de commande (école, prix, date, moyen de paiement) a été
+ * retiré de la maquette — la page ne montre plus que la réussite, la carte de
+ * bienvenue, la frise et l'aide.
  *
  * ### Les quatre états
  *
@@ -40,7 +33,7 @@ import { paymentRepo } from '~/core/repositories'
 definePageMeta({ middleware: 'auth' })
 
 const route = useRoute()
-const { t, locale, d, n } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 /** Stripe renvoie l'identifiant de commande dans l'URL. */
@@ -55,14 +48,8 @@ const { data: validation, apiError, isInitialLoading, refresh } = await usePageD
   { watch: [orderId, locale] },
 )
 
-const order = computed(() => validation.value?.order ?? null)
 const confirmed = computed(() => validation.value?.confirmed === true)
 const failed = computed(() => validation.value?.failed === true)
-
-const paymentDate = computed(() => {
-  if (!order.value?.createdAt) return ''
-  return d(new Date(order.value.createdAt), 'long')
-})
 
 /**
  * Les quatre étapes — éditoriales.
@@ -98,7 +85,6 @@ usePageSeo(() => ({
       <template #loading>
         <div class="flex flex-col gap-20">
           <QSkeleton variant="rect" :height="123" />
-          <QSkeleton variant="rect" :height="180" />
           <QSkeleton variant="rect" :height="205" />
         </div>
       </template>
@@ -153,68 +139,8 @@ usePageSeo(() => ({
         </div>
       </div>
 
-      <!-- Récapitulatif -->
-      <div
-        v-if="order"
-        class="flex flex-col gap-20 rounded-xl border border-border-soft bg-white px-15 py-17 shadow-card"
-      >
-        <p class="m-0 text-exact-15-5 font-semibold text-text">
-          {{ $t('checkout.success.orderTitle') }}
-        </p>
-
-        <div class="flex items-center justify-between gap-12 py-4">
-          <div class="flex min-w-0 flex-1 items-center gap-12">
-            <div class="h-48 w-64 shrink-0 overflow-hidden rounded-exact-7 bg-border-soft">
-              <!-- L'image déborde de 12,5% et se recentre : cadrage de la maquette. -->
-              <img
-                v-if="order.offer?.icon"
-                :src="order.offer.icon"
-                alt=""
-                class="-ml-[6.25%] h-full w-[112.5%] max-w-none object-cover"
-              >
-            </div>
-
-            <div class="min-w-0">
-              <p class="m-0 text-base leading-[22.5px] font-medium text-navy-2">{{ order.offer?.title }}</p>
-              <p v-if="order.offer?.description" class="m-0 text-base leading-16 font-medium text-slate">
-                {{ order.offer.description }}
-              </p>
-            </div>
-          </div>
-
-          <p class="m-0 shrink-0 text-2xl leading-[25.5px] font-bold whitespace-nowrap text-navy-2">
-            {{ n(order.price.amount, 'currency') }}
-          </p>
-        </div>
-
-        <div aria-hidden="true" class="h-1 bg-border-soft" />
-
-        <div class="flex flex-col gap-14 pt-4">
-          <div class="flex items-center justify-between gap-8">
-            <span class="shrink-0 text-base leading-20 font-normal text-text">
-              {{ $t('checkout.paymentDateLabel') }}
-            </span>
-            <span class="text-lg leading-20 font-medium text-text">{{ paymentDate }}</span>
-          </div>
-
-          <div class="flex items-center justify-between gap-8">
-            <span class="shrink-0 text-base leading-20 font-normal text-text">
-              {{ $t('checkout.paymentMethodLabel') }}
-            </span>
-            <!-- La maquette ajoute « ...4242 » : l'API ne renvoie aucune
-                 information de carte, la mention est donc retirée. -->
-            <span class="flex flex-wrap items-center justify-end gap-6">
-              <span
-                class="rounded-md bg-stripe-bg px-8 py-2 text-exact-10-5 font-bold tracking-[0.525px] text-stripe italic"
-              >stripe</span>
-              <span class="text-base leading-20 font-medium text-slate">{{ $t('checkout.cardMethod') }}</span>
-            </span>
-          </div>
-        </div>
-      </div>
-
       <!-- Bienvenue -->
-      <div class="py-20">
+      <div class="pb-20">
         <div class="flex items-start gap-16 rounded-xl border border-welcome-border bg-welcome-bg px-10 py-21">
           <QIcon name="ic-gift" :size="44" />
           <div class="min-w-0">

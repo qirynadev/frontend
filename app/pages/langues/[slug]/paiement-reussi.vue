@@ -24,24 +24,24 @@
  * | shell | `.page-lpp { background: #faf9fe }` — seul écran teinté en entier |
  * | barre supérieure | `padding-bottom: 30px`, retour 24×24, logo 145×45, cloche 49×49 |
  * | réussite | `padding: 8px 0 0 26px` · pastille 96×96 (halo flouté 16,287px, cercle 80×80 à +8/+8) · texte 254px, `padding-left: 16px` |
- * | récapitulatif | carte `padding: 15px 21px`, rayon 10, ombre `0 4px 20px` · corps `gap: 20px`, filet 0,906×64 |
  * | étapes | frise absolue à 10px, `top`/`bottom` 10px · pastilles 20×20 · cartes `padding: 17px 11px 17px 6px` |
  * | assistance | `min-height: 86px`, `padding: 9px`, fond `#f5f3ff` |
- * | sous 400px | réussite alignée en haut, titre 16px/24px · corps du récapitulatif enroulé, filet masqué, métadonnées en ligne · cartes d'étape enroulées `padding: 14px 10px` |
+ * | sous 400px | réussite alignée en haut, titre 16px/24px · cartes d'étape enroulées `padding: 14px 10px` |
+ *
+ * Le récapitulatif de commande (formule, prix, date, numéro, e-mail de
+ * confirmation) a été retiré de la maquette — la page ne montre plus que la
+ * réussite, la frise des cinq étapes et l'assistance.
  *
  * ### Ce que la maquette invente, et ce qu'on en fait
  *
  * | Maquette | Réel | Décision |
  * |---|---|---|
- * | « QRY-20240521-4587 » | aucun numéro de commande en base | référence **dérivée** de l'identifiant (`QRY-` + 8 caractères), comme l'ancien front |
- * | « 15 séances de 1H/mois » | `nbr_hours` sur la formule | affiché quand il existe, masqué sinon |
- * | « Equilibre & progression » | `description` — vide sur les 12 formules du catalogue | l'étiquette n'est rendue que si elle est renseignée |
  * | 5 étapes avec statuts | seule la première a une source (l'e-mail part avec la commande) | étape 1 « Terminé », les autres gardent les statuts de la maquette — voir LOT-5.md |
  * | pastille de notification « 3 » | aucun compteur exposé | pas de pastille |
  *
  * ### Les quatre états
  *
- * **Chargement** — squelettes calés sur la carte et les cinq étapes.
+ * **Chargement** — squelettes calés sur la réussite et les cinq étapes.
  * **Erreur** — `PageState` ; le retour de Stripe peut échouer.
  * **Vide** — aucun identifiant de commande dans l'URL : message explicite avec
  * un renvoi vers « Mon projet », plutôt qu'une page de succès mensongère.
@@ -57,7 +57,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { t, locale, d, n } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 const slug = computed(() => String(route.params.slug ?? ''))
@@ -73,15 +73,8 @@ const { data: validation, apiError, isInitialLoading, refresh } = await usePageD
   { watch: [orderId, locale] },
 )
 
-const order = computed(() => validation.value?.order ?? null)
 const confirmed = computed(() => validation.value?.confirmed === true)
 const failed = computed(() => validation.value?.failed === true)
-
-/** Date longue, localisée — l'adapter a déjà ramené `JJ/MM/AAAA` en ISO. */
-const orderDate = computed(() => {
-  if (!order.value?.createdAt) return ''
-  return d(new Date(order.value.createdAt), 'long')
-})
 
 /**
  * Les cinq étapes.
@@ -169,7 +162,6 @@ usePageSeo(() => ({
       <template #loading>
         <div class="flex flex-col gap-20">
           <QSkeleton variant="rect" :height="96" />
-          <QSkeleton variant="rect" :height="180" />
           <QSkeleton v-for="index in 5" :key="index" variant="rect" :height="78" />
         </div>
       </template>
@@ -222,86 +214,6 @@ usePageSeo(() => ({
           <p class="m-0 max-w-238 pt-4 text-sm leading-[17.875px] font-medium whitespace-pre-line text-text">
             {{ $t('confirmation.subtitle') }}
           </p>
-        </div>
-      </div>
-
-      <!-- Récapitulatif -->
-      <div v-if="order" class="w-full pt-24">
-        <div class="flex w-full flex-col rounded-xl border border-order-card-border bg-white px-21 py-15 shadow-order">
-          <h2 class="m-0 text-lg leading-[19.5px] font-semibold whitespace-nowrap text-order-title">
-            {{ $t('confirmation.orderTitle') }}
-          </h2>
-
-          <div
-            class="flex w-full items-center justify-between gap-20 border-b border-border-soft pt-16 pb-1 max-xs:flex-wrap max-xs:gap-12"
-          >
-            <div class="flex shrink-0 items-center">
-              <div class="flex size-56 shrink-0 items-center justify-center">
-                <img
-                  v-if="order.offer?.icon"
-                  :src="order.offer.icon"
-                  alt=""
-                  width="56"
-                  height="56"
-                  class="size-56 object-contain"
-                >
-                <QIcon v-else name="ic-lpp-formule" :size="56" />
-              </div>
-
-              <div class="flex w-[131.18px] flex-col items-start gap-3 pl-8">
-                <p class="m-0 text-xl leading-20 font-semibold whitespace-nowrap text-order-name">
-                  {{ order.offer?.title }}
-                </p>
-                <span
-                  v-if="order.offer?.description"
-                  class="inline-flex h-20 items-center rounded-sm bg-order-tag-bg px-10 text-xs leading-15 font-medium whitespace-nowrap text-order-name"
-                >{{ order.offer.description }}</span>
-                <span
-                  v-if="order.offer?.hours"
-                  class="inline-flex h-20 items-center rounded-sm bg-order-tag-bg px-10 text-xs leading-15 font-medium whitespace-nowrap text-order-name"
-                >{{ $t('confirmation.hours', { count: order.offer.hours }) }}</span>
-                <p class="mt-4 mb-0 text-xl leading-28 font-semibold whitespace-nowrap text-order-price">
-                  {{ n(order.price.amount, 'currency') }}
-                </p>
-              </div>
-            </div>
-
-            <div aria-hidden="true" class="h-64 w-[0.906px] shrink-0 bg-border-soft max-xs:hidden" />
-
-            <div
-              class="flex w-[103.914px] shrink-0 flex-col items-start max-xs:w-full max-xs:flex-row max-xs:justify-between max-xs:gap-12"
-            >
-              <div class="w-full max-xs:w-auto max-xs:flex-1">
-                <p class="m-0 text-xs leading-15 font-medium whitespace-nowrap text-order-meta-label">
-                  {{ $t('confirmation.orderDateLabel') }}
-                </p>
-                <p class="m-0 w-104 pt-4 text-xs leading-[16.5px] font-medium text-order-meta-value max-xs:w-auto">
-                  {{ orderDate }}
-                </p>
-              </div>
-              <!-- `padding-top: 8px` sur le second bloc, y compris sous 400px :
-                   le `@media` de la maquette passe la colonne en ligne mais ne
-                   retire pas ce retrait, qui décale donc le second bloc. -->
-              <div class="w-full pt-8 max-xs:w-auto max-xs:flex-1">
-                <p class="m-0 text-xs leading-15 font-medium whitespace-nowrap text-order-meta-label">
-                  {{ $t('confirmation.orderNumberLabel') }}
-                </p>
-                <p class="m-0 w-104 pt-4 text-xs leading-[16.5px] font-medium text-order-meta-value max-xs:w-auto">
-                  {{ order.reference }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="order.customerEmail" class="flex w-full items-center pt-10">
-            <div class="flex size-32 shrink-0 items-center justify-center rounded-full bg-order-mail-bg">
-              <QIcon name="ic-lpp-mail-confirm" :size="16" />
-            </div>
-            <p class="m-0 max-w-263 pl-12 text-sm leading-[13.75px] font-normal text-text">
-              {{ $t('confirmation.emailNotice') }}
-              <strong class="block text-sm leading-[13.75px] font-semibold">{{ order.customerEmail }}</strong>
-            </p>
-          </div>
         </div>
       </div>
 
