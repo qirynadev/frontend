@@ -247,6 +247,7 @@
   "destination": {
     "detail": {
       "bannerTitle": "{country}, a destination of excellence",
+      "domainSchoolCount": "No school | 1 school | {count} schools",
       "domainsEmpty": "No fields of study published yet.",
       "domainsSubtitle": "Our support packages by specialism",
       "domainsTitle": "Choose a field of study",
@@ -803,12 +804,6 @@
     "formationCount": "no programmes | 1 programme | {count} programmes",
     "list": {
       "count": "no schools available | 1 school available | {count} schools available",
-      "domainArchitecture": "Architecture",
-      "domainEngineering": "Engineering",
-      "domainManagement": "Management",
-      "domainMedicine": "Medicine",
-      "domainPoliticalScience": "Political science",
-      "domainScience": "Science",
       "emptyDescription": "Broaden your search or remove a filter to see more results.",
       "emptyTitle": "No matching schools",
       "foundedYear": "Founded: {year}",

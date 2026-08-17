@@ -14,6 +14,8 @@ export interface SeoMeta {
 
 /** Pays normalisé. L'API renvoie tantôt `{ name }`, tantôt `{ id, name, iso_alpha_2 }`. */
 export interface Country {
+  /** Identifiant numérique back-office — `null` quand l'API ne le fournit pas. Sert à `GET /schools/{countryId}/{areaId}`. */
+  id: string | null
   name: string
   /** ISO 3166-1 alpha-2 en majuscules, ou `null` si l'API ne l'a pas fourni. */
   code: string | null

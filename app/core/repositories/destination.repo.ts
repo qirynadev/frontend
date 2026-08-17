@@ -1,4 +1,4 @@
-import type { Destination, DestinationSummary } from '../contracts'
+import type { AreaOfStudySummary, Destination, DestinationSummary } from '../contracts'
 import { ApiError } from '../http/errors'
 import { bffFetch } from '../http/client'
 
@@ -32,5 +32,10 @@ export const destinationRepo = {
       if (error instanceof ApiError && error.kind === 'notFound') return null
       throw error
     }
+  },
+
+  /** Domaines d'étude propres à cette destination — pas le catalogue générique d'offres. */
+  areas(slug: string, locale?: string): Promise<AreaOfStudySummary[]> {
+    return bffFetch<AreaOfStudySummary[]>(`/destinations/${encodeURIComponent(slug)}/areas`, { locale })
   },
 }

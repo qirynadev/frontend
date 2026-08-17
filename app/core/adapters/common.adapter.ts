@@ -13,6 +13,7 @@ export function toCountry(raw: unknown, flagBase?: string): Country {
   const normalized = code === '' ? null : code.toUpperCase()
 
   return {
+    id: optionalStr(source, 'id'),
     name: str(source, 'name'),
     code: normalized,
     // Le drapeau fourni tel quel l'emporte (les langues en ont un) ; sinon on

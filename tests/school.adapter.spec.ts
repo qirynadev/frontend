@@ -9,7 +9,7 @@ describe('réponse nominale', () => {
     expect(school.slug).toBe('emlyon-business-school')
     expect(school.city).toBe('Lyon')
     expect(school.destinationSlug).toBe('france')
-    expect(school.country).toEqual({ name: 'France', code: null, flag: null })
+    expect(school.country).toEqual({ id: null, name: 'France', code: null, flag: null })
     expect(school.presentation).toContain('<p>')
   })
 

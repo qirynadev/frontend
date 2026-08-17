@@ -5,7 +5,14 @@ import { bffFetch } from '../http/client'
 export interface SchoolQuery {
   /** Slug de destination. */
   destination?: string
-  /** Recherche sur le nom ou la ville. */
+  /**
+   * Identifiant du domaine d'étude (`AreaOfStudySummary.id`).
+   *
+   * Exige `destination` : filtrer par domaine seul n'a pas de sens côté API
+   * (`GET /schools/{countryId}/{areaId}` prend les deux).
+   */
+  area?: string
+  /** Recherche sur le nom ou la ville. Incompatible avec `area` — l'API ne les combine pas. */
   search?: string
   page?: number
   perPage?: number
@@ -32,6 +39,7 @@ export const schoolRepo = {
       locale,
       query: {
         destination: query.destination,
+        area: query.area,
         search: query.search,
         page: query.page,
         perPage: query.perPage,

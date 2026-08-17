@@ -247,6 +247,7 @@
   "destination": {
     "detail": {
       "bannerTitle": "{country}, une destination d’excellence ",
+      "domainSchoolCount": "Aucune école | 1 école | {count} écoles",
       "domainsEmpty": "Aucun domaine d’étude publié pour l’instant.",
       "domainsSubtitle": "Nos formules d’accompagnement par spécialité",
       "domainsTitle": "Choisissez un domaine d’étude ",
@@ -803,12 +804,6 @@
     "formationCount": "aucune formation | 1 formation | {count} formations",
     "list": {
       "count": "aucune école disponible | 1 école disponible | {count} écoles disponibles",
-      "domainArchitecture": "Architecture",
-      "domainEngineering": "Ingénierie",
-      "domainManagement": "Management",
-      "domainMedicine": "Médecine",
-      "domainPoliticalScience": "Sciences politiques",
-      "domainScience": "Sciences",
       "emptyDescription": "Élargissez votre recherche ou retirez un filtre pour voir plus de résultats.",
       "emptyTitle": "Aucune école ne correspond",
       "foundedYear": "Année de création : {year}",

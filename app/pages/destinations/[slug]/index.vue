@@ -13,8 +13,15 @@
  * `destination.detail.statUniversities`/`statNobel` portent un retour à la
  * ligne littéral (`\n` + `whitespace-pre-line`) : la maquette les coupe avec
  * `<br>`, interdit dans une clé i18n (rejette le fichier de locale entier).
+ *
+ * Domaines réels de la destination (`destinationRepo.areas`), pas le
+ * catalogue générique d'offres : deux destinations n'ont pas les mêmes — la
+ * France n'a que Management et Médecine quand la plupart en ont cinq
+ * (Management, Ingénierie, Médecine, Droit, Architecture). Icônes réelles du
+ * back-office, rendues `object-contain` comme `DomainCard.vue` : jamais de
+ * rognage deviné pour une image dont on ne connaît pas le cadrage.
  */
-import { catalogRepo, destinationRepo } from '~/core/repositories'
+import { destinationRepo } from '~/core/repositories'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -25,66 +32,17 @@ const slug = computed(() => String(route.params.slug ?? ''))
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
   `destination-${slug.value}`,
   async () => {
-    const [destination, catalog] = await Promise.all([
+    const [destination, areas] = await Promise.all([
       destinationRepo.bySlug(slug.value, locale.value),
-      catalogRepo.load(locale.value),
+      destinationRepo.areas(slug.value, locale.value),
     ])
-    return { destination, domains: catalog.offers }
+    return { destination, areas }
   },
   { watch: [slug, locale] },
 )
 
 const destination = computed(() => data.value?.destination ?? null)
-const domains = computed(() => data.value?.domains ?? [])
-
-/**
- * Cartographie des icônes et fonds selon le domaine.
- *
- * Deux traitements dans la maquette (`.dom-card-icon--arch`/`--mgmt` contre
- * `--full`) : le cercle fait **toujours 32px**, mais une icône colorée
- * déborde volontairement à 44px et se fait rogner par l'`overflow: hidden`
- * du cercle (effet de zoom), quand une icône « pleine » (fond transparent)
- * remplit exactement les 32px, sans rognage (`overflow: visible`).
- */
-const DOMAIN_STYLES: Record<string, { icon: string; bg: string; size: number; clipped: boolean }> = {
-  architecture: { icon: 'ic-dom-arch', bg: '#f5f3ff', size: 44, clipped: true },
-  management: { icon: 'ic-dom-mgmt', bg: '#fdeff0', size: 44, clipped: true },
-  ingenierie: { icon: 'ic-dom-ing', bg: 'transparent', size: 32, clipped: false },
-  medecine: { icon: 'ic-dom-med', bg: 'transparent', size: 32, clipped: false },
-  'sciences-politiques': { icon: 'ic-dom-pol', bg: 'transparent', size: 32, clipped: false },
-  sciences: { icon: 'ic-dom-sci', bg: 'transparent', size: 32, clipped: false },
-  'sciences-exactes': { icon: 'ic-dom-sci', bg: 'transparent', size: 32, clipped: false },
-  droit: { icon: 'ic-dom-pol', bg: 'transparent', size: 32, clipped: false },
-  'sciences-humaines': { icon: 'ic-dom-pol', bg: 'transparent', size: 32, clipped: false },
-  mba: { icon: 'ic-dom-mgmt', bg: '#fdeff0', size: 44, clipped: true },
-}
-
-function getDomainStyle(domainSlug: string) {
-  const normalized = domainSlug.toLowerCase().trim()
-  return DOMAIN_STYLES[normalized] || { icon: 'ic-dom-arch', bg: '#f5f3ff', size: 44, clipped: true }
-}
-
-// Domaines statiques de secours conformes à la maquette si l'API est vide
-const defaultDomains = [
-  { id: 'architecture', slug: 'architecture', title: 'Architecture', count: '20+ écoles' },
-  { id: 'management', slug: 'management', title: 'Management', count: '20+ écoles' },
-  { id: 'ingenierie', slug: 'ingenierie', title: 'Ingénierie', count: '20+ écoles' },
-  { id: 'medecine', slug: 'medecine', title: 'Médecine', count: '20+ écoles' },
-  { id: 'sciences-politiques', slug: 'sciences-politiques', title: 'Sciences politiques', count: '20+ écoles' },
-  { id: 'sciences', slug: 'sciences', title: 'Sciences', count: '20+ écoles' },
-]
-
-const displayDomains = computed(() => {
-  if (domains.value.length > 0) {
-    return domains.value.map((d) => ({
-      id: d.id,
-      slug: d.slug,
-      title: d.title,
-      count: '20+ écoles',
-    }))
-  }
-  return defaultDomains
-})
+const areas = computed(() => data.value?.areas ?? [])
 
 if (data.value && !data.value.destination) {
   throw createError({ statusCode: 404, statusMessage: t('destination.detail.notFound'), fatal: true })
@@ -148,26 +106,29 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
 
         <div class="grid w-full grid-cols-2 gap-16 pb-25">
           <NuxtLink
-            v-for="dom in displayDomains"
-            :key="dom.id"
-            :to="localePath(`/destinations/${destination.slug}/ecoles?domaine=${dom.slug}`)"
+            v-for="area in areas"
+            :key="area.id"
+            :to="localePath(`/destinations/${destination.slug}/ecoles?domaine=${area.slug}`)"
             class="box-border flex w-full items-center justify-between gap-4 rounded-xl border-0 bg-white py-17 px-11 text-text no-underline shadow-card"
           >
             <div class="flex min-w-0 flex-1 items-center gap-10">
-              <div
-                class="flex size-32 shrink-0 items-center justify-center rounded-full"
-                :class="getDomainStyle(dom.slug).clipped ? 'overflow-hidden' : 'overflow-visible'"
-                :style="{ backgroundColor: getDomainStyle(dom.slug).bg }"
-              >
-                <QIcon
-                  :name="getDomainStyle(dom.slug).icon"
-                  :size="getDomainStyle(dom.slug).size"
-                  :class="getDomainStyle(dom.slug).clipped ? 'max-w-none' : ''"
+              <div class="flex size-32 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2">
+                <NuxtImg
+                  v-if="area.icon"
+                  :src="area.icon"
+                  alt=""
+                  width="32"
+                  height="32"
+                  format="webp"
+                  class="size-24 object-contain"
                 />
+                <QIcon v-else name="ic-dom-arch" :size="24" />
               </div>
               <div class="flex min-w-0 flex-col items-start leading-tight">
-                <span class="text-sm font-semibold leading-21 text-navy truncate max-2xs:whitespace-normal">{{ dom.title }}</span>
-                <span class="pt-2 text-xs leading-[16.5px] font-medium text-dom-card-meta truncate whitespace-nowrap">{{ dom.count }}</span>
+                <span class="text-sm font-semibold leading-21 text-navy truncate max-2xs:whitespace-normal">{{ area.title }}</span>
+                <span class="pt-2 text-xs leading-[16.5px] font-medium text-dom-card-meta truncate whitespace-nowrap">
+                  {{ $t('destination.detail.domainSchoolCount', area.schoolCount) }}
+                </span>
               </div>
             </div>
             <QIcon name="ic-dom-btn" :size="24" class="shrink-0" />

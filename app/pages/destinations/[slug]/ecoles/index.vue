@@ -17,8 +17,16 @@
  * pagination, aucun champ de filtre dans la maquette.
  *
  * Cinq écoles par page.
+ *
+ * Domaines réels de la destination (`destinationRepo.areas`), plus leur
+ * icône du back-office — pas les six domaines fixes devinés jusqu'ici, qui
+ * ne couvraient ni Droit ni MBA et en montraient deux qu'aucune destination
+ * n'a réellement (Sciences, Sciences politiques). Le domaine sélectionné
+ * (`?domaine=`) se résout en son identifiant réel avant d'interroger
+ * `GET /schools/{countryId}/{areaId}` — seul endpoint qui filtre
+ * effectivement par domaine (voir `server/api/bff/schools/index.get.ts`).
  */
-import { catalogRepo, schoolRepo } from '~/core/repositories'
+import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
 import type { SchoolSummary } from '~/core/contracts'
 
 const route = useRoute()
@@ -28,26 +36,45 @@ const localePath = useLocalePath()
 
 const slug = computed(() => String(route.params.slug ?? ''))
 const page = computed(() => Math.max(1, Number(route.query.page ?? 1) || 1))
-const selectedDomain = ref(String(route.query.domaine ?? 'architecture'))
-
-/** Icône à taille fixe par domaine (`.le-chip-icon--*`), pas une taille unique. */
-const domains = [
-  { id: 'architecture', labelKey: 'school.list.domainArchitecture', icon: 'ic-le-chip-arch', width: 11, height: 14 },
-  { id: 'management', labelKey: 'school.list.domainManagement', icon: 'ic-le-chip-mgmt', width: 16, height: 14 },
-  { id: 'ingenierie', labelKey: 'school.list.domainEngineering', icon: 'ic-le-chip-ing', width: 21, height: 21 },
-  { id: 'medecine', labelKey: 'school.list.domainMedicine', icon: 'ic-dom-med', width: 18, height: 18 },
-  { id: 'sciences-politiques', labelKey: 'school.list.domainPoliticalScience', icon: 'ic-dom-pol', width: 18, height: 18 },
-  { id: 'sciences', labelKey: 'school.list.domainScience', icon: 'ic-dom-sci', width: 18, height: 18 },
-]
+const domaineParam = computed(() => String(route.query.domaine ?? ''))
 
 const chipsRef = ref<HTMLDivElement | null>(null)
 
-function setDomain(domId: string) {
-  selectedDomain.value = domId
-  router.replace({ query: { ...route.query, domaine: domId, page: undefined } })
+const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
+  'school-list',
+  async () => {
+    const [areas, catalog] = await Promise.all([
+      destinationRepo.areas(slug.value, locale.value),
+      catalogRepo.load(locale.value),
+    ])
+    // Le domaine demandé par l'URL s'il existe pour cette destination, sinon le premier.
+    const selected = areas.find((area) => area.slug === domaineParam.value) ?? areas[0] ?? null
+
+    const result = selected
+      ? await schoolRepo.list({ destination: slug.value, area: selected.id, page: page.value }, locale.value)
+      : { items: [], page: page.value, perPage: 5, total: 0, totalPages: 1 }
+
+    return {
+      result,
+      areas,
+      selectedSlug: selected?.slug ?? '',
+      destination: catalog.destinations.find((item) => item.slug === slug.value) ?? null,
+    }
+  },
+  { watch: [slug, page, domaineParam, locale] },
+)
+
+const result = computed(() => data.value?.result ?? null)
+const schools = computed(() => result.value?.items ?? [])
+const areas = computed(() => data.value?.areas ?? [])
+const selectedDomain = computed(() => data.value?.selectedSlug ?? '')
+const destinationName = computed(() => data.value?.destination?.title ?? slug.value)
+
+function setDomain(areaSlug: string) {
+  router.replace({ query: { ...route.query, domaine: areaSlug, page: undefined } })
   nextTick(() => {
     const chips = chipsRef.value
-    const chip = chips?.querySelector<HTMLElement>(`[data-domaine="${domId}"]`)
+    const chip = chips?.querySelector<HTMLElement>(`[data-domaine="${areaSlug}"]`)
     if (!chips || !chip) return
     const left = chip.offsetLeft - (chips.clientWidth - chip.offsetWidth) / 2
     chips.scrollTo({ left: Math.max(0, left), behavior: 'smooth' })
@@ -56,28 +83,10 @@ function setDomain(domId: string) {
 
 /** Bouton « suivant » (`.le-chips-next`) : avance d'un domaine, en boucle. */
 function nextDomain() {
-  const idx = domains.findIndex((d) => d.id === selectedDomain.value)
-  setDomain(domains[(idx + 1) % domains.length]!.id)
+  const idx = areas.value.findIndex((area) => area.slug === selectedDomain.value)
+  const next = areas.value[(idx + 1) % areas.value.length]
+  if (next) setDomain(next.slug)
 }
-
-const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
-  'school-list',
-  async () => {
-    const [result, catalog] = await Promise.all([
-      schoolRepo.list(
-        { destination: slug.value, page: page.value, perPage: 5 },
-        locale.value,
-      ),
-      catalogRepo.load(locale.value),
-    ])
-    return { result, destination: catalog.destinations.find((item) => item.slug === slug.value) ?? null }
-  },
-  { watch: [slug, page, locale] },
-)
-
-const result = computed(() => data.value?.result ?? null)
-const schools = computed(() => result.value?.items ?? [])
-const destinationName = computed(() => data.value?.destination?.title ?? slug.value)
 
 const currentPage = computed({
   get: () => page.value,
@@ -99,17 +108,17 @@ usePageSeo(() => ({
     <div class="flex w-full items-center justify-center gap-10 box-border">
       <div ref="chipsRef" class="flex min-w-0 flex-1 gap-7 overflow-x-auto py-2 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden box-border">
         <button
-          v-for="d in domains"
-          :key="d.id"
+          v-for="area in areas"
+          :key="area.id"
           type="button"
-          :data-domaine="d.id"
+          :data-domaine="area.slug"
           class="box-border flex shrink-0 items-center justify-center gap-5 rounded-xl border py-12 px-8 max-2xs:px-6 text-text"
-          :class="selectedDomain === d.id ? 'bg-le-chip-selected-bg border-le-chip-selected-border' : 'bg-white border-le-chip-border shadow-le-chip'"
+          :class="selectedDomain === area.slug ? 'bg-le-chip-selected-bg border-le-chip-selected-border' : 'bg-white border-le-chip-border shadow-le-chip'"
           :style="{ flex: '0 0 calc((100% - 14px) / 3)', width: 'calc((100% - 14px) / 3)' }"
-          @click="setDomain(d.id)"
+          @click="setDomain(area.slug)"
         >
-          <QIcon :name="d.icon" :size="d.width" :height="d.height" class="shrink-0 overflow-hidden" />
-          <span class="min-w-0 truncate text-sm leading-21 font-semibold text-navy">{{ $t(d.labelKey) }}</span>
+          <NuxtImg v-if="area.icon" :src="area.icon" alt="" width="18" height="18" format="webp" class="block size-18 shrink-0 object-contain" />
+          <span class="min-w-0 truncate text-sm leading-21 font-semibold text-navy">{{ area.title }}</span>
         </button>
       </div>
 
@@ -125,10 +134,10 @@ usePageSeo(() => ({
 
     <div class="flex w-full items-center justify-center">
       <span
-        v-for="d in domains"
-        :key="d.id"
+        v-for="area in areas"
+        :key="area.id"
         class="ml-6 size-6 shrink-0 rounded-full"
-        :class="selectedDomain === d.id ? 'bg-le-dot-active' : 'bg-border-slate'"
+        :class="selectedDomain === area.slug ? 'bg-le-dot-active' : 'bg-border-slate'"
       />
     </div>
   </div>

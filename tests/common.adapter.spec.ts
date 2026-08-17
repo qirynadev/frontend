@@ -7,9 +7,9 @@ import { rawHome, rawMenu, rawPage, rawSettings } from './fixtures/all-data'
 describe('toCountry', () => {
   it('unifie les deux formes renvoyées par l’API', () => {
     // Forme « destination ».
-    expect(toCountry({ id: 73, name: 'France', iso_alpha_2: 'FR' })).toEqual({ name: 'France', code: 'FR', flag: null })
+    expect(toCountry({ id: 73, name: 'France', iso_alpha_2: 'FR' })).toEqual({ id: '73', name: 'France', code: 'FR', flag: null })
     // Forme « école ».
-    expect(toCountry({ name: 'France' })).toEqual({ name: 'France', code: null, flag: null })
+    expect(toCountry({ name: 'France' })).toEqual({ id: null, name: 'France', code: null, flag: null })
   })
 
   it('met le code en majuscules et supporte les alias', () => {
@@ -18,7 +18,7 @@ describe('toCountry', () => {
   })
 
   it('ne lève pas sur une entrée absente', () => {
-    expect(toCountry(null)).toEqual({ name: '', code: null, flag: null })
+    expect(toCountry(null)).toEqual({ id: null, name: '', code: null, flag: null })
   })
 })
 

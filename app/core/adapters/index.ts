@@ -1,3 +1,4 @@
+export * from './area.adapter'
 export * from './common.adapter'
 export * from './course.adapter'
 export * from './destination.adapter'

@@ -1,3 +1,4 @@
+export type * from './area'
 export type * from './common'
 export type * from './course'
 export type * from './destination'
