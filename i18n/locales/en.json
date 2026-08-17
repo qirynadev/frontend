@@ -530,6 +530,24 @@
   "orientation": {
     "calloutDesc": "Our guidance service helps you get to know yourself better, explore careers, and choose the path that fits you.",
     "calloutTitle": "Make the right decisions now",
+    "confirmation": {
+      "seoDescription": "Your guidance journey starts now: here are the next steps.",
+      "seoTitle": "Payment successful",
+      "step1Desc": "You will receive an email with the details of your journey.",
+      "step1Title": "Check your inbox",
+      "step2Desc": "Complete your tests online so we can analyse your profile.",
+      "step2Title": "Take your tests",
+      "step3Desc": "Your personalised report will be delivered within 5 to 7 business days.",
+      "step3Title": "Receive your guidance report",
+      "step4Desc": "An advisor will contact you to schedule your debrief interview.",
+      "step4Title": "Debrief interview",
+      "stepsHeading": "the next steps",
+      "subtitle": "Thank you for your trust.\nYour guidance journey starts now.",
+      "supportCta": "Contact support",
+      "supportDescription": "Our team is here to support you.\nContact us anytime",
+      "supportTitle": "Need help?",
+      "title": "Payment successful!"
+    },
     "cta": "Start my guidance",
     "fallbackTitle": "School and career guidance",
     "formules": {

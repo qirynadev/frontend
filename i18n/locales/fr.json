@@ -530,6 +530,24 @@
   "orientation": {
     "calloutDesc": "Notre service d'orientation vous aide à mieux vous connaître, explorer les métiers et choisir le parcours fait pour vous.",
     "calloutTitle": "Prenez les bonnes décisions dès maintenant",
+    "confirmation": {
+      "seoDescription": "Votre parcours d'orientation démarre : voici les prochaines étapes.",
+      "seoTitle": "Paiement réussi",
+      "step1Desc": "Vous allez recevoir un email avec les détails de votre parcours. ",
+      "step1Title": "Vérifiez votre boîte mail ",
+      "step2Desc": "Complétez vos tests en ligne pour nous permettre d'analyser votre profil.",
+      "step2Title": "Répondez à vos tests ",
+      "step3Desc": "Votre bilan personnalisé vous sera remis sous 5 à 7 jours ouvrés.",
+      "step3Title": "Recevez votre bilan d'orientation ",
+      "step4Desc": "Un conseiller vous contactera pour planifier votre entretien en visio.",
+      "step4Title": "Entretien de restitution ",
+      "stepsHeading": "les prochaines étapes",
+      "subtitle": "Merci pour votre confiance.\nVotre parcours d'orientation démarre maintenant.",
+      "supportCta": "Contacter le support",
+      "supportDescription": "Notre équipe est là pour vous accompagner.\nContactez-nous à tout moment.",
+      "supportTitle": "Besoin d'aide ?",
+      "title": "Paiement réussi !"
+    },
     "cta": "Commencer mon orientation",
     "fallbackTitle": "Orientation scolaire et professionnelle",
     "formules": {
