@@ -1,166 +1,194 @@
 <script setup lang="ts">
 /**
- * Offre d'orientation ← `maquette/pwa/pages/offre-orientation.html`.
+ * Orientation — écran de découverte ← `maquette/pwa/pages/orientation-scolaire.html`
+ * (`.osp-*`).
  *
- * Source : `GET /profilage`. Les « catégories » du back-office deviennent le
- * bloc « Ce qui est inclus » — même chose, nom différent.
+ * Remplace l'ancien contenu de cette route (offre unique à 899 €, portée du
+ * `offre-orientation.html` au lot A4) : la maquette resynchronisée fait de
+ * `orientation-scolaire.html` la vraie destination de l'onglet « Orientation »
+ * de la barre basse (lien réel vers lui-même, plus `href="#"`). Décision du
+ * responsable : le contenu change, la route reste `/orientation`.
  *
- * | Bloc | Règles reprises de `app.css` (`.oo-*`) |
+ * Page entièrement statique côté maquette (pas d'appel réseau dans son
+ * script) — pas de `PageState`, juste `usePageSeo`.
+ *
+ * | Bloc | Règles reprises de `app.css` |
  * |---|---|
- * | héros | dégradé `90deg`, `min-height: 196px`, illustration surdimensionnée en absolu |
- * | inclus | cartes `padding: 11px 21px` (14px sous 380px), icône 48×48, coche 28×28 |
- * | tarif | fond `#4f31eb`, badge `#4029c7`, prix en `Plus Jakarta Sans` 29px/40px |
+ * | statistiques | grille 2 colonnes, `gap: 12px` (8px sous 420px — seuil propre à cette page) |
+ * | méthode | 4 étapes, trait pointillé entre pastilles (position par script dans la maquette, ici du CSS pur suffit) |
+ * | parcours | cartes radio 40×40, sélection par bordure `#6853fe` |
  *
- * ⚠️ **La maquette affiche « 899 € — paiement unique ». L'API n'expose aucun
- * prix pour cette offre.** Plutôt que d'inscrire en dur un montant commercial —
- * la pire chose à figer dans du code — le bloc tarifaire ne s'affiche que si le
- * champ est alimenté. En attendant, l'appel à l'action reste, sans prix.
- *
- * `orientation.description` n'est pas optionnel dans le contrat, mais la
- * maquette ne lui réserve aucun bloc visuel (elle n'a que les fonctionnalités
- * et le tarif). Affiché en texte courant entre les deux pour ne pas perdre un
- * contenu réel de l'API — écart signalé, pas un oubli.
- *
- * Sous 380px (`max-2xs:`, `@media (max-width: 380px)` de la maquette) : le
- * titre du héros passe à 22px, les cartes resserrent leur retrait horizontal,
- * et la ligne tarif/CTA passe à la ligne (séparateur masqué, CTA pleine
- * largeur).
+ * `.osp-bilan` (encart de prix) existe dans `app.css` mais n'apparaît nulle
+ * part dans le HTML de la maquette : bloc CSS mort, non reproduit.
  */
-import { orientationRepo } from '~/core/repositories'
-
-const { t, n, locale } = useI18n()
+const path = ref<'moi' | 'enfant'>('moi')
 const localePath = useLocalePath()
+const { t } = useI18n()
 
-const { data: orientation, apiError, isInitialLoading, refresh } = await usePageData(
-  'orientation',
-  () => orientationRepo.load(locale.value),
-  { watch: [locale] },
-)
+const stats = [
+  { icon: 'ic-osp-stat-students', tone: 'indigo', valueKey: 'orientation.stat1Value', descKey: 'orientation.stat1Desc' },
+  { icon: 'ic-osp-stat-trend', tone: 'red', valueKey: 'orientation.stat2Value', descKey: 'orientation.stat2Desc' },
+  { icon: 'ic-osp-stat-clock', tone: 'amber', valueKey: 'orientation.stat3Value', descKey: 'orientation.stat3Desc' },
+  { icon: 'ic-osp-stat-chart', tone: 'green', valueKey: 'orientation.stat4Value', descKey: 'orientation.stat4Desc' },
+]
 
-useContractSeo(() => orientation.value?.seo, t('orientation.fallbackTitle'))
-useOfferSchemaOrg(orientation)
+const steps = [
+  { icon: 'ic-osp-step-1', num: 1, titleKey: 'orientation.step1Title' },
+  { icon: 'ic-osp-step-2', num: 2, titleKey: 'orientation.step2Title' },
+  { icon: 'ic-osp-step-3', num: 3, titleKey: 'orientation.step3Title' },
+  { icon: 'ic-osp-step-4', num: 4, titleKey: 'orientation.step4Title' },
+]
+
+const paths = [
+  { id: 'moi' as const, icon: 'ic-osp-path-me', bg: 'bg-osp-path-me-bg', iconSize: 24, titleKey: 'orientation.pathMeTitle', descKey: 'orientation.pathMeDesc' },
+  { id: 'enfant' as const, icon: 'ic-osp-path-child', bg: 'bg-osp-path-child-bg', iconSize: 20, titleKey: 'orientation.pathChildTitle', descKey: 'orientation.pathChildDesc' },
+]
+
+usePageSeo(() => ({
+  title: t('orientation.fallbackTitle'),
+  description: t('orientation.seoDescription'),
+}))
 </script>
 
 <template>
-  <AppTopBar back back-to="/" :notifications="3" />
+  <AppTopBar back back-to="/" :notifications="3" :gap="0" />
 
-  <PageState
-    :loading="isInitialLoading"
-    :error="apiError"
-    :empty="orientation === null"
-    :empty-title="$t('orientation.emptyTitle')"
-    :empty-description="$t('orientation.emptyDescription')"
-    :on-retry="() => refresh()"
-  >
-    <template #loading>
-      <div class="flex flex-col gap-16">
-        <QSkeleton variant="rect" :height="196" />
-        <QSkeleton variant="row" />
-        <QSkeleton variant="row" />
-        <QSkeleton variant="rect" :height="96" />
-      </div>
-    </template>
+  <!-- Introduction -->
+  <div class="mt-22 w-full">
+    <h1 class="m-0 text-4xl leading-normal font-semibold tracking-tight text-text">
+      {{ $t('orientation.title') }}
+    </h1>
+    <p class="m-0 text-xl leading-normal font-normal text-text">
+      {{ $t('orientation.subtitle') }}
+    </p>
+  </div>
 
-    <template v-if="orientation">
-      <!-- Héros -->
-      <section
-        class="relative box-border flex min-h-196 w-full items-center justify-between gap-8 overflow-hidden rounded-xl bg-gradient-to-r from-oo-hero-1 via-oo-hero-2 to-oo-hero-3 px-15 py-32 max-2xs:px-12 max-2xs:py-24"
+  <!-- Statistiques -->
+  <!-- `.osp-stat` a un `@media (max-width: 420px)` déclaré AVANT sa règle de
+       base dans la maquette : la base gagne toujours au niveau de l'élément
+       (source ultérieure, spécificité égale) — l'allègement sous 420px n'a
+       jamais d'effet réel. Seul `.osp-stats-grid` (base déclarée avant sa
+       propre media query) applique le sien. Reproduit tel quel : le grid
+       gap varie, tout le reste de la carte reste fixe. -->
+  <div class="mt-22 grid w-full grid-cols-2 gap-12 max-sm:gap-8">
+    <div
+      v-for="stat in stats"
+      :key="stat.icon"
+      class="box-border flex items-start gap-10 rounded-xl border border-border bg-white p-11"
+    >
+      <span
+        :class="[
+          'flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full',
+          stat.tone === 'indigo' && 'bg-osp-stat-indigo-bg',
+          stat.tone === 'red' && 'bg-transparent',
+          stat.tone === 'amber' && 'bg-osp-stat-amber-bg',
+          stat.tone === 'green' && 'bg-osp-stat-green-bg',
+        ]"
       >
-        <div class="min-w-0 flex-1">
-          <h1 class="m-0 text-5xl leading-30 font-semibold text-text max-2xs:text-[22px]">{{ orientation.title }}</h1>
-          <p class="m-0 mt-12 text-xl leading-20 font-normal text-text">{{ $t('orientation.heroText') }}</p>
-        </div>
-        <div class="relative size-130 shrink-0 overflow-visible">
-          <NuxtImg
-            :src="orientation.image || '/img/hero-gift.webp'"
-            alt=""
-            width="218"
-            height="145"
-            format="webp"
-            class="pointer-events-none absolute top-8 -left-66 block h-145 w-218 max-w-none object-contain object-center"
+        <QIcon :name="stat.icon" :size="stat.tone === 'red' ? 36 : 20" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <p
+          :class="[
+            'm-0 text-base leading-[18.125px] font-semibold whitespace-nowrap',
+            stat.tone === 'indigo' && 'text-osp-stat-indigo',
+            stat.tone === 'red' && 'text-osp-stat-red',
+            stat.tone === 'amber' && 'text-osp-stat-amber',
+            stat.tone === 'green' && 'text-osp-stat-green',
+          ]"
+        >
+          {{ $t(stat.valueKey) }}
+        </p>
+        <p class="m-0 mt-2 text-2xs leading-[13.5px] font-medium text-text">
+          {{ $t(stat.descKey) }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Argument -->
+  <div class="mt-22 box-border flex w-full items-start gap-16 rounded-xl bg-surface-2 px-9 py-20">
+    <img src="/img/icons/ic-osp-compass.svg" alt="" width="44" height="44" class="block shrink-0">
+    <div class="min-w-0 flex-1">
+      <h3 class="m-0 text-base leading-20 font-bold text-text">{{ $t('orientation.calloutTitle') }}</h3>
+      <p class="m-0 mt-4 text-sm leading-16 font-normal text-text">{{ $t('orientation.calloutDesc') }}</p>
+    </div>
+  </div>
+
+  <!-- Méthode en 4 étapes -->
+  <div class="mt-22 flex w-full flex-col gap-22">
+    <h2 class="m-0 text-xl leading-16 font-semibold tracking-wider text-text">{{ $t('orientation.methodTitle') }}</h2>
+
+    <div class="flex w-full items-start">
+      <div v-for="(step, index) in steps" :key="step.icon" class="flex min-w-0 flex-1 flex-col items-center gap-8 text-center">
+        <div class="relative flex w-88 max-w-full flex-col items-center">
+          <span
+            v-if="index < steps.length - 1"
+            aria-hidden="true"
+            class="absolute top-25 left-[calc(50%+25px)] h-0 w-[calc(100%-18px)] border-t-[1.5px] border-dashed border-osp-step-dash max-2xs:hidden"
           />
+          <span class="relative z-1 flex size-50 shrink-0 items-center justify-center overflow-hidden">
+            <QIcon :name="step.icon" :size="50" />
+          </span>
         </div>
-      </section>
+        <p class="m-0 flex min-h-28 w-full items-start justify-center text-center text-xs leading-normal font-bold whitespace-pre-line text-text">
+          {{ $t(step.titleKey) }}
+        </p>
+      </div>
+    </div>
+  </div>
 
-      <!-- Ce qui est inclus -->
-      <section class="w-full pb-20">
-        <h2 class="m-0 pt-32 pb-12 text-xl leading-16 font-semibold tracking-wider text-text">
-          {{ $t('orientation.includedTitle') }}
-        </h2>
+  <!-- Choix du parcours -->
+  <div class="mt-22 flex w-full flex-col gap-22">
+    <h2 class="m-0 text-xl leading-16 font-semibold tracking-wider text-text">{{ $t('orientation.pathsTitle') }}</h2>
 
-        <div v-if="orientation.features.length > 0" class="flex w-full flex-col gap-16">
-          <article
-            v-for="feature in orientation.features"
-            :key="feature.slug || feature.title"
-            class="box-border flex w-full items-center justify-between gap-12 rounded-xl border border-oo-feature-border bg-white px-21 py-11 max-2xs:px-14"
-          >
-            <div class="flex min-w-0 flex-1 items-center gap-16">
-              <span class="flex size-48 shrink-0 items-center justify-center overflow-hidden">
-                <NuxtImg
-                  v-if="feature.icon"
-                  :src="feature.icon"
-                  alt=""
-                  width="48"
-                  height="48"
-                  format="webp"
-                  loading="lazy"
-                  class="block size-48 object-contain"
-                />
-                <QIcon v-else name="target" :size="24" class="text-primary" />
+    <div role="radiogroup" :aria-label="$t('orientation.pathsTitle')" class="flex w-full flex-col gap-14">
+      <button
+        v-for="p in paths"
+        :key="p.id"
+        type="button"
+        role="radio"
+        :aria-checked="path === p.id"
+        :class="[
+          'box-border flex w-full items-center justify-between gap-12 rounded-xl border bg-white p-17 text-left',
+          path === p.id ? 'border-osp-path-selected-border' : 'border-osp-path-border',
+        ]"
+        @click="path = p.id"
+      >
+        <span class="flex min-w-0 flex-1 items-center gap-12">
+          <span :class="['flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-full', p.bg]">
+            <QIcon :name="p.icon" :size="p.iconSize" />
+          </span>
+          <span class="flex min-w-0 flex-1 flex-col items-start">
+            <span class="flex flex-wrap items-start gap-6 max-2xs:flex-col max-2xs:gap-4">
+              <span class="text-lg leading-[16.25px] font-semibold text-text">{{ $t(p.titleKey) }}</span>
+              <span class="whitespace-nowrap rounded-md bg-osp-path-badge-bg px-6 py-2 text-2xs leading-12 font-medium text-osp-path-badge">
+                {{ $t('orientation.pathBadge') }}
               </span>
-              <div class="min-w-0 flex-1">
-                <h3 class="m-0 text-xl leading-24 font-semibold text-text">{{ feature.title }}</h3>
-                <RichText v-if="feature.description" :content="feature.description" class="mt-4" />
-              </div>
-            </div>
-            <span class="flex size-28 shrink-0 items-center justify-center overflow-hidden">
-              <img src="/img/icons/ic-oo-check.svg" alt="" width="28" height="28" class="block size-28">
             </span>
-          </article>
-        </div>
+            <span class="mt-2 text-exact-10-5 leading-[15.75px] font-normal text-text">{{ $t(p.descKey) }}</span>
+          </span>
+        </span>
+        <span
+          :class="[
+            'size-14 shrink-0 rounded-full box-border',
+            path === p.id ? 'border-4 border-osp-path-radio-selected' : 'border border-osp-path-radio-border',
+          ]"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+  </div>
 
-        <QCard v-else variant="outlined" padding="none">
-          <QEmptyState icon="target" :title="$t('orientation.featuresEmpty')" />
-        </QCard>
-      </section>
+  <div class="mt-22 w-full">
+    <NuxtLink
+      :to="localePath(`/orientation/formules?path=${path}`)"
+      class="box-border flex w-full items-center justify-center gap-10 rounded-xl bg-primary-cta px-24 py-16 text-center text-xl leading-[22.5px] font-semibold text-white no-underline"
+    >
+      <span>{{ $t('orientation.cta') }}</span>
+      <img src="/img/icons/ic-osp-cta-arrow.svg" alt="" width="20" height="20" class="block shrink-0">
+    </NuxtLink>
+  </div>
 
-      <RichText v-if="orientation.description" :content="orientation.description" class="mb-20" />
-
-      <!-- Tarif -->
-      <section class="mb-16 box-border flex w-full flex-col gap-9 rounded-xl bg-oo-price-bg p-11">
-        <div class="flex w-full items-center gap-12 max-2xs:flex-wrap">
-          <div v-if="orientation.price" class="min-w-0 flex-none">
-            <span
-              class="inline-flex h-23 items-center rounded-full bg-oo-price-badge-bg px-8 text-2xs leading-15 font-medium tracking-[0.5px] text-white uppercase"
-            >
-              {{ $t('orientation.priceBadge') }}
-            </span>
-            <p class="m-0 mt-6 font-jakarta text-[29px] leading-40 font-bold tracking-[-0.9px] whitespace-nowrap text-white">
-              {{ n(orientation.price.amount, 'currency') }}
-            </p>
-            <p class="m-0 text-md leading-[16.5px] tracking-[0.275px] whitespace-nowrap text-white/90">
-              {{ orientation.price.mode === 'once' ? $t('offer.oneOff') : $t('offer.perMonth') }}
-            </p>
-          </div>
-          <p v-else class="m-0 min-w-0 flex-1 text-base text-white">{{ $t('orientation.priceOnRequest') }}</p>
-
-          <span v-if="orientation.price" class="ml-4 h-52 w-1 shrink-0 bg-white/35 max-2xs:hidden" aria-hidden="true" />
-
-          <NuxtLink
-            :to="localePath('/compte')"
-            class="box-border flex h-52 min-w-0 flex-1 items-center justify-center gap-8 rounded-xl bg-white px-12 text-center text-base leading-20 font-semibold text-primary-link no-underline max-2xs:w-full max-2xs:flex-[1_1_100%]"
-          >
-            <span>{{ $t('orientation.cta') }}</span>
-            <img src="/img/icons/ic-oo-cta-arrow.svg" alt="" width="8" height="7" class="block shrink-0">
-          </NuxtLink>
-        </div>
-        <div class="flex items-center gap-7">
-          <img src="/img/icons/ic-oo-shield.svg" alt="" width="20" height="20" class="block shrink-0">
-          <span class="text-md leading-[16.5px] text-white">{{ $t('orientation.secure') }}</span>
-        </div>
-      </section>
-
-      <TrustStrip />
-    </template>
-  </PageState>
+  <TrustStrip class="mt-22" />
 </template>

@@ -397,16 +397,10 @@
   --color-rg-danger-bg: #fef2f2;
   --color-rg-danger-desc: #2b2b2b;
 
-  /* ─── Offre d'orientation (`offre-orientation.html`) ─────────────
-     Le prix affiche `font-family: 'Plus Jakarta Sans', 'Jost', sans-serif` —
-     seul écran de la maquette à sortir de la police de marque. */
+  /* Plusieurs écrans (`domaines-etude.html` `.dom-card-meta--bold`, entre
+     autres) sortent ponctuellement de la police de marque pour ce prix ou
+     ce chiffre mis en avant. */
   --font-jakarta: 'Plus Jakarta Sans', 'Jost', sans-serif;
-  --color-oo-hero-1: rgb(238 242 255 / 0.8);
-  --color-oo-hero-2: rgb(250 245 255 / 0.5);
-  --color-oo-hero-3: rgb(238 242 255 / 0.4);
-  --color-oo-feature-border: rgb(241 245 249 / 0.9);
-  --color-oo-price-bg: #4f31eb;
-  --color-oo-price-badge-bg: #4029c7;
 
   /* ─── Domaines d'étude (`domaines-etude.html`) ────────────────────
      `--dom-block-gap: 22px` de la maquette pilote le rythme vertical
@@ -437,6 +431,30 @@
   --color-ed-badge-text-bg: #001962;
   --shadow-ed-badge: 0 10px 15px rgb(0 0 0 / 0.1), 0 4px 6px rgb(0 0 0 / 0.1);
   --shadow-ed-icon-btn: 0 4px 6px rgb(0 0 0 / 0.1), 0 2px 4px rgb(0 0 0 / 0.1);
+
+  /* ─── Orientation scolaire (`orientation-scolaire.html`) ──────────
+     `--osp-block-gap: 22px` — même mécanisme que `.le-main`/`.ed-main`
+     (`gap` sur `.osp-main`), rendu par `gap-22`/`mt-22` directs. */
+  --color-osp-stat-indigo-bg: #eef2ff;
+  --color-osp-stat-indigo: #4f46e5;
+  --color-osp-stat-red: #ff2d46;
+  --color-osp-stat-amber-bg: #fffbeb;
+  --color-osp-stat-amber: #f59e0b;
+  --color-osp-stat-green-bg: #ecfdf5;
+  --color-osp-stat-green: #10b981;
+  --color-osp-step-1: #3700f6;
+  --color-osp-step-2: #03b62a;
+  --color-osp-step-3: #ff8e03;
+  --color-osp-step-4: #0154f5;
+  --color-osp-step-dash: #cfcfe8;
+  --color-osp-path-border: #efeff6;
+  --color-osp-path-selected-border: #6853fe;
+  --color-osp-path-me-bg: #e8e1fe;
+  --color-osp-path-child-bg: #def5e3;
+  --color-osp-path-badge-bg: #efecfe;
+  --color-osp-path-badge: #2a11f8;
+  --color-osp-path-radio-border: #eeeff6;
+  --color-osp-path-radio-selected: #330bfd;
 
   /* ─── Messages (`messages.html`) ────────────────────────────────
      Six teintes d'étiquette, une par type d'interlocuteur. */
@@ -527,6 +545,9 @@
   --breakpoint-3xs: 360.02px;
   --breakpoint-2xs: 380.02px;
   --breakpoint-xs: 400.02px;
+  /* `orientation-scolaire.html` (`.osp-stats-grid`) : seule page à rompre à
+     420px — donc active en permanence à 375px, notre référence. */
+  --breakpoint-sm: 420.02px;
   --breakpoint-shell: 768px;
   --container-shell: 768px;
 
