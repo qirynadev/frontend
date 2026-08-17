@@ -750,16 +750,13 @@
   },
   "school": {
     "detail": {
-      "ctaButton": "Être accompagnée",
-      "ctaDescription": "Nos conseillers vous guident à\nchaque étape de votre candidature.",
-      "ctaTitle": "Souhaitez-vous être accompagné pour intégrer cette école ?",
       "emptyDescription": "Cette école n’a pas encore de contenu publié. Nos équipes le complètent.",
       "emptyTitle": "Fiche en cours de rédaction",
       "fallbackTitle": "Fiche école",
       "favourite": "Ajouter aux favoris",
+      "floatingCta": "Être accompagné pour candidater",
       "founded": "Fondée en",
       "notFound": "École introuvable",
-      "sections": "Sections de la fiche",
       "share": "Partager",
       "students": "Étudiants",
       "tabFormations": "Formations",

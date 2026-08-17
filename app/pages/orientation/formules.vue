@@ -9,6 +9,11 @@
  * contenu sont écrits en dur dans son script, aucun appel réseau) — pas de
  * `PageState`, `usePageSeo` seul.
  *
+ * Resynchronisation maquette du 2026-08-17 (commit `5d60a2d`) : le carrousel
+ * (`.formule-slider`, flèches/pastilles/`translateX`) a été retiré, remplacé
+ * par une simple pile verticale `.formule-stack` (`gap: 22px`). Les trois
+ * cartes s'affichent donc empilées, sans mécanique de défilement.
+ *
  * L'accent de chaque carte suit le nom du palier dans la maquette, pas son
  * rang : Jordan (1er, moins cher) porte l'accent violet `--color-tier-2`,
  * Tyson le vert `--color-tier-1`, Pelé le rouge `--color-tier-3` — un ordre
@@ -66,12 +71,6 @@ const tiers = [
   },
 ] as const
 
-const current = ref(0)
-
-function go(index: number) {
-  current.value = Math.min(Math.max(index, 0), tiers.length - 1)
-}
-
 const features = [
   { icon: 'ic-of-feat-visio', titleKey: 'orientation.formules.featVisioTitle', subKey: 'orientation.formules.featVisioSub' },
   { icon: 'ic-of-feat-conseillers', titleKey: 'orientation.formules.featConseillersTitle', subKey: 'orientation.formules.featConseillersSub' },
@@ -85,7 +84,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <AppTopBar back :back-to="`/orientation?path=${path}`" :notifications="3" />
+  <AppTopBar back :back-to="`/orientation?path=${path}`" :notifications="3" :gap="0" />
 
   <!-- Introduction. `.of-intro` porte `padding-bottom: 8px` dans la
        maquette, mais une règle plus spécifique le ramène à 0 (mesuré, pas
@@ -108,109 +107,60 @@ usePageSeo(() => ({
     >
   </div>
 
-  <!-- Carrousel de formules -->
-  <div class="w-full pt-20 pb-16">
-    <div class="grid w-full grid-cols-[28px_minmax(0,1fr)_28px] items-center gap-4 max-2xs:grid-cols-[24px_minmax(0,1fr)_24px] max-2xs:gap-2">
-      <button
-        type="button"
-        class="inline-flex size-28 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-slider-arrow transition-colors duration-150 hover:bg-slider-arrow-bg hover:text-primary-cta"
-        :aria-label="$t('ds.carousel.previous')"
-        :disabled="current === 0"
-        @click="go(current - 1)"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
-
-      <div class="w-full touch-pan-y overflow-hidden">
-        <div
-          class="flex w-full motion-safe:transition-transform motion-safe:duration-[320ms] motion-safe:ease-out"
-          :style="{ transform: `translateX(-${current * 100}%)` }"
+  <!-- Pile de formules -->
+  <div class="flex w-full flex-col gap-22 pt-22 pb-22">
+    <article
+      v-for="tier in tiers"
+      :key="tier.id"
+      :class="['box-border flex w-full flex-col gap-14 rounded-2xl border bg-white px-20 pt-22 pb-24 max-2xs:px-14 max-2xs:pt-18 max-2xs:pb-20', tier.card]"
+    >
+      <header class="flex w-full flex-col items-center">
+        <span
+          v-if="tier.isTop"
+          class="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tier-3-bg"
         >
-          <article
-            v-for="tier in tiers"
-            :key="tier.id"
-            :class="['box-border flex w-full min-w-0 shrink-0 basis-full flex-col gap-14 rounded-2xl border bg-white px-20 pt-22 pb-24 max-2xs:px-14 max-2xs:pt-18 max-2xs:pb-20', tier.card]"
-          >
-            <header class="flex w-full flex-col items-center">
-              <span
-                v-if="tier.isTop"
-                class="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tier-3-bg"
-              >
-                <QIcon :name="tier.icon" :size="44" />
-              </span>
-              <QIcon v-else :name="tier.icon" :size="36" />
+          <QIcon :name="tier.icon" :size="44" />
+        </span>
+        <QIcon v-else :name="tier.icon" :size="36" />
 
-              <h2 :class="['mt-4 mb-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', tier.name]">
-                {{ $t(`orientation.formules.${tier.id}.name`) }}
-              </h2>
-              <span :class="['mt-8 inline-flex items-center justify-center rounded-exact-5 px-6 text-sm leading-[16.5px] font-semibold whitespace-nowrap', tier.badgeBg, tier.badgeText]">
-                {{ $t(`orientation.formules.${tier.id}.badge`) }}
-              </span>
-              <p class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
-                {{ $t(`orientation.formules.${tier.id}.tagline`) }}
-              </p>
+        <h2 :class="['mt-4 mb-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', tier.name]">
+          {{ $t(`orientation.formules.${tier.id}.name`) }}
+        </h2>
+        <span :class="['mt-8 inline-flex items-center justify-center rounded-exact-5 px-6 text-sm leading-[16.5px] font-semibold whitespace-nowrap', tier.badgeBg, tier.badgeText]">
+          {{ $t(`orientation.formules.${tier.id}.badge`) }}
+        </span>
+        <p class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
+          {{ $t(`orientation.formules.${tier.id}.tagline`) }}
+        </p>
 
-              <hr class="mt-14 w-full border-0 border-t border-border-soft">
-            </header>
+        <hr class="mt-14 w-full border-0 border-t border-border-soft">
+      </header>
 
-            <ul class="m-0 flex w-full list-none flex-col gap-8 p-0">
-              <li v-for="n in tier.features" :key="n" class="flex items-center gap-10 text-lg leading-18 text-text">
-                <QIcon :name="tier.checkIcon" :size="12" />
-                <span class="min-w-0">{{ $t(`orientation.formules.${tier.id}.feature${n}`) }}</span>
-              </li>
-            </ul>
+      <ul class="m-0 flex w-full list-none flex-col gap-8 p-0">
+        <li v-for="n in tier.features" :key="n" class="flex items-start gap-10 text-lg leading-18 text-text">
+          <QIcon :name="tier.checkIcon" :size="12" />
+          <span class="min-w-0">{{ $t(`orientation.formules.${tier.id}.feature${n}`) }}</span>
+        </li>
+      </ul>
 
-            <footer class="mt-auto flex w-full flex-col items-center gap-14 pt-8">
-              <div class="flex flex-col items-center gap-2">
-                <p :class="['m-0 text-6xl leading-[1.1] font-semibold whitespace-nowrap max-2xs:text-5xl', tier.price]">
-                  {{ $n(300, 'currency') }}
-                </p>
-                <p class="m-0 text-center text-base leading-[1.2] font-medium text-tier-period">
-                  {{ $t('offer.perMonth') }}
-                </p>
-              </div>
-
-              <NuxtLink
-                :to="localePath(`/orientation/paiement-reussi?path=${path}&formule=${tier.id}`)"
-                :class="['flex w-full cursor-pointer items-center justify-center rounded-lg px-16 py-14 text-center text-xl leading-20 font-semibold whitespace-nowrap no-underline', tier.button]"
-              >
-                {{ $t('orientation.formules.choose') }}
-              </NuxtLink>
-            </footer>
-          </article>
+      <footer class="mt-8 flex w-full flex-col items-center gap-14 pt-8">
+        <div class="flex flex-col items-center gap-2">
+          <p :class="['m-0 text-6xl leading-[1.1] font-semibold whitespace-nowrap max-2xs:text-5xl', tier.price]">
+            {{ $n(300, 'currency') }}
+          </p>
+          <p class="m-0 text-center text-base leading-[1.2] font-medium text-tier-period">
+            {{ $t('offer.perMonth') }}
+          </p>
         </div>
-      </div>
 
-      <button
-        type="button"
-        class="inline-flex size-28 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-slider-arrow transition-colors duration-150 hover:bg-slider-arrow-bg hover:text-primary-cta"
-        :aria-label="$t('ds.carousel.next')"
-        :disabled="current >= tiers.length - 1"
-        @click="go(current + 1)"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
-    </div>
-
-    <div role="tablist" :aria-label="$t('offer.tiersLabel')" class="mt-14 flex items-center justify-center gap-8">
-      <button
-        v-for="(tier, index) in tiers"
-        :key="tier.id"
-        type="button"
-        role="tab"
-        :aria-selected="index === current"
-        :aria-label="$t(`orientation.formules.${tier.id}.name`)"
-        :class="[
-          'h-6 cursor-pointer rounded-full border-0 p-0 transition-all duration-200',
-          index === current ? 'w-18 bg-primary-cta' : 'w-6 bg-slider-dot',
-        ]"
-        @click="go(index)"
-      />
-    </div>
+        <NuxtLink
+          :to="localePath(`/orientation/paiement-reussi?path=${path}&formule=${tier.id}`)"
+          :class="['flex w-full cursor-pointer items-center justify-center rounded-lg px-16 py-14 text-center text-xl leading-20 font-semibold whitespace-nowrap no-underline', tier.button]"
+        >
+          {{ $t('orientation.formules.choose') }}
+        </NuxtLink>
+      </footer>
+    </article>
   </div>
 
   <!-- Arguments -->

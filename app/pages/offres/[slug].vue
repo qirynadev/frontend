@@ -70,7 +70,7 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
 
 <template>
   <div>
-    <AppTopBar back back-to="/langues" :notifications="3" />
+    <AppTopBar back back-to="/langues" :notifications="3" :gap="0" />
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
       <template #loading>

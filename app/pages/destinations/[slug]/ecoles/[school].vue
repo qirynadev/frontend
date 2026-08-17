@@ -21,7 +21,9 @@
  * l'API ne les alimente pour aucune école : une icône générique et un texte
  * fixe remplacent la donnée absente, comme sur la liste d'écoles voisine.
  */
+import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { schoolRepo } from '~/core/repositories'
+import type { SchoolFormation } from '~/core/contracts'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -87,13 +89,100 @@ const badgeLines = computed(() => {
 const tabs = computed(() => {
   if (!school.value) return []
   return [
-    { value: 'presentation', label: t('school.detail.tabPresentation') },
-    { value: 'formations', label: t('school.detail.tabFormations') },
-    { value: 'points', label: t('school.detail.tabStrengths') },
+    { value: 'presentation', label: t('school.detail.tabPresentation'), icon: 'ed-tab-presentation' },
+    { value: 'formations', label: t('school.detail.tabFormations'), icon: 'ed-tab-formations' },
+    { value: 'points', label: t('school.detail.tabStrengths'), icon: 'ed-tab-points' },
   ]
 })
 
 const activeTab = ref('formations')
+
+/**
+ * Modale de détail d'une formation, à la place du renvoi vers l'offre du
+ * domaine (resynchronisation maquette du 2026-08-17, commit `5d60a2d`).
+ *
+ * La maquette affiche cinq sections fixes (Cible/Programmes/Frais/Admission/
+ * Débouchés, `buildFormationDetailHtml`) tirées de son jeu d'essai —
+ * `SchoolFormation` n'a que `title`/`description` côté API réelle, aucune de
+ * ces cinq rubriques n'existe. Montrer la vraie description plutôt
+ * qu'inventer les rubriques manquantes, même vides.
+ */
+const activeFormation = ref<SchoolFormation | null>(null)
+const formationModalOpen = computed({
+  get: () => activeFormation.value !== null,
+  set: (value: boolean) => { if (!value) activeFormation.value = null },
+})
+
+/**
+ * CTA flottant : se cache/réapparaît au défilement. Logique portée de
+ * `ecole-detail.html` (`updateFloatCtaFromScroll`) : visible en haut, visible
+ * en bas, masqué en descendant, ré-affiché en remontant — au-delà d'un seuil
+ * de 6px pour ignorer le bruit de micro-scroll.
+ *
+ * Le conteneur qui défile réellement dépend de la hauteur du contenu : sur
+ * un écran court, c'est `<main>` (`overflow-y-auto` du layout `mobile.vue`,
+ * équivalent du `.ed-main` de la maquette) ; une école à beaucoup de
+ * formations dépasse `min-h-dvh` du shell (qui n'est qu'un plancher, pas un
+ * plafond) et c'est alors le document entier qui défile. Détecté une fois au
+ * montage plutôt que supposé, faute de quoi le CTA ne réagit jamais sur les
+ * fiches longues (mesuré : `NEOMA Business School`, 11 formations).
+ */
+const floatCtaVisible = ref(true)
+let scrollTarget: HTMLElement | Window = window
+let lastScroll = 0
+let ticking = false
+const SCROLL_DELTA = 6
+
+function scrollTop() {
+  return scrollTarget === window ? window.scrollY : (scrollTarget as HTMLElement).scrollTop
+}
+
+function scrollMax() {
+  if (scrollTarget === window) {
+    const doc = document.scrollingElement ?? document.documentElement
+    return Math.max(0, doc.scrollHeight - window.innerHeight)
+  }
+  const el = scrollTarget as HTMLElement
+  return Math.max(0, el.scrollHeight - el.clientHeight)
+}
+
+function updateFloatCtaFromScroll() {
+  if (activeFormation.value) return
+  const st = scrollTop()
+  const atBottom = scrollMax() - st <= 32
+  const delta = st - lastScroll
+  if (atBottom || st <= 8) floatCtaVisible.value = true
+  else if (delta > SCROLL_DELTA) floatCtaVisible.value = false
+  else if (delta < -SCROLL_DELTA) floatCtaVisible.value = true
+  lastScroll = st
+}
+
+function onScroll() {
+  if (ticking) return
+  ticking = true
+  requestAnimationFrame(() => { updateFloatCtaFromScroll(); ticking = false })
+}
+
+onMounted(() => {
+  const main = document.getElementById('q-shell')?.querySelector('main')
+  scrollTarget = main && main.scrollHeight - main.clientHeight > 1 ? main : window
+  lastScroll = scrollTop()
+  scrollTarget.addEventListener('scroll', onScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  scrollTarget.removeEventListener('scroll', onScroll)
+})
+
+watch(activeTab, () => {
+  lastScroll = scrollTop()
+  updateFloatCtaFromScroll()
+})
+
+watch(activeFormation, (value) => {
+  if (value) floatCtaVisible.value = false
+  else updateFloatCtaFromScroll()
+})
 
 useContractSeo(() => school.value?.seo, t('school.detail.fallbackTitle'), school.value?.slugs)
 useSchoolSchemaOrg(school)
@@ -190,11 +279,14 @@ useSchoolSchemaOrg(school)
             v-for="tb in tabs"
             :key="tb.value"
             type="button"
-            class="relative flex-1 border-0 bg-transparent pb-12 text-xl max-2xs:text-base leading-21 font-medium whitespace-nowrap text-text"
+            role="tab"
+            :aria-selected="activeTab === tb.value"
+            class="relative flex flex-1 items-center justify-center gap-4 max-2xs:gap-8 border-0 bg-transparent pb-12 text-xl max-2xs:text-base leading-21 font-medium whitespace-nowrap text-text"
             :class="activeTab === tb.value && 'text-le-chip-selected-border'"
             @click="activeTab = tb.value"
           >
-            {{ tb.label }}
+            <QIcon :name="tb.icon" :size="16" class="max-2xs:size-14" />
+            <span>{{ tb.label }}</span>
             <span
               v-if="activeTab === tb.value"
               class="absolute bottom-0 left-1/2 h-1 w-[min(108px,90%)] -translate-x-1/2 rounded-full bg-le-chip-selected-border"
@@ -209,11 +301,12 @@ useSchoolSchemaOrg(school)
           </div>
 
           <div v-else-if="activeTab === 'formations'" class="flex w-full flex-col gap-16">
-            <NuxtLink
+            <button
               v-for="formation in school.formations"
               :key="formation.title"
-              :to="localePath(`/offres/${domaine}`)"
-              class="box-border flex w-full items-start gap-16 rounded-xl bg-white p-20 text-text no-underline shadow-card"
+              type="button"
+              class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-white p-20 text-left text-text shadow-card"
+              @click="activeFormation = formation"
             >
               <div class="flex size-44 shrink-0 items-center justify-center overflow-hidden">
                 <QIcon name="ic-ed-grad" :size="44" class="text-primary" />
@@ -238,7 +331,7 @@ useSchoolSchemaOrg(school)
               </div>
 
               <QIcon name="ic-ed-chevron" :size="16" class="mt-4 shrink-0 text-muted" />
-            </NuxtLink>
+            </button>
           </div>
 
           <div v-else class="w-full">
@@ -250,26 +343,44 @@ useSchoolSchemaOrg(school)
         </div>
       </div>
 
-      <!-- Appel conseiller (.ed-cta) -->
-      <div class="relative mt-22 box-border flex min-h-120 w-full items-center rounded-xl bg-surface-2 py-20 px-9 max-2xs:flex-col max-2xs:items-stretch max-2xs:gap-12">
-        <div class="flex min-w-0 flex-1 items-start gap-11 pr-110 max-2xs:flex-col max-2xs:pr-0">
-          <span class="flex size-44 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-soft">
-            <QIcon name="ic-ed-cta-headset" :size="24" />
-          </span>
-          <div class="min-w-0">
-            <p class="m-0 text-base leading-20 font-bold text-text">{{ $t('school.detail.ctaTitle') }}</p>
-            <p class="m-0 mt-4 text-sm leading-16 whitespace-pre-line text-text">{{ $t('school.detail.ctaDescription') }}</p>
-          </div>
-        </div>
-
-        <NuxtLink
-          :to="localePath(`/offres/${domaine}`)"
-          class="absolute right-9 bottom-20 inline-flex items-center justify-center gap-5 rounded-xl border border-primary-link bg-transparent py-9 px-15 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline max-2xs:static max-2xs:self-end"
-        >
-          <span>{{ $t('school.detail.ctaButton') }}</span>
-          <img src="/img/icons/ic-oo-cta-arrow.svg" alt="" width="8" height="7" class="block shrink-0">
-        </NuxtLink>
-      </div>
     </template>
   </PageState>
+
+  <!-- CTA flottant (.ed-float-cta) : remplace le bloc « Appel conseiller »
+       statique depuis la resynchronisation du 2026-08-17 (commit `5d60a2d`). -->
+  <NuxtLink
+    v-if="school"
+    :to="localePath(`/offres/${domaine}`)"
+    class="fixed bottom-[calc(var(--spacing-nav-bottom)+85px)] left-1/2 z-49 box-border w-[calc(100%-var(--spacing-nav-inset)*2)] max-w-[calc(var(--container-shell)-var(--spacing-nav-inset)*2)] rounded-xl bg-primary px-16 py-16 text-center text-xl leading-20 font-semibold whitespace-nowrap text-white no-underline shadow-ed-float-cta transition-[transform,opacity] duration-250 ease-in-out"
+    :class="floatCtaVisible ? '-translate-x-1/2 translate-y-0 opacity-100' : '-translate-x-1/2 translate-y-[calc(100%+24px)] pointer-events-none opacity-0'"
+  >
+    {{ $t('school.detail.floatingCta') }}
+  </NuxtLink>
+
+  <!-- Modale de détail de formation (.ed-form-modal) -->
+  <DialogRoot v-model:open="formationModalOpen">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
+      <DialogContent
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-3xl bg-white"
+      >
+        <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
+          <DialogTitle class="m-0 pr-8 text-xl leading-21 font-bold text-navy">
+            {{ activeFormation?.title }}
+          </DialogTitle>
+          <DialogClose
+            class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-2 p-0"
+            :aria-label="$t('ds.sheet.close')"
+          >
+            <QIcon name="ic-menu-close" :size="14" />
+          </DialogClose>
+        </header>
+
+        <div class="flex flex-col gap-18 overflow-y-auto px-20 pt-16 pb-[calc(24px+env(safe-area-inset-bottom,0px))]">
+          <RichText v-if="activeFormation?.description" :content="activeFormation.description" />
+          <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
+        </div>
+      </DialogContent>
+    </DialogPortal>
+  </DialogRoot>
 </template>

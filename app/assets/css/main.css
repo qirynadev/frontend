@@ -431,6 +431,8 @@
   --color-ed-badge-text-bg: #001962;
   --shadow-ed-badge: 0 10px 15px rgb(0 0 0 / 0.1), 0 4px 6px rgb(0 0 0 / 0.1);
   --shadow-ed-icon-btn: 0 4px 6px rgb(0 0 0 / 0.1), 0 2px 4px rgb(0 0 0 / 0.1);
+  /* CTA flottant, ajouté à la resynchronisation du 2026-08-17 (commit `5d60a2d`). */
+  --shadow-ed-float-cta: 0 4px 16px rgb(88 44 253 / 0.25);
 
   /* ─── Orientation scolaire (`orientation-scolaire.html`) ──────────
      `--osp-block-gap: 22px` — même mécanisme que `.le-main`/`.ed-main`

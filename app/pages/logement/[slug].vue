@@ -143,7 +143,7 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
 
 <template>
   <div>
-    <AppTopBar back back-to="/logement" :notifications="3" />
+    <AppTopBar back back-to="/logement" :notifications="3" :gap="0" />
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
       <template #loading>

@@ -750,16 +750,13 @@
   },
   "school": {
     "detail": {
-      "ctaButton": "Get support",
-      "ctaDescription": "Our advisors guide you through every step of your application.",
-      "ctaTitle": "Would you like support joining this school?",
       "emptyDescription": "This school has no published content yet. Our team is working on it.",
       "emptyTitle": "Profile being written",
       "fallbackTitle": "School profile",
       "favourite": "Add to favourites",
+      "floatingCta": "Get support with your application",
       "founded": "Founded in",
       "notFound": "School not found",
-      "sections": "Profile sections",
       "share": "Share",
       "students": "Students",
       "tabFormations": "Programmes",

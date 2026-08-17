@@ -104,6 +104,20 @@ export const icons = {
     body: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.3a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-2.8-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3.5 15a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.8-1.1V4a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.3a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.7 1.2z"/>',
   },
   logout: { body: '<path d="M15 17l5-5-5-5M20 12H9"/><path d="M12 4H6a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 0 6 20h6"/>' },
+
+  // ─── Onglets fiche école (`ecole-detail.html` .ed-tab-icon) ──────
+  // La couleur change avec l'onglet actif (`currentColor`) : rendues inline
+  // plutôt qu'en asset `<img>`. Tracé maquette (viewBox 16×16) mis à l'échelle
+  // ×1.5 pour la grille 24×24 du registre.
+  'ed-tab-presentation': {
+    body: '<path d="M4.5 3.75h15a.75.75 0 0 1 .75.75v15a.75.75 0 0 1-.75.75H4.5a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 .75-.75Z"/><path d="M7.5 8.25h9M7.5 12h9M7.5 15.75h6"/>',
+  },
+  'ed-tab-formations': {
+    body: '<path d="M3.75 6.75 12 2.25l8.25 4.5v6.75L12 18.75 3.75 13.5V6.75Z"/><path d="M12 2.25v16.5M3.75 6.75 12 11.25l8.25-4.5"/>',
+  },
+  'ed-tab-points': {
+    body: '<path d="M12 2.25 14.4 8.7l6.9.6-5.25 4.5 1.5 6.75L12 17.7l-5.55 2.85 1.5-6.75-5.25-4.5 6.9-.6L12 2.25Z"/>',
+  },
 } as const satisfies Record<string, IconDefinition>
 
 export type IconName = keyof typeof icons
