@@ -206,10 +206,10 @@ conformes.
 
 | Lot | Maquette | Route |
 |---|---|---|
-| **B1** | `offres-logement.html` | à cadrer (`logement/[slug]` ?) |
-| **B2** | `orientation-scolaire.html`, `orientation-formules.html` | à cadrer |
-| **B3** | `orientation-post-paiement.html`, `logement-post-paiement.html` | `orientation/paiement-reussi`, `logement/paiement-reussi` |
-| **B4** | `mon-projet-apercu.html` | à cadrer — **maquette distincte** de `mon-projet.html` |
+| **B1** | `offres-logement.html` | `logement/[slug]` (cadré avec le responsable) |
+| ~~B2~~ | `orientation-scolaire.html`, `orientation-formules.html` | ✅ livré et vérifié — `orientation` (contenu remplacé, même slug), `orientation/formules` |
+| ~~B3~~ | `orientation-post-paiement.html`, `logement-post-paiement.html` | ✅ livré et vérifié — `orientation/paiement-reussi`, `logement/paiement-reussi` |
+| **B4** | `mon-projet-apercu.html` | `mon-projet/apercu` (cadré avec le responsable) — **maquette distincte** de `mon-projet.html` |
 
 ### Chantier C — mise sous données réelles
 
@@ -577,64 +577,52 @@ suffisait déjà à la conformité.
 
 Créer l'écran des offres de logement d'après `offres-logement.html`.
 
-## À cadrer avant de coder
+## Route déjà cadrée
 
-La route n'est **pas tranchée**. `logement/index` est un sélecteur de destination
-dont les cartes sont des **boutons de sélection**, sans navigation — parce que
-cet écran n'existait pas. Deux options : `logement/[slug]` (une page par pays) ou
-un écran unique filtré.
-
-**Poser la question au responsable avant de coder**, et proposer une
-recommandation argumentée plutôt qu'un choix silencieux.
-
-Une fois la route arrêtée, rebrancher les cartes de `logement/index` dessus —
-elles retomberont naturellement de `div` en liens.
+`logement/[slug]` (une page par pays), tranché avec le responsable.
+`logement/index` est un sélecteur de destination dont les cartes sont des
+**boutons de sélection**, sans navigation — parce que cet écran n'existait pas.
+Une fois l'écran créé, rebrancher les cartes de `logement/index` dessus — elles
+retomberont naturellement de `div` en liens.
 ````
 
 ---
 
-### Lot B2 — tunnel orientation
+### Lot B2 — tunnel orientation (résultat)
 
-````markdown
-[COLLER ICI LE BRIEF COMMUN § 1]
+Traité par le superviseur directement, sur `main`, sans agent dédié. Conflit de
+route surfacé au responsable avant de coder : `orientation-scolaire.html`
+revendiquait le même créneau « Orientation » de la barre de navigation
+qu'`orientation.vue` (lot A4). Réponse du responsable : le contenu
+d'`orientation-scolaire.html` **remplace** celui d'`/orientation`, le slug ne
+change pas.
 
-# Ta mission
-
-Créer deux écrans d'après `orientation-scolaire.html` et
-`orientation-formules.html`. Les routes sont **à cadrer** : poser la question
-avant de coder.
-
-`orientation-scolaire.html` a changé à la resynchronisation (29 lignes) :
-travailler sur la version à jour.
-
-Vérifier comment ces écrans s'articulent avec `orientation.vue` (lot A4, traité
-en parallèle) — se coordonner avec le superviseur pour éviter deux
-interprétations concurrentes du même parcours.
-````
+`app/pages/orientation.vue` → `app/pages/orientation/index.vue` (conflit de
+routage Nuxt fichier-plat / dossier avec `orientation/formules.vue`).
+`orientation/formules.vue` créé d'après `orientation-formules.html` — accent de
+chaque palier codé en dur par nom (Jordan/Tyson/Pelé), pas par rang, comme la
+maquette.
 
 ---
 
-### Lot B3 — écrans de succès manquants
+### Lot B3 — écrans de succès manquants (résultat)
 
-````markdown
-[COLLER ICI LE BRIEF COMMUN § 1]
+Traité par le superviseur directement, sur `main`, sans agent dédié.
 
-# Ta mission
-
-Créer deux écrans de succès, un par tunnel :
-
-- `orientation/paiement-reussi` ← `orientation-post-paiement.html`
-- `logement/paiement-reussi` ← `logement-post-paiement.html`
-
-Il existe déjà deux écrans de ce type (`paiement-reussi.vue` et
-`langues/[slug]/paiement-reussi.vue`) : **s'en inspirer** pour la garde de route,
-la lecture de la commande et la gestion des quatre états, sans dupliquer ce qui
-peut être partagé.
-
-⚠️ `orientation-post-paiement.html` a perdu 139 lignes à la resynchronisation.
-Le lot A3 traite les deux écrans existants en parallèle : se coordonner avec le
-superviseur si un composant commun émerge.
-````
+- `orientation/paiement-reussi` ← `orientation-post-paiement.html`, sur le
+  modèle de `langues/[slug]/paiement-reussi.vue` (quatre étapes au lieu de
+  cinq, bloc d'assistance qui bascule en colonne dès 400px — un vrai écart
+  entre les deux tunnels, pas une coquille).
+- `logement/paiement-reussi` ← `logement-post-paiement.html`. Malgré son nom,
+  **pas** un écran de confirmation : c'est le tableau de bord envoyé par
+  e-mail après l'achat, où le client complète ses préférences de logement —
+  confirmé par le responsable après une question de cadrage. Coexiste avec
+  `mon-projet/logement.vue` (même sujet, chronologie différente). Aucun
+  endpoint pour les offres/préférences (Chantier C) : données d'essai dans
+  `app/config/logement-offers.ts`. Bug réel de la maquette (CSS `.lp-panel`
+  qui l'emporte sur l'attribut `hidden`, les deux onglets restent visibles) —
+  **non reproduit**, casserait une fonctionnalité pour une fidélité purement
+  cosmétique.
 
 ---
 
@@ -658,8 +646,8 @@ plutôt que repartir de zéro :
 git show ef4f94e~1:app/pages/mon-projet.vue
 ```
 
-**Cadrer la route avec le responsable avant de coder.** Puis remesurer : la
-maquette a changé depuis.
+Route déjà cadrée avec le responsable : `mon-projet/apercu`. Remesurer avant de
+coder : la maquette a changé depuis.
 ````
 
 ---
