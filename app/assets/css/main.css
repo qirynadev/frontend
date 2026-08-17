@@ -456,6 +456,16 @@
   --color-osp-path-radio-border: #eeeff6;
   --color-osp-path-radio-selected: #330bfd;
 
+  /* ─── Orientation formules (`orientation-formules.html`) ─────────
+     `.of-card-badge--*` : une couleur par palier, distincte de l'accent
+     `--color-tier-*` du palier lui-même. */
+  --color-of-badge-jordan-bg: #f3f1fe;
+  --color-of-badge-jordan: #570bfd;
+  --color-of-badge-tyson-bg: #eef9f0;
+  --color-of-badge-tyson: #00a31c;
+  --color-of-badge-pele-bg: #fef2f2;
+  --color-of-badge-pele: #fc010d;
+
   /* ─── Messages (`messages.html`) ────────────────────────────────
      Six teintes d'étiquette, une par type d'interlocuteur. */
   --color-msg-tab-active: #3b2cf2;
@@ -505,6 +515,8 @@
   /* 7px — vignette de commande de `paiement-reussi.html`. Le Lot 1 le
      ramenait à 8px ; l'écart est visible sur un cadre de 64×48. */
   --radius-exact-7: 7px;
+  /* 5px — `.of-card-badge` (`orientation-formules.html`, `offres-logement.html`). */
+  --radius-exact-5: 5px;
   --radius-lg: 8px;
   --radius-xl: 10px;
   --radius-2xl: 12px;
