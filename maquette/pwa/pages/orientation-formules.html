@@ -41,18 +41,8 @@
           <img class="of-intro-visual" src="../assets/images/orientation-formules/hero-compass.png" alt="" width="105" height="105" />
         </div>
 
-        <div class="formule-slider" data-formule-slider>
-          <div class="formule-slider-frame">
-            <button type="button" class="formule-slider-arrow formule-slider-arrow--prev" data-formule-prev aria-label="Formule précédente">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-
-            <div class="formule-slider-viewport">
-              <div class="formule-slider-track" data-formule-track>
-
-                <article class="formule-card formule-card--acon of-card" data-formule-slide data-formule-id="jordan">
+        <div class="formule-stack">
+                <article class="formule-card formule-card--acon of-card" data-formule-id="jordan">
                   <div class="formule-card-head">
                     <img src="../assets/icons/orientation-formules/ic-of-jordan.svg" alt="" class="formule-card-icon" width="36" height="36" />
                     <h2 class="formule-card-name">Jordan</h2>
@@ -75,7 +65,7 @@
                   </div>
                 </article>
 
-                <article class="formule-card formule-card--kili of-card" data-formule-slide data-formule-id="tyson">
+                <article class="formule-card formule-card--kili of-card" data-formule-id="tyson">
                   <div class="formule-card-head">
                     <img src="../assets/icons/orientation-formules/ic-of-tyson.svg" alt="" class="formule-card-icon" width="36" height="36" />
                     <h2 class="formule-card-name">Tyson</h2>
@@ -101,7 +91,7 @@
                   </div>
                 </article>
 
-                <article class="formule-card formule-card--everest of-card" data-formule-slide data-formule-id="pele">
+                <article class="formule-card formule-card--everest of-card" data-formule-id="pele">
                   <div class="formule-card-head">
                     <span class="formule-card-icon-wrap">
                       <img src="../assets/icons/orientation-formules/ic-of-pele.svg" alt="" class="formule-card-icon formule-card-icon--everest" width="44" height="44" />
@@ -131,22 +121,6 @@
                     <a href="#" class="formule-card-btn formule-card-btn--solid" data-of-cta data-formule="pele">Choisir cette formule</a>
                   </div>
                 </article>
-
-              </div>
-            </div>
-
-            <button type="button" class="formule-slider-arrow formule-slider-arrow--next" data-formule-next aria-label="Formule suivante">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
-
-          <div class="formule-slider-dots" role="tablist" aria-label="Formules" data-formule-dots>
-            <button type="button" class="formule-slider-dot is-active" role="tab" aria-selected="true" aria-label="Jordan" data-formule-dot="0"></button>
-            <button type="button" class="formule-slider-dot" role="tab" aria-selected="false" aria-label="Tyson" data-formule-dot="1"></button>
-            <button type="button" class="formule-slider-dot" role="tab" aria-selected="false" aria-label="Pelé" data-formule-dot="2"></button>
-          </div>
         </div>
 
         <div class="formule-features-wrap">
@@ -221,57 +195,6 @@
     const formule = cta.getAttribute("data-formule");
     cta.href = `orientation-post-paiement.html?path=${encodeURIComponent(path)}&formule=${encodeURIComponent(formule)}`;
   });
-
-  const root = document.querySelector("[data-formule-slider]");
-  if (root) {
-    const track = root.querySelector("[data-formule-track]");
-    const slides = [...root.querySelectorAll("[data-formule-slide]")];
-    const dots = [...root.querySelectorAll("[data-formule-dot]")];
-    const prev = root.querySelector("[data-formule-prev]");
-    const next = root.querySelector("[data-formule-next]");
-    let index = 0;
-
-    const goTo = (i) => {
-      index = ((i % slides.length) + slides.length) % slides.length;
-      track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
-      dots.forEach((dot, di) => {
-        const on = di === index;
-        dot.classList.toggle("is-active", on);
-        dot.setAttribute("aria-selected", on ? "true" : "false");
-      });
-    };
-
-    prev?.addEventListener("click", (e) => {
-      e.preventDefault();
-      goTo(index - 1);
-    });
-    next?.addEventListener("click", (e) => {
-      e.preventDefault();
-      goTo(index + 1);
-    });
-    dots.forEach((dot) => {
-      dot.addEventListener("click", (e) => {
-        e.preventDefault();
-        goTo(Number(dot.dataset.formuleDot));
-      });
-    });
-
-    let startX = 0;
-    let deltaX = 0;
-    const viewport = root.querySelector(".formule-slider-viewport");
-    viewport?.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].clientX;
-      deltaX = 0;
-    }, { passive: true });
-    viewport?.addEventListener("touchmove", (e) => {
-      deltaX = e.touches[0].clientX - startX;
-    }, { passive: true });
-    viewport?.addEventListener("touchend", () => {
-      if (Math.abs(deltaX) > 40) goTo(deltaX < 0 ? index + 1 : index - 1);
-    });
-
-    goTo(0);
-  }
 </script>
 </body>
 </html>
