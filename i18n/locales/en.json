@@ -704,10 +704,6 @@
     "fallbackTitle": "Information",
     "notFound": "Page not found"
   },
-  "placeholder": {
-    "description": "This screen will be built in Lot 5, from the mockup and the Lot 2 API layer.",
-    "title": "Screen coming soon"
-  },
   "projectHousing": {
     "docsDesc": "Find here all the documents related to your support.",
     "docsTitle": "Useful documents",

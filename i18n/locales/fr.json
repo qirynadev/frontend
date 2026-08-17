@@ -704,10 +704,6 @@
     "fallbackTitle": "Information",
     "notFound": "Page introuvable"
   },
-  "placeholder": {
-    "description": "Cet écran sera construit au Lot 5, à partir de la maquette et de la couche API du Lot 2.",
-    "title": "Écran à venir"
-  },
   "projectHousing": {
     "docsDesc": "Retrouvez ici tous les documents liés à votre accompagnement.",
     "docsTitle": "Documents utiles",
