@@ -456,6 +456,30 @@
   --color-osp-path-radio-border: #eeeff6;
   --color-osp-path-radio-selected: #330bfd;
 
+  /* ─── Logement post-paiement (`logement-post-paiement.html`) ─────
+     `--lp-block-gap: 22px` — même mécanisme que `.osp-main`/`.lpp-main`
+     (`gap` sur `.lp-main`), rendu par `gap-22`/`mt-22` directs. Malgré son
+     nom, cet écran n'a rien d'une confirmation de paiement : c'est le
+     tableau de bord envoyé par e-mail après l'achat d'un accompagnement
+     logement, avec le formulaire de préférences à compléter. */
+  --color-lp-progress-border: rgb(226 232 240 / 0.7);
+  --color-lp-progress-num: #ee163e;
+  --color-lp-tab-active: #4f18f6;
+  --color-lp-apercu-border: #e7e7f3;
+  --color-lp-apercu-bg: #fbfbfe;
+  --color-lp-offer-border: #e2e8f0;
+  --color-lp-offer-desc: #64748b;
+  --color-lp-badge-bg: #eeeaff;
+  --color-lp-badge: #5c3cf3;
+  --color-lp-price: #570bfd;
+  --color-lp-paid-bg: #eafaec;
+  --color-lp-paid: #059669;
+  --color-lp-feature-bg: #f7f6fe;
+  --color-lp-feature-label: #475569;
+  --color-lp-field-border: #e7e7f3;
+  --color-lp-field-label: #0d1b3e;
+  --color-lp-field-hint: #64748b;
+
   /* ─── Orientation formules (`orientation-formules.html`) ─────────
      `.of-card-badge--*` : une couleur par palier, distincte de l'accent
      `--color-tier-*` du palier lui-même. */
