@@ -206,7 +206,7 @@ conformes.
 
 | Lot | Maquette | Route |
 |---|---|---|
-| **B1** | `offres-logement.html` | `logement/[slug]` (cadré avec le responsable) |
+| ~~B1~~ | `offres-logement.html` | ✅ livré et vérifié — `logement/[slug]` |
 | ~~B2~~ | `orientation-scolaire.html`, `orientation-formules.html` | ✅ livré et vérifié — `orientation` (contenu remplacé, même slug), `orientation/formules` |
 | ~~B3~~ | `orientation-post-paiement.html`, `logement-post-paiement.html` | ✅ livré et vérifié — `orientation/paiement-reussi`, `logement/paiement-reussi` |
 | **B4** | `mon-projet-apercu.html` | `mon-projet/apercu` (cadré avec le responsable) — **maquette distincte** de `mon-projet.html` |
@@ -568,23 +568,21 @@ suffisait déjà à la conformité.
 
 ---
 
-### Lot B1 — offres de logement
+### Lot B1 — offres de logement (résultat)
 
-````markdown
-[COLLER ICI LE BRIEF COMMUN § 1]
+Traité par le superviseur directement, sur `main`, sans agent dédié.
+`logement/[slug]` (une page par pays, tranché avec le responsable) — un
+carrousel de trois formules (Comoé/Volga/Yukon), même famille `.formule-*`
+qu'`orientation/formules.vue`. `logement/index.vue` était un sélecteur de
+destination sans navigation (`offres-logement.html` n'avait pas de route) :
+ses cartes retombent maintenant de `div` en `NuxtLink`, sur le modèle de
+`DestinationCard.vue`.
 
-# Ta mission
-
-Créer l'écran des offres de logement d'après `offres-logement.html`.
-
-## Route déjà cadrée
-
-`logement/[slug]` (une page par pays), tranché avec le responsable.
-`logement/index` est un sélecteur de destination dont les cartes sont des
-**boutons de sélection**, sans navigation — parce que cet écran n'existait pas.
-Une fois l'écran créé, rebrancher les cartes de `logement/index` dessus — elles
-retomberont naturellement de `div` en liens.
-````
+Bug mesuré côté maquette, reproduit tel quel : le bouton plein de Yukon n'a
+pas de bordure (`.formule-card--yukon .formule-card-btn--solid` ne fixe que
+`border-color`, jamais `-style`/`-width`, contrairement au palier « everest »
+générique) — 1,6px d'écart de hauteur, propagé aux trois cartes par
+l'étirement du carrousel (`align-items: stretch`).
 
 ---
 
