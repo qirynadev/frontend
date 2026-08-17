@@ -70,6 +70,9 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    // Sert à générer les liens `hreflang`/canonical absolus (`useLocaleHead`) —
+    // sans lui, `@nuxtjs/i18n` avertit et ces balises restent incomplètes.
+    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com',
     langDir: 'locales',
     locales: [
       { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' },
