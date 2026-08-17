@@ -29,6 +29,16 @@ const localePath = useLocalePath()
 
 const destinationSlug = computed(() => String(route.params.slug ?? ''))
 const schoolSlug = computed(() => String(route.params.school ?? ''))
+/**
+ * Domaine d'étude de l'école — porté par l'URL, pas par `School` (qui n'a
+ * aucun champ domaine : ni l'API ni le contrat ne l'exposent). La liste
+ * d'écoles le transmet déjà en query (`ecoles/index.vue`), reprenant le sien
+ * de la fiche destination (`destinations/[slug]/index.vue`) : même
+ * mécanique que `ecole-detail.html` (`params.get('domaine') || school.domaine
+ * || 'architecture'`), sans le champ `school.domaine` que notre contrat n'a
+ * pas.
+ */
+const domaine = computed(() => String(route.query.domaine ?? 'architecture'))
 
 const { data: school, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
@@ -202,7 +212,7 @@ useSchoolSchemaOrg(school)
             <NuxtLink
               v-for="formation in school.formations"
               :key="formation.title"
-              :to="localePath('/orientation')"
+              :to="localePath(`/offres/${domaine}`)"
               class="box-border flex w-full items-start gap-16 rounded-xl bg-white p-20 text-text no-underline shadow-card"
             >
               <div class="flex size-44 shrink-0 items-center justify-center overflow-hidden">
@@ -253,7 +263,7 @@ useSchoolSchemaOrg(school)
         </div>
 
         <NuxtLink
-          :to="localePath('/orientation')"
+          :to="localePath(`/offres/${domaine}`)"
           class="absolute right-9 bottom-20 inline-flex items-center justify-center gap-5 rounded-xl border border-primary-link bg-transparent py-9 px-15 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline max-2xs:static max-2xs:self-end"
         >
           <span>{{ $t('school.detail.ctaButton') }}</span>
