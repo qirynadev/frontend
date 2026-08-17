@@ -511,17 +511,12 @@
     "unreadCount": "{count} non lus"
   },
   "myProject": {
-    "accompaniementAdmissionSub": "ESA Paris",
     "accompaniementAdmissionTitle": "Admission école",
-    "accompaniementLanguesSub": "Anglais général - Niveau B1",
     "accompaniementLanguesTitle": "Cours de langues",
-    "accompaniementLogementSub": "Recherche en cours à Paris",
     "accompaniementLogementTitle": "Logement",
-    "accompaniementOrientationSub": "Profil d’orientation généré",
     "accompaniementOrientationTitle": "Orientation",
     "accompaniementsTitle": "Mes accompagnements",
-    "advisorFemale": "Conseillère : ",
-    "advisorMale": "Conseiller : ",
+    "advisorLabel": "Accompagnant·e : ",
     "bookAppointment": "Prendre rendez-vous",
     "cardLangueDesc": "Apprenez une nouvelle langue et ouvrez les portes du monde.",
     "cardLangueTitle": "Apprendre une langue",
@@ -560,15 +555,13 @@
     "statInProgress": "En cours",
     "statUpcoming": "À venir",
     "statusDone": "Terminé",
+    "statusFailed": "Échec",
     "statusInProgress": "En cours",
+    "statusPending": "En attente",
     "supportDesc": "Réservez un rendez-vous avec un\nconseiller pour avancer.",
     "supportTitle": "Besoin d'un accompagnement ?",
     "title": "Mon projet",
-    "updated1Day": "Mise à jour : 1j",
-    "updated2Days": "Mise à jour : 2j",
-    "updated5Days": "Mise à jour : 5j",
-    "updatedToday": "Mis à jour aujourd'hui",
-    "updatedYesterday": "Mise à jour : Hier"
+    "updatedDaysAgo": "Mis à jour aujourd'hui | Mise à jour : hier | Mise à jour : il y a {count} jours"
   },
   "nav": {
     "account": "Compte",

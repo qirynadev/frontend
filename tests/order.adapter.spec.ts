@@ -17,7 +17,9 @@ const rawOrder = {
   status: 'pending',
   payment_type: 'subscription',
   created_at: '13/01/2026',
+  updated_at: '14/01/2026',
   service_type: 'App\\Models\\Course',
+  teacher_name: 'Amina Diallo',
   user: { id: 'u1', email: 'user@example.com' },
   associated_service: { id: 'c1', slug: 'anglais' },
   options: { language: 'Anglais', level: 'B2', vide: '', nul: null, nombre: 3 },
@@ -39,11 +41,21 @@ describe('réponse nominale', () => {
     expect(order?.status).toBe('pending')
     expect(order?.price).toEqual({ amount: 400, currency: 'EUR', mode: 'subscription' })
     expect(order?.createdAt).toBe('2026-01-13')
+    expect(order?.updatedAt).toBe('2026-01-14')
     expect(order?.serviceType).toBe('course')
     expect(order?.customerEmail).toBe('user@example.com')
     expect(order?.serviceSlug).toBe('anglais')
     expect(order?.offer?.title).toBe('Everest')
     expect(order?.offer?.hours).toBe(8)
+    expect(order?.advisorName).toBe('Amina Diallo')
+  })
+
+  it('donne `null` sans professeur ni conseiller assigné', () => {
+    expect(toOrder({ ...rawOrder, teacher_name: undefined })?.advisorName).toBeNull()
+  })
+
+  it('préfère `mentor_name` à `teacher_name` quand les deux sont présents', () => {
+    expect(toOrder({ ...rawOrder, mentor_name: 'Sarah Kouamé' })?.advisorName).toBe('Sarah Kouamé')
   })
 
   it('dérive une référence lisible faute de numéro en base', () => {
@@ -114,6 +126,16 @@ describe('cas dégradé', () => {
     expect(toOrderStatus({ status: 'cancelled' })).toBe('failed')
     expect(toOrderStatus({ payment_status: 'succeeded' })).toBe('confirmed')
     expect(toOrderStatus({})).toBe('pending')
+  })
+
+  it('reconnaît les libellés français d’`OrderTrackingStatusEnum` (`/payment/list`)', () => {
+    expect(toOrderStatus({ status: 'Vérifié' })).toBe('confirmed')
+    expect(toOrderStatus({ status: 'Confirmée' })).toBe('confirmed')
+    expect(toOrderStatus({ status: 'Terminé' })).toBe('confirmed')
+    expect(toOrderStatus({ status: 'En attente de paiement' })).toBe('pending')
+    expect(toOrderStatus({ status: 'En attente de vérification' })).toBe('pending')
+    expect(toOrderStatus({ status: 'Échoué' })).toBe('failed')
+    expect(toOrderStatus({ status: 'Annulé' })).toBe('failed')
   })
 
   it('ramène une URL de paiement vide à null', () => {

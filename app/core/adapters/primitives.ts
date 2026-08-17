@@ -106,7 +106,12 @@ export function toIsoDate(value: unknown): string | null {
   const trimmed = value.trim()
   if (trimmed === '') return null
 
-  const french = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(trimmed)
+  // `/payment/list` ajoute une heure (`16/08/2026 16:39`) que les autres
+  // endpoints n'ont pas (`17/08/2024`) : sans le suffixe optionnel, ces
+  // dates tombaient dans `new Date(trimmed)` ci-dessous, qui lit `JJ/MM` en
+  // `MM/JJ` — `12/08` devenait le 8 décembre, silencieusement faux plutôt
+  // que `null`.
+  const french = /^(\d{2})\/(\d{2})\/(\d{4})(?:[ T]\d{2}:\d{2}(?::\d{2})?)?$/.exec(trimmed)
   if (french) {
     const [, day, month, year] = french
     const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)))

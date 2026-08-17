@@ -19,16 +19,23 @@
  * L'écran `mon-projet-apercu.html` (blocs aperçu, statistiques et rendez-vous,
  * classes `.projet-*`) est une **maquette distincte** : il a sa propre route à
  * cadrer, il ne s'agit pas de la même page.
+ *
+ * Une carte par **commande**, pas par type : un client peut avoir plusieurs
+ * formules de langues ou plusieurs bilans d'orientation (voir
+ * `useProjetData.ts`). La maquette n'en montre qu'une par type parce que sa
+ * donnée d'essai n'en avait qu'une — `.mp-list`/`.mp-card` sont déjà une
+ * liste répétable, rien à changer côté gabarit.
  */
 import { NuxtLink } from '#components'
 import type { ProjetBadgeTone } from '~/core/contracts/projet'
 
 definePageMeta({ middleware: 'auth' })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const { data: accompagnements } = useProjetData()
+const { data: orders, apiError, isInitialLoading, refresh } = await useProjetData(locale)
+const accompagnements = computed(() => toAccompagnements(orders.value ?? []))
 
 /** `.mp-badge--purple|green|pink|orange` (`app.css`). */
 const badgeToneClass: Record<ProjetBadgeTone, string> = {
@@ -46,7 +53,18 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <PageState :loading="false" :error="null" :empty="accompagnements.length === 0">
+  <PageState
+    :loading="isInitialLoading"
+    :error="apiError"
+    :empty="accompagnements.length === 0"
+    :on-retry="() => refresh()"
+  >
+    <template #loading>
+      <div class="flex flex-col gap-14">
+        <QSkeleton v-for="index in 4" :key="index" variant="rect" :height="120" />
+      </div>
+    </template>
+
     <template #empty>
       <p class="m-0">{{ $t('myProject.emptyTitle') }}</p>
     </template>
@@ -117,13 +135,13 @@ usePageSeo(() => ({
                       {{ $t(item.statusKey) }}
                     </span>
                   </span>
-                  <span class="mp-card-sub mt-2 text-exact-12-5 font-normal text-mp-sub">{{ $t(item.subKey) }}</span>
+                  <span class="mp-card-sub mt-2 text-exact-12-5 font-normal text-mp-sub">{{ item.sub }}</span>
                 </span>
               </div>
               <img class="mp-card-chevron h-16 w-18 shrink-0 mt-8 object-contain opacity-70" src="/img/icons/ic-rg-chevron.svg" alt="" width="8" height="16">
             </div>
 
-            <div class="mp-progress flex w-full items-center gap-12 pt-10 box-border">
+            <div v-if="item.progressPercent !== null" class="mp-progress flex w-full items-center gap-12 pt-10 box-border">
               <span class="mp-progress-track h-4 min-w-0 flex-1 overflow-hidden rounded-full bg-border-soft">
                 <span class="mp-progress-fill block h-4 rounded-full" :style="{ width: `${item.progressPercent}%`, background: item.progressColor }" />
               </span>
@@ -131,11 +149,13 @@ usePageSeo(() => ({
             </div>
 
             <div class="mp-card-meta mt-12 flex w-full items-center justify-between gap-8 border-t border-mp-divider pt-5 box-border">
-              <span class="mp-meta-person inline-flex min-w-0 items-center gap-6 text-exact-11-5 font-medium text-slate">
+              <span v-if="item.advisorName" class="mp-meta-person inline-flex min-w-0 items-center gap-6 text-exact-11-5 font-medium text-slate">
                 <img src="/img/icons/ic-user.svg" alt="" width="11" height="11" class="size-11 shrink-0 opacity-70">
-                <span>{{ $t(item.advisorRoleKey) }}<strong class="font-medium text-navy-2">{{ item.advisorName }}</strong></span>
+                <span>{{ $t('myProject.advisorLabel') }}<strong class="font-medium text-navy-2">{{ item.advisorName }}</strong></span>
               </span>
-              <span class="mp-meta-updated shrink-0 text-exact-11-5 font-medium text-mp-updated">{{ $t(item.updatedKey) }}</span>
+              <span v-if="item.updatedAt" class="mp-meta-updated shrink-0 ml-auto text-exact-11-5 font-medium text-mp-updated">
+                {{ $t('myProject.updatedDaysAgo', daysSince(item.updatedAt)) }}
+              </span>
             </div>
           </component>
         </div>

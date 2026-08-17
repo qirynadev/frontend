@@ -511,17 +511,12 @@
     "unreadCount": "{count} unread"
   },
   "myProject": {
-    "accompaniementAdmissionSub": "ESA Paris",
     "accompaniementAdmissionTitle": "School admission",
-    "accompaniementLanguesSub": "General English - Level B1",
     "accompaniementLanguesTitle": "Language courses",
-    "accompaniementLogementSub": "Search under way in Paris",
     "accompaniementLogementTitle": "Housing",
-    "accompaniementOrientationSub": "Guidance profile generated",
     "accompaniementOrientationTitle": "Guidance",
     "accompaniementsTitle": "My support programmes",
-    "advisorFemale": "Advisor: ",
-    "advisorMale": "Advisor: ",
+    "advisorLabel": "Support contact: ",
     "bookAppointment": "Book an appointment",
     "cardLangueDesc": "Learn a new language and open the doors to the world.",
     "cardLangueTitle": "Learn a language",
@@ -560,15 +555,13 @@
     "statInProgress": "In progress",
     "statUpcoming": "Upcoming",
     "statusDone": "Completed",
+    "statusFailed": "Failed",
     "statusInProgress": "In progress",
+    "statusPending": "Pending",
     "supportDesc": "Book an appointment with an\nadviser to move forward.",
     "supportTitle": "Need guidance?",
     "title": "My project",
-    "updated1Day": "Updated: 1d",
-    "updated2Days": "Updated: 2d",
-    "updated5Days": "Updated: 5d",
-    "updatedToday": "Updated today",
-    "updatedYesterday": "Updated: Yesterday"
+    "updatedDaysAgo": "Updated today | Updated yesterday | Updated {count} days ago"
   },
   "nav": {
     "account": "Account",

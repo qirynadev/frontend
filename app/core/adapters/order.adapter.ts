@@ -50,8 +50,12 @@ export function toOrderStatus(raw: unknown): OrderStatus {
   if (bool(source, 'failed', false)) return 'failed'
 
   const status = str(source, 'status').toLowerCase() || str(source, 'payment_status').toLowerCase()
-  if (['confirmed', 'success', 'succeeded', 'paid', 'completed'].includes(status)) return 'confirmed'
-  if (['failed', 'error', 'canceled', 'cancelled', 'refused'].includes(status)) return 'failed'
+  // `/payment/list` renvoie le libellé français d'`OrderTrackingStatusEnum`
+  // (« Vérifié », « En attente de paiement »…), pas le vocabulaire anglais
+  // qu'on pourrait attendre d'un statut de paiement générique — sans ces
+  // valeurs, toute commande réelle retombait sur `pending`.
+  if (['confirmed', 'success', 'succeeded', 'paid', 'completed', 'vérifié', 'confirmée', 'en cours', 'terminé'].includes(status)) return 'confirmed'
+  if (['failed', 'error', 'canceled', 'cancelled', 'refused', 'échoué', 'annulé'].includes(status)) return 'failed'
   return 'pending'
 }
 
@@ -105,12 +109,16 @@ export function toOrder(raw: unknown): Order | null {
       mode: str(source, 'payment_type') === 'subscription' ? 'subscription' : 'once',
     },
     createdAt: toIsoDate(source.created_at),
+    updatedAt: toIsoDate(source.updated_at),
     serviceType: normalizeServiceType(source.service_type) || normalizeServiceType(dig(source, 'offer.type')),
     offer: toOrderOffer(source.offer),
     customerEmail: optionalStr(source, 'user.email'),
     // `associated_service` est l'objet ; `service` n'est qu'un libellé texte.
     serviceSlug: optionalStr(source, 'associated_service.slug'),
     options: toOrderOptions(source.options),
+    // Langue : `teacher_name`. École/logement/orientation : `mentor_name`.
+    // Jamais les deux à la fois sur une même commande.
+    advisorName: optionalStr(source, 'mentor_name') ?? optionalStr(source, 'teacher_name'),
   }
 }
 

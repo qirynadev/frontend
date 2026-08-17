@@ -44,7 +44,14 @@ export interface Order {
   price: Price
   /** ISO `AAAA-MM-JJ` — l'API renvoie du `JJ/MM/AAAA`. */
   createdAt: string | null
-  /** `course`, `area`, `profilage`, `living`… tel que le back-office le nomme. */
+  /** ISO `AAAA-MM-JJ` — dernière modification connue de la commande. */
+  updatedAt: string | null
+  /**
+   * `course`, `areaofstudy`, `costofliving`, `profilage`… le nom de classe PHP
+   * en minuscules (`normalizeServiceType`), **pas** le vocabulaire court
+   * (`area`/`living`) que `/payment/init` accepte en entrée — `tests/order.
+   * adapter.spec.ts` fixe ce comportement, vérifié empiriquement.
+   */
   serviceType: string
   offer: OrderOffer | null
   /** E-mail de confirmation, quand la commande le porte. */
@@ -53,6 +60,12 @@ export interface Order {
   serviceSlug: string | null
   /** Options choisies au moment de la commande (langue, niveau, objectif…). */
   options: Record<string, string>
+  /**
+   * Professeur (langue) ou conseiller (école/logement/orientation) déjà
+   * assigné à cette commande. `null` la plupart du temps aujourd'hui — non
+   * assigné, ou pas encore modélisé côté API pour ce type de service.
+   */
+  advisorName: string | null
 }
 
 /**

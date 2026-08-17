@@ -79,6 +79,14 @@ describe('toIsoDate', () => {
     expect(toIsoDate('2024-08-16T10:00:00Z')).toBe('2024-08-16')
   })
 
+  it('ignore l’heure que `/payment/list` ajoute au format JJ/MM/AAAA', () => {
+    // Sans le suffixe optionnel, `new Date('12/08/2026 22:35')` lit `12/08`
+    // en `MM/JJ` et renvoie le 8 décembre — faux, pas juste imprécis.
+    expect(toIsoDate('16/08/2026 16:39')).toBe('2026-08-16')
+    expect(toIsoDate('12/08/2026 22:35')).toBe('2026-08-12')
+    expect(toIsoDate('08/08/2026 11:24:05')).toBe('2026-08-08')
+  })
+
   it('refuse une date impossible plutôt que de la reporter', () => {
     expect(toIsoDate('31/02/2024')).toBeNull()
   })
