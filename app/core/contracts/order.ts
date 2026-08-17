@@ -30,6 +30,26 @@ export interface OrderOffer {
  */
 export type OrderStatus = 'pending' | 'confirmed' | 'failed'
 
+/**
+ * Une ligne du suivi par étapes d'une commande (`OrderChecklistItem` côté
+ * back-office). `pending` traduit littéralement `en attente` — l'API n'a pas
+ * de concept d'étape « en cours » distinct : à la création, une seule ligne
+ * reçoit ce statut (celle qui suit la dernière `done`), ce que les écrans qui
+ * consomment `checklist` peuvent choisir d'afficher comme l'étape active.
+ */
+export type OrderChecklistItemStatus = 'done' | 'pending' | 'upcoming'
+
+export interface OrderChecklistItem {
+  id: string
+  /** Identifiant d'étape stable (`payment_confirmed`, `housing_assigned`…), voir `OrderChecklistStepEnum` côté back-office. */
+  stepKey: string
+  /** Rang d'affichage, à partir de 1. */
+  position: number
+  status: OrderChecklistItemStatus
+  /** ISO `AAAA-MM-JJ`, `null` tant que l'étape n'est pas terminée. */
+  completedAt: string | null
+}
+
 export interface Order {
   id: string
   /**
@@ -66,6 +86,14 @@ export interface Order {
    * assigné, ou pas encore modélisé côté API pour ce type de service.
    */
   advisorName: string | null
+  /**
+   * Suivi par étapes, quand le type de service en a un (école, logement —
+   * pas orientation/profilage, jamais alimenté pour ce type côté back-office).
+   * Généré à la **création** de la commande (`OrderChecklistItem::
+   * seedDefaultsForOrder`) : une commande antérieure à ce mécanisme a une
+   * liste **vide**, pas une liste par défaut reconstituée côté client.
+   */
+  checklist: OrderChecklistItem[]
 }
 
 /**

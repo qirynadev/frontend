@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   normalizeServiceType,
   toOrder,
+  toOrderChecklist,
   toOrderList,
   toOrderOptions,
   toOrderReference,
@@ -150,6 +151,30 @@ describe('cas dégradé', () => {
   it('accepte `redirect_url` comme `redirectUrl`', () => {
     expect(toPaymentInit({ redirect_url: 'https://checkout.stripe.com/x' }).redirectUrl)
       .toBe('https://checkout.stripe.com/x')
+  })
+
+  it('traduit la checklist, triée par position', () => {
+    const checklist = toOrderChecklist([
+      { id: 'c2', step_key: 'documents_submitted', position: 2, status: 'en attente', completed_at: null },
+      { id: 'c1', step_key: 'payment_confirmed', position: 1, status: 'terminé', completed_at: '2026-08-17T16:39:00.000000Z' },
+      { id: 'c3', step_key: 'file_review', position: 3, status: 'à venir', completed_at: null },
+    ])
+
+    expect(checklist).toEqual([
+      { id: 'c1', stepKey: 'payment_confirmed', position: 1, status: 'done', completedAt: '2026-08-17' },
+      { id: 'c2', stepKey: 'documents_submitted', position: 2, status: 'pending', completedAt: null },
+      { id: 'c3', stepKey: 'file_review', position: 3, status: 'upcoming', completedAt: null },
+    ])
+  })
+
+  it('donne une checklist vide sans lever, sur une commande antérieure au suivi par étapes', () => {
+    expect(toOrderChecklist(undefined)).toEqual([])
+    expect(toOrder(rawOrder)?.checklist).toEqual([])
+  })
+
+  it('écarte une ligne de checklist sans identifiant ou sans clé d’étape', () => {
+    expect(toOrderChecklist([{ step_key: 'x', position: 1, status: 'terminé' }])).toEqual([])
+    expect(toOrderChecklist([{ id: 'c1', position: 1, status: 'terminé' }])).toEqual([])
   })
 
   it('déduit le verdict de la commande quand les drapeaux manquent', () => {

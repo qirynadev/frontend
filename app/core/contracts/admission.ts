@@ -19,8 +19,3 @@ export interface AdmissionDocument {
   status: DocumentStatus
   icon: string
 }
-
-export interface AdmissionData {
-  steps: AdmissionStep[]
-  documents: AdmissionDocument[]
-}

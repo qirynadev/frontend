@@ -1,4 +1,4 @@
-import type { Order, OrderOffer, OrderStatus, PaymentInit, PaymentValidation } from '../contracts'
+import type { Order, OrderChecklistItem, OrderChecklistItemStatus, OrderOffer, OrderStatus, PaymentInit, PaymentValidation } from '../contracts'
 import { asArray, asRecord, bool, dig, num, optionalNum, optionalStr, str, toIsoDate, toUrl } from './primitives'
 
 /**
@@ -91,6 +91,37 @@ export function toOrderOffer(raw: unknown): OrderOffer | null {
   }
 }
 
+function toOrderChecklistItemStatus(raw: unknown): OrderChecklistItemStatus {
+  const value = typeof raw === 'string' ? raw.trim().toLowerCase() : ''
+  if (value === 'terminé') return 'done'
+  if (value === 'en attente') return 'pending'
+  return 'upcoming'
+}
+
+export function toOrderChecklistItem(raw: unknown): OrderChecklistItem | null {
+  const source = asRecord(raw)
+  const id = str(source, 'id')
+  const stepKey = str(source, 'step_key')
+  if (id === '' || stepKey === '') return null
+
+  return {
+    id,
+    stepKey,
+    position: num(source, 'position', 0),
+    status: toOrderChecklistItemStatus(source.status),
+    // `completed_at` est en ISO8601 (`toIso8601String()` côté back-office),
+    // pas au format `JJ/MM/AAAA` du reste de l'API — `toIsoDate` gère les deux.
+    completedAt: toIsoDate(source.completed_at),
+  }
+}
+
+export function toOrderChecklist(raw: unknown): OrderChecklistItem[] {
+  return asArray(raw)
+    .map(toOrderChecklistItem)
+    .filter((item): item is OrderChecklistItem => item !== null)
+    .sort((a, b) => a.position - b.position)
+}
+
 export function toOrder(raw: unknown): Order | null {
   const source = asRecord(raw)
   const id = str(source, 'id')
@@ -119,6 +150,7 @@ export function toOrder(raw: unknown): Order | null {
     // Langue : `teacher_name`. École/logement/orientation : `mentor_name`.
     // Jamais les deux à la fois sur une même commande.
     advisorName: optionalStr(source, 'mentor_name') ?? optionalStr(source, 'teacher_name'),
+    checklist: toOrderChecklist(source.checklist),
   }
 }
 
