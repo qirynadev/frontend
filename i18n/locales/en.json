@@ -368,9 +368,42 @@
     "countryFrance": "France",
     "countryGermany": "Germany",
     "countryUsa": "United States",
-    "gridLabel": "Housing destinations",
     "helpDescription": "From choosing your school to settling in, our experts support you to maximise your chances of success.",
     "helpTitle": "Support at every step",
+    "offers": {
+      "badgeCount": "no homes available | 1 home available | {count} homes available",
+      "bannerHeadline": "Affordable, well-connected student housing ",
+      "comoe": {
+        "name": "Comoé",
+        "tagline": "The essentials for your stay"
+      },
+      "featureAdmin": "Administrative assistance",
+      "featureFicheLogement": "Detailed housing profile",
+      "featureFicheQuartier": "Detailed neighbourhood profile",
+      "featureGarant": "Qiryna acts as guarantor",
+      "featureSim": "Local SIM card",
+      "featureTaxi": "Airport–home taxi",
+      "introTitle": "Find the housing that suits you ",
+      "ribbon": "Most chosen",
+      "seoDescription": "Compare the three housing support packages and choose yours.",
+      "seoTitle": "Housing offers",
+      "statBailLabel": "lease term",
+      "statBailValue": "9 to 12 months",
+      "statCautionLabel": "deposit",
+      "statCautionValue": "1 month",
+      "statChargesLabel": "utilities",
+      "statChargesValue": "€50 to €120",
+      "statLoyerLabel": "average rent",
+      "statLoyerValue": "€559",
+      "volga": {
+        "name": "Volga",
+        "tagline": "More guarantees"
+      },
+      "yukon": {
+        "name": "Yukon",
+        "tagline": "Complete peace of mind"
+      }
+    },
     "seoDescription": "Find student housing in several countries.",
     "seoTitle": "Find my housing",
     "subtitle": "Find housing in several countries",

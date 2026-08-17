@@ -368,9 +368,42 @@
     "countryFrance": "France",
     "countryGermany": "Allemagne",
     "countryUsa": "Etats-Unis",
-    "gridLabel": "Destinations logement",
     "helpDescription": "De la sélection de votre école jusqu’à votre installation, nos experts vous accompagnent pour maximiser vos chances de réussite.",
     "helpTitle": "Un accompagnement à chaque étape",
+    "offers": {
+      "badgeCount": "aucun logement proposé | 1 logement proposé | {count} logements proposés",
+      "bannerHeadline": "Un logement étudiant accessible, bien desservi ",
+      "comoe": {
+        "name": "Comoé",
+        "tagline": "L'essentiel du séjour"
+      },
+      "featureAdmin": "Assistance administrative",
+      "featureFicheLogement": "Fiche détaillée du logement",
+      "featureFicheQuartier": "Fiche détaillée du Quartier",
+      "featureGarant": "Qiryna se porte garant",
+      "featureSim": "Carte SIM locale",
+      "featureTaxi": "Taxi aéroport – Maison",
+      "introTitle": "Trouvez le logement qui vous correspond ",
+      "ribbon": "La plus choisie",
+      "seoDescription": "Comparez les trois formules d'accompagnement logement et choisissez la vôtre.",
+      "seoTitle": "Offres de logement",
+      "statBailLabel": "durée du bail",
+      "statBailValue": "9 à 12 mois",
+      "statCautionLabel": "de caution",
+      "statCautionValue": "1 mois",
+      "statChargesLabel": "de charges",
+      "statChargesValue": "50 € à 120 €",
+      "statLoyerLabel": "loyer moyen",
+      "statLoyerValue": "559 €",
+      "volga": {
+        "name": "Volga",
+        "tagline": "Plus de garanties"
+      },
+      "yukon": {
+        "name": "Yukon",
+        "tagline": "La tranquillité complète"
+      }
+    },
     "seoDescription": "Trouvez un logement étudiant dans plusieurs pays.",
     "seoTitle": "Trouver mon logement",
     "subtitle": "Trouvez un logement dans plusieurs pays",

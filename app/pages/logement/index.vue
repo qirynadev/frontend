@@ -14,14 +14,15 @@
  * | carte | `min-height: 217px`, `padding: 7px 7px 10px`, rayon 10 · photo 112px · drapeau 31×31 à `bottom: -15.5px` |
  * | encart d'aide | `.dest-help-wrap` `padding: 22px 0` · fond `#f5f3ff`, `padding: 20px 9px`, icône 44×44 |
  *
- * Les cartes sont des **boutons de sélection**, comme dans la maquette : elles
- * ne mènent nulle part tant que `offres-logement.html` n'a pas sa route.
+ * Les cartes de la maquette sont des **boutons de sélection**, sans mener
+ * nulle part : `offres-logement.html` n'avait pas de route. Elle en a une
+ * désormais (`logement/[slug]`, cadrée avec le responsable) : les cartes
+ * y renvoient.
  */
 import { logementDestinations } from '~/config/logement-destinations'
 
 const { t } = useI18n()
-
-const selected = ref(logementDestinations[0]!.id)
+const localePath = useLocalePath()
 
 usePageSeo(() => ({
   title: t('housing.seoTitle'),
@@ -42,18 +43,12 @@ usePageSeo(() => ({
       </p>
     </div>
 
-    <div class="grid w-full grid-cols-3 gap-10 max-xs:grid-cols-2" role="listbox" :aria-label="$t('housing.gridLabel')">
-      <button
+    <div class="grid w-full grid-cols-3 gap-10 max-xs:grid-cols-2">
+      <NuxtLink
         v-for="destination in logementDestinations"
         :key="destination.id"
-        type="button"
-        role="option"
-        :aria-selected="selected === destination.id"
-        :class="[
-          'relative flex min-h-217 max-xs:min-h-0 w-full cursor-pointer flex-col items-start gap-22 rounded-xl border bg-white px-7 pt-7 pb-10 text-left text-text shadow-card box-border',
-          selected === destination.id ? 'is-selected border-primary' : 'border-transparent',
-        ]"
-        @click="selected = destination.id"
+        :to="localePath(`/logement/${destination.id}`)"
+        class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-white px-7 pt-7 pb-10 text-left text-text no-underline shadow-card box-border"
       >
         <div class="relative h-112 w-full shrink-0">
           <img
@@ -87,7 +82,7 @@ usePageSeo(() => ({
             <QIcon name="ic-log-chevron" :size="9" />
           </div>
         </div>
-      </button>
+      </NuxtLink>
     </div>
 
     <!-- Encart d'accompagnement -->

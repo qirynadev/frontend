@@ -490,6 +490,26 @@
   --color-of-badge-pele-bg: #fef2f2;
   --color-of-badge-pele: #fc010d;
 
+  /* ─── Offres de logement (`offres-logement.html`) ─────────────────
+     Réutilise `--color-tier-1*`/`--color-tier-2` (Comoé/Volga, mêmes
+     valeurs que le palier 1/2 générique) ; Yukon a son propre accent
+     orange, distinct du rouge `--color-tier-3` (palier « everest »).
+     Trois valeurs très proches mais non identiques, comme mesuré :
+     nom #ff6300, prix #fe6801, bouton #fe6903. */
+  --color-ol-banner-bg: #fbfbfe;
+  --color-ol-stat-label: #191919;
+  --color-ol-featured-border: #5c3cf3;
+  --color-ol-badge-comoe-bg: #eef9f0;
+  --color-ol-badge-comoe: #00a31c;
+  --color-ol-badge-volga-bg: #f3f1fe;
+  --color-ol-badge-volga: #570bfd;
+  --color-ol-badge-yukon-bg: #fff7ed;
+  --color-ol-badge-yukon: #ea580c;
+  --color-ol-yukon-border: #fdba74;
+  --color-ol-yukon-name: #ff6300;
+  --color-ol-yukon-price: #fe6801;
+  --color-ol-yukon-button: #fe6903;
+
   /* ─── Messages (`messages.html`) ────────────────────────────────
      Six teintes d'étiquette, une par type d'interlocuteur. */
   --color-msg-tab-active: #3b2cf2;
