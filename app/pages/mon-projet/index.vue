@@ -21,12 +21,17 @@
  * cadrer, il ne s'agit pas de la même page.
  *
  * Une carte par **commande**, pas par type : un client peut avoir plusieurs
- * formules de langues ou plusieurs bilans d'orientation (voir
- * `useProjetData.ts`). La maquette n'en montre qu'une par type parce que sa
- * donnée d'essai n'en avait qu'une — `.mp-list`/`.mp-card` sont déjà une
- * liste répétable, rien à changer côté gabarit.
+ * bilans d'orientation, par exemple (voir `useProjetData.ts`). La maquette
+ * n'en montre qu'une par type parce que sa donnée d'essai n'en avait qu'une —
+ * `.mp-list`/`.mp-card` sont déjà une liste répétable, rien à changer côté
+ * gabarit.
+ *
+ * Exception : les **langues** se regroupent par langue, pas par commande
+ * (deux commandes d'anglais → une carte, heures additionnées) — confirmé par
+ * le responsable le 2026-08-17. `toLanguageAccompagnements` les calcule à
+ * part, insérées à la position que la maquette leur donne (après logement,
+ * avant orientation).
  */
-import { NuxtLink } from '#components'
 import type { ProjetBadgeTone } from '~/core/contracts/projet'
 
 definePageMeta({ middleware: 'auth' })
@@ -34,8 +39,15 @@ definePageMeta({ middleware: 'auth' })
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const { data: orders, apiError, isInitialLoading, refresh } = await useProjetData(locale)
-const accompagnements = computed(() => toAccompagnements(orders.value ?? []))
+const { data, apiError, isInitialLoading, refresh } = await useProjetData(locale)
+
+const accompagnements = computed(() => {
+  const orders = data.value?.orders ?? []
+  const before = toAccompagnements(orders.filter((order) => order.serviceType === 'areaofstudy' || order.serviceType === 'costofliving'))
+  const languages = toLanguageAccompagnements(data.value?.languages ?? [], data.value?.sessions ?? [])
+  const after = toAccompagnements(orders.filter((order) => order.serviceType === 'profilage'))
+  return [...before, ...languages, ...after]
+})
 
 /** `.mp-badge--purple|green|pink|orange` (`app.css`). */
 const badgeToneClass: Record<ProjetBadgeTone, string> = {
@@ -111,16 +123,10 @@ usePageSeo(() => ({
 
         <!-- Liste des accompagnements -->
         <div class="mp-list flex w-full flex-col gap-14" aria-labelledby="accompagnements-title">
-          <!-- `NuxtLink` vient de `#components` : `resolveComponent('NuxtLink')`
-               dans cette expression ne résout pas et rend un élément inconnu
-               `<nuxtlink>`, sans `href` ni clic. Les accompagnements sans écran
-               de détail retombent sur un `div`, comme le `href="#"` de la
-               maquette. -->
-          <component
-            :is="item.to ? NuxtLink : 'div'"
+          <NuxtLink
             v-for="item in accompagnements"
             :key="item.id"
-            :to="item.to ? localePath(item.to) : undefined"
+            :to="localePath(item.to)"
             class="mp-card flex w-full flex-col rounded-xl border border-mp-card-border bg-white p-17 text-inherit no-underline box-border"
           >
             <div class="mp-card-top flex w-full items-start justify-between gap-8">
@@ -157,7 +163,7 @@ usePageSeo(() => ({
                 {{ $t('myProject.updatedDaysAgo', daysSince(item.updatedAt)) }}
               </span>
             </div>
-          </component>
+          </NuxtLink>
         </div>
 
         <!-- Encart d'encouragement -->

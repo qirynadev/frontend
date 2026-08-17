@@ -31,6 +31,5 @@ export interface ProjetAccompagnement {
   /** ISO `AAAA-MM-JJ` de dernière mise à jour, ou `null`. */
   updatedAt: string | null
   icon: string
-  /** Destination du drill-down ; `null` tant que l'écran n'existe pas. */
-  to: string | null
+  to: string
 }

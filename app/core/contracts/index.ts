@@ -7,6 +7,7 @@ export type * from './offer'
 export type * from './offer-page'
 export type * from './order'
 export type * from './page'
+export type * from './planning'
 export type * from './school'
 export type * from './session'
 
