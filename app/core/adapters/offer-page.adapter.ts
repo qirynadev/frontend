@@ -1,5 +1,6 @@
 import type { OfferPage, OfferTier } from '../contracts'
 import { toPrice, toSeo } from './common.adapter'
+import { toLivingDestination, toLivingStats } from './living.adapter'
 import { asArray, asRecord, html, num, optionalNum, optionalStr, str, toUrl } from './primitives'
 
 /**
@@ -37,6 +38,33 @@ export function toCourseTier(raw: unknown): OfferTier {
     price: { amount: num(source, 'amount', 0), currency: 'EUR', mode: 'subscription' },
     periodLabel: 'month',
     hours,
+    stripeProductId: optionalStr(source, 'stripe_product_id'),
+    highlighted: false,
+  }
+}
+
+/**
+ * Palier issu d'une formule de logement (`livings[].formulas[]`).
+ *
+ * Même forme JSON qu'une formule de langue (`toCourseTier`) — mais un
+ * logement se paie **une fois**, pas par mois : aucune des quinze formules
+ * réelles (5 destinations × 3) ne porte `nbr_hours`, et l'ancien écran de
+ * post-paiement l'annonçait déjà comme « Paiement unique ». Réutiliser
+ * `toCourseTier` tel quel aurait affiché « /mois » sur un montant payé une
+ * fois — une étiquette fausse, pas un simple détail de présentation.
+ */
+export function toLivingTier(raw: unknown): OfferTier {
+  const source = asRecord(raw)
+
+  return {
+    id: str(source, 'id'),
+    name: str(source, 'title'),
+    tagline: str(source, 'description'),
+    icon: toUrl(source.icon),
+    features: toFeatures(source.items),
+    price: { amount: num(source, 'amount', 0), currency: 'EUR', mode: 'once' },
+    periodLabel: 'once',
+    hours: optionalNum(source, 'nbr_hours'),
     stripeProductId: optionalStr(source, 'stripe_product_id'),
     highlighted: false,
   }
@@ -89,6 +117,7 @@ export function toLanguageOfferPage(raw: unknown): OfferPage {
     serviceId: str(source, 'id'),
     serviceType: 'course',
     seo: toSeo(source, title, description),
+    living: null,
   }
 }
 
@@ -113,5 +142,33 @@ export function toDomainOfferPage(raw: unknown): OfferPage {
     serviceId: str(source, 'area.id') || str(source, 'id'),
     serviceType: 'area',
     seo: toSeo(source, title, description),
+    living: null,
+  }
+}
+
+/**
+ * Page d'offre construite depuis une destination logement (`GET /livings`).
+ *
+ * Même unification que les deux ci-dessus : trois paliers réels (Colorado /
+ * Amazone / Zambeze pour la France), plus le pays et le bandeau statistique
+ * de la destination, absents des deux autres formes et donc propres à
+ * `kind: 'living'` (voir `OfferPage.living`).
+ */
+export function toLivingOfferPage(raw: unknown): OfferPage {
+  const source = asRecord(raw)
+  const title = str(source, 'title')
+  const description = html(source, 'description')
+
+  return {
+    slug: str(source, 'slug'),
+    kind: 'living',
+    title,
+    description,
+    icon: toUrl(source.country_flag),
+    tiers: orderTiers(asArray(source.formulas).map(toLivingTier).filter((tier) => tier.id !== '')),
+    serviceId: str(source, 'id'),
+    serviceType: 'living',
+    seo: toSeo(source, title, description),
+    living: { ...toLivingDestination(raw), ...toLivingStats(raw) },
   }
 }

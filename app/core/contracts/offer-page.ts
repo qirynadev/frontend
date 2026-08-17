@@ -1,4 +1,5 @@
 import type { Price, SeoMeta } from './common'
+import type { LivingDestination, LivingStats } from './living'
 
 /**
  * Palier tarifaire.
@@ -32,7 +33,7 @@ export interface OfferTier {
 export interface OfferPage {
   slug: string
   /** D'où viennent les paliers — utile pour le fil d'Ariane et le SEO. */
-  kind: 'domain' | 'language'
+  kind: 'domain' | 'language' | 'living'
   title: string
   /** HTML. */
   description: string
@@ -41,14 +42,17 @@ export interface OfferPage {
   /**
    * Identifiant du **service** auquel les paliers se rattachent (`service_id`
    * dans la commande) : l'identifiant de la langue pour `kind: 'language'`,
-   * celui du domaine d'étude pour `kind: 'domain'`.
+   * celui du domaine d'étude pour `kind: 'domain'`, celui de la destination
+   * logement (`CostOfLiving.id`) pour `kind: 'living'`.
    *
    * Sans lui, une commande ne peut pas être créée : `POST /payment/init` exige
    * le couple `offer_id` (le palier) **et** `service_id` (ce à quoi il
    * s'applique).
    */
   serviceId: string
-  /** Vocabulaire du back-office : `course` pour une langue, `area` pour un domaine. */
-  serviceType: 'course' | 'area'
+  /** Vocabulaire du back-office : `course` pour une langue, `area` pour un domaine, `living` pour un logement. */
+  serviceType: 'course' | 'area' | 'living'
   seo: SeoMeta
+  /** Pays, photo et bandeau statistique — renseigné uniquement pour `kind: 'living'`. */
+  living: (LivingDestination & LivingStats) | null
 }

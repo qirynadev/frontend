@@ -48,6 +48,7 @@ export function useCheckout() {
   function toIntent(offer: OfferPage, tier: OfferTier) {
     const options: Record<string, string> = {}
     if (offer.kind === 'language') options.language = offer.title
+    else if (offer.kind === 'living' && offer.living) options.country = offer.living.country.name
     const goal = route.query.objectif
     if (typeof goal === 'string' && goal !== '') options.goal = goal
 
@@ -65,14 +66,18 @@ export function useCheckout() {
        * `paiement-reussi.html` sont deux maquettes distinctes : la première
        * détaille cinq étapes propres à un parcours linguistique (test de
        * niveau, choix du professeur, planning, visio), la seconde en montre
-       * quatre, génériques. Logement et orientation auront les leurs.
+       * quatre, génériques. Logement a le sien (`logement-post-paiement.html`,
+       * qui ouvre directement sur le formulaire de préférences plutôt que sur
+       * une frise) ; orientation retombe encore sur l'écran générique.
        *
        * D'où le nommage `<tunnel>/paiement-reussi` plutôt qu'un écran unique
        * paramétré : les écrans divergent par leur contenu, pas par une option.
        */
       returnPath: offer.kind === 'language'
         ? localePath(`/langues/${offer.slug}/paiement-reussi`)
-        : localePath('/paiement-reussi'),
+        : offer.kind === 'living'
+          ? localePath('/logement/paiement-reussi')
+          : localePath('/paiement-reussi'),
     }
   }
 

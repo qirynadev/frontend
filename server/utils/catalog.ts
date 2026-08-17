@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { Article, Catalog, Course, Destination, Offer, OfferPage, Orientation, Page, School } from '~~/app/core/contracts'
+import type { Article, Catalog, Course, Destination, LivingDestination, Offer, OfferPage, Orientation, Page, School } from '~~/app/core/contracts'
 import { createApiClient } from '~~/app/core/http/api-client'
 import {
   toArticleList,
@@ -9,6 +9,8 @@ import {
   toDomainOfferPage,
   toHomeContent,
   toLanguageOfferPage,
+  toLivingDestination,
+  toLivingOfferPage,
   toMenu,
   toOfferList,
   toOrientation,
@@ -33,6 +35,7 @@ import {
  * |---------------|-------------------------------------------|---------|
  * | `/all-data`   | menu, accueil, destinations, écoles, pages | 4,4 Mo  |
  * | `/courses`    | langues étrangères + paliers tarifaires    | 27 Ko   |
+ * | `/livings`    | destinations logement + paliers tarifaires | -       |
  * | `/profilage`  | offre d'orientation                        | 5 Ko    |
  * | `/articles`   | actualités de l'accueil                    | vide    |
  *
@@ -48,6 +51,8 @@ export interface CatalogSnapshot {
   offers: Offer[]
   pages: Page[]
   courses: Course[]
+  /** Destinations logement disponibles — voir `server/api/bff/livings/index.get.ts`. */
+  livings: LivingDestination[]
   offerPages: OfferPage[]
   orientation: Orientation | null
   articles: Article[]
@@ -66,13 +71,14 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
   const client = apiClient(event, locale)
   const flagBase = useRuntimeConfig(event).apiBaseUrl
 
-  // AUJOURD'HUI : un dump monolithique plus trois appels annexes.
+  // AUJOURD'HUI : un dump monolithique plus quatre appels annexes.
   // DEMAIN : `client.request('/bootstrap')` seul.
-  const [raw, rawCourses, rawOrientation, rawArticles] = await Promise.all([
+  const [raw, rawCourses, rawLivings, rawOrientation, rawArticles] = await Promise.all([
     client.request<Record<string, unknown>>('/all-data'),
-    // Ces trois-là ne doivent pas faire tomber la page d'accueil s'ils échouent :
+    // Ceux-là ne doivent pas faire tomber la page d'accueil s'ils échouent :
     // le catalogue principal suffit à rendre l'essentiel du site.
     client.request<unknown>('/courses').catch(() => []),
+    client.request<unknown>('/livings').catch(() => []),
     client.request<unknown>('/profilage').catch(() => null),
     client.request<unknown>('/articles').catch(() => []),
   ])
@@ -81,11 +87,14 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
   const offers = toOfferList(raw.offers)
   const pages = toPageList(raw.pages)
   const courses = toCourseList(rawCourses)
+  const livings: LivingDestination[] = (Array.isArray(rawLivings) ? rawLivings.map(toLivingDestination) : [])
+    .filter((destination) => destination.slug !== '')
 
-  // Les deux formes tarifaires de l'API convergent vers un seul contrat.
+  // Les trois formes tarifaires de l'API convergent vers un seul contrat.
   const offerPages: OfferPage[] = [
     ...(Array.isArray(rawCourses) ? rawCourses.map(toLanguageOfferPage) : []),
     ...(Array.isArray(raw.offers) ? raw.offers.map(toDomainOfferPage) : []),
+    ...(Array.isArray(rawLivings) ? rawLivings.map(toLivingOfferPage) : []),
   ].filter((page) => page.slug !== '' && page.tiers.length > 0)
 
   // Les fiches complètes sont reconstruites depuis le même dump : c'est le seul
@@ -121,7 +130,7 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
     courses: courses.map(({ description: _d, levels: _l, seo: _seo, ...summary }) => summary),
   }
 
-  return { catalog, destinations, schools, offers, pages, courses, offerPages, orientation: toOrientation(rawOrientation), articles: toArticleList(rawArticles) }
+  return { catalog, destinations, schools, offers, pages, courses, livings, offerPages, orientation: toOrientation(rawOrientation), articles: toArticleList(rawArticles) }
 }
 
 /**
