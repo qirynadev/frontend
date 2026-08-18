@@ -20,6 +20,14 @@
  * `SchoolFormation` n'a ni l'un ni l'autre (juste `title`/`description`) et
  * l'API ne les alimente pour aucune école : une icône générique et un texte
  * fixe remplacent la donnée absente, comme sur la liste d'écoles voisine.
+ *
+ * La carte n'affiche **pas** `formation.description` (contrairement à
+ * `f.desc` dans la maquette, dont la donnée d'essai tient en une phrase) :
+ * la modale ouverte au clic montre déjà ce même texte, réel et long sur
+ * plusieurs paragraphes — le dupliquer dans la carte la rendrait
+ * démesurément haute pour rien. Titre + méta suffisent en aperçu, comme le
+ * veut `ecole-detail.html` (carte compacte, détail complet uniquement dans
+ * la modale).
  */
 import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { schoolRepo } from '~/core/repositories'
@@ -281,8 +289,8 @@ useSchoolSchemaOrg(school)
             type="button"
             role="tab"
             :aria-selected="activeTab === tb.value"
-            class="relative flex flex-1 items-center justify-center gap-4 max-2xs:gap-8 border-0 bg-transparent pb-12 text-xl max-2xs:text-base leading-21 font-medium whitespace-nowrap text-text"
-            :class="activeTab === tb.value && 'text-le-chip-selected-border'"
+            class="relative flex flex-1 items-center justify-center gap-4 max-2xs:gap-8 border-0 bg-transparent pb-12 text-xl max-2xs:text-base leading-21 font-medium whitespace-nowrap"
+            :class="activeTab === tb.value ? 'text-le-chip-selected-border' : 'text-text'"
             @click="activeTab = tb.value"
           >
             <QIcon :name="tb.icon" :size="16" class="max-2xs:size-14" />
@@ -326,8 +334,6 @@ useSchoolSchemaOrg(school)
                     <span>{{ $t('school.detail.students') }}</span>
                   </span>
                 </div>
-
-                <RichText v-if="formation.description" :content="formation.description" class="mt-6" />
               </div>
 
               <QIcon name="ic-ed-chevron" :size="16" class="mt-4 shrink-0 text-muted" />
