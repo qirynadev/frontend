@@ -65,6 +65,10 @@
      `langues-post-payment.html`, hors du corpus analysé au Lot 1. */
   --text-exact-16: 16px;
   --text-exact-16--line-height: 24px;
+  /* `offre-orientation.html` `.oo-hero-copy h1`, sous 380px (viewport de
+     référence) : 22px, hors suite 3xl(18)/4xl(20). */
+  --text-exact-22: 22px;
+  --text-exact-22--line-height: 30px;
   --text-3xl: 18px;
   --text-3xl--line-height: 28px;
   --text-4xl: 20px;
@@ -193,6 +197,11 @@
   /* Cartes de palier */
   --color-tier-border: #e5e7eb;
   --color-tier-period: #7f7979;
+
+  /* Bannière de l'offre à palier unique (`offre-orientation.html` `.oo-hero`) —
+     pas un `--color-*` : Tailwind ne génère pas d'utilitaire à partir de ce
+     nom, la valeur sert via `bg-[image:var(--gradient-oo-hero)]`. */
+  --gradient-oo-hero: linear-gradient(90deg, rgb(238 242 255 / 0.8) 0%, rgb(250 245 255 / 0.5) 50%, rgb(238 242 255 / 0.4) 100%);
 
   /* ─── Étiquettes de langue (`langue-apprentissage.html`) ──────────
      Sept variantes `.langue-tag--*` pour quatre couleurs de texte : la
