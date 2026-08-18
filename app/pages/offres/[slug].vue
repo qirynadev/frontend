@@ -141,6 +141,7 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
             :tier="tiers[0]!"
             :index="0"
             :total="1"
+            domain
             :loading="checkoutPending === tiers[0]!.id"
             :disabled="checkoutPending !== null && checkoutPending !== tiers[0]!.id"
             @choose="offer && startCheckout(offer, $event)"

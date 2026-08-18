@@ -21,6 +21,12 @@ import type { OfferTier } from '~/core/contracts'
  * prix croissant ; le moins cher est vert, le suivant violet, le plus cher
  * rouge — comme dans la maquette (200 € / 300 € / 400 €). Renommer une formule
  * côté back-office ne casse donc rien.
+ *
+ * **Domaine d'étude (palier unique)** : accent violet fixe et icône propre
+ * (`ic-oo-feature-1`, pas `ic-formule-acon`) — reprend `offre-orientation.html`
+ * `.formule-card--acon`, pas la logique de rang (`index`/`total` valent
+ * toujours 0/1 pour un domaine, ce qui donnerait le vert « kili » sinon).
+ * Bouton « Démarrer mon accompagnement », pas « Choisir cette formule ».
  */
 const props = withDefaults(
   defineProps<{
@@ -33,8 +39,10 @@ const props = withDefaults(
     loading?: boolean
     /** Un autre palier est en cours d'achat : celui-ci ne doit pas partir aussi. */
     disabled?: boolean
+    /** Palier unique d'un domaine d'étude — accent et libellé dédiés, voir plus haut. */
+    domain?: boolean
   }>(),
-  { index: 0, total: 1, loading: false, disabled: false },
+  { index: 0, total: 1, loading: false, disabled: false, domain: false },
 )
 
 const emit = defineEmits<{ choose: [tier: OfferTier] }>()
@@ -54,6 +62,16 @@ const tagline = computed(() => props.tier.tagline || t(`offer.tagline${Math.min(
 const isTop = computed(() => props.total > 1 && props.index === props.total - 1)
 
 const accent = computed(() => {
+  if (props.domain) {
+    return {
+      card: 'border-tier-border',
+      name: 'text-tier-2',
+      price: 'text-tier-2',
+      button: 'border border-tier-2 bg-white text-tier-2',
+      icon: 'ic-oo-feature-1',
+      check: 'ic-formule-check-purple',
+    }
+  }
   if (isTop.value) {
     return {
       card: 'border-tier-3-border',
@@ -141,7 +159,7 @@ const accent = computed(() => {
         @click="emit('choose', tier)"
       >
         <QSpinner v-if="loading" size="sm" />
-        <span v-else>{{ $t('offer.choose') }}</span>
+        <span v-else>{{ domain ? $t('offer.startAccompaniment') : $t('offer.choose') }}</span>
       </button>
     </footer>
   </article>
