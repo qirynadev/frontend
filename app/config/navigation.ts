@@ -32,7 +32,24 @@ export interface NavEntry {
    * niveau.
    */
   match?: string[]
+  /**
+   * Icône de repli sur `AUTH_PATHS` (`connexion.html`/`inscription.html`/
+   * `mot-de-passe.html`) : la maquette y remplace l'icône normale par celle-ci
+   * sur ces trois écrans précis, avant même de regarder `iconActive`.
+   */
+  guestIcon?: string
+  guestIconWidth?: number
+  guestIconHeight?: number
 }
+
+/**
+ * Écrans d'authentification, avant toute connexion.
+ *
+ * Sert deux entrées : `account.match` (l'onglet « Compte » s'y allume) et
+ * `orientation.guestIcon` (voir plus bas) — les deux dérivent de la même
+ * réalité, un seul endroit pour la changer.
+ */
+const AUTH_PATHS = ['/connexion', '/inscription', '/mot-de-passe']
 
 export const bottomNavEntries: NavEntry[] = [
   {
@@ -61,6 +78,11 @@ export const bottomNavEntries: NavEntry[] = [
     iconWidth: 36,
     iconHeight: 34,
     match: ['/destinations', '/ecoles', '/domaines', '/offres', '/langues'],
+    // Sur les écrans d'authentification, icône standard (24×24), comme les
+    // autres onglets — la maquette n'y reprend pas le logo agrandi.
+    guestIcon: 'nav-orientation',
+    guestIconWidth: 24,
+    guestIconHeight: 24,
   },
   {
     id: 'project',
@@ -80,9 +102,27 @@ export const bottomNavEntries: NavEntry[] = [
     iconActive: 'nav-compte-active',
     iconWidth: 24,
     iconHeight: 24,
-    match: ['/connexion', '/inscription', '/mot-de-passe'],
+    match: AUTH_PATHS,
   },
 ]
+
+/**
+ * Icône « invité » d'une entrée sur `AUTH_PATHS`, si le chemin (déjà
+ * délocalisé) y correspond et que l'entrée en définit une — `null` sinon,
+ * pour laisser l'appelant garder l'icône par défaut de l'entrée.
+ *
+ * Ne remplace pas la résolution active/inactive de `QBottomNav` : c'est à
+ * l'appelant (`AppBottomNav`) d'appliquer ce résultat aux deux champs
+ * `icon`/`iconActive` avant de les lui passer, pour qu'elle reste correcte
+ * quel que soit l'onglet actif sur ces écrans.
+ */
+export function resolveGuestIcon(entry: NavEntry, path: string): { icon: string, width: number, height: number } | null {
+  if (!entry.guestIcon) return null
+  const normalized = path.replace(/\/+$/, '') || '/'
+  const isGuestPath = AUTH_PATHS.some((p) => normalized === p || normalized.startsWith(`${p}/`))
+  if (!isGuestPath) return null
+  return { icon: entry.guestIcon, width: entry.guestIconWidth ?? entry.iconWidth, height: entry.guestIconHeight ?? entry.iconHeight }
+}
 
 /**
  * Déduit l'onglet actif d'un chemin.

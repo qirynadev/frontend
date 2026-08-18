@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavItem } from '~/design-system/types'
-import { bottomNavEntries, resolveActiveNavId } from '~/config/navigation'
+import { bottomNavEntries, resolveActiveNavId, resolveGuestIcon } from '~/config/navigation'
 
 /**
  * Navigation principale du produit.
@@ -17,18 +17,6 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
 
-const items = computed<NavItem[]>(() =>
-  bottomNavEntries.map((entry) => ({
-    id: entry.id,
-    to: localePath(entry.to),
-    label: t(entry.labelKey),
-    icon: entry.icon,
-    iconActive: entry.iconActive,
-    iconWidth: entry.iconWidth,
-    iconHeight: entry.iconHeight,
-  })),
-)
-
 /**
  * Chemin délocalisé : `/en/mon-projet` → `/mon-projet`.
  *
@@ -40,6 +28,27 @@ const unlocalizedPath = computed(() => {
   if (route.path === prefix) return '/'
   return route.path.startsWith(`${prefix}/`) ? route.path.slice(prefix.length) : route.path
 })
+
+const items = computed<NavItem[]>(() =>
+  bottomNavEntries.map((entry) => {
+    /**
+     * Sur les écrans d'authentification, la maquette remplace l'icône de
+     * l'onglet Orientation par une icône standard — appliquée aux deux
+     * champs pour que ça reste vrai quel que soit l'onglet actif ici (voir
+     * `resolveGuestIcon`).
+     */
+    const guestIcon = resolveGuestIcon(entry, unlocalizedPath.value)
+    return {
+      id: entry.id,
+      to: localePath(entry.to),
+      label: t(entry.labelKey),
+      icon: guestIcon?.icon ?? entry.icon,
+      iconActive: guestIcon?.icon ?? entry.iconActive,
+      iconWidth: guestIcon?.width ?? entry.iconWidth,
+      iconHeight: guestIcon?.height ?? entry.iconHeight,
+    }
+  }),
+)
 
 const active = computed(() => resolveActiveNavId(unlocalizedPath.value))
 </script>
