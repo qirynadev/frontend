@@ -14,8 +14,8 @@
  * | défilement (langue) | piste translatée, `transition: transform .32s ease` |
  * | pastilles (langue) | 6×6, active 18×6, `gap: 8px`, `margin-top: 14px` |
  * | palier unique (domaine) | `.oo-formule-wrap` : `OfferTierCard` seul, sans flèches ni pastilles |
- * | arguments | `.formule-features` `padding: 13px 11px`, rayon 10, ombre `0 0 3.5px`, séparateurs 1×32 |
- * | réassurance | `data-trust-bar` |
+ * | arguments (langue) | `.formule-features` `padding: 13px 11px`, rayon 10, ombre `0 0 3.5px`, séparateurs 1×32 — absent pour un domaine, `offre-orientation.html` s'arrête à `.oo-formule-wrap` |
+ * | réassurance (langue) | `data-trust-bar` — absente pour un domaine, même raison |
  *
  * Le slug désigne indifféremment une **langue** (trois paliers mensuels
  * `courses[].formulas`), un **domaine d'étude** (un paiement unique
@@ -220,23 +220,26 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
           <QEmptyState icon="ic-formule-kili" :title="$t('offer.emptyTitle')" :description="$t('offer.emptyDescription')" />
         </QCard>
 
-        <!-- Arguments -->
-        <div class="w-full pb-20">
-          <div class="flex w-full items-center justify-center gap-13 rounded-xl bg-white px-11 py-13 shadow-card">
-            <template v-for="(feature, index) in features" :key="feature.titleKey">
-              <span v-if="index > 0" aria-hidden="true" class="h-32 w-0 shrink-0 border-l border-tier-border" />
-              <div class="flex min-w-0 flex-1 items-center justify-center gap-5">
-                <QIcon :name="feature.icon" :size="24" />
-                <div class="flex flex-col items-start pt-6 leading-[13.125px] text-navy">
-                  <p class="m-0 text-xs leading-[13.125px] font-medium">{{ $t(feature.titleKey) }}</p>
-                  <p class="m-0 text-2xs leading-[13.125px] font-normal">{{ $t(feature.subKey) }}</p>
+        <!-- Arguments + réassurance : absents de offre-orientation.html
+             (domaine) — la page s'arrête à .oo-formule-wrap. -->
+        <template v-if="!isDomain">
+          <div class="w-full pb-20">
+            <div class="flex w-full items-center justify-center gap-13 rounded-xl bg-white px-11 py-13 shadow-card">
+              <template v-for="(feature, index) in features" :key="feature.titleKey">
+                <span v-if="index > 0" aria-hidden="true" class="h-32 w-0 shrink-0 border-l border-tier-border" />
+                <div class="flex min-w-0 flex-1 items-center justify-center gap-5">
+                  <QIcon :name="feature.icon" :size="24" />
+                  <div class="flex flex-col items-start pt-6 leading-[13.125px] text-navy">
+                    <p class="m-0 text-xs leading-[13.125px] font-medium">{{ $t(feature.titleKey) }}</p>
+                    <p class="m-0 text-2xs leading-[13.125px] font-normal">{{ $t(feature.subKey) }}</p>
+                  </div>
                 </div>
-              </div>
-            </template>
+              </template>
+            </div>
           </div>
-        </div>
 
-        <TrustStrip />
+          <TrustStrip />
+        </template>
       </template>
     </PageState>
   </div>
