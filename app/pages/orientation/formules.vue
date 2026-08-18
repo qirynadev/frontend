@@ -22,6 +22,12 @@
  *
  * Les trois formules affichent le même prix (300 €/mois) : ainsi dans la
  * maquette, reproduit tel quel.
+ *
+ * Bloc arguments (3 icônes) + réassurance retiré à la demande du
+ * responsable (2026-08-18), qui diverge ici volontairement de la
+ * maquette : `orientation-formules.html` le garde sur les deux branches
+ * (`main` et `release`), ce n'est donc pas un écart à corriger mais un
+ * choix produit propre à cette page.
  */
 const route = useRoute()
 const { t } = useI18n()
@@ -29,6 +35,12 @@ const localePath = useLocalePath()
 
 const path = computed(() => (route.query.path === 'enfant' ? 'enfant' : 'moi'))
 
+/**
+ * Icône par élément de la liste, pas une coche uniforme : la maquette varie
+ * l'icône selon la **nature** de l'élément (entretien de cadrage, test,
+ * bilan, restitution) — répétée à l'identique entre paliers de même
+ * couleur. Tableaux alignés position à position sur `featureN`.
+ */
 const tiers = [
   {
     id: 'jordan',
@@ -40,8 +52,7 @@ const tiers = [
     badgeText: 'text-of-badge-jordan',
     price: 'text-tier-2',
     button: 'border border-tier-2 bg-white text-tier-2',
-    checkIcon: 'ic-of-check-purple',
-    features: [1, 2, 3, 4],
+    featureIcons: ['ic-of-check-purple', 'ic-of-check-purple', 'ic-of-bilan-purple', 'ic-of-visio-purple'],
   },
   {
     id: 'tyson',
@@ -53,8 +64,10 @@ const tiers = [
     badgeText: 'text-of-badge-tyson',
     price: 'text-tier-1-price',
     button: 'border border-tier-1-line bg-white text-tier-1-line',
-    checkIcon: 'ic-of-check-green',
-    features: [1, 2, 3, 4, 5, 6, 7],
+    featureIcons: [
+      'ic-of-cadrage-green', 'ic-of-check-green', 'ic-of-check-green', 'ic-of-check-green',
+      'ic-of-check-green', 'ic-of-bilan-green', 'ic-of-cadrage-green',
+    ],
   },
   {
     id: 'pele',
@@ -66,16 +79,12 @@ const tiers = [
     badgeText: 'text-of-badge-pele',
     price: 'text-tier-3',
     button: 'border border-tier-3 bg-tier-3 text-white',
-    checkIcon: 'ic-of-check-red',
-    features: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    featureIcons: [
+      'ic-of-cadrage-red', 'ic-of-check-red', 'ic-of-check-red', 'ic-of-check-red-2', 'ic-of-check-red',
+      'ic-of-check-red', 'ic-of-check-red', 'ic-of-check-red', 'ic-of-bilan-red', 'ic-of-cadrage-red',
+    ],
   },
 ] as const
-
-const features = [
-  { icon: 'ic-of-feat-visio', titleKey: 'orientation.formules.featVisioTitle', subKey: 'orientation.formules.featVisioSub' },
-  { icon: 'ic-of-feat-conseillers', titleKey: 'orientation.formules.featConseillersTitle', subKey: 'orientation.formules.featConseillersSub' },
-  { icon: 'ic-of-feat-parcours', titleKey: 'orientation.formules.featParcoursTitle', subKey: 'orientation.formules.featParcoursSub' },
-]
 
 usePageSeo(() => ({
   title: t('orientation.formules.title'),
@@ -137,9 +146,9 @@ usePageSeo(() => ({
       </header>
 
       <ul class="m-0 flex w-full list-none flex-col gap-8 p-0">
-        <li v-for="n in tier.features" :key="n" class="flex items-start gap-10 text-lg leading-18 text-text">
-          <QIcon :name="tier.checkIcon" :size="12" />
-          <span class="min-w-0">{{ $t(`orientation.formules.${tier.id}.feature${n}`) }}</span>
+        <li v-for="(icon, i) in tier.featureIcons" :key="i" class="flex items-start gap-10 text-lg leading-18 text-text">
+          <QIcon :name="icon" :size="12" />
+          <span class="min-w-0">{{ $t(`orientation.formules.${tier.id}.feature${i + 1}`) }}</span>
         </li>
       </ul>
 
@@ -162,22 +171,4 @@ usePageSeo(() => ({
       </footer>
     </article>
   </div>
-
-  <!-- Arguments -->
-  <div class="w-full pb-20">
-    <div class="flex w-full items-center justify-center gap-13 rounded-xl bg-white px-11 py-13 shadow-card">
-      <template v-for="(feature, index) in features" :key="feature.titleKey">
-        <span v-if="index > 0" aria-hidden="true" class="h-32 w-0 shrink-0 border-l border-tier-border" />
-        <div class="flex min-w-0 flex-1 items-center justify-center gap-5">
-          <QIcon :name="feature.icon" :size="24" />
-          <div class="flex flex-col items-start pt-6 leading-[13.125px] text-navy">
-            <p class="m-0 text-xs leading-[13.125px] font-medium">{{ $t(feature.titleKey) }}</p>
-            <p class="m-0 text-2xs leading-[13.125px] font-normal">{{ $t(feature.subKey) }}</p>
-          </div>
-        </div>
-      </template>
-    </div>
-  </div>
-
-  <TrustStrip />
 </template>
