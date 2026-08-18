@@ -107,9 +107,9 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-mpo flex min-h-screen flex-1 flex-col bg-white">
+  <div class="page-mpo flex flex-1 flex-col bg-white">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
-    <div class="mpo-main flex flex-col pb-[var(--spacing-content-bottom)] box-border">
+    <div class="mpo-main flex flex-col box-border">
       <!-- `gap: 0` : cet écran ne reprend pas le retrait de 30px sous la barre,
            le premier bloc vient à 8px (`.mpo-progress { margin-top: 8px }`). -->
       <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />

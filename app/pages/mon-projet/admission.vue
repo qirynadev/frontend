@@ -44,10 +44,10 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-mpa flex min-h-screen flex-1 flex-col bg-white">
+  <div class="page-mpa flex flex-1 flex-col bg-white">
     <!-- Les gouttières (16px latéraux) et le retrait supérieur viennent du
          layout mobile ; ne pas les doubler ici (cf. `mon-projet/index.vue`). -->
-    <div class="mpa-main flex flex-col gap-22 pb-[var(--spacing-content-bottom)] box-border">
+    <div class="mpa-main flex flex-col gap-22 box-border">
       <!-- Topbar : Retour + Logo + Cloche de notifications -->
       <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />
 

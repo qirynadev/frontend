@@ -37,9 +37,9 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rt flex min-h-screen flex-1 flex-col">
+  <div class="page-rt flex flex-1 flex-col">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
-    <div class="rt-main flex w-full max-w-full flex-col gap-15 pb-[var(--spacing-content-bottom)] box-border">
+    <div class="rt-main flex w-full max-w-full flex-col gap-15 box-border">
       <AppTopBar :back="true" back-to="/reglages" :notifications="3" />
 
       <section class="rt-intro w-full">

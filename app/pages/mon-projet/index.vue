@@ -83,8 +83,8 @@ usePageSeo(() => ({
 
     <!-- Les gouttières (16px) et le retrait supérieur viennent du layout
          mobile ; ne pas les doubler ici. -->
-    <div class="page-mp flex min-h-screen flex-1 flex-col bg-white">
-      <div class="mp-main flex w-full max-w-full flex-col gap-22 pb-[var(--spacing-content-bottom)] box-border">
+    <div class="page-mp flex flex-1 flex-col bg-white">
+      <div class="mp-main flex w-full max-w-full flex-col gap-22 box-border">
         <!-- Topbar : Retour + Logo + Cloche -->
         <AppTopBar :back="true" back-to="/" :notifications="3" :gap="0" />
 

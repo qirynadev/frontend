@@ -97,9 +97,9 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-mpl flex min-h-screen flex-1 flex-col bg-white">
+  <div class="page-mpl flex flex-1 flex-col bg-white">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
-    <div class="mpl-main flex flex-col pb-[var(--spacing-content-bottom)] box-border">
+    <div class="mpl-main flex flex-col box-border">
       <!-- `gap: 0` : pas de retrait sous la barre, le bandeau vient à 8px. -->
       <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />
 
