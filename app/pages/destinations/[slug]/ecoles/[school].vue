@@ -18,8 +18,10 @@
  * `.ed-form-card` porte l'icône **propre à la formation** (`f.icon`, 44×44,
  * sans cercle de fond) et des méta Grade/Durée qui varient par formation.
  * `SchoolFormation` n'a ni l'un ni l'autre (juste `title`/`description`) et
- * l'API ne les alimente pour aucune école : une icône générique et un texte
- * fixe remplacent la donnée absente, comme sur la liste d'écoles voisine.
+ * l'API ne les alimente pour aucune école : `formationPlaceholder()` reprend
+ * telles quelles les 4 valeurs que la maquette place pour sa première école
+ * (ESA) — décision du responsable (2026-08-18), le temps que l'API livre ces
+ * champs par formation. Signalé, pas inventé : à retirer dès que possible.
  *
  * La carte n'affiche **pas** `formation.description` (contrairement à
  * `f.desc` dans la maquette, dont la donnée d'essai tient en une phrase) :
@@ -104,6 +106,24 @@ const tabs = computed(() => {
 })
 
 const activeTab = ref('formations')
+
+/**
+ * Icône + grade + durée d'une formation, en l'absence de ces champs côté API
+ * (`SchoolFormation` n'a que `title`/`description` — voir plus bas). Cycle sur
+ * les 4 valeurs que `js/schools.js` place pour la première école (ESA) —
+ * signalé, pas inventé : dès que l'API livre ces champs par formation, ce
+ * repli disparaît au profit des vraies valeurs.
+ */
+const FORMATION_PLACEHOLDERS = [
+  { icon: 'ic-ed-form-1', gradeKey: 'school.detail.placeholderGradeMaster', durationKey: 'school.detail.placeholderDuration5' },
+  { icon: 'ic-ed-form-2', gradeKey: 'school.detail.placeholderGradeMaster', durationKey: 'school.detail.placeholderDuration2' },
+  { icon: 'ic-ed-form-3', gradeKey: 'school.detail.placeholderGradeMaster', durationKey: 'school.detail.placeholderDuration2' },
+  { icon: 'ic-ed-form-4', gradeKey: 'school.detail.placeholderGradeSpecialise', durationKey: 'school.detail.placeholderDuration1' },
+] as const
+
+function formationPlaceholder(index: number) {
+  return FORMATION_PLACEHOLDERS[index % FORMATION_PLACEHOLDERS.length]!
+}
 
 /**
  * Modale de détail d'une formation, à la place du renvoi vers l'offre du
@@ -310,14 +330,14 @@ useSchoolSchemaOrg(school)
 
           <div v-else-if="activeTab === 'formations'" class="flex w-full flex-col gap-16">
             <button
-              v-for="formation in school.formations"
+              v-for="(formation, index) in school.formations"
               :key="formation.title"
               type="button"
               class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-white p-20 text-left text-text shadow-card"
               @click="activeFormation = formation"
             >
               <div class="flex size-44 shrink-0 items-center justify-center overflow-hidden">
-                <QIcon name="ic-ed-grad" :size="44" class="text-primary" />
+                <QIcon :name="formationPlaceholder(index).icon" :size="44" class="text-primary" />
               </div>
 
               <div class="min-w-0 flex-1">
@@ -326,12 +346,12 @@ useSchoolSchemaOrg(school)
                 <div class="flex flex-wrap items-center gap-12 pt-6">
                   <span class="flex items-center gap-6 text-md leading-[16.5px] font-medium whitespace-nowrap text-text">
                     <QIcon name="ic-ed-grad" :size="12" :height="9" />
-                    <span>{{ $t('school.detail.founded') }}</span>
+                    <span>{{ $t(formationPlaceholder(index).gradeKey) }}</span>
                   </span>
                   <span class="text-md leading-[16.5px] font-bold text-border-slate">|</span>
                   <span class="flex items-center gap-6 text-md leading-[16.5px] font-medium whitespace-nowrap text-text">
                     <QIcon name="ic-ed-clock" :size="9" :height="9" />
-                    <span>{{ $t('school.detail.students') }}</span>
+                    <span>{{ $t(formationPlaceholder(index).durationKey) }}</span>
                   </span>
                 </div>
               </div>
@@ -340,15 +360,20 @@ useSchoolSchemaOrg(school)
             </button>
           </div>
 
-          <div v-else class="w-full">
-            <ul v-if="school.details.length > 0" class="m-0 flex list-disc flex-col gap-12 pl-18">
-              <li v-for="d in school.details" :key="d.title" class="text-lg leading-21 text-text">{{ d.title }}</li>
-            </ul>
+          <div v-else class="flex w-full flex-col gap-16">
+            <template v-if="school.details.length > 0">
+              <RichText v-for="d in school.details" :key="d.title" :content="d.description" />
+            </template>
             <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
           </div>
         </div>
       </div>
 
+      <!-- Espace de scroll sous le CTA flottant (`.ed-main::after`, 56px,
+           en plus du padding-bottom standard du layout) : sans lui, le bas
+           du contenu (dernière formation, fin du texte) se retrouve masqué
+           derrière le CTA une fois arrivé au bout du scroll. -->
+      <div class="h-56 shrink-0" aria-hidden="true" />
     </template>
   </PageState>
 
