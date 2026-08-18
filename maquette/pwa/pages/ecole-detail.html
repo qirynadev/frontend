@@ -70,18 +70,9 @@
 
         <div class="ed-content">
           <div class="ed-tabs" role="tablist" aria-label="Sections">
-            <button type="button" class="ed-tab" role="tab" aria-selected="false" data-ed-tab="presentation">
-              <svg class="ed-tab-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 2.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5Z" stroke="currentColor" stroke-linejoin="round"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-linecap="round"/></svg>
-              <span>Présentation</span>
-            </button>
-            <button type="button" class="ed-tab is-active" role="tab" aria-selected="true" data-ed-tab="formations">
-              <svg class="ed-tab-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5 8 1.5l5.5 3v4.5L8 12.5 2.5 9V4.5Z" stroke="currentColor" stroke-linejoin="round"/><path d="M8 1.5v11M2.5 4.5 8 7.5l5.5-3" stroke="currentColor" stroke-linejoin="round"/></svg>
-              <span>Formations</span>
-            </button>
-            <button type="button" class="ed-tab" role="tab" aria-selected="false" data-ed-tab="points">
-              <svg class="ed-tab-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 9.6 5.8l4.6.4-3.5 3 1 4.5L8 11.8 4.3 13.7l1-4.5-3.5-3 4.6-.4L8 1.5Z" stroke="currentColor" stroke-linejoin="round"/></svg>
-              <span>Points forts</span>
-            </button>
+            <button type="button" class="ed-tab" role="tab" aria-selected="false" data-ed-tab="presentation">Présentation</button>
+            <button type="button" class="ed-tab is-active" role="tab" aria-selected="true" data-ed-tab="formations">Formations</button>
+            <button type="button" class="ed-tab" role="tab" aria-selected="false" data-ed-tab="points">Points forts</button>
           </div>
 
           <div class="ed-panels">
@@ -99,21 +90,22 @@
           </div>
         </div>
 
-      </div>
-    </div>
+        <div class="ed-cta">
+          <div class="ed-cta-left">
+            <span class="ed-cta-icon">
+              <img src="../assets/icons/ic-ed-cta-headset.svg" alt="" width="24" height="24" />
+            </span>
+            <div class="ed-cta-copy">
+              <p class="ed-cta-title">Souhaitez-vous être accompagné pour intégrer cette école&nbsp;?</p>
+              <p class="ed-cta-text">Nos conseillers vous guident à<br />chaque étape de votre candidature.</p>
+            </div>
+          </div>
+          <a href="offre-orientation.html" class="ed-cta-btn" data-ed-cta>
+            <span>Être accompagnée</span>
+            <img src="../assets/icons/ic-ed-cta-arrow.svg" alt="" width="8" height="7" />
+          </a>
+        </div>
 
-    <a href="offre-orientation.html" class="ed-float-cta btn-primary" data-ed-float-cta>Être accompagné pour candidater</a>
-
-    <div class="ed-form-modal" data-ed-form-modal hidden aria-hidden="true">
-      <div class="ed-form-modal-backdrop" data-ed-form-modal-close tabindex="-1"></div>
-      <div class="ed-form-modal-panel" role="dialog" aria-modal="true" aria-labelledby="ed-form-modal-title">
-        <header class="ed-form-modal-header">
-          <h2 id="ed-form-modal-title" class="ed-form-modal-title" data-ed-form-modal-title></h2>
-          <button type="button" class="ed-form-modal-close" data-ed-form-modal-close aria-label="Fermer">
-            <img src="../assets/icons/ic-menu-close.svg" alt="" width="14" height="14" />
-          </button>
-        </header>
-        <div class="ed-form-modal-body" data-ed-form-modal-body></div>
       </div>
     </div>
 
@@ -144,7 +136,7 @@
 </div>
 
 <script type="module">
-  import { getSchoolById, buildFormationDetailHtml } from '../js/schools.js';
+  import { getSchoolById } from '../js/schools.js';
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -201,73 +193,12 @@
       .join('');
   }
 
-  const modal = document.querySelector('[data-ed-form-modal]');
-  const modalTitle = document.querySelector('[data-ed-form-modal-title]');
-  const modalBody = document.querySelector('[data-ed-form-modal-body]');
-  const scrollEl = document.querySelector('.page-ed .ed-main');
-  const floatCta = document.querySelector('[data-ed-float-cta]');
-  let modalOpen = false;
-  let lastScroll = scrollEl?.scrollTop || 0;
-  const SCROLL_DELTA = 6;
-
-  function setFloatCtaVisible(visible) {
-    if (!floatCta || modalOpen) return;
-    floatCta.classList.toggle('is-hidden', !visible);
-  }
-
-  function updateFloatCtaFromScroll() {
-    if (!scrollEl || !floatCta || modalOpen) return;
-
-    const st = scrollEl.scrollTop;
-    const maxScroll = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
-    const atBottom = maxScroll - st <= 32;
-    const delta = st - lastScroll;
-
-    if (atBottom || st <= 8) {
-      setFloatCtaVisible(true);
-    } else if (delta > SCROLL_DELTA) {
-      setFloatCtaVisible(false);
-    } else if (delta < -SCROLL_DELTA) {
-      setFloatCtaVisible(true);
-    }
-
-    lastScroll = st;
-  }
-
-  function openFormationModal(formation) {
-    if (!modal || !modalTitle || !modalBody) return;
-    modalTitle.textContent = formation.title;
-    modalBody.innerHTML = buildFormationDetailHtml(formation.detail);
-    modal.hidden = false;
-    modal.setAttribute('aria-hidden', 'false');
-    scrollEl?.classList.add('ed-scroll-locked');
-    modalOpen = true;
-    floatCta?.classList.add('is-hidden');
-  }
-
-  function closeFormationModal() {
-    if (!modal) return;
-    modal.hidden = true;
-    modal.setAttribute('aria-hidden', 'true');
-    scrollEl?.classList.remove('ed-scroll-locked');
-    modalOpen = false;
-    updateFloatCtaFromScroll();
-  }
-
-  document.querySelectorAll('[data-ed-form-modal-close]').forEach((el) => {
-    el.addEventListener('click', closeFormationModal);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal && !modal.hidden) closeFormationModal();
-  });
-
   const formations = document.querySelector('[data-ed-formations]');
   if (formations) {
     formations.innerHTML = school.formations
       .map(
         (f, i) => `
-      <button type="button" class="ed-form-card" data-ed-form-index="${i}">
+      <a class="ed-form-card" href="offre-orientation.html?ecole=${encodeURIComponent(school.id)}&formation=${encodeURIComponent(String(i))}&pays=${encodeURIComponent(pays)}&domaine=${encodeURIComponent(domaine)}">
         <div class="ed-form-icon">
           <img src="${f.icon}" alt="" width="44" height="44" />
         </div>
@@ -287,17 +218,9 @@
           <p>${f.desc}</p>
         </div>
         <img class="ed-form-chevron" src="../assets/icons/ic-ed-chevron.svg" alt="" width="16" height="16" />
-      </button>`
+      </a>`
       )
       .join('');
-
-    formations.querySelectorAll('[data-ed-form-index]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const idx = Number(btn.dataset.edFormIndex);
-        const formation = school.formations[idx];
-        if (formation) openFormationModal(formation);
-      });
-    });
   }
 
   const points = document.querySelector('[data-ed-points]');
@@ -319,8 +242,6 @@
       panel.classList.toggle('is-active', on);
       panel.hidden = !on;
     });
-    lastScroll = scrollEl?.scrollTop || 0;
-    updateFloatCtaFromScroll();
   }
 
   tabs.forEach((tab) => {
@@ -330,27 +251,9 @@
   const initialTab = params.get('tab') || 'formations';
   activateTab(['presentation', 'formations', 'points'].includes(initialTab) ? initialTab : 'formations');
 
-  if (scrollEl && floatCta) {
-    floatCta.href = `offre-orientation.html?ecole=${encodeURIComponent(school.id)}&pays=${encodeURIComponent(pays)}&domaine=${encodeURIComponent(domaine)}`;
-
-    let ticking = false;
-    scrollEl.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            updateFloatCtaFromScroll();
-            ticking = false;
-          });
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
-
-    updateFloatCtaFromScroll();
-  } else if (floatCta) {
-    floatCta.href = `offre-orientation.html?ecole=${encodeURIComponent(school.id)}&pays=${encodeURIComponent(pays)}&domaine=${encodeURIComponent(domaine)}`;
+  const cta = document.querySelector('[data-ed-cta]');
+  if (cta) {
+    cta.href = `offre-orientation.html?ecole=${encodeURIComponent(school.id)}&pays=${encodeURIComponent(pays)}&domaine=${encodeURIComponent(domaine)}`;
   }
 </script>
 </body>

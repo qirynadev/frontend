@@ -5612,36 +5612,12 @@ a.objectifs-cta:focus {
   color: #fff;
 }
 
-.page-of .formule-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  width: 100%;
-  padding-top: 22px;
-  padding-bottom: 22px;
-  box-sizing: border-box;
-}
-
-.page-of .formule-stack .formule-card {
-  flex: none;
-  width: 100%;
-  height: auto;
-  min-height: 0;
-}
-
-.page-of .formule-stack .formule-card-foot {
-  margin-top: 8px;
-}
-
-.page-of .formule-stack .formule-card-list li {
-  align-items: flex-start;
-}
-
 .formule-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding-bottom: 30px;
 }
 
 .formule-back {
@@ -8290,15 +8266,6 @@ a.formule-card-btn:focus {
 /* ─── Fiche école (Figma 440:160) ─────────────────────────────── */
 .page-ed {
   --ed-block-gap: 22px;
-  height: 100dvh;
-  max-height: 100dvh;
-}
-
-@media (min-width: 769px) {
-  .page-ed {
-    height: calc(100dvh - 48px);
-    max-height: calc(100dvh - 48px);
-  }
 }
 
 .page-ed .ed-header {
@@ -8307,35 +8274,18 @@ a.formule-card-btn:focus {
   display: flex;
   flex-direction: column;
   padding: 0 var(--q-gutter) 24px;
-  overflow: hidden;
 }
 
 .page-ed .ed-main {
   flex: 1;
   min-height: 0;
-  overflow-x: hidden;
   overflow-y: auto;
-  overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   padding-top: 16px;
   padding-bottom: var(--q-content-pad-bottom);
   display: flex;
   flex-direction: column;
   gap: var(--ed-block-gap);
-}
-
-.page-ed .ed-main::-webkit-scrollbar {
-  display: none;
-}
-
-/* Espace scroll sous le CTA flottant (nav inchangée — même token que les autres pages) */
-.page-ed .ed-main::after {
-  content: '';
-  display: block;
-  height: 56px;
-  flex-shrink: 0;
 }
 
 .ed-topbar {
@@ -8609,7 +8559,7 @@ a.formule-card-btn:focus {
   align-items: stretch;
   width: 100%;
   margin-top: 0;
-  padding: 0 10px;
+  padding: 0 24px;
   border-bottom: 1px solid #f1f5f9;
   box-sizing: border-box;
 }
@@ -8627,22 +8577,6 @@ a.formule-card-btn:focus {
   cursor: pointer;
   position: relative;
   white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-
-.ed-tab-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  display: block;
-  color: #191919;
-}
-
-.ed-tab.is-active .ed-tab-icon {
-  color: #5a2ef1;
 }
 
 .ed-tab.is-active {
@@ -8706,9 +8640,6 @@ a.formule-card-btn:focus {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  border: 0;
-  font: inherit;
-  text-align: left;
 }
 
 .ed-form-icon {
@@ -8884,136 +8815,6 @@ a.formule-card-btn:focus {
   display: block;
 }
 
-/* CTA flottant fiche école */
-.page-ed .ed-float-cta {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%) translateY(0);
-  width: calc(100% - (var(--q-nav-inset) * 2));
-  max-width: calc(var(--q-shell-max) - (var(--q-nav-inset) * 2));
-  bottom: calc(max(12px, env(safe-area-inset-bottom, 0px)) + 75px + 10px);
-  z-index: 49;
-  margin-top: 0;
-  box-sizing: border-box;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-  box-shadow: 0 4px 16px rgba(88, 44, 253, 0.25);
-}
-
-.page-ed .ed-float-cta.is-hidden {
-  transform: translateX(-50%) translateY(calc(100% + 24px));
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Modale détail formation */
-.ed-form-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.ed-form-modal[hidden] {
-  display: none !important;
-}
-
-.ed-form-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(13, 27, 62, 0.45);
-}
-
-.ed-form-modal-panel {
-  position: relative;
-  width: 100%;
-  max-width: var(--q-shell-max);
-  max-height: min(85vh, 640px);
-  background: #fff;
-  border-radius: 16px 16px 0 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: ed-form-modal-in 0.28s ease;
-}
-
-@keyframes ed-form-modal-in {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-.ed-form-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 20px 20px 12px;
-  border-bottom: 1px solid #f1f5f9;
-  flex-shrink: 0;
-}
-
-.ed-form-modal-title {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 21px;
-  color: #0d1b3e;
-  padding-right: 8px;
-}
-
-.ed-form-modal-close {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: #f5f3ff;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  cursor: pointer;
-  padding: 0;
-}
-
-.ed-form-modal-close img {
-  display: block;
-}
-
-.page-ed .ed-main.ed-scroll-locked {
-  overflow: hidden;
-}
-
-.ed-form-modal-body {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 16px 20px calc(24px + env(safe-area-inset-bottom, 0px));
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.ed-form-modal-section h3 {
-  margin: 0 0 6px;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 20px;
-  color: #5a2ef1;
-}
-
-.ed-form-modal-section p {
-  margin: 0;
-  font-family: 'Jost', sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 21px;
-  color: #191919;
-}
-
 @media (max-width: 380px) {
   .ed-tabs {
     padding: 0 8px;
@@ -9021,12 +8822,6 @@ a.formule-card-btn:focus {
 
   .ed-tab {
     font-size: 12px;
-    gap: 8px;
-  }
-
-  .ed-tab-icon {
-    width: 14px;
-    height: 14px;
   }
 
   .ed-cta-left {
@@ -9047,40 +8842,6 @@ a.formule-card-btn:focus {
 }
 
 /* ─── Offre d'Orientation (Figma 442:815) ─────────────────────── */
-.page-oo .formule-header {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 0 var(--q-gutter) 24px;
-  border-radius: 0;
-  flex-shrink: 1;
-}
-
-.page-oo .formule-main {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-top: 16px;
-  padding-bottom: var(--q-content-pad-bottom);
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-.page-oo .oo-formule-wrap {
-  width: 100%;
-}
-
-.page-oo .oo-formule-wrap .formule-card {
-  width: 100%;
-}
-
-.page-oo .formule-card-list span {
-  line-height: 18px;
-}
-
 .page-oo .oo-header {
   flex: 1;
   min-height: 0;
@@ -14739,26 +14500,6 @@ html[data-theme="dark"] .lpp-step-card,
 html[data-theme="dark"] .lpp-order-card,
 html[data-theme="dark"] .paiement-welcome,
 html[data-theme="dark"] .paiement-help,
-html[data-theme="dark"] .ed-form-modal-panel {
-  background: var(--q-bg-card);
-}
-
-html[data-theme="dark"] .ed-form-modal-header {
-  border-bottom-color: var(--q-border);
-}
-
-html[data-theme="dark"] .ed-form-modal-title,
-html[data-theme="dark"] .ed-form-modal-section p,
-html[data-theme="dark"] .ed-presentation p,
-html[data-theme="dark"] .ed-points li,
-html[data-theme="dark"] .ed-tab {
-  color: var(--q-text);
-}
-
-html[data-theme="dark"] .ed-form-modal-close {
-  background: var(--q-surface-2);
-}
-
 html[data-theme="dark"] .ed-form-card,
 html[data-theme="dark"] .dom-card,
 html[data-theme="dark"] .dest-card,

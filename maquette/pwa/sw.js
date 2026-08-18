@@ -1,4 +1,4 @@
-const CACHE = "qiryna-pwa-v93";
+const CACHE = "qiryna-pwa-v86";
 const ASSETS = [
   "./",
   "./index.html",
@@ -435,9 +435,6 @@ const ASSETS = [
   "./assets/icons/ic-ed-form-2.svg",
   "./assets/icons/ic-ed-form-3.svg",
   "./assets/icons/ic-ed-form-4.svg",
-  "./assets/icons/ic-ed-tab-presentation.svg",
-  "./assets/icons/ic-ed-tab-formations.svg",
-  "./assets/icons/ic-ed-tab-points.svg",
   "./assets/icons/ic-ed-cta-headset.svg",
   "./assets/icons/ic-ed-cta-arrow.svg",
   "./assets/icons/ic-step-connector-long.svg",

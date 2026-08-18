@@ -9,13 +9,20 @@
  * pour rien.
  *
  * Ce qu'il fait :
- *   1. clone (première fois) ou `git pull` (ensuite) le dépôt dans un cache
- *      gitignoré (`.cache/maquette-src/`) ;
+ *   1. clone (première fois) ou remet à jour (ensuite) le dépôt dans un cache
+ *      gitignoré (`.cache/maquette-src/`), sur la branche `release` ;
  *   2. recopie son dossier `pwa/` vers deux emplacements :
  *      - `maquette/pwa/`     → référence versionnée, citée par les composants ;
  *      - `public/_maquette/` → copie servie en dev pour le harnais de mesure ;
  *   3. normalise les fins de ligne en LF sur les fichiers texte, pour que la
  *      copie n'introduise aucune modification fantôme dans Git.
+ *
+ * Pourquoi `release` et pas `main` : côté maquette, `main` est la branche de
+ * travail de l'équipe design (écrans en cours d'ajustement, pas encore
+ * relus) ; une fois un écran validé, il est mergé dans `release` — c'est
+ * cette branche qui fait foi comme spécification (confirmé par Kader
+ * Souary, 2026-08-18). Prendre `main` reviendrait à porter des écrans qui
+ * peuvent encore changer.
  *
  * Usage : `npm run maquette:sync`
  *
@@ -29,6 +36,7 @@ import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const REPO = 'https://github.com/UzaLab/qiryna.git'
+const BRANCH = 'release'
 const CACHE = join(ROOT, '.cache', 'maquette-src')
 const SOURCE = join(CACHE, 'pwa')
 const TARGETS = [join(ROOT, 'maquette', 'pwa'), join(ROOT, 'public', '_maquette')]
@@ -42,14 +50,19 @@ function git(args, cwd) {
 
 function fetchRepo() {
   if (existsSync(join(CACHE, '.git'))) {
-    console.log('→ mise à jour du cache (git pull)…')
-    git(['pull', '--ff-only', '--depth', '1'], CACHE)
+    // `fetch` + `reset --hard` plutôt que `pull` : fonctionne même si le
+    // cache existant est resté sur une autre branche (ex. `main`, avant ce
+    // changement) — pas besoin de le recréer à la main.
+    console.log(`→ mise à jour du cache (branche ${BRANCH})…`)
+    git(['fetch', '--depth', '1', 'origin', BRANCH], CACHE)
+    git(['checkout', '-B', BRANCH, 'FETCH_HEAD'], CACHE)
+    git(['reset', '--hard', 'FETCH_HEAD'], CACHE)
     return
   }
-  console.log('→ premier clone du dépôt maquette…')
+  console.log(`→ premier clone du dépôt maquette (branche ${BRANCH})…`)
   mkdirSync(dirname(CACHE), { recursive: true })
   rmSync(CACHE, { recursive: true, force: true })
-  git(['clone', '--depth', '1', REPO, CACHE])
+  git(['clone', '--depth', '1', '--branch', BRANCH, REPO, CACHE])
 }
 
 /** Réécrit chaque fichier texte en LF ; laisse le binaire intact. */
