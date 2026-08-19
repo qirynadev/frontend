@@ -571,8 +571,7 @@
   },
   "offer": {
     "choose": "Choisir cette formule",
-    "domainHeroSubtitle": "Nous vous accompagnons\nà chaque étape vers\nles meilleures écoles.",
-    "domainHeroTitle": "Vous méritez\nle meilleur.",
+    "domainCardName": "Accompagnement candidature",
     "emptyDescription": "Les tarifs de cette offre ne sont pas encore publiés.",
     "emptyTitle": "Aucune formule disponible",
     "fallbackTitle": "Nos formules",

@@ -27,6 +27,12 @@ import type { OfferTier } from '~/core/contracts'
  * `.formule-card--acon`, pas la logique de rang (`index`/`total` valent
  * toujours 0/1 pour un domaine, ce qui donnerait le vert « kili » sinon).
  * Bouton « Démarrer mon accompagnement », pas « Choisir cette formule ».
+ *
+ * Nom de carte fixe (« Accompagnement candidature », `offer.domainCardName`)
+ * plutôt que `tier.name` (le domaine, ex. « Management ») — décision du
+ * responsable (2026-08-18), en même temps que le retrait du bandeau `.oo-hero`
+ * sur `offres/[slug].vue` : reprend `offre-orientation.html` au pied de la
+ * lettre plutôt que d'exposer le nom du domaine sur la carte elle-même.
  */
 const props = withDefaults(
   defineProps<{
@@ -121,7 +127,7 @@ const accent = computed(() => {
       <QIcon v-else :name="accent.icon" :size="36" />
 
       <h2 :class="['mt-4 mb-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', accent.name]">
-        {{ tier.name }}
+        {{ domain ? $t('offer.domainCardName') : tier.name }}
       </h2>
 
       <p v-if="tagline" class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">

@@ -571,8 +571,7 @@
   },
   "offer": {
     "choose": "Choose this plan",
-    "domainHeroSubtitle": "We support you\nat every step towards\nthe best schools.",
-    "domainHeroTitle": "You deserve\nthe best.",
+    "domainCardName": "Application support",
     "emptyDescription": "Pricing for this offer hasn’t been published yet.",
     "emptyTitle": "No plans available",
     "fallbackTitle": "Our plans",

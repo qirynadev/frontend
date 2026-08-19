@@ -6,9 +6,8 @@
  *
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
- * | barre supérieure | `.formule-topbar` `padding-bottom: 30px` (langue) · `.oo-hero` : 22px sous la barre (domaine) |
+ * | barre supérieure | `.formule-topbar` `padding-bottom: 30px` (langue) · `gap=0` (domaine, plus de bandeau — voir plus bas) |
  * | introduction (langue) | h1 20px `-0.65px` `line-height: normal` · p 14px/22,75px |
- * | bannière (domaine) | `.oo-hero` dégradé, rayon 10, `min-height: 196px`, `padding: 24px 12px` sous 380px |
  * | carrousel (langue) | `.formule-slider` `max-width: 360px`, `padding: 20px 0 16px` (plein écran sous 380px) |
  * | cadre (langue) | `.formule-slider-frame` grille `28px 1fr 28px`, `gap: 4px` (24px / 2px sous 380px) |
  * | défilement (langue) | piste translatée, `transition: transform .32s ease` |
@@ -78,7 +77,11 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
 
 <template>
   <div>
-    <AppTopBar back back-to="/langues" :notifications="3" :gap="isDomain ? 22 : 0" />
+    <!-- `gap=0` dans les deux cas : le bandeau .oo-hero qui justifiait les
+         22px sous la barre pour un domaine a été retiré (2026-08-18) — le
+         seul espacement restant vient du `pt-22` du bloc palier unique
+         plus bas, pas question de cumuler les deux. -->
+    <AppTopBar back back-to="/langues" :notifications="3" :gap="0" />
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
       <template #loading>
@@ -89,32 +92,11 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
       </template>
 
       <template v-if="offer">
-        <!-- Bannière (domaine, .oo-hero) : remplace l'introduction générique,
-             pas de carrousel pour un palier unique — voir offre-orientation.html. -->
-        <div
-          v-if="isDomain"
-          class="box-border flex w-full min-h-196 items-center justify-between gap-8 overflow-hidden rounded-xl bg-[image:var(--gradient-oo-hero)] py-24 px-12"
-        >
-          <div class="min-w-0 flex-1">
-            <h1 class="m-0 text-exact-22 leading-30 font-semibold whitespace-pre-line text-text">
-              {{ $t('offer.domainHeroTitle') }}
-            </h1>
-            <p class="m-0 mt-12 text-xl leading-20 font-normal whitespace-pre-line text-text">
-              {{ $t('offer.domainHeroSubtitle') }}
-            </p>
-          </div>
-          <div class="relative size-130 shrink-0 overflow-visible" aria-hidden="true">
-            <img
-              src="/img/hero-gift.webp"
-              alt=""
-              width="218"
-              height="145"
-              class="pointer-events-none absolute top-8 -left-66 block h-145 w-218 max-w-none bg-transparent object-contain object-center"
-            >
-          </div>
-        </div>
-
-        <div v-else class="w-full">
+        <!-- Bannière (langue/logement uniquement) : retirée pour un domaine
+             à la demande du responsable (2026-08-18) — plus de bandeau
+             .oo-hero au-dessus de la carte, voir aussi le nom fixe de la
+             carte plus bas. -->
+        <div v-if="!isDomain" class="w-full">
           <h1 class="m-0 text-4xl leading-normal font-semibold tracking-tight text-text">
             {{ $t('offer.title') }}
           </h1>
