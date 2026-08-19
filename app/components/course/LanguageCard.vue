@@ -70,6 +70,10 @@ const badgeClass = computed(() =>
   >
     <!-- Drapeau rond de la maquette. `QIcon` le sert depuis `public/img/icons/flags/`. -->
     <QIcon v-if="flagName" :name="flagName" :size="32" class="rounded-xs object-cover" />
+    <!-- `rounded-full`, pas `rounded-xs` : contrairement aux SVG de la
+         maquette (déjà dessinés ronds), le drapeau de l'API est un
+         rectangle — seul un arrondi complet le fait paraître rond, pour
+         toute langue ajoutée après coup sans attendre un nouvel asset. -->
     <img
       v-else-if="course.flag"
       :src="course.flag"
@@ -77,7 +81,7 @@ const badgeClass = computed(() =>
       width="32"
       height="32"
       loading="lazy"
-      class="block size-32 shrink-0 rounded-xs object-cover"
+      class="block size-32 shrink-0 rounded-full object-cover"
     >
     <span v-else class="block size-32 shrink-0 rounded-xs bg-surface-2" />
 
