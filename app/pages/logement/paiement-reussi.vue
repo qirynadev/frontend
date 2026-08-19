@@ -138,6 +138,10 @@ usePageSeo(() => ({
         class="mt-22"
       />
 
+      <!-- Progression / onglets / formulaire : réservés au paiement confirmé
+           — sinon l'alerte ("échoué"/"en attente") cohabitait avec "75 %
+           terminé" et "Payé le [date]", un vrai contresens. -->
+      <template v-if="confirmed">
       <!-- Progression -->
       <section class="mt-22 box-border w-full rounded-xl border border-lp-progress-border bg-white p-17">
         <div class="flex items-start justify-between gap-12">
@@ -320,6 +324,7 @@ usePageSeo(() => ({
           </button>
         </form>
       </div>
+      </template>
     </PageState>
   </div>
 </template>

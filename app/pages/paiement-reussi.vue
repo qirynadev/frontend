@@ -116,80 +116,85 @@ usePageSeo(() => ({
         :message="$t('confirmation.pendingDescription')"
       />
 
-      <!-- Réussite -->
-      <div class="flex flex-col items-center">
-        <div class="h-123 w-276 shrink-0 overflow-hidden">
-          <img
-            src="/img/hero-paiement.webp"
-            alt=""
-            width="276"
-            height="123"
-            class="pointer-events-none size-full object-cover"
+      <!-- Réussite / Bienvenue / étapes : réservées au paiement confirmé —
+           sinon l'alerte ci-dessus ("échoué"/"en attente") cohabitait avec
+           une coche verte "Paiement réussi !", un vrai contresens. -->
+      <template v-if="confirmed">
+        <!-- Réussite -->
+        <div class="flex flex-col items-center">
+          <div class="h-123 w-276 shrink-0 overflow-hidden">
+            <img
+              src="/img/hero-paiement.webp"
+              alt=""
+              width="276"
+              height="123"
+              class="pointer-events-none size-full object-cover"
+            >
+          </div>
+
+          <h1
+            class="m-0 text-5xl leading-[31.25px] font-semibold tracking-[-0.625px] whitespace-nowrap text-text max-[375.02px]:whitespace-normal"
           >
-        </div>
+            {{ $t('checkout.success.title') }}
+          </h1>
 
-        <h1
-          class="m-0 text-5xl leading-[31.25px] font-semibold tracking-[-0.625px] whitespace-nowrap text-text max-[375.02px]:whitespace-normal"
-        >
-          {{ $t('checkout.success.title') }}
-        </h1>
-
-        <div class="pt-8 text-center text-xl leading-normal font-normal whitespace-pre-line text-text">
-          {{ $t('checkout.success.subtitle') }}
-        </div>
-      </div>
-
-      <!-- Bienvenue -->
-      <div>
-        <div class="flex items-start gap-16 rounded-xl border border-welcome-border bg-welcome-bg px-10 py-21">
-          <QIcon name="ic-gift" :size="44" />
-          <div class="min-w-0">
-            <p class="m-0 text-base leading-20 font-bold text-text">
-              {{ $t('checkout.success.welcomeTitle') }}
-            </p>
-            <p class="mt-4 mb-0 text-sm leading-16 font-normal text-text">
-              {{ $t('checkout.success.welcomeDescription') }}
-            </p>
+          <div class="pt-8 text-center text-xl leading-normal font-normal whitespace-pre-line text-text">
+            {{ $t('checkout.success.subtitle') }}
           </div>
         </div>
-      </div>
 
-      <!-- Et maintenant ? -->
-      <div>
-        <h2 class="m-0 text-xl leading-16 font-semibold tracking-wider text-text">
-          {{ $t('checkout.success.stepsHeading') }}
-        </h2>
-
-        <div class="relative flex min-h-205 items-start pt-10">
-          <!-- Séparateurs posés en absolu aux quarts, pas entre les colonnes :
-               ils restent alignés quel que soit le retour à la ligne des textes. -->
-          <QIcon
-            v-for="position in ['left-[calc(25%-10px)]', 'left-[calc(50%-10px)]', 'left-[calc(75%-10px)]']"
-            :key="position"
-            name="ic-step-divider"
-            :size="20"
-            :height="8"
-            :class="['pointer-events-none absolute top-30', position]"
-          />
-
-          <div v-for="(step, index) in steps" :key="step.icon" class="flex min-w-0 flex-1 flex-col items-center gap-11">
-            <div class="flex w-88 flex-col items-center gap-18">
-              <QIcon :name="step.icon" :size="50" />
-              <span
-                :class="[
-                  'flex h-20 w-21 items-center justify-center rounded-full text-md leading-20 font-semibold text-white',
-                  step.tone,
-                ]"
-              >{{ index + 1 }}</span>
-            </div>
-
-            <div class="flex w-full flex-col items-center gap-5 text-center">
-              <p class="m-0 text-sm leading-14 font-bold text-text">{{ $t(step.titleKey) }}</p>
-              <p class="m-0 min-h-32 text-2xs leading-normal font-medium text-text">{{ $t(step.descKey) }}</p>
+        <!-- Bienvenue -->
+        <div>
+          <div class="flex items-start gap-16 rounded-xl border border-welcome-border bg-welcome-bg px-10 py-21">
+            <QIcon name="ic-gift" :size="44" />
+            <div class="min-w-0">
+              <p class="m-0 text-base leading-20 font-bold text-text">
+                {{ $t('checkout.success.welcomeTitle') }}
+              </p>
+              <p class="mt-4 mb-0 text-sm leading-16 font-normal text-text">
+                {{ $t('checkout.success.welcomeDescription') }}
+              </p>
             </div>
           </div>
         </div>
-      </div>
+
+        <!-- Et maintenant ? -->
+        <div>
+          <h2 class="m-0 text-xl leading-16 font-semibold tracking-wider text-text">
+            {{ $t('checkout.success.stepsHeading') }}
+          </h2>
+
+          <div class="relative flex min-h-205 items-start pt-10">
+            <!-- Séparateurs posés en absolu aux quarts, pas entre les colonnes :
+                 ils restent alignés quel que soit le retour à la ligne des textes. -->
+            <QIcon
+              v-for="position in ['left-[calc(25%-10px)]', 'left-[calc(50%-10px)]', 'left-[calc(75%-10px)]']"
+              :key="position"
+              name="ic-step-divider"
+              :size="20"
+              :height="8"
+              :class="['pointer-events-none absolute top-30', position]"
+            />
+
+            <div v-for="(step, index) in steps" :key="step.icon" class="flex min-w-0 flex-1 flex-col items-center gap-11">
+              <div class="flex w-88 flex-col items-center gap-18">
+                <QIcon :name="step.icon" :size="50" />
+                <span
+                  :class="[
+                    'flex h-20 w-21 items-center justify-center rounded-full text-md leading-20 font-semibold text-white',
+                    step.tone,
+                  ]"
+                >{{ index + 1 }}</span>
+              </div>
+
+              <div class="flex w-full flex-col items-center gap-5 text-center">
+                <p class="m-0 text-sm leading-14 font-bold text-text">{{ $t(step.titleKey) }}</p>
+                <p class="m-0 min-h-32 text-2xs leading-normal font-medium text-text">{{ $t(step.descKey) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
 
       <!-- Une question ? -->
       <div>

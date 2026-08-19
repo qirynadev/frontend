@@ -140,83 +140,88 @@ usePageSeo(() => ({
         :message="$t('confirmation.pendingDescription')"
       />
 
-      <!-- Réussite -->
-      <div class="flex w-full items-center pl-26 max-xs:items-start max-xs:pl-0">
-        <div class="relative size-96 shrink-0" aria-hidden="true">
-          <span class="absolute -top-4 -left-4 text-base leading-16 text-spark-1">✦</span>
-          <span class="absolute top-8 left-[94.48px] text-base leading-16 text-spark-2">✦</span>
-          <span class="absolute top-88 left-[70.48px] text-base leading-16 text-spark-3">✦</span>
-          <span class="absolute top-76 -left-8 text-base leading-16 text-spark-2">✦</span>
-          <div
-            class="pointer-events-none absolute -top-[0.86px] -left-[0.86px] size-[97.724px] rounded-full bg-glow opacity-85 blur-[16.287px]"
-          />
-          <div class="absolute top-8 left-8 flex size-80 items-center justify-center rounded-full bg-white shadow-glow">
-            <QIcon name="ic-opp-check" :size="40" />
+      <!-- Réussite / étapes : réservées au paiement confirmé — sinon
+           l'alerte ("échoué"/"en attente") cohabitait avec la grande coche
+           verte "Paiement réussi !", un vrai contresens. -->
+      <template v-if="confirmed">
+        <!-- Réussite -->
+        <div class="flex w-full items-center pl-26 max-xs:items-start max-xs:pl-0">
+          <div class="relative size-96 shrink-0" aria-hidden="true">
+            <span class="absolute -top-4 -left-4 text-base leading-16 text-spark-1">✦</span>
+            <span class="absolute top-8 left-[94.48px] text-base leading-16 text-spark-2">✦</span>
+            <span class="absolute top-88 left-[70.48px] text-base leading-16 text-spark-3">✦</span>
+            <span class="absolute top-76 -left-8 text-base leading-16 text-spark-2">✦</span>
+            <div
+              class="pointer-events-none absolute -top-[0.86px] -left-[0.86px] size-[97.724px] rounded-full bg-glow opacity-85 blur-[16.287px]"
+            />
+            <div class="absolute top-8 left-8 flex size-80 items-center justify-center rounded-full bg-white shadow-glow">
+              <QIcon name="ic-opp-check" :size="40" />
+            </div>
+          </div>
+
+          <div class="w-254 shrink-0 pl-16 max-xs:w-auto max-xs:min-w-0 max-xs:flex-1">
+            <h1
+              class="m-0 text-3xl leading-30 font-semibold tracking-[-0.6px] whitespace-nowrap text-text max-xs:text-exact-16 max-xs:leading-24 max-xs:whitespace-normal"
+            >
+              {{ $t('orientation.confirmation.title') }}
+            </h1>
+            <p class="m-0 max-w-238 pt-4 text-sm leading-[17.875px] font-medium whitespace-pre-line text-text">
+              {{ $t('orientation.confirmation.subtitle') }}
+            </p>
           </div>
         </div>
 
-        <div class="w-254 shrink-0 pl-16 max-xs:w-auto max-xs:min-w-0 max-xs:flex-1">
-          <h1
-            class="m-0 text-3xl leading-30 font-semibold tracking-[-0.6px] whitespace-nowrap text-text max-xs:text-exact-16 max-xs:leading-24 max-xs:whitespace-normal"
-          >
-            {{ $t('orientation.confirmation.title') }}
-          </h1>
-          <p class="m-0 max-w-238 pt-4 text-sm leading-[17.875px] font-medium whitespace-pre-line text-text">
-            {{ $t('orientation.confirmation.subtitle') }}
-          </p>
-        </div>
-      </div>
+        <!-- Prochaines étapes -->
+        <div class="flex w-full flex-col gap-10">
+          <h2 class="m-0 text-xl leading-24 font-semibold text-text">{{ $t('orientation.confirmation.stepsHeading') }}</h2>
 
-      <!-- Prochaines étapes -->
-      <div class="flex w-full flex-col gap-10">
-        <h2 class="m-0 text-xl leading-24 font-semibold text-text">{{ $t('orientation.confirmation.stepsHeading') }}</h2>
-
-        <div ref="stepsList" class="relative flex w-full flex-col gap-10">
-          <div
-            aria-hidden="true"
-            class="pointer-events-none absolute left-10 z-0 -ml-[0.5px] w-1 bg-step-line"
-            :style="lineInset"
-          />
-
-          <div v-for="(step, index) in steps" :key="step.titleKey" class="relative z-1 flex w-full items-center gap-5">
+          <div ref="stepsList" class="relative flex w-full flex-col gap-10">
             <div
               aria-hidden="true"
-              data-step-dot
-              class="flex size-20 shrink-0 items-center justify-center rounded-full bg-step-num text-sm leading-16 font-medium text-white shadow-xs"
-            >
-              {{ index + 1 }}
-            </div>
+              class="pointer-events-none absolute left-10 z-0 -ml-[0.5px] w-1 bg-step-line"
+              :style="lineInset"
+            />
 
-            <div
-              class="flex min-w-0 flex-1 items-center rounded-xl border border-border-soft bg-white py-17 pr-11 pl-6 shadow-xs max-xs:flex-wrap max-xs:gap-8 max-xs:px-10 max-xs:py-14"
-            >
-              <div class="flex min-w-0 flex-1 items-center">
-                <span
-                  :class="['ml-14 flex size-44 shrink-0 items-center justify-center overflow-hidden rounded-full', step.tint]"
-                >
-                  <QIcon :name="step.icon" :size="20" />
-                </span>
-                <div class="min-w-0 flex-1 pr-8 pl-14">
-                  <p :class="['m-0 text-sm leading-16', step.strong ? 'font-bold text-step-title-bold' : 'font-semibold text-order-title']">
-                    {{ $t(step.titleKey) }}
-                  </p>
-                  <p class="m-0 pt-2 text-sm leading-15 font-normal text-text">{{ $t(step.descKey) }}</p>
-                </div>
+            <div v-for="(step, index) in steps" :key="step.titleKey" class="relative z-1 flex w-full items-center gap-5">
+              <div
+                aria-hidden="true"
+                data-step-dot
+                class="flex size-20 shrink-0 items-center justify-center rounded-full bg-step-num text-sm leading-16 font-medium text-white shadow-xs"
+              >
+                {{ index + 1 }}
               </div>
 
-              <span
-                :class="[
-                  'inline-flex shrink-0 items-center gap-4 rounded-full text-sm leading-15 font-medium whitespace-nowrap max-xs:ml-auto',
-                  badgeClass[step.status],
-                ]"
+              <div
+                class="flex min-w-0 flex-1 items-center rounded-xl border border-border-soft bg-white py-17 pr-11 pl-6 shadow-xs max-xs:flex-wrap max-xs:gap-8 max-xs:px-10 max-xs:py-14"
               >
-                <QIcon v-if="step.status === 'done'" name="ic-opp-step-done" :size="12" />
-                {{ $t(`confirmation.status.${step.status}`) }}
-              </span>
+                <div class="flex min-w-0 flex-1 items-center">
+                  <span
+                    :class="['ml-14 flex size-44 shrink-0 items-center justify-center overflow-hidden rounded-full', step.tint]"
+                  >
+                    <QIcon :name="step.icon" :size="20" />
+                  </span>
+                  <div class="min-w-0 flex-1 pr-8 pl-14">
+                    <p :class="['m-0 text-sm leading-16', step.strong ? 'font-bold text-step-title-bold' : 'font-semibold text-order-title']">
+                      {{ $t(step.titleKey) }}
+                    </p>
+                    <p class="m-0 pt-2 text-sm leading-15 font-normal text-text">{{ $t(step.descKey) }}</p>
+                  </div>
+                </div>
+
+                <span
+                  :class="[
+                    'inline-flex shrink-0 items-center gap-4 rounded-full text-sm leading-15 font-medium whitespace-nowrap max-xs:ml-auto',
+                    badgeClass[step.status],
+                  ]"
+                >
+                  <QIcon v-if="step.status === 'done'" name="ic-opp-step-done" :size="12" />
+                  {{ $t(`confirmation.status.${step.status}`) }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </template>
 
       <!-- Assistance : bascule en colonne dès 400px, propre à ce tunnel. -->
       <div
