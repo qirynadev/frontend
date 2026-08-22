@@ -17,8 +17,8 @@ Assets : `public/img/icons/mpl-prof/*`, `public/img/mpl-prof/*`, `public/img/ico
 | experienceYears | oui | i18n pluriel |
 | biography | oui | non affiché sur la maquette Figma |
 | pays / drapeau | **oui** (2026-08-22) | `country.name` / `country_flag`, réels et fiables — câblés |
-| badge vérifié | **non** | `user.email_verified_at` existe mais sémantique ambiguë, voir `docs/directives-backend.md` §4 |
-| qualification (TEFL…) | **non** | `formations[].diploma` existe mais qualité inégale (test sur un profil), voir `docs/directives-backend.md` §3 |
+| badge vérifié | **oui** (2026-08-22) | `user.email_verified_at !== null` — câblé ; ne reflète qu'une confirmation d'e-mail, pas un contrôle de profil dédié, voir `docs/directives-backend.md` §4 |
+| qualification (TEFL…) | **oui** (2026-08-22) | `formations[0].diploma` — câblé ; qualité éditoriale encore inégale selon le profil (accepté en dev), voir `docs/directives-backend.md` §3 |
 | disponibilité + couleur | **oui** (2026-08-22) | dérivée de `plannings[]` (déjà incluse dans la réponse), voir `app/utils/teacher-availability.ts` |
 | prix « À partir de » | **non** | Figma = « - » ; pas un écart, voir `docs/directives-backend.md` |
 | recherche / filtres UI | local | filtres = bouton inerte |

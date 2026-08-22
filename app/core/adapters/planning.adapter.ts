@@ -107,6 +107,8 @@ export function toTeacher(raw: unknown): Teacher | null {
     countryLabel: optionalStr(source, 'country.name'),
     countryFlag: toUrl(source.country_flag),
     nextAvailableAt: toNextAvailableAt(source.plannings),
+    qualification: optionalStr(source, 'formations.0.diploma'),
+    verified: optionalStr(source, 'user.email_verified_at') !== null,
   }
 }
 

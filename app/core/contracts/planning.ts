@@ -55,6 +55,10 @@ export interface Teacher {
    * cette même réponse — pas d'appel supplémentaire). `null` si aucun.
    */
   nextAvailableAt: string | null
+  /** Diplôme déclaré (`formations[0].diploma`) — qualité éditoriale variable, voir `docs/directives-backend.md`. */
+  qualification: string | null
+  /** `user.email_verified_at !== null` — confirmation d'e-mail, pas un contrôle de profil distinct côté API. */
+  verified: boolean
 }
 
 /** Un créneau du calendrier d'un professeur — libre ou déjà réservé. */
