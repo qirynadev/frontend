@@ -47,6 +47,14 @@ export interface Teacher {
   rating: number | null
   reviewsCount: number
   experienceYears: number | null
+  /** Pays déclaré sur le profil (`country.name` / `country_flag`, réels côté API). */
+  countryLabel: string | null
+  countryFlag: string | null
+  /**
+   * Premier créneau libre à venir, dérivé de `plannings[]` (déjà inclus dans
+   * cette même réponse — pas d'appel supplémentaire). `null` si aucun.
+   */
+  nextAvailableAt: string | null
 }
 
 /** Un créneau du calendrier d'un professeur — libre ou déjà réservé. */

@@ -394,6 +394,9 @@
   },
   "languagePlanning": {
     "assignErrorTitle": "Could not assign this teacher. Please try again.",
+    "availableOn": "Available on {date}",
+    "availableToday": "Available today",
+    "availableTomorrow": "Available tomorrow",
     "bookErrorTitle": "Could not book this slot. It may already be taken — please try again.",
     "bookingStepIntro": "Select an available date and time.",
     "bookingStepTitle": "Choose a slot",

@@ -14,6 +14,7 @@ import {
   langueTeachersMock,
 } from '~/config/projet-langue-mock'
 import { planningRepo } from '~/core/repositories'
+import { resolveTeacherAvailability } from '~/utils/teacher-availability'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -59,19 +60,20 @@ const teacherCard = computed(() => {
   if (mock) return mock
   const api = (teachers.value ?? []).find(item => item.id === teacherId.value)
   if (api) {
+    const availability = resolveTeacherAvailability(api.nextAvailableAt, locale.value, t)
     return {
       id: api.id,
       fullName: api.fullName,
       photo: api.photo ?? '/img/mpl-prof/sarah.jpg',
       verified: false,
-      countryLabel: null as string | null,
-      flagSrc: null as string | null,
+      countryLabel: api.countryLabel,
+      flagSrc: api.countryFlag,
       rating: api.rating,
       reviewsCount: api.reviewsCount,
       qualification: null as string | null,
       experienceYears: api.experienceYears,
-      availabilityLabel: null as string | null,
-      availabilityTone: null as 'today' | 'tomorrow' | 'soon' | 'later' | null,
+      availabilityLabel: availability?.label ?? null,
+      availabilityTone: availability?.tone ?? null,
       priceFrom: '-',
     }
   }

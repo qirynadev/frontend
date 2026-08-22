@@ -2,9 +2,10 @@
 /**
  * Choix du professeur ← Figma `865:2982` « Mon Projet - Professeur ».
  *
- * API : `planningRepo.teachersByCourse` → `Teacher` (nom, photo, bio, note, avis, expérience).
- * Hors API (mock) : pays/drapeau, badge vérifié, qualification, disponibilité, prix.
- * Voir `docs/mon-projet-professeur-mocks.md`.
+ * API : `planningRepo.teachersByCourse` → `Teacher` (nom, photo, bio, note, avis,
+ * expérience, pays/drapeau, disponibilité — voir `planning.adapter.ts:toTeacher`).
+ * Toujours hors API (mock) : badge vérifié, qualification, prix — voir
+ * `docs/directives-backend.md` pour le détail des écarts restants.
  */
 import type { Teacher } from '~/core/contracts'
 import {
@@ -15,6 +16,7 @@ import {
   langueTeachersMock,
 } from '~/config/projet-langue-mock'
 import { planningRepo } from '~/core/repositories'
+import { resolveTeacherAvailability } from '~/utils/teacher-availability'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -67,19 +69,21 @@ const availabilityToneClass: Record<LangueTeacherAvailabilityTone, { bg: string;
 }
 
 function fromApi(teacher: Teacher): TeacherCardView {
+  const availability = resolveTeacherAvailability(teacher.nextAvailableAt, locale.value, t)
+
   return {
     id: teacher.id,
     fullName: teacher.fullName,
     photo: teacher.photo,
     verified: false,
-    countryLabel: null,
-    flagSrc: null,
+    countryLabel: teacher.countryLabel,
+    flagSrc: teacher.countryFlag,
     rating: teacher.rating,
     reviewsCount: teacher.reviewsCount,
     qualification: null,
     experienceYears: teacher.experienceYears,
-    availabilityLabel: null,
-    availabilityTone: null,
+    availabilityLabel: availability?.label ?? null,
+    availabilityTone: availability?.tone ?? null,
     priceFrom: '-',
   }
 }

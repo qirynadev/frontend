@@ -16,11 +16,11 @@ Assets : `public/img/icons/mpl-prof/*`, `public/img/mpl-prof/*`, `public/img/ico
 | rating, reviewsCount | oui | |
 | experienceYears | oui | i18n pluriel |
 | biography | oui | non affiché sur la maquette Figma |
-| pays / drapeau | **non** | mock |
-| badge vérifié | **non** | mock |
-| qualification (TEFL…) | **non** | mock |
-| disponibilité + couleur | **non** | mock |
-| prix « À partir de » | **non** | Figma = « - » ; mock |
+| pays / drapeau | **oui** (2026-08-22) | `country.name` / `country_flag`, réels et fiables — câblés |
+| badge vérifié | **non** | `user.email_verified_at` existe mais sémantique ambiguë, voir `docs/directives-backend.md` §4 |
+| qualification (TEFL…) | **non** | `formations[].diploma` existe mais qualité inégale (test sur un profil), voir `docs/directives-backend.md` §3 |
+| disponibilité + couleur | **oui** (2026-08-22) | dérivée de `plannings[]` (déjà incluse dans la réponse), voir `app/utils/teacher-availability.ts` |
+| prix « À partir de » | **non** | Figma = « - » ; pas un écart, voir `docs/directives-backend.md` |
 | recherche / filtres UI | local | filtres = bouton inerte |
 | bandeau satisfaction | **non** | copy Figma mock |
 | pagination | client | **4 professeurs / page** (`QPager`) |
