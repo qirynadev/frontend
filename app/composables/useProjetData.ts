@@ -69,15 +69,29 @@ function toSub(order: Order): string {
 /**
  * Statut affiché et avancement.
  *
- * `Order.status` ne porte que l'état du **paiement**, pas celui du dossier —
- * l'API n'expose aucun avancement générique. `pending`/`failed` valent 0 %,
- * légitimement (rien n'a commencé) ; `confirmed` ne dit rien de plus qu'« en
- * cours » : la barre est masquée plutôt que remplie au hasard.
+ * `Order.status` ne porte que l'état du **paiement**, pas celui du dossier.
+ * `pending`/`failed` valent 0 %, légitimement (rien n'a commencé). Pour une
+ * commande confirmée, `order.checklist` (école/logement — voir
+ * `useAdmissionData`/`useLogementData`, même formule ici pour que la carte du
+ * hub et l'écran de détail affichent le même pourcentage) donne un avancement
+ * réel quand il existe ; une commande antérieure au mécanisme de checklist
+ * (15/08/2026) ou d'un type qui n'en a jamais (`profilage`) a une liste vide —
+ * la barre reste masquée (`null`) plutôt que remplie au hasard.
  */
 function toStatus(order: Order): { statusKey: string; progressPercent: number | null } {
   if (order.status === 'failed') return { statusKey: 'myProject.statusFailed', progressPercent: 0 }
   if (order.status === 'pending') return { statusKey: 'myProject.statusPending', progressPercent: 0 }
-  return { statusKey: 'myProject.statusInProgress', progressPercent: null }
+
+  if (order.checklist.length === 0) {
+    return { statusKey: 'myProject.statusInProgress', progressPercent: null }
+  }
+
+  const done = order.checklist.filter((item) => item.status === 'done').length
+  const progressPercent = Math.round((done / order.checklist.length) * 100)
+  return {
+    statusKey: progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
+    progressPercent,
+  }
 }
 
 function toAccompagnement(order: Order, config: AccompagnementTypeConfig): ProjetAccompagnement {
