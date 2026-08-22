@@ -89,7 +89,13 @@ const accent = computed(() => {
   }
 })
 
-/** Prestations parcours école : titres seuls (sans descriptions par domaine). */
+/**
+ * Repli Figma : titres génériques, utilisés seulement quand l'offre du
+ * domaine n'a encore aucune prestation renseignée côté back-office
+ * (`tier.features` vide) — dès qu'un contenu admin existe, même sommaire, on
+ * l'affiche (voir `docs/directives-backend.md` pour la qualité éditoriale
+ * encore à compléter sur certains domaines).
+ */
 const domainFeatures = computed(() => {
   if (!props.domain) return []
   return DOMAIN_OFFER_FEATURE_IDS.map((id) => ({
@@ -167,14 +173,7 @@ const displayName = computed(() => (props.domain ? t('offer.domainCardName') : p
       <hr class="mt-14 w-full border-0 border-t border-border-soft">
     </header>
 
-    <ul v-if="domain && domainFeatures.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
-      <li v-for="feature in domainFeatures" :key="feature.id" class="flex items-start gap-10 text-lg leading-18 text-text">
-        <QIcon :name="accent.check" :size="12" class="mt-3 shrink-0" />
-        <span class="min-w-0">{{ $t(feature.labelKey) }}</span>
-      </li>
-    </ul>
-
-    <ul v-else-if="tier.features.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
+    <ul v-if="tier.features.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
       <li
         v-for="feature in tier.features"
         :key="feature"
@@ -182,6 +181,13 @@ const displayName = computed(() => (props.domain ? t('offer.domainCardName') : p
       >
         <QIcon :name="accent.check" :size="12" :class="stacked ? 'mt-3 shrink-0' : ''" />
         <span class="min-w-0">{{ feature }}</span>
+      </li>
+    </ul>
+
+    <ul v-else-if="domain && domainFeatures.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
+      <li v-for="feature in domainFeatures" :key="feature.id" class="flex items-start gap-10 text-lg leading-18 text-text">
+        <QIcon :name="accent.check" :size="12" class="mt-3 shrink-0" />
+        <span class="min-w-0">{{ $t(feature.labelKey) }}</span>
       </li>
     </ul>
 
