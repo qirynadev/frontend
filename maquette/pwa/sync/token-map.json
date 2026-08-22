@@ -1,0 +1,49 @@
+{
+  "$schema": "./token-map.schema.json",
+  "version": 1,
+  "updated": "2026-08-17",
+  "description": "Correspondance tokens maquette (:root --q-*) ↔ frontend (main.css @theme --color-*)",
+  "maquetteSource": "css/app.css :root",
+  "frontendSource": "frontend-main/app/assets/css/main.css @theme",
+  "tokens": [
+    { "maquette": "--q-font", "frontend": "--font-sans", "value": "'Jost', sans-serif" },
+    { "maquette": "--q-primary", "frontend": "--color-primary", "value": "#582cfd" },
+    { "maquette": "--q-primary-dark", "frontend": "--color-primary-dark", "value": "#3b2cf2" },
+    { "maquette": "--q-primary-btn", "frontend": "--color-primary-btn", "value": "#5d2afb" },
+    { "maquette": "--q-navy", "frontend": "--color-navy", "value": "#0d1b3e" },
+    { "maquette": "--q-text", "frontend": "--color-text", "value": "#191919" },
+    { "maquette": "--q-muted", "frontend": "--color-muted", "value": "#9c9ac6" },
+    { "maquette": "--q-muted-2", "frontend": "--color-muted-2", "value": "#7371a2" },
+    { "maquette": "--q-border", "frontend": "--color-border", "value": "#e6e5f2" },
+    { "maquette": "--q-surface", "frontend": "--color-surface", "value": "#f7f6fe" },
+    { "maquette": "--q-surface-2", "frontend": "--color-surface-2", "value": "#f5f3ff" },
+    { "maquette": "--q-success", "frontend": "--color-success", "value": "#16aa59" },
+    { "maquette": "--q-success-bg", "frontend": "--color-success-bg", "value": "#eaf8eb" },
+    { "maquette": "--q-warning", "frontend": "--color-warning", "value": "#fe7812" },
+    { "maquette": "--q-warning-bg", "frontend": "--color-warning-bg", "value": "#fff3e0" },
+    { "maquette": "--q-danger", "frontend": "--color-danger", "value": "#ee163e" },
+    { "maquette": "--q-muted-bg", "frontend": "--color-muted-bg", "value": "#f5f3fc" },
+    { "maquette": "--q-muted-text", "frontend": "--color-muted-text", "value": "#6b679d" },
+    { "maquette": "--q-bg-shell", "frontend": "--color-bg-shell", "value": "#eef0f5" },
+    { "maquette": "--q-bg-screen", "frontend": "--color-bg-screen", "value": "#ffffff" },
+    { "maquette": "--q-bg-card", "frontend": "--color-bg-card", "value": "#ffffff" },
+    { "maquette": "--q-bg-nav", "frontend": "--color-bg-nav", "value": "#ffffff" },
+    { "maquette": "--q-bg-input", "frontend": "--color-bg-input", "value": "#ffffff" },
+    { "maquette": "--q-text-secondary", "frontend": "--color-text-secondary", "value": "#64748b" },
+    { "maquette": "--q-shell-max", "frontend": "--container-shell", "value": "768px" },
+    { "maquette": "--q-gutter", "frontend": "--spacing-gutter", "value": "clamp(16px, 4vw, 24px)" },
+    { "maquette": "--q-nav-inset", "frontend": "--spacing-nav-inset", "value": "15px" },
+    { "maquette": "--q-nav-gap", "frontend": "--spacing-nav-gap", "value": "22px" },
+    { "maquette": "--q-content-pad-bottom", "frontend": "--spacing-content-pad-bottom", "value": "calc(75px + 24px + env(safe-area-inset-bottom, 0px))" }
+  ],
+  "tierTokens": [
+    { "maquetteClass": ".formule-card--kili", "frontend": "--color-tier-1", "value": "#00a31c" },
+    { "maquetteClass": ".formule-card--acon", "frontend": "--color-tier-2", "value": "#570bfd" },
+    { "maquetteClass": ".formule-card--everest", "frontend": "--color-tier-3", "value": "#f6071a" }
+  ],
+  "darkMode": {
+    "maquetteSelector": "html[data-theme=\"dark\"]",
+    "frontendStatus": "not-ported",
+    "notes": "Tokens dark présents en maquette ; chantier séparé côté Nuxt"
+  }
+}

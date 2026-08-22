@@ -24,10 +24,32 @@ export interface SchoolSummary {
   slugs?: Record<string, string>
 }
 
+export interface FormationSection {
+  label: string
+  /** HTML du corps de la rubrique (sans le libellé). */
+  content: string
+}
+
 export interface SchoolFormation {
   title: string
-  /** HTML. */
+  /** HTML brut renvoyé par l'API. */
   description: string
+  /** Accroche carte — description courte, jamais la rubrique « Cible ». */
+  summary: string
+  /** Rubriques modale (Cible, Programmes, Frais…). */
+  sections: FormationSection[]
+  /** Paragraphes libres hors rubriques — corps détaillé de la modale. */
+  bodyHtml: string
+  /**
+   * Grade affiché sur la carte (`.ed-form-meta`).
+   * Absent de l’API stage → mock via `resolveFormationMeta` (documenté).
+   */
+  grade: string
+  /**
+   * Durée / année(s) affichée sur la carte.
+   * Absent de l’API stage → mock via `resolveFormationMeta` (documenté).
+   */
+  duration: string
 }
 
 export interface SchoolDetail {

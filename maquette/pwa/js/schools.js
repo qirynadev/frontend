@@ -24,6 +24,13 @@ export const SCHOOLS = [
         duration: "5 ans",
         desc: "Formation complète en architecture alliant conception, théorie, technique et pratique professionnelle.",
         icon: "../assets/icons/ic-ed-form-1.svg",
+        detail: {
+          cible: "Le lycéen ou l'étudiant en réorientation qui souhaite devenir architecte et exercer en France, avec une formation complète par le projet et une immersion progressive dans le monde professionnel parisien.",
+          programmes: "Le DE à l'ESA s'étend sur 5 ans et combine ateliers de conception, enseignements théoriques (histoire, urbanisme, sciences de la construction) et stages en agence. Les trois premières années posent les fondamentaux du projet architectural ; les deux dernières approfondissent la maîtrise d'œuvre, la réglementation et la culture critique. Des options de mobilité internationale et des workshops thématiques enrichissent le parcours.",
+          frais: "Frais de scolarité annuels indicatifs : environ 8 500 à 10 500 € selon l'année (référence 2025-2026). Des facilités de paiement et des bourses sur critères sociaux peuvent être étudiées au cas par cas.",
+          admission: "Admission sur dossier et entretien pour les bacheliers, avec portfolio recommandé. Possibilité d'admissions parallèles en cours de cursus sur étude de dossier. Niveau attendu en dessin et culture générale apprécié.",
+          debouches: "Architecte DPLG, insertion en agence d'architecture, bureau d'études ou collectivité. Poursuite possible en master ou mastère spécialisé à l'ESA ou dans une autre école.",
+        },
       },
       {
         title: "Master Architecture",
@@ -31,6 +38,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Approfondir vos compétences en conception architecturale et en projets urbains.",
         icon: "../assets/icons/ic-ed-form-2.svg",
+        detail: {
+          cible: "Le titulaire du DE ou équivalent qui souhaite affiner sa pratique du projet architectural et développer une expertise en conception urbaine et territoriale.",
+          programmes: "Master en 2 ans structuré autour d'ateliers avancés, séminaires et projets urbains à échelle métropolitaine. Les étudiants travaillent sur des programmes complexes (logement, équipements, reconversion) en lien avec des partenaires institutionnels et des agences parisiennes.",
+          frais: "Environ 9 500 à 11 000 € par an (référence 2025-2026). Tarifs dégressifs possibles pour les diplômés ESA.",
+          admission: "Sur dossier : DE en architecture ou titre équivalent reconnu, portfolio de projets, lettre de motivation et entretien.",
+          debouches: "Architecte concepteur en agence, chef de projet junior, chargé de mission en aménagement urbain, ou candidature à l'HMONP.",
+        },
       },
       {
         title: "Master Architecture & Transition écologique",
@@ -38,6 +52,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Former des architectes engagés pour une architecture durable et responsable.",
         icon: "../assets/icons/ic-ed-form-3.svg",
+        detail: {
+          cible: "L'architecte ou l'étudiant sensibilisé aux enjeux climatiques qui veut concevoir des bâtiments sobres, adaptés et durables, en maîtrisant les matériaux biosourcés et les stratégies énergétiques.",
+          programmes: "Parcours spécialisé mêlant ateliers de conception bas carbone, modules sur la performance énergétique, l'économie circulaire et la réhabilitation. Projets sur la rénovation du bâti existant et l'architecture bioclimatique, avec interventions de praticiens et de bureaux d'études environnementaux.",
+          frais: "Environ 9 500 à 11 000 € par an (référence 2025-2026).",
+          admission: "DE ou master 1 en architecture, motivation démontrée pour la transition écologique, dossier et entretien.",
+          debouches: "Architecte spécialisé rénovation et performance énergétique, consultant RSE, chargé de mission transition écologique en collectivité ou agence d'urbanisme.",
+        },
       },
       {
         title: "Mastère Spécialisé® Architecture & Innovation",
@@ -45,6 +66,13 @@ export const SCHOOLS = [
         duration: "1 an",
         desc: "Innover dans les matériaux, les usages et les technologies pour concevoir autrement.",
         icon: "../assets/icons/ic-ed-form-4.svg",
+        detail: {
+          cible: "Le professionnel de l'architecture ou du design bâti qui souhaite accélérer sur l'innovation matérielle, numérique et les nouveaux modes de fabrication.",
+          programmes: "Formation intensive d'un an : prototypage, fabrication numérique, matériaux innovants, design computationnel et projets avec des industriels. Accès aux ateliers de fabrication de l'école et à un réseau d'entreprises partenaires.",
+          frais: "Environ 12 000 à 14 000 € pour l'année (référence 2025-2026).",
+          admission: "Diplôme bac+5 en architecture ou domaine connexe, expérience professionnelle appréciée, dossier, portfolio et entretien.",
+          debouches: "Architecte innovateur, responsable R&D en agence, consultant BIM/fabrication numérique, entrepreneur dans la construction.",
+        },
       },
     ],
     pointsForts: [
@@ -77,6 +105,13 @@ export const SCHOOLS = [
         duration: "5 ans",
         desc: "Cursus public d'architecte alliant conception, urbanité et culture du projet.",
         icon: "../assets/icons/ic-ed-form-1.svg",
+        detail: {
+          cible: "Le bachelier motivé par la ville, l'habitat et les enjeux sociaux qui recherche une formation publique exigeante au cœur de Paris, avec une forte culture du débat et du projet collectif.",
+          programmes: "Cursus en 5 ans articulé autour d'ateliers pluridisciplinaires, enseignements en sciences humaines, techniques et histoire de l'architecture. L'ENSAPLV met l'accent sur la ville contemporaine, les territoires et les pratiques collaboratives. Stages obligatoires et possibilités de mobilité Erasmus.",
+          frais: "École publique : frais d'inscription administratifs d'environ 700 € par an + CVEC (~103 €). Pas de frais de scolarité pour les étudiants ressortissants de l'UE.",
+          admission: "Via Parcoursup pour les bacheliers français (dossier, lettre de motivation, parfois épreuves). Admissions parallèles possibles sur concours ou dossier selon le niveau.",
+          debouches: "Architecte, urbaniste, insertion en agence publique ou privée, aménagement du territoire, poursuite en master ou DSA.",
+        },
       },
       {
         title: "Master Architecture & Ville",
@@ -84,6 +119,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Approfondir les enjeux urbains, paysagers et territoriaux contemporains.",
         icon: "../assets/icons/ic-ed-form-2.svg",
+        detail: {
+          cible: "L'architecte diplômé qui souhaite se spécialiser dans la fabrique de la ville, les projets urbains et les dynamiques territoriales à l'échelle métropolitaine.",
+          programmes: "Master en 2 ans centré sur l'urbanisme projeté, le paysage urbain et les politiques de la ville. Ateliers en partenariat avec des collectivités, séminaires avec des urbanistes et géographes, projets sur des sites parisiens et franciliens.",
+          frais: "Frais administratifs d'inscription publics (~700 €/an + CVEC).",
+          admission: "DE ou équivalent, dossier de candidature, portfolio et entretien. Places limitées.",
+          debouches: "Architecte-urbaniste, chargé de projet en aménagement, consultant en développement urbain, insertion en agence d'urbanisme.",
+        },
       },
       {
         title: "Master Architecture & Société",
@@ -91,6 +133,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Questionner le rôle social de l'architecte et les pratiques collaboratives.",
         icon: "../assets/icons/ic-ed-form-3.svg",
+        detail: {
+          cible: "L'étudiant engagé qui veut replacer l'architecture au service du collectif, de l'habitat social et des usages partagés, avec une approche critique et participative.",
+          programmes: "Parcours explorant le logement social, l'habitat participatif, les coproductions et le rôle de l'architecte médiateur. Projets avec des associations, bailleurs sociaux et habitants. Croisement avec sociologie, ethnographie et design participatif.",
+          frais: "Frais administratifs d'inscription publics (~700 €/an + CVEC).",
+          admission: "DE ou master 1 architecture, motivation pour les enjeux sociaux, dossier et entretien.",
+          debouches: "Architecte en habitat social, coordinateur de projets participatifs, chargé de mission en collectivité, ONG et associations du logement.",
+        },
       },
       {
         title: "DSA Architecture & Patrimoine",
@@ -98,6 +147,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Se spécialiser dans l'intervention sur le bâti existant et le patrimoine.",
         icon: "../assets/icons/ic-ed-form-4.svg",
+        detail: {
+          cible: "L'architecte expérimenté ou récemment diplômé qui souhaite maîtriser la restauration, la réhabilitation et l'intervention sur le patrimoine bâti et les monuments historiques.",
+          programmes: "Diplôme de spécialisation et d'approfondissement en 2 ans : diagnostic patrimonial, techniques de restauration, réglementation ABF, projets sur sites classés. Interventions d'architectes des Bâtiments de France et du secteur conservatoire.",
+          frais: "Frais administratifs d'inscription publics (~700 €/an + CVEC).",
+          admission: "DE en architecture, expérience professionnelle recommandée, dossier, portfolio de projets patrimoniaux et entretien.",
+          debouches: "Architecte du patrimoine, restaurateur, expert en réhabilitation du bâti ancien, insertion en agence spécialisée ou collectivité.",
+        },
       },
     ],
     pointsForts: [
@@ -130,6 +186,13 @@ export const SCHOOLS = [
         duration: "5 ans",
         desc: "Formation d'architecte publique tournée vers le projet et le territoire.",
         icon: "../assets/icons/ic-ed-form-1.svg",
+        detail: {
+          cible: "Le lycéen attiré par le projet architectural et les enjeux territoriaux lyonnais qui souhaite une formation publique alliant expérimentation, technique et ancrage métropolitain.",
+          programmes: "DE en 5 ans avec ateliers de conception, modules techniques, stages et workshops thématiques. L'ENSA Lyon met l'accent sur la recherche par le projet, les transitions écologiques et les collaborations avec l'écosystème local (agences, fab labs, collectivités).",
+          frais: "École publique : ~700 € de frais d'inscription par an + CVEC. Pas de frais de scolarité pour les ressortissants UE.",
+          admission: "Parcoursup pour les bacheliers, admissions parallèles sur dossier ou épreuves selon le niveau d'entrée.",
+          debouches: "Architecte, poursuite en master à l'ENSA Lyon ou ailleurs, insertion en agence lyonnaise ou nationale.",
+        },
       },
       {
         title: "Master Architecture & Transitions",
@@ -137,6 +200,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Explorer les transitions énergétiques, climatiques et constructives.",
         icon: "../assets/icons/ic-ed-form-3.svg",
+        detail: {
+          cible: "L'architecte conscient des défis climatiques qui veut concevoir des bâtiments adaptés, sobres et résilients, en intégrant les enjeux énergétiques et matériaux durables.",
+          programmes: "Master en 2 ans autour de la rénovation énergétique, l'architecture bioclimatique, les matériaux bas carbone et l'adaptation au changement climatique. Projets sur le territoire lyonnais avec des partenaires industriels et institutionnels.",
+          frais: "Frais administratifs publics (~700 €/an + CVEC).",
+          admission: "DE ou master 1 architecture, dossier, portfolio et entretien.",
+          debouches: "Architecte spécialisé performance énergétique, consultant environnemental, chargé de mission transition en collectivité.",
+        },
       },
       {
         title: "Master Architecture & Paysage",
@@ -144,6 +214,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Articuler architecture, paysage et aménagement des milieux.",
         icon: "../assets/icons/ic-ed-form-2.svg",
+        detail: {
+          cible: "L'étudiant sensible au paysage et à l'environnement bâti qui souhaite articuler architecture, végétalisation et aménagement des espaces extérieurs.",
+          programmes: "Parcours croisant architecture et paysage : projets d'ambiances, continuités écologiques, espaces publics et interfaces ville-nature. Ateliers avec des paysagistes et des écologues, sorties sur le terrain en région lyonnaise.",
+          frais: "Frais administratifs publics (~700 €/an + CVEC).",
+          admission: "DE ou master 1 architecture, motivation pour le paysage, dossier et entretien.",
+          debouches: "Architecte-paysagiste, concepteur d'espaces publics, agence pluridisciplinaire architecture-paysage.",
+        },
       },
       {
         title: "HMONP",
@@ -151,6 +228,13 @@ export const SCHOOLS = [
         duration: "1 an",
         desc: "Préparer l'exercice de la maîtrise d'œuvre en nom propre.",
         icon: "../assets/icons/ic-ed-form-4.svg",
+        detail: {
+          cible: "L'architecte DE qui souhaite exercer en nom propre et obtenir l'habilitation à la maîtrise d'œuvre en son nom personnel (HMONP), condition pour signer des marchés de travaux.",
+          programmes: "Formation d'un an : droit de la construction, gestion de chantier, économie de la construction, assurance et responsabilité. Cours magistraux, études de cas et préparation à l'examen d'habilitation.",
+          frais: "Frais administratifs publics (~700 € + CVEC) ou tarif spécifique selon statut.",
+          admission: "DE en architecture, stage professionnel validé, dossier et parfois épreuves écrites.",
+          debouches: "Architecte en exercice libéral, associé en agence, maître d'œuvre en nom propre.",
+        },
       },
     ],
     pointsForts: [
@@ -183,6 +267,13 @@ export const SCHOOLS = [
         duration: "5 ans",
         desc: "Concevoir des objets et systèmes utiles, désirables et responsables.",
         icon: "../assets/icons/ic-ed-form-1.svg",
+        detail: {
+          cible: "Le lycéen créatif attiré par le design d'objet et de produit qui veut allier esthétique, usage et innovation industrielle, avec une immersion progressive en entreprise.",
+          programmes: "Cursus en 5 ans : dessin, modélisation 3D, prototypage, ergonomie, matériaux et design thinking. Projets avec des marques (automobile, électroménager, mobilier) et stages en agence ou chez un industriel. Double compétence design-stratégie.",
+          frais: "Environ 9 500 à 11 500 € par an (référence 2025-2026), soit un total indicatif de 47 500 à 57 500 € sur 5 ans.",
+          admission: "Via Parcoursup ou dossier d'admission avec book créatif et entretien de motivation.",
+          debouches: "Designer produit, designer industriel, chef de projet innovation, intégration en agence ou bureau de design.",
+        },
       },
       {
         title: "Design d'Interaction",
@@ -190,6 +281,13 @@ export const SCHOOLS = [
         duration: "5 ans",
         desc: "Imaginer des expériences numériques et des interfaces centrées utilisateur.",
         icon: "../assets/icons/ic-ed-form-2.svg",
+        detail: {
+          cible: "Le profil curieux du numérique et de l'expérience utilisateur qui souhaite concevoir des interfaces, services et parcours digitaux centrés sur l'humain.",
+          programmes: "Formation en 5 ans mêlant UX/UI, prototypage interactif, recherche utilisateur, design de service et technologies émergentes (IA, IoT). Ateliers avec des acteurs tech et projets en conditions réelles.",
+          frais: "Environ 9 500 à 11 500 € par an (référence 2025-2026).",
+          admission: "Parcoursup ou dossier avec portfolio numérique/créatif et entretien.",
+          debouches: "UX/UI designer, designer d'interaction, product designer, intégration en startup ou grande entreprise tech.",
+        },
       },
       {
         title: "Design Transport & Mobilité",
@@ -197,6 +295,13 @@ export const SCHOOLS = [
         duration: "5 ans",
         desc: "Repenser les mobilités de demain et les espaces associés.",
         icon: "../assets/icons/ic-ed-form-3.svg",
+        detail: {
+          cible: "L'étudiant passionné par l'automobile, les transports et l'urbanisme mobile qui veut concevoir les véhicules, services et espaces de mobilité de demain.",
+          programmes: "Parcours spécialisé en design de véhicules, design d'espaces intérieurs, mobilité urbaine et services associés. Partenariats avec des constructeurs et des acteurs de la mobilité. Stages en France et à l'étranger.",
+          frais: "Environ 9 500 à 11 500 € par an (référence 2025-2026).",
+          admission: "Parcoursup ou dossier, book créatif orienté transport/mobilité, entretien.",
+          debouches: "Designer automobile, designer de mobilité, concepteur d'espaces intérieurs, agence de design transport.",
+        },
       },
       {
         title: "Mastère Design & Innovation",
@@ -204,6 +309,13 @@ export const SCHOOLS = [
         duration: "1 an",
         desc: "Accélérer une spécialisation en stratégie de design et innovation.",
         icon: "../assets/icons/ic-ed-form-4.svg",
+        detail: {
+          cible: "Le designer ou ingénieur bac+5 qui souhaite accélérer sur la stratégie d'innovation, le design thinking et le management de projets créatifs en entreprise.",
+          programmes: "Mastère intensif d'un an : méthodologies d'innovation, design strategy, management de l'innovation, projets avec des entreprises partenaires. Approche transversale produit-service-expérience.",
+          frais: "Environ 13 000 à 15 000 € pour l'année (référence 2025-2026).",
+          admission: "Bac+5 en design, ingénierie ou management, expérience professionnelle appréciée, dossier et entretien.",
+          debouches: "Directeur de l'innovation, design manager, consultant en innovation, entrepreneur.",
+        },
       },
     ],
     pointsForts: [
@@ -236,6 +348,13 @@ export const SCHOOLS = [
         duration: "5 ans",
         desc: "Cursus exigeant tourné vers la culture du projet et la recherche.",
         icon: "../assets/icons/ic-ed-form-1.svg",
+        detail: {
+          cible: "Le bachelier exigeant et curieux qui recherche une formation publique d'élite au cœur de Paris, avec une forte culture théorique et une liberté pédagogique reconnue.",
+          programmes: "DE en 5 ans structuré autour d'ateliers exigeants, séminaires théoriques et expérimentations critiques. L'ENSA Paris-Malaquais encourage la recherche par le projet et le dialogue entre architecture, arts et sciences. Stages et mobilités internationales possibles.",
+          frais: "École publique : ~700 € de frais d'inscription par an + CVEC.",
+          admission: "Parcoursup pour les bacheliers, sélection sur dossier, motivation et parfois épreuves créatives.",
+          debouches: "Architecte, poursuite en master ou DSA, insertion en agence d'architecture ou en recherche.",
+        },
       },
       {
         title: "Master Architecture & Théorie",
@@ -243,6 +362,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Approfondir les fondements théoriques et critiques de l'architecture.",
         icon: "../assets/icons/ic-ed-form-2.svg",
+        detail: {
+          cible: "L'architecte ou chercheur en devenir qui souhaite approfondir la pensée architecturale, l'histoire critique et la théorie du projet.",
+          programmes: "Master en 2 ans centré sur l'histoire et la théorie de l'architecture, la critique du projet et la recherche académique. Séminaires avec des historiens et théoriciens, mémoire de recherche et projets conceptuels.",
+          frais: "Frais administratifs publics (~700 €/an + CVEC).",
+          admission: "DE ou master 1 architecture, appétence pour la théorie, dossier, écrits et entretien.",
+          debouches: "Chercheur, enseignant, critique d'architecture, architecte à pratique conceptuelle, doctorat.",
+        },
       },
       {
         title: "Master Architecture & Expérimentation",
@@ -250,6 +376,13 @@ export const SCHOOLS = [
         duration: "2 ans",
         desc: "Explorer des démarches expérimentales de conception et de fabrication.",
         icon: "../assets/icons/ic-ed-form-4.svg",
+        detail: {
+          cible: "L'architecte créatif qui veut repousser les frontières du projet architectural par l'expérimentation matérielle, numérique et processuelle.",
+          programmes: "Parcours orienté fabrication, matériaux, outils numériques et protocoles expérimentaux. Ateliers de fabrication, workshops internationaux et projets hybrides entre architecture, art et technologie.",
+          frais: "Frais administratifs publics (~700 €/an + CVEC).",
+          admission: "DE ou master 1, portfolio expérimental, dossier et entretien.",
+          debouches: "Architecte expérimentateur, praticien en fab lab, chercheur-créateur, agence d'architecture innovante.",
+        },
       },
       {
         title: "HMONP",
@@ -257,6 +390,13 @@ export const SCHOOLS = [
         duration: "1 an",
         desc: "Accéder à l'exercice de la maîtrise d'œuvre en son nom propre.",
         icon: "../assets/icons/ic-ed-form-3.svg",
+        detail: {
+          cible: "L'architecte DE prêt à exercer en indépendant et à obtenir l'habilitation indispensable pour la maîtrise d'œuvre en nom propre.",
+          programmes: "Année de formation professionnalisante : droit, gestion de projet, économie du bâtiment, conduite de chantier et préparation à l'examen national d'habilitation.",
+          frais: "Frais administratifs publics (~700 € + CVEC).",
+          admission: "DE en architecture, stages professionnels validés, dossier de candidature.",
+          debouches: "Architecte libéral, maître d'œuvre, associé en agence.",
+        },
       },
     ],
     pointsForts: [
@@ -270,4 +410,22 @@ export const SCHOOLS = [
 
 export function getSchoolById(id) {
   return SCHOOLS.find((s) => s.id === id) || SCHOOLS[0];
+}
+
+export function buildFormationDetailHtml(detail) {
+  if (!detail) return "";
+  const sections = [
+    ["Cible", detail.cible],
+    ["Programmes", detail.programmes],
+    ["Frais", detail.frais],
+    ["Admission", detail.admission],
+    ["Débouchés", detail.debouches],
+  ];
+  return sections
+    .filter(([, text]) => text)
+    .map(
+      ([label, text]) =>
+        `<div class="ed-form-modal-section"><h3>${label} ?</h3><p>${text}</p></div>`
+    )
+    .join("");
 }

@@ -6,6 +6,7 @@
  * - `title` d'une destination contient une accroche marketing, pas le nom du pays ;
  * - les dates sont au format `JJ/MM/AAAA` ;
  * - `formations` et `details` contiennent une entrée `{ title: null, description: null }` ;
+ * - chaque formation réelle n’a que `title` + `description` (pas de `grade` / `duration`) ;
  * - `founded_year` et `student_count` sont `null` pour les 570 écoles ;
  * - `hero_title`, `cta_text`, `badge_label` et `area` sont `null` sur les 8 formules.
  */
@@ -37,7 +38,7 @@ export const rawSchoolWithFormations = {
   formations: [
     {
       title: 'Global Bachelor of Business Administration',
-      description: '<p class="ql-align-justify"><strong>Cible ?</strong>&nbsp;Le lycéen…</p>',
+      description: '<p class="ql-align-justify"><strong>Cible ?</strong>&nbsp;Le lycéen…</p><p>Bachelor international en 4 ans, stages et échanges à l’étranger.</p>',
     },
     { title: null, description: null },
   ],

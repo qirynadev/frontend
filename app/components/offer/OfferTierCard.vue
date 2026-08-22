@@ -1,70 +1,47 @@
 <script setup lang="ts">
 import type { OfferTier } from '~/core/contracts'
+import { DOMAIN_OFFER_FEATURE_IDS } from '~/config/offer-domain-features'
 
 /**
- * Carte tarifaire — portage littéral de `.formule-card`.
+ * Carte tarifaire — `.formule-card` / pile type `orientation-formules.html`.
  *
- * | Élément | Maquette |
+ * | Mode | Usage |
  * |---|---|
- * | carte | `padding: 22px 20px 24px`, bord `#e5e7eb`, rayon 12, `gap: 14px` |
- * | icône | 36×36 (44×44 pour le dernier palier, dans une pastille `#fef2f2`) |
- * | nom | 20px / 28px, `font-weight: 600`, coloré par l'accent |
- * | accroche | 13px / 18px, centrée, `max-width: 260px` |
- * | filet | `margin-top: 14px`, `#f1f5f9` |
- * | liste | `gap: 8px`, 13px / 18px, coche 12×12 |
- * | prix | 28px, `line-height: 1.1`, coloré par l'accent |
- * | période | 12px, `#7f7979` |
- * | bouton | `padding: 14px 16px`, rayon 8 — contour, plein pour le dernier |
- * | sous 380px | `padding: 18px 14px 20px`, nom 18px, prix 24px |
+ * | `domain` | Palier unique domaine (`offre-orientation.html`) — badge « Offre unique » |
+ * | `stacked` | Pile langue (comme `/orientation/formules`) — ruban coloré + titre/icône inline |
+ * | défaut | Carte classique (icône au-dessus du nom) — fallback |
  *
- * **L'accent est déduit du rang, pas du nom.** L'adapter trie les paliers par
- * prix croissant ; le moins cher est vert, le suivant violet, le plus cher
- * rouge — comme dans la maquette (200 € / 300 € / 400 €). Renommer une formule
- * côté back-office ne casse donc rien.
- *
- * **Domaine d'étude (palier unique)** : accent violet fixe et icône propre
- * (`ic-oo-feature-1`, pas `ic-formule-acon`) — reprend `offre-orientation.html`
- * `.formule-card--acon`, pas la logique de rang (`index`/`total` valent
- * toujours 0/1 pour un domaine, ce qui donnerait le vert « kili » sinon).
- * Bouton « Démarrer mon accompagnement », pas « Choisir cette formule ».
- *
- * Nom de carte fixe (« Accompagnement candidature », `offer.domainCardName`)
- * plutôt que `tier.name` (le domaine, ex. « Management ») — décision du
- * responsable (2026-08-18), en même temps que le retrait du bandeau `.oo-hero`
- * sur `offres/[slug].vue` : reprend `offre-orientation.html` au pied de la
- * lettre plutôt que d'exposer le nom du domaine sur la carte elle-même.
+ * Accent déduit du rang (prix croissant) : vert → violet → rouge.
  */
 const props = withDefaults(
   defineProps<{
     tier: OfferTier
-    /** Rang du palier, du moins cher au plus cher. */
     index?: number
-    /** Nombre total de paliers : le dernier reçoit le traitement « Everest ». */
     total?: number
-    /** Achat en cours pour ce palier. */
     loading?: boolean
-    /** Un autre palier est en cours d'achat : celui-ci ne doit pas partir aussi. */
     disabled?: boolean
-    /** Palier unique d'un domaine d'étude — accent et libellé dédiés, voir plus haut. */
     domain?: boolean
+    domainSlug?: string
+    /** Pile verticale + ruban (formules langue / orientation). */
+    stacked?: boolean
   }>(),
-  { index: 0, total: 1, loading: false, disabled: false, domain: false },
+  {
+    index: 0,
+    total: 1,
+    loading: false,
+    disabled: false,
+    domain: false,
+    domainSlug: '',
+    stacked: false,
+  },
 )
 
 const emit = defineEmits<{ choose: [tier: OfferTier] }>()
 
 const { n, t } = useI18n()
 
-/**
- * Accroche du palier.
- *
- * `courses[].formulas[].description` est **vide** pour les douze formules du
- * catalogue. En attendant que le back-office soit alimenté, on reprend les
- * accroches de la maquette, indexées sur le rang.
- */
 const tagline = computed(() => props.tier.tagline || t(`offer.tagline${Math.min(props.index + 1, 3)}`))
 
-/** Dernier palier d'un jeu d'au moins deux : accent rouge et bouton plein. */
 const isTop = computed(() => props.total > 1 && props.index === props.total - 1)
 
 const accent = computed(() => {
@@ -75,7 +52,8 @@ const accent = computed(() => {
       price: 'text-tier-2',
       button: 'border border-tier-2 bg-white text-tier-2',
       icon: 'ic-oo-feature-1',
-      check: 'ic-formule-check-purple',
+      check: 'ic-of-check-purple',
+      ribbonBg: 'bg-tier-2',
     }
   }
   if (isTop.value) {
@@ -86,6 +64,7 @@ const accent = computed(() => {
       button: 'border border-tier-3 bg-tier-3 text-white',
       icon: 'ic-formule-everest',
       check: 'ic-formule-check-red',
+      ribbonBg: 'bg-tier-3',
     }
   }
   if (props.index === 0) {
@@ -96,6 +75,7 @@ const accent = computed(() => {
       button: 'border border-tier-1-line bg-white text-tier-1-line',
       icon: 'ic-formule-kili',
       check: 'ic-formule-check-green',
+      ribbonBg: 'bg-tier-1',
     }
   }
   return {
@@ -105,52 +85,116 @@ const accent = computed(() => {
     button: 'border border-tier-2 bg-white text-tier-2',
     icon: 'ic-formule-acon',
     check: 'ic-formule-check-purple',
+    ribbonBg: 'bg-tier-2',
   }
 })
+
+/** Prestations parcours école : titres seuls (sans descriptions par domaine). */
+const domainFeatures = computed(() => {
+  if (!props.domain) return []
+  return DOMAIN_OFFER_FEATURE_IDS.map((id) => ({
+    id,
+    labelKey: `offer.domainFeature.${id}` as const,
+  }))
+})
+
+const displayName = computed(() => (props.domain ? t('offer.domainCardName') : props.tier.name))
 </script>
 
 <template>
   <article
     :class="[
-      'flex w-full min-w-0 shrink-0 basis-full flex-col gap-14 rounded-2xl border bg-white px-20 pt-22 pb-24 max-2xs:px-14 max-2xs:pt-18 max-2xs:pb-20',
+      'relative box-border flex w-full min-w-0 flex-col gap-14 rounded-2xl border bg-white px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
+      stacked ? 'overflow-visible pt-26' : 'shrink-0 basis-full pt-22 max-2xs:pt-18',
       accent.card,
     ]"
   >
+    <!-- Ruban (pile langue / orientation) — accroche sur le ruban -->
+    <span
+      v-if="stacked && tagline"
+      :class="[
+        'absolute -top-11 left-14 z-1 inline-flex max-w-[calc(100%-28px)] items-center justify-center rounded-full px-12 py-4 text-center text-md leading-14 font-semibold text-white',
+        accent.ribbonBg,
+      ]"
+    >
+      {{ tagline }}
+    </span>
+
     <header class="flex w-full flex-col items-center">
-      <!-- Le dernier palier porte son icône dans une pastille. -->
+      <!-- Titre + icône sur une ligne (mode pile) -->
+      <div v-if="stacked" class="flex w-full flex-row items-center justify-center gap-8">
+        <span
+          v-if="isTop"
+          class="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tier-3-bg"
+        >
+          <QIcon :name="accent.icon" :size="44" />
+        </span>
+        <QIcon v-else :name="accent.icon" :size="36" />
+        <h2 :class="['m-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', accent.name]">
+          {{ displayName }}
+        </h2>
+      </div>
+
+      <!-- Disposition classique (domaine / fallback) -->
+      <template v-else>
+        <span
+          v-if="isTop"
+          class="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tier-3-bg"
+        >
+          <QIcon :name="accent.icon" :size="44" />
+        </span>
+        <QIcon v-else :name="accent.icon" :size="36" />
+
+        <h2 :class="['mt-4 mb-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', accent.name]">
+          {{ displayName }}
+        </h2>
+      </template>
+
       <span
-        v-if="isTop"
-        class="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tier-3-bg"
+        v-if="domain"
+        class="mt-8 inline-flex items-center justify-center rounded-exact-5 bg-of-badge-jordan-bg px-6 text-sm leading-[16.5px] font-semibold whitespace-nowrap text-of-badge-jordan"
       >
-        <QIcon :name="accent.icon" :size="44" />
+        {{ $t('offer.domainBadge') }}
       </span>
-      <QIcon v-else :name="accent.icon" :size="36" />
 
-      <h2 :class="['mt-4 mb-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', accent.name]">
-        {{ domain ? $t('offer.domainCardName') : tier.name }}
-      </h2>
-
-      <p v-if="tagline" class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
+      <p v-if="domain" class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
+        {{ $t('offer.domainIncluded') }}
+      </p>
+      <p v-else-if="!stacked && tagline" class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
         {{ tagline }}
       </p>
 
       <hr class="mt-14 w-full border-0 border-t border-border-soft">
     </header>
 
-    <ul v-if="tier.features.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
-      <li v-for="feature in tier.features" :key="feature" class="flex items-center gap-10 text-lg leading-18 text-text">
-        <QIcon :name="accent.check" :size="12" />
+    <ul v-if="domain && domainFeatures.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
+      <li v-for="feature in domainFeatures" :key="feature.id" class="flex items-start gap-10 text-lg leading-18 text-text">
+        <QIcon :name="accent.check" :size="12" class="mt-3 shrink-0" />
+        <span class="min-w-0">{{ $t(feature.labelKey) }}</span>
+      </li>
+    </ul>
+
+    <ul v-else-if="tier.features.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
+      <li
+        v-for="feature in tier.features"
+        :key="feature"
+        :class="['flex gap-10 text-lg leading-18 text-text', stacked ? 'items-start' : 'items-center']"
+      >
+        <QIcon :name="accent.check" :size="12" :class="stacked ? 'mt-3 shrink-0' : ''" />
         <span class="min-w-0">{{ feature }}</span>
       </li>
     </ul>
 
-    <footer class="mt-auto flex w-full flex-col items-center gap-14 pt-8">
+    <footer :class="['flex w-full flex-col items-center gap-8 pt-8', stacked ? 'mt-8' : 'mt-auto']">
       <div class="flex flex-col items-center gap-2">
         <p :class="['m-0 text-6xl leading-[1.1] font-semibold whitespace-nowrap max-2xs:text-5xl', accent.price]">
           {{ n(tier.price.amount, 'currency') }}
         </p>
-        <p class="m-0 text-center text-base leading-[1.2] font-medium text-tier-period">
-          {{ tier.periodLabel === 'month' ? $t('offer.perMonth') : $t('offer.oneOff') }}
+        <p
+          v-if="tier.periodLabel !== 'month'"
+          class="m-0 text-center text-base leading-[1.2] font-medium text-tier-period"
+        >
+          {{ $t('offer.oneOff') }}
         </p>
       </div>
 

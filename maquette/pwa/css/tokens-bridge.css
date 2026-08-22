@@ -1,0 +1,49 @@
+/*
+ * tokens-bridge.css — miroir sémantique frontend-main/app/assets/css/main.css
+ *
+ * RÉFÉRENCE UNIQUEMENT — ne pas lier dans les pages HTML de la maquette.
+ * Valeurs IDENTIQUES à :root dans app.css — ne pas modifier sans valider les deux repos.
+ *
+ * Usage : diff tokens maquette ↔ Nuxt, scripts sync/lint (voir pwa/sync/token-map.json)
+ */
+
+:root {
+  /* ─── Marque & texte ─────────────────────────────────────────── */
+  --color-primary: var(--q-primary);           /* #582cfd */
+  --color-primary-dark: var(--q-primary-dark); /* #3b2cf2 */
+  --color-primary-btn: var(--q-primary-btn);   /* #5d2afb */
+  --color-navy: var(--q-navy);                 /* #0d1b3e */
+  --color-text: var(--q-text);                 /* #191919 */
+  --color-muted: var(--q-muted);               /* #9c9ac6 */
+  --color-muted-2: var(--q-muted-2);           /* #7371a2 */
+  --color-text-secondary: var(--q-text-secondary); /* #64748b */
+  --color-muted-text: var(--q-muted-text);     /* #6b679d */
+
+  /* ─── Surfaces & bordures ────────────────────────────────────── */
+  --color-border: var(--q-border);             /* #e6e5f2 */
+  --color-surface: var(--q-surface);           /* #f7f6fe */
+  --color-surface-2: var(--q-surface-2);       /* #f5f3ff */
+  --color-muted-bg: var(--q-muted-bg);         /* #f5f3fc */
+  --color-bg-shell: var(--q-bg-shell);         /* #eef0f5 */
+  --color-bg-screen: var(--q-bg-screen);       /* #fff */
+  --color-bg-card: var(--q-bg-card);           /* #fff */
+  --color-bg-nav: var(--q-bg-nav);             /* #fff */
+  --color-bg-input: var(--q-bg-input);         /* #fff */
+
+  /* ─── Sémantique ─────────────────────────────────────────────── */
+  --color-success: var(--q-success);           /* #16aa59 */
+  --color-success-bg: var(--q-success-bg);     /* #eaf8eb */
+  --color-warning: var(--q-warning);           /* #fe7812 */
+  --color-warning-bg: var(--q-warning-bg);     /* #fff3e0 */
+  --color-danger: var(--q-danger);             /* #ee163e */
+
+  /* ─── Layout mobile shell ────────────────────────────────────── */
+  --container-shell: var(--q-shell-max);       /* 768px */
+  --spacing-gutter: var(--q-gutter);
+  --spacing-nav-inset: var(--q-nav-inset);
+  --spacing-nav-gap: var(--q-nav-gap);
+  --spacing-content-pad-bottom: var(--q-content-pad-bottom);
+
+  /* ─── Typographie ────────────────────────────────────────────── */
+  --font-sans: var(--q-font);                  /* Jost */
+}

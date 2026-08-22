@@ -1,0 +1,245 @@
+{
+  "$schema": "./screen-map.schema.json",
+  "version": 1,
+  "updated": "2026-08-17",
+  "commit": "db69933",
+  "screens": [
+    {
+      "maquetteId": "home",
+      "file": "pages/home.html",
+      "frontendRoute": "/",
+      "frontendFile": "app/pages/index.vue",
+      "syncStatus": "aligned",
+      "notes": "Mesuré pixel 375px"
+    },
+    {
+      "maquetteId": "connexion",
+      "file": "pages/connexion.html",
+      "frontendRoute": "/connexion",
+      "frontendFile": "app/pages/connexion.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "inscription",
+      "file": "pages/inscription.html",
+      "frontendRoute": "/inscription",
+      "frontendFile": "app/pages/inscription.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "mot-de-passe",
+      "file": "pages/mot-de-passe.html",
+      "frontendRoute": "/mot-de-passe",
+      "frontendFile": "app/pages/mot-de-passe.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "messages",
+      "file": "pages/messages.html",
+      "frontendRoute": "/messages",
+      "frontendFile": "app/pages/messages.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "reglages",
+      "file": "pages/reglages.html",
+      "frontendRoute": "/reglages",
+      "frontendFile": "app/pages/reglages/index.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "reglages-theme",
+      "file": "pages/reglages-theme.html",
+      "frontendRoute": "/reglages/theme",
+      "frontendFile": "app/pages/reglages/theme.vue",
+      "syncStatus": "partial",
+      "notes": "UI réglages OK ; dark mode non porté côté Nuxt"
+    },
+    {
+      "maquetteId": "reglages-mdp",
+      "file": "pages/reglages-mdp.html",
+      "frontendRoute": "/reglages/mot-de-passe",
+      "frontendFile": "app/pages/reglages/mot-de-passe.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "reglages-langues",
+      "file": "pages/reglages-langues.html",
+      "frontendRoute": "/reglages/langues",
+      "frontendFile": "app/pages/reglages/langues.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "reglages-mentions",
+      "file": "pages/reglages-mentions.html",
+      "frontendRoute": "/reglages/mentions",
+      "frontendFile": "app/pages/reglages/mentions.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "destination-etude",
+      "file": "pages/destination-etude.html",
+      "frontendRoute": "/destinations",
+      "frontendFile": "app/pages/destinations/index.vue",
+      "syncStatus": "aligned",
+      "notes": "Lot 4 — h1 seul, ic-dest-school"
+    },
+    {
+      "maquetteId": "domaines-etude",
+      "file": "pages/domaines-etude.html",
+      "frontendRoute": "/destinations/[slug]",
+      "frontendFile": "app/pages/destinations/[slug]/index.vue",
+      "syncStatus": "aligned",
+      "notes": "Lot 4 — `.dom-card-icon--*` par slug"
+    },
+    {
+      "maquetteId": "liste-ecole",
+      "file": "pages/liste-ecole.html",
+      "frontendRoute": "/destinations/[slug]/ecoles",
+      "frontendFile": "app/pages/destinations/[slug]/ecoles/index.vue",
+      "syncStatus": "aligned",
+      "notes": "Lot 4 — `.le-chip-icon` par slug"
+    },
+    {
+      "maquetteId": "ecole-detail",
+      "file": "pages/ecole-detail.html",
+      "frontendRoute": "/destinations/[slug]/ecoles/[school]",
+      "frontendFile": "app/pages/destinations/[slug]/ecoles/[school].vue",
+      "syncStatus": "aligned",
+      "notes": "Tabs, modale formation, CTA flottant ; contenu API formation partiel"
+    },
+    {
+      "maquetteId": "offre-orientation",
+      "file": "pages/offre-orientation.html",
+      "frontendRoute": "/offres/[slug]",
+      "frontendFile": "app/pages/offres/[slug].vue",
+      "syncStatus": "aligned",
+      "notes": "Palier unique domaine ; aussi référence orientation/index.vue"
+    },
+    {
+      "maquetteId": "orientation-scolaire",
+      "file": "pages/orientation-scolaire.html",
+      "frontendRoute": "/orientation",
+      "frontendFile": "app/pages/orientation/index.vue",
+      "syncStatus": "remeasure"
+    },
+    {
+      "maquetteId": "orientation-formules",
+      "file": "pages/orientation-formules.html",
+      "frontendRoute": "/orientation/formules",
+      "frontendFile": "app/pages/orientation/formules.vue",
+      "syncStatus": "aligned",
+      "notes": "Pile verticale `.formule-stack`"
+    },
+    {
+      "maquetteId": "orientation-post-paiement",
+      "file": "pages/orientation-post-paiement.html",
+      "frontendRoute": "/orientation/paiement-reussi",
+      "frontendFile": "app/pages/orientation/paiement-reussi.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "logement",
+      "file": "pages/logement.html",
+      "frontendRoute": "/logement",
+      "frontendFile": "app/pages/logement/index.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "offres-logement",
+      "file": "pages/offres-logement.html",
+      "frontendRoute": "/logement/[slug]",
+      "frontendFile": "app/pages/logement/[slug].vue",
+      "syncStatus": "aligned",
+      "notes": "Carrousel `.ol-*`, badges éditoriaux par rang"
+    },
+    {
+      "maquetteId": "logement-post-paiement",
+      "file": "pages/logement-post-paiement.html",
+      "frontendRoute": "/logement/paiement-reussi",
+      "frontendFile": "app/pages/logement/paiement-reussi.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "langue-apprentissage",
+      "file": "pages/langue-apprentissage.html",
+      "frontendRoute": "/langues",
+      "frontendFile": "app/pages/langues/index.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "objectifs",
+      "file": "pages/objectifs.html",
+      "frontendRoute": "/langues/[slug]/objectifs",
+      "frontendFile": "app/pages/langues/[slug]/objectifs.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "formule",
+      "file": "pages/formule.html",
+      "frontendRoute": "/offres/[slug]",
+      "frontendFile": "app/pages/offres/[slug].vue",
+      "syncStatus": "aligned",
+      "notes": "Carrousel paliers langue"
+    },
+    {
+      "maquetteId": "langues-post-payment",
+      "file": "pages/langues-post-payment.html",
+      "frontendRoute": "/langues/[slug]/paiement-reussi",
+      "frontendFile": "app/pages/langues/[slug]/paiement-reussi.vue",
+      "syncStatus": "partial"
+    },
+    {
+      "maquetteId": "paiement-reussi",
+      "file": "pages/paiement-reussi.html",
+      "frontendRoute": "/paiement-reussi",
+      "frontendFile": "app/pages/paiement-reussi.vue",
+      "syncStatus": "aligned",
+      "notes": "Tunnel domaines d'étude"
+    },
+    {
+      "maquetteId": "mon-projet",
+      "file": "pages/mon-projet.html",
+      "frontendRoute": "/mon-projet",
+      "frontendFile": "app/pages/mon-projet/index.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "mon-projet-apercu",
+      "file": "pages/mon-projet-apercu.html",
+      "frontendRoute": "/mon-projet/apercu",
+      "frontendFile": "app/pages/mon-projet/apercu.vue",
+      "syncStatus": "aligned",
+      "notes": "Distinct de mon-projet/index — aperçu illustratif"
+    },
+    {
+      "maquetteId": "mon-projet-admission",
+      "file": "pages/mon-projet-admission.html",
+      "frontendRoute": "/mon-projet/admission",
+      "frontendFile": "app/pages/mon-projet/admission.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "mon-projet-orientation",
+      "file": "pages/mon-projet-orientation.html",
+      "frontendRoute": "/mon-projet/orientation",
+      "frontendFile": "app/pages/mon-projet/orientation.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "mon-projet-logement",
+      "file": "pages/mon-projet-logement.html",
+      "frontendRoute": "/mon-projet/logement",
+      "frontendFile": "app/pages/mon-projet/logement.vue",
+      "syncStatus": "aligned"
+    },
+    {
+      "maquetteId": "offre-orientation-backup",
+      "file": "pages/offre-orientation.backup.html",
+      "frontendRoute": null,
+      "frontendFile": null,
+      "syncStatus": "backup",
+      "notes": "Sauvegarde avant refonte formule-card — ne pas sync"
+    }
+  ]
+}

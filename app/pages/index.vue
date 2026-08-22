@@ -6,7 +6,7 @@
  *
  * | Bloc | Règles reprises |
  * |---|---|
- * | bandeau | `.home-banner-wrap` `padding-top: 16px`, `margin-bottom: 24px` · `.home-banner` `aspect-ratio: 1819/865`, rayon 10 |
+ * | bandeau | `.home-banner-wrap` `padding-top: 16px`, `margin-bottom: 24px` · `.home-banner` `aspect-ratio: 1819/865`, rayon 10 — **visuel maquette** `home-banner.png` (pas le slide API) |
  * | raccourcis | `.home-categories` `gap: 12px`, `padding-top: 0`, une seule rangée (2×2 sous 360px) |
  * | sections | `.home-section` `padding-top: 16px` · titre 18px/28px, `letter-spacing: -0.45px` · enfant non-titre `margin-top: 16px` |
  * | carte parcours | `.home-progress-card` fond `#fef4f5`, `padding: 20px`, `min-height: 154px`, illustration en absolu `right: -20px` |
@@ -48,8 +48,8 @@ const articles = computed(() => {
   return fetched.length > 0 ? fetched : fallbackArticles(t('home.news.placeholderTitle'))
 })
 
-/** Bandeau : visuel administré, à défaut celui de la maquette. */
-const bannerSrc = computed(() => home.value?.slides[0]?.image ?? '/img/home-banner.webp')
+/** Bandeau hero : visuel maquette (`pwa/assets/images/home-banner.png`), pas le slide API. */
+const bannerSrc = '/img/home-banner.webp'
 
 /**
  * Progression de l'orientation.
@@ -83,11 +83,11 @@ usePageSeo(() => ({
         </div>
       </template>
 
-      <!-- Bandeau éditorial -->
+      <!-- Bandeau éditorial ← `home-banner.png` maquette (aspect 1819/865) -->
       <div class="w-full pt-16 mb-24">
         <NuxtImg
           :src="bannerSrc"
-          :alt="home?.slides[0]?.description || ''"
+          alt=""
           width="720"
           height="342"
           format="webp"
@@ -122,14 +122,12 @@ usePageSeo(() => ({
               <p class="m-0 text-xl leading-[19.25px] font-semibold text-text">
                 {{ $t('home.progress.title') }}
               </p>
-              <div class="pt-8 text-md leading-[17.875px] text-progress-text">
-                <p class="m-0">{{ $t('home.progress.desc1') }}</p>
-                <p class="m-0">{{ $t('home.progress.desc2') }}</p>
-                <p class="m-0">{{ $t('home.progress.desc3') }}</p>
-              </div>
+              <p class="m-0 pt-4 pb-2 text-md leading-[17.875px] text-progress-text">
+                {{ $t('home.progress.desc') }}
+              </p>
               <NuxtLink
                 :to="localePath('/orientation')"
-                class="mt-10 inline-flex cursor-pointer rounded-lg bg-progress-btn px-13 py-8 text-base leading-16 font-semibold text-white no-underline"
+                class="mt-6 inline-flex cursor-pointer rounded-lg bg-progress-btn px-13 py-8 text-base leading-16 font-semibold text-white no-underline"
               >
                 {{ $t('home.progress.cta') }}
               </NuxtLink>

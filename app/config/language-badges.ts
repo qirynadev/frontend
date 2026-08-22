@@ -22,9 +22,9 @@
  * qu'une étiquette exacte.
  *
  * ⚠️ **Ces libellés sont à faire valider par le client, puis à administrer.**
- * Dès que `badge` est renseigné côté back-office, il l'emporte sur ce fichier —
- * voir `LanguageCard.vue`. Ce fichier deviendra alors du repli mort, et pourra
- * être supprimé sans toucher au reste.
+ * Ils restent la source d’affichage pour les langues listées ici (titres
+ * commerciaux de la maquette). `badge` API ne s’applique qu’aux langues hors
+ * liste — voir `LanguageCard.vue`.
  */
 
 /** Tonalités relevées dans `app.css` (`.langue-tag--*`). */

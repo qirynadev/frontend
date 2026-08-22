@@ -21,6 +21,7 @@
  * back-office, rendues `object-contain` comme `DomainCard.vue` : jamais de
  * rognage deviné pour une image dont on ne connaît pas le cadrage.
  */
+import { domainAreaVisual, domainCardIconWrapClass } from '~/config/domain-area-visual'
 import { destinationRepo } from '~/core/repositories'
 
 const route = useRoute()
@@ -112,7 +113,12 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
             class="box-border flex w-full items-center justify-between gap-4 rounded-xl border-0 bg-white py-17 px-11 text-text no-underline shadow-card"
           >
             <div class="flex min-w-0 flex-1 items-center gap-10">
-              <div class="flex size-32 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2">
+              <div
+                :class="[
+                  'flex size-32 shrink-0 items-center justify-center rounded-full',
+                  domainCardIconWrapClass(domainAreaVisual(area.slug).cardVariant),
+                ]"
+              >
                 <NuxtImg
                   v-if="area.icon"
                   :src="area.icon"
@@ -120,13 +126,25 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
                   width="32"
                   height="32"
                   format="webp"
-                  class="size-24 object-contain"
+                  :class="[
+                    'object-contain',
+                    domainAreaVisual(area.slug).cardVariant === 'full' ? 'size-32' : 'size-44 max-w-none',
+                  ]"
                 />
-                <QIcon v-else name="ic-dom-arch" :size="24" />
+                <QIcon
+                  v-else
+                  :name="domainAreaVisual(area.slug).cardIcon"
+                  :size="domainAreaVisual(area.slug).cardIconSize"
+                />
               </div>
               <div class="flex min-w-0 flex-col items-start leading-tight">
                 <span class="text-sm font-semibold leading-21 text-navy truncate max-2xs:whitespace-normal">{{ area.title }}</span>
-                <span class="pt-2 text-xs leading-[16.5px] font-medium text-dom-card-meta truncate whitespace-nowrap">
+                <span
+                  :class="[
+                    'pt-2 text-xs leading-[16.5px] text-dom-card-meta truncate whitespace-nowrap',
+                    domainAreaVisual(area.slug).metaBold ? 'font-jakarta font-bold' : 'font-medium',
+                  ]"
+                >
                   {{ $t('destination.detail.domainSchoolCount', area.schoolCount) }}
                 </span>
               </div>

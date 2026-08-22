@@ -14,8 +14,14 @@
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
-<div class="screen-shell">
-  <div class="screen page-inscription">
+<!--
+  @maquette-id inscription
+  @frontend-route /inscription
+  @frontend-file frontend-main/app/pages/inscription.vue
+  @sync-status aligned | 2026-08-17 | commit db69933
+-->
+<div class="screen-shell" data-q-layout="mobile-shell">
+  <div data-maquette-id="inscription" class="screen page-inscription">
 
     <div class="inscription-header">
       <div class="inscription-main">
@@ -138,7 +144,7 @@
 
             <!-- Submit (453:2208) pt 5 -->
             <div class="inscription-submit-wrap">
-              <button class="btn-primary" type="button">Créer mon compte</button>
+              <button data-q-variant="primary" data-q-component="QButton" class="btn-primary" type="button">Créer mon compte</button>
             </div>
           </div>
 
@@ -178,7 +184,7 @@
     </div>
 
     <!-- Bottom Nav (470:155) gap 8 / py 10 -->
-    <nav class="bottom-nav" aria-label="Navigation principale">
+    <nav data-q-component="QBottomNav" class="bottom-nav" aria-label="Navigation principale">
       <a href="home.html" class="nav-item">
         <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
         <span>Accueil</span>

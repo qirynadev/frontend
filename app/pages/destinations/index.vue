@@ -36,9 +36,6 @@ usePageSeo(() => ({
       <h1 class="m-0 text-4xl leading-normal font-semibold tracking-tight text-text">
         {{ $t('destination.list.title') }}
       </h1>
-      <p class="m-0 text-xl leading-[22.75px] text-text">
-        {{ $t('destination.list.subtitle') }}
-      </p>
     </div>
 
     <PageState

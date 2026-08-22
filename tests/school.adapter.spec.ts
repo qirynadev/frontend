@@ -19,6 +19,12 @@ describe('réponse nominale', () => {
     // L’API insère systématiquement un `{ title: null, description: null }`.
     expect(school.formations).toHaveLength(1)
     expect(school.formations[0]?.title).toBe('Global Bachelor of Business Administration')
+    expect(school.formations[0]?.summary).toContain('Bachelor international')
+    expect(school.formations[0]?.summary).not.toContain('Le lycéen')
+    expect(school.formations[0]?.bodyHtml).toContain('Bachelor international')
+    expect(school.formations[0]?.sections.some((s) => s.label === 'Cible')).toBe(true)
+    expect(school.formations[0]?.grade).toBe('Grade Bachelor')
+    expect(school.formations[0]?.duration).toBe('3 ans')
     expect(school.details).toHaveLength(1)
     expect(school.details[0]?.title).toBe('Classement')
   })
@@ -29,6 +35,23 @@ describe('réponse nominale', () => {
     expect(school.formations).toEqual([])
     expect(school.details).toEqual([])
     expect(school.formationCount).toBe(0)
+  })
+
+  it('lit grade et duration API le jour où le back-office les alimentera', () => {
+    const school = toSchool({
+      ...rawSchoolWithFormations,
+      formations: [
+        {
+          title: 'Programme test',
+          description: '<p>Accroche libre.</p>',
+          grade: 'Grade Licence',
+          duration: '4 ans',
+        },
+      ],
+    })
+
+    expect(school.formations[0]?.grade).toBe('Grade Licence')
+    expect(school.formations[0]?.duration).toBe('4 ans')
   })
 
   it('expose foundedYear et studentCount à null sans les inventer', () => {

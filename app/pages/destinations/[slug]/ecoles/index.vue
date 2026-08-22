@@ -26,6 +26,7 @@
  * `GET /schools/{countryId}/{areaId}` — seul endpoint qui filtre
  * effectivement par domaine (voir `server/api/bff/schools/index.get.ts`).
  */
+import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
 import type { SchoolSummary } from '~/core/contracts'
 
@@ -117,7 +118,23 @@ usePageSeo(() => ({
           :style="{ flex: '0 0 calc((100% - 14px) / 3)', width: 'calc((100% - 14px) / 3)' }"
           @click="setDomain(area.slug)"
         >
-          <NuxtImg v-if="area.icon" :src="area.icon" alt="" width="18" height="18" format="webp" class="block size-18 shrink-0 object-contain" />
+          <span class="flex shrink-0 items-center justify-center overflow-clip">
+            <NuxtImg
+              v-if="area.icon"
+              :src="area.icon"
+              alt=""
+              width="18"
+              height="18"
+              format="webp"
+              class="block size-18 object-contain"
+            />
+            <QIcon
+              v-else
+              :name="domainAreaVisual(area.slug).chipIcon"
+              :size="domainAreaVisual(area.slug).chipIconSize"
+              :height="domainAreaVisual(area.slug).chipIconHeight"
+            />
+          </span>
           <span class="min-w-0 truncate text-sm leading-21 font-semibold text-navy">{{ area.title }}</span>
         </button>
       </div>

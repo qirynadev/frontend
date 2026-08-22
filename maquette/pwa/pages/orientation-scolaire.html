@@ -14,8 +14,14 @@
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
-<div class="screen-shell">
-  <div class="screen page-osp">
+<!--
+  @maquette-id orientation-scolaire
+  @frontend-route /orientation
+  @frontend-file frontend-main/app/pages/orientation/index.vue
+  @sync-status remeasure | 2026-08-17 | commit db69933
+-->
+<div class="screen-shell" data-q-layout="mobile-shell">
+  <div data-maquette-id="orientation-scolaire" class="screen page-osp">
 
     <div class="osp-header">
       <div class="osp-main">
@@ -174,7 +180,7 @@
       </div>
     </div>
 
-    <nav class="bottom-nav" aria-label="Navigation principale">
+    <nav data-q-component="QBottomNav" class="bottom-nav" aria-label="Navigation principale">
       <a href="home.html" class="nav-item">
         <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
         <span>Accueil</span>

@@ -1,0 +1,207 @@
+{
+  "$schema": "./component-map.schema.json",
+  "version": 1,
+  "updated": "2026-08-17",
+  "components": [
+    {
+      "qComponent": "QBottomNav",
+      "selectors": [".bottom-nav", ".nav-item", ".nav-item.active"],
+      "dataAttribute": "data-q-component=\"QBottomNav\"",
+      "pages": "all-with-bottom-nav"
+    },
+    {
+      "qComponent": "QTopBar",
+      "selectors": [
+        ".home-topbar",
+        ".formule-topbar",
+        ".ed-topbar",
+        ".le-topbar",
+        ".connexion-header",
+        ".page-header"
+      ],
+      "dataAttribute": "data-q-component=\"QTopBar\"",
+      "pages": "most"
+    },
+    {
+      "qComponent": "QButton",
+      "selectors": [
+        ".btn-primary",
+        ".btn-outline",
+        ".btn-cta",
+        ".btn-start",
+        ".formule-card-btn",
+        ".oo-cta",
+        ".ed-cta-btn",
+        ".ed-float-cta",
+        ".objectifs-cta",
+        ".langue-cta",
+        ".projet-btn-start"
+      ],
+      "dataAttribute": "data-q-component=\"QButton\"",
+      "variantProp": "data-q-variant"
+    },
+    {
+      "qComponent": "QCard",
+      "selectors": [
+        ".formule-card",
+        ".ed-form-card",
+        ".le-school",
+        ".dest-card",
+        ".langue-card",
+        ".objectifs-card",
+        ".dom-card",
+        ".home-news-card",
+        ".service-card",
+        ".order-card"
+      ],
+      "dataAttribute": "data-q-component=\"QCard\"",
+      "notes": "OfferTierCard pour .formule-card dans le frontend"
+    },
+    {
+      "qComponent": "OfferTierCard",
+      "selectors": [".formule-card", ".formule-card--kili", ".formule-card--acon", ".formule-card--everest"],
+      "extends": "QCard",
+      "frontendFile": "app/components/offer/OfferTierCard.vue"
+    },
+    {
+      "qComponent": "QIconButton",
+      "selectors": [
+        ".dest-back",
+        ".dom-back",
+        ".le-back",
+        ".ed-back",
+        ".formule-back",
+        ".home-menu-btn",
+        ".home-notif"
+      ],
+      "dataAttribute": "data-q-component=\"QIconButton\""
+    },
+    {
+      "qComponent": "QSegmentedControl",
+      "selectors": [".ed-tabs", ".ed-tab", ".auth-toggle"],
+      "dataAttribute": "data-q-component=\"QSegmentedControl\"",
+      "variant": "underline | pill"
+    },
+    {
+      "qComponent": "QTrustBar",
+      "selectors": [".q-trust", ".formule-trust-item", ".dom-trust-item", ".dest-trust-item"],
+      "dataAttribute": "data-q-component=\"QTrustBar\""
+    },
+    {
+      "qComponent": "QInput",
+      "selectors": [".input-field", ".input-group", ".field-icon"],
+      "dataAttribute": "data-q-component=\"QInput\""
+    },
+    {
+      "qComponent": "QHero",
+      "selectors": [".hero-row", ".connexion-hero", ".oo-hero", ".projet-hero", ".dom-banner"],
+      "dataAttribute": "data-q-component=\"QHero\""
+    },
+    {
+      "qComponent": "QSectionHeader",
+      "selectors": [".home-section-title", ".dom-section-title", ".le-title", ".le-subtitle"],
+      "dataAttribute": "data-q-component=\"QSectionHeader\""
+    },
+    {
+      "qComponent": "QBadge",
+      "selectors": [".langue-tag", ".ed-badge", ".status-badge", ".home-news-tag"],
+      "dataAttribute": "data-q-component=\"QBadge\""
+    },
+    {
+      "qComponent": "QChip",
+      "selectors": [".le-chip"],
+      "dataAttribute": "data-q-component=\"QChip\""
+    },
+    {
+      "qComponent": "QSheet",
+      "selectors": [".home-menu", ".ed-modal", ".ed-modal-backdrop"],
+      "dataAttribute": "data-q-component=\"QSheet\"",
+      "notes": "Modale fiche école = bottom sheet"
+    },
+    {
+      "qComponent": "QCarousel",
+      "selectors": [".formule-slider", ".home-news-scroll", ".le-chips"],
+      "dataAttribute": "data-q-component=\"QCarousel\""
+    },
+    {
+      "qComponent": "QStepper",
+      "selectors": [".mdp-steps", ".lpp-steps", ".paiement-step"],
+      "dataAttribute": "data-q-component=\"QStepper\""
+    },
+    {
+      "qComponent": "QProgressRing",
+      "selectors": [".home-progress-ring", ".projet-ring"],
+      "dataAttribute": "data-q-component=\"QProgressRing\""
+    },
+    {
+      "qComponent": "QStat",
+      "selectors": [".stat-item", ".dom-stat", ".projet-stat"],
+      "dataAttribute": "data-q-component=\"QStat\""
+    },
+    {
+      "qComponent": "QHelpBox",
+      "selectors": [".help-box", ".cta-box", ".dest-help"],
+      "dataAttribute": "data-q-component=\"QHelpBox\""
+    },
+    {
+      "qComponent": "QDivider",
+      "selectors": [".divider-or", ".formule-feature-sep", ".q-trust__sep"],
+      "dataAttribute": "data-q-component=\"QDivider\""
+    },
+    {
+      "qComponent": "QCheckbox",
+      "selectors": [".cgu-row", ".cgu-checkbox"],
+      "dataAttribute": "data-q-component=\"QCheckbox\""
+    },
+    {
+      "qComponent": "QRadio",
+      "selectors": [".objectifs-radio", ".dest-card.is-selected"],
+      "dataAttribute": "data-q-component=\"QRadio\""
+    },
+    {
+      "qComponent": "QPasswordStrength",
+      "selectors": [".password-strength-bar", ".password-strength-hint"],
+      "dataAttribute": "data-q-component=\"QPasswordStrength\""
+    },
+    {
+      "qComponent": "QSocialButton",
+      "selectors": [".social-btn", ".social-row"],
+      "dataAttribute": "data-q-component=\"QSocialButton\""
+    },
+    {
+      "qComponent": "QPager",
+      "selectors": [".q-pager__btn", ".le-dot", ".formule-slider-dot"],
+      "dataAttribute": "data-q-component=\"QPager\""
+    },
+    {
+      "qComponent": "QMediaRow",
+      "selectors": [".info-row", ".home-menu-item", ".formule-feature", ".oo-feature"],
+      "dataAttribute": "data-q-component=\"QMediaRow\""
+    },
+    {
+      "qComponent": "QIconCircle",
+      "selectors": [".dom-card-icon", ".oo-feature-icon", ".home-cat-icon"],
+      "dataAttribute": "data-q-component=\"QIconCircle\""
+    },
+    {
+      "qComponent": "QProgressBar",
+      "selectors": [".progress-bar", ".projet-mini-progress"],
+      "dataAttribute": "data-q-component=\"QProgressBar\""
+    },
+    {
+      "qComponent": "QSkeleton",
+      "selectors": [],
+      "notes": "État chargement — frontend only, absent de la maquette"
+    },
+    {
+      "qComponent": "QEmptyState",
+      "selectors": [],
+      "notes": "État vide — frontend only"
+    },
+    {
+      "qComponent": "QAlert",
+      "selectors": [],
+      "notes": "État erreur — frontend only"
+    }
+  ]
+}

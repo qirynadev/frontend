@@ -54,6 +54,9 @@ const shellClass = computed(() => (route.meta.shellBackground === 'tint' ? 'bg-s
       <div class="flex min-h-0 flex-1 flex-col px-gutter pb-24">
         <main
           :class="[
+            /* Pas de `scrollbar-gutter: stable` : réserve une bande vide à droite
+               et décale le contenu. Le saut d’onglets (école / messages) reste
+               acceptable vs un layout asymétrique permanent. */
             'min-h-0 flex-1 overflow-y-auto pt-16',
             showBottomNav ? 'pb-content-bottom' : 'pb-safe-bottom',
           ]"

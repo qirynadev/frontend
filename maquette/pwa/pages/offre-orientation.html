@@ -14,125 +14,77 @@
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
-<div class="screen-shell">
-  <div class="screen page-oo">
+<!--
+  @maquette-id offre-orientation
+  @frontend-route /offres/[slug]
+  @frontend-file frontend-main/app/pages/offres/[slug].vue
+  @sync-status aligned | 2026-08-17 | commit db69933
+  @notes Palier unique domaine ; aussi référence orientation/index.vue
+-->
+<div class="screen-shell" data-q-layout="mobile-shell">
+  <div data-maquette-id="offre-orientation" class="screen page-formule page-oo">
 
-    <div class="oo-header">
-      <div class="oo-main">
+    <div class="formule-header">
+      <div class="formule-main">
 
-        <header class="oo-topbar">
-          <a href="ecole-detail.html" class="oo-back" data-oo-back aria-label="Retour">
+        <header data-q-component="QTopBar" class="formule-topbar">
+          <a href="ecole-detail.html" class="formule-back" data-oo-back aria-label="Retour">
             <img src="../assets/icons/ic-lang-back.svg" alt="" width="24" height="24" />
           </a>
-          <a href="home.html" class="oo-logo-frame" aria-label="Accueil">
+          <a href="home.html" class="formule-logo-frame" aria-label="Accueil">
             <img src="../assets/images/logo.png" alt="Qiryna" />
           </a>
-          <div class="oo-notif">
+          <div class="formule-notif">
             <img src="../assets/icons/ic-bell.svg" alt="" width="25" height="25" />
-            <span class="oo-notif-badge">3</span>
+            <span class="formule-notif-badge">3</span>
           </div>
         </header>
 
-        <section class="oo-hero">
-          <div class="oo-hero-copy">
-            <h1>Vous méritez<br />le meilleur.</h1>
-            <p>Nous vous accompagnons<br />à chaque étape vers<br />les meilleures écoles.</p>
-          </div>
-          <div class="oo-hero-visual">
-            <img src="../assets/images/offre/hero-gift.png" alt="" width="218" height="145" />
-          </div>
-        </section>
-
-        <section class="oo-inclus">
-          <h2>Ce qui est inclus dans votre offre</h2>
-          <div class="oo-features">
-            <article class="oo-feature">
-              <div class="oo-feature-main">
-                <span class="oo-feature-icon">
-                  <img src="../assets/icons/ic-oo-feature-1.svg" alt="" width="48" height="48" />
-                </span>
-                <div class="oo-feature-copy">
-                  <h3>Projet professionnel</h3>
-                  <p>Clarifiez vos objectifs et construisons ensemble un projet qui vous ressemble.</p>
-                </div>
-              </div>
-              <span class="oo-feature-check">
-                <img src="../assets/icons/ic-oo-check-1.svg" alt="" width="28" height="28" />
-              </span>
-            </article>
-
-            <article class="oo-feature">
-              <div class="oo-feature-main">
-                <span class="oo-feature-icon">
-                  <img src="../assets/icons/ic-oo-feature-2.svg" alt="" width="48" height="48" />
-                </span>
-                <div class="oo-feature-copy">
-                  <h3>Test d’aptitude (GMAT, TOEFL, ..)</h3>
-                  <p>Préparation personnalisée et stratégies efficaces pour maximiser vos scores.</p>
-                </div>
-              </div>
-              <span class="oo-feature-check">
-                <img src="../assets/icons/ic-oo-check-1.svg" alt="" width="28" height="28" />
-              </span>
-            </article>
-
-            <article class="oo-feature">
-              <div class="oo-feature-main">
-                <span class="oo-feature-icon">
-                  <img src="../assets/icons/ic-oo-feature-3.svg" alt="" width="48" height="48" />
-                </span>
-                <div class="oo-feature-copy">
-                  <h3>Dossier de candidature</h3>
-                  <p>Rédaction, relecture et optimisation de vos documents pour un dossier convaincant.</p>
-                </div>
-              </div>
-              <span class="oo-feature-check">
-                <img src="../assets/icons/ic-oo-check-3.svg" alt="" width="28" height="28" />
-              </span>
-            </article>
-
-            <article class="oo-feature">
-              <div class="oo-feature-main">
-                <span class="oo-feature-icon">
-                  <img src="../assets/icons/ic-oo-feature-4.svg" alt="" width="48" height="48" />
-                </span>
-                <div class="oo-feature-copy">
-                  <h3>Simulation d’entretien</h3>
-                  <p>Entraînements personnalisés pour maîtriser vos entretiens et faire la différence.</p>
-                </div>
-              </div>
-              <span class="oo-feature-check">
-                <img src="../assets/icons/ic-oo-check-1.svg" alt="" width="28" height="28" />
-              </span>
-            </article>
-          </div>
-        </section>
-
-        <section class="oo-price">
-          <div class="oo-price-row">
-            <div class="oo-price-amount">
-              <span class="oo-price-badge">Offre unique</span>
-              <p class="oo-price-value">899 €</p>
-              <p class="oo-price-note">Paiement unique</p>
+        <div class="oo-formule-wrap">
+          <article data-q-tier="acon" data-q-component="QCard" class="formule-card formule-card--acon of-card">
+            <div class="formule-card-head">
+              <img src="../assets/icons/ic-oo-feature-1.svg" alt="" class="formule-card-icon" width="36" height="36" />
+              <h2 class="formule-card-name">Accompagnement candidature</h2>
+              <span class="of-card-badge of-card-badge--jordan">Offre unique</span>
+              <p class="formule-card-tagline">Ce qui est inclus dans votre offre</p>
+              <hr class="formule-card-rule" />
             </div>
-            <span class="oo-price-sep" aria-hidden="true"></span>
-            <a href="paiement-reussi.html" class="oo-cta" data-oo-cta>
-              <span>Démarrer mon accompagnement</span>
-              <img src="../assets/icons/ic-oo-cta-arrow.svg" alt="" width="8" height="7" />
-            </a>
-          </div>
-          <div class="oo-secure">
-            <img src="../assets/icons/ic-oo-shield.svg" alt="" width="20" height="20" />
-            <span>Paiement 100% sécurisé • Sans abonnement</span>
-          </div>
-        </section>
-
-        <div data-trust-bar></div>
+            <ul class="formule-card-list" data-oo-features>
+              <li data-oo-feature="cadrage">
+                <img src="../assets/icons/orientation-formules/ic-of-check-purple.svg" alt="" width="12" height="12" />
+                <span>Entretien de cadrage</span>
+              </li>
+              <li data-oo-feature="projetEtude">
+                <img src="../assets/icons/orientation-formules/ic-of-check-purple.svg" alt="" width="12" height="12" />
+                <span>Projet d’étude</span>
+              </li>
+              <li data-oo-feature="projetPro">
+                <img src="../assets/icons/orientation-formules/ic-of-check-purple.svg" alt="" width="12" height="12" />
+                <span>Projet professionnel</span>
+              </li>
+              <li data-oo-feature="essais">
+                <img src="../assets/icons/orientation-formules/ic-of-check-purple.svg" alt="" width="12" height="12" />
+                <span>Rédaction des essais</span>
+              </li>
+              <li data-oo-feature="entretien">
+                <img src="../assets/icons/orientation-formules/ic-of-check-purple.svg" alt="" width="12" height="12" />
+                <span>Simulation d’entretien</span>
+              </li>
+            </ul>
+            <div class="formule-card-foot">
+              <div class="formule-card-price-block">
+                <p class="formule-card-price">899 €</p>
+                <p class="formule-card-period">Paiement unique</p>
+              </div>
+              <a href="paiement-reussi.html" class="formule-card-btn" data-oo-cta>Démarrer mon accompagnement</a>
+            </div>
+          </article>
+        </div>
 
       </div>
     </div>
 
-    <nav class="bottom-nav" aria-label="Navigation principale">
+    <nav data-q-component="QBottomNav" class="bottom-nav" aria-label="Navigation principale">
       <a href="home.html" class="nav-item">
         <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
         <span>Accueil</span>
@@ -159,8 +111,7 @@
 </div>
 
 <script type="module">
-  import { mountComponents } from '../js/components.js';
-  mountComponents();
+  import { applyOfferFeaturesByDomaine } from '../js/offer-orientation.js';
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -173,6 +124,8 @@
   const pays = params.get('pays') || 'france';
   const domaine = params.get('domaine') || 'architecture';
   const formation = params.get('formation') || '0';
+
+  applyOfferFeaturesByDomaine(domaine);
 
   const back = document.querySelector('[data-oo-back]');
   if (back) {

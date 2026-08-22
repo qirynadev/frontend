@@ -356,9 +356,7 @@
     },
     "progress": {
       "cta": "Continuer ",
-      "desc1": "Complétez votre orientation pour",
-      "desc2": "découvrir les métiers qui vous",
-      "desc3": "correspondent vraiment.",
+      "desc": "Complétez votre orientation pour découvrir les métiers qui vous correspondent vraiment.",
       "sectionTitle": "Continuez votre parcours",
       "title": "Votre orientation Qiryna"
     },
@@ -384,7 +382,10 @@
       "statLoyerLabel": "loyer moyen",
       "tagline1": "L'essentiel pour bien démarrer",
       "tagline2": "Plus de garanties et d'accompagnement",
-      "tagline3": "La tranquillité complète"
+      "tagline3": "La tranquillité complète",
+      "badge1": "2 logements proposés",
+      "badge2": "3 logements proposés",
+      "badge3": "3 logements proposés"
     },
     "seoDescription": "Trouvez un logement étudiant dans plusieurs pays.",
     "seoTitle": "Trouver mon logement",
@@ -394,8 +395,17 @@
   "languagePlanning": {
     "assignErrorTitle": "Impossible d'assigner ce professeur. Réessayez.",
     "bookErrorTitle": "Impossible de réserver ce créneau. Il est peut-être déjà pris — réessayez.",
-    "bookingStepIntro": "Séances d'une heure, selon les disponibilités du professeur.",
-    "bookingStepTitle": "Choisissez un créneau",
+    "bookingStepIntro": "Sélectionnez une date et un horaire disponible.",
+    "bookingStepTitle": "Choisir un créneau",
+    "chooseDate": "1. Choisir une date",
+    "chooseSlot": "2. Choisir un créneau disponible",
+    "confirmChoice": "3. Confirmer votre choix",
+    "confirmSlot": "Confirmer le créneau",
+    "cancelSlot": "Annuler",
+    "selectSlotHint": "Sélectionnez un créneau ci-dessus.",
+    "sessionDuration": "60 min par séance",
+    "teacherLocalTime": "Heure locale du professeur (Paris)",
+    "teachersPagerLabel": "Pagination des professeurs",
     "defaultSessionTitle": "Cours de langue",
     "emptyDescription": "Vous n'avez pas encore acheté de formule de langue.",
     "emptyTitle": "Aucun cours de langue",
@@ -413,8 +423,60 @@
     "seoTitle": "Mes cours de langues",
     "teacherStepIntro": "Ces professeurs enseignent cette langue et ont des créneaux disponibles.",
     "teacherStepTitle": "Choisissez votre professeur",
+    "teachersAvailableTitle": "Nos professeurs disponibles",
+    "searchTeacher": "Rechercher un professeur",
+    "filters": "Filtres",
+    "chooseTeacher": "Choisir",
+    "priceFrom": "À partir de",
+    "reviewsCount": "{count} avis",
+    "guaranteeTitle": "Satisfaction garantie",
+    "guaranteeDesc": "Si le premier cours ne vous convient pas, nous vous proposons un autre professeur sans frais.",
     "title": "Mes cours de langues",
     "upcomingTitle": "Séances à venir"
+  },
+  "languageProject": {
+    "connect": "Se connecter",
+    "hourToPlan": "1 heure à planifier",
+    "nextTitle": "Prochain cours",
+    "progressDone": "terminé",
+    "progressHint": "Vous êtes sur la bonne voie ! Continuez comme ça.",
+    "progressTitle": "Ma progression",
+    "schedule": "Planifier",
+    "duration60": "60 min",
+    "certSeoTitle": "Mon projet — Certification langue",
+    "certSeoDescription": "Votre parcours de langue est terminé : rapport et certification.",
+    "certProgressHint": "Félicitations ! Votre certification de langue est prête.",
+    "certProfileTitle": "Votre profil est prêt !",
+    "certProfileDesc": "Découvrez votre niveau, vos progrès et les recommandations pour poursuivre.",
+    "certReportBadge": "Rapport disponible",
+    "certSeeReport": "Voir mon rapport",
+    "certTestTitle": "Votre test de niveau",
+    "certTestDesc": "Vous pouvez revoir ou reprendre le test de niveau à tout moment.",
+    "certRetakeTest": "Passer ou revoir le test",
+    "certInfoTitle": "À savoir",
+    "certInfo1": "Votre profil a été généré à partir de vos cours et de notre analyse.",
+    "certInfo2": "Le rapport de certification contient votre niveau, vos points forts et vos axes de progrès.",
+    "certInfo3": "Vous pouvez télécharger votre rapport et y revenir à tout moment.",
+    "certHelpTitle": "Besoin d'aide ?",
+    "certHelpDesc": "Votre conseillère est là pour vous accompagner si vous avez des questions.",
+    "certContact": "Contacter ma conseillère",
+    "seoDescription": "Suivez votre progression et vos cours de langue.",
+    "seoTitle": "Mon projet — Langue",
+    "startsIn": "Débute dans",
+    "step1": "Inscription\nconfirmée",
+    "step2": "Test de\nniveau",
+    "step3": "Cours en\ncours",
+    "step4": "Évaluation\nintermédiaire",
+    "step5": "Certification\nfinale",
+    "tabPlanned": "Cours planifiés",
+    "tabsLabel": "Type de cours",
+    "tabUnplanned": "Cours à planifier",
+    "unitH": "h",
+    "unitMin": "min",
+    "unitS": "s",
+    "unplannedEmptyDesc": "Toutes vos heures sont déjà planifiées.",
+    "unplannedEmptyTitle": "Rien à planifier",
+    "visio": "En visioconférence"
   },
   "logementConfirmation": {
     "apercuDescAfter": " pour compléter vos informations et affiner la recherche.",
@@ -511,7 +573,7 @@
     "accompaniementLogementTitle": "Logement",
     "accompaniementOrientationTitle": "Orientation",
     "accompaniementsTitle": "Mes accompagnements",
-    "advisorLabel": "Accompagnant·e : ",
+    "advisorLabel": "Conseiller·e : ",
     "bookAppointment": "Prendre rendez-vous",
     "cardLangueDesc": "Apprenez une nouvelle langue et ouvrez les portes du monde.",
     "cardLangueTitle": "Apprendre une langue",
@@ -527,6 +589,7 @@
     "emptyDescription": "Vous n'avez pas encore souscrit à une formule ou un accompagnement.",
     "emptyTitle": "Aucun service actif",
     "intro": "Tous vos accompagnements au même endroit.",
+    "mockNotice": "Affichage illustratif : aucune commande active pour le moment.",
     "myServices": "Mes services",
     "nextAppointment": "Prochain RDV",
     "overviewTitle": "Aperçu général",
@@ -556,7 +619,7 @@
     "supportDesc": "Réservez un rendez-vous avec un\nconseiller pour avancer.",
     "supportTitle": "Besoin d'un accompagnement ?",
     "title": "Mon projet",
-    "updatedDaysAgo": "Mis à jour aujourd'hui | Mise à jour : hier | Mise à jour : il y a {count} jours"
+    "updatedDaysAgo": "Mis à jour aujourd'hui | Mise à jour : Hier | Mise à jour : {count}j"
   },
   "nav": {
     "account": "Compte",
@@ -594,7 +657,18 @@
     "tagline2": "Un bon équilibre pour progresser efficacement",
     "tagline3": "Pour des progrès rapides et durables",
     "tiersLabel": "Formules disponibles",
-    "title": "Choisissez la formule qui vous correspond"
+    "title": "Choisissez la formule qui vous correspond",
+    "domainFeature": {
+      "cadrage": "Entretien de cadrage",
+      "projetEtude": "Projet d’étude",
+      "projetPro": "Projet professionnel",
+      "essais": "Rédaction des essais",
+      "entretien": "Simulation d’entretien"
+    },
+    "domainBadge": "Offre unique",
+    "domainHeroSubtitle": "Nous vous accompagnons\nà chaque étape vers\nles meilleures écoles.",
+    "domainHeroTitle": "Vous méritez\nle meilleur.",
+    "domainIncluded": "Ce qui est inclus dans votre offre"
   },
   "orientation": {
     "calloutDesc": "Notre service d'orientation vous aide à mieux vous connaître, explorer les métiers et choisir le parcours fait pour vous.",
@@ -634,7 +708,7 @@
         "feature3": "Bilan d'orientation 20 pages",
         "feature4": "Entretien de restitution (30 min en visio)",
         "name": "Jordan",
-        "tagline": "Pour commencer et mieux se connaître"
+        "tagline": "Pour bien démarrer"
       },
       "pele": {
         "badge": "5 dimensions analysées",
@@ -807,7 +881,8 @@
       "share": "Partager",
       "tabFormations": "Formations",
       "tabPresentation": "Présentation",
-      "tabStrengths": "Points forts"
+      "tabStrengths": "Points forts",
+      "tabsLabel": "Sections fiche école"
     },
     "formationCount": "aucune formation | 1 formation | {count} formations",
     "list": {

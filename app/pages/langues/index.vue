@@ -7,7 +7,6 @@
  * | barre supérieure | `.langue-topbar` `padding-bottom: 30px` |
  * | introduction | `.langue-intro` `padding-bottom: 13px` · h1 20px `-0.65px` `line-height: normal` · p 14px/22,75px, `min-height: 31px` |
  * | grille | `.langue-grid` **deux colonnes** en `flex`, `gap: 10px`, chacune en colonne avec `gap: 10px` |
- * | encart « autre langue » | `.langue-other` fond `#f5f3ff`, `padding: 20px 9px`, globe 44×44, bouton contour `#450ff2` |
  * | appel à l'action | `.langue-cta` pleine largeur, `padding: 16px 24px`, fond `#4309fc`, flèche 20×20 |
  * | réassurance | `data-trust-bar` |
  *
@@ -92,32 +91,6 @@ usePageSeo(() => ({
             :selected="selected === course.slug"
             @select="selected = $event"
           />
-        </div>
-      </div>
-
-      <!-- Une autre langue en tête ? -->
-      <div class="w-full pt-24">
-        <div class="flex w-full items-center justify-between gap-8 rounded-xl bg-surface-2 px-9 py-20">
-          <div class="flex min-w-0 flex-1 items-start gap-16">
-            <QIcon name="ic-lang-globe" :size="44" />
-            <div class="min-w-0 flex-1">
-              <p class="m-0 text-base leading-20 font-bold whitespace-nowrap text-text">
-                {{ $t('course.list.otherTitle') }}
-              </p>
-              <p class="mt-4 mb-0 text-sm leading-16 whitespace-pre-line text-text">
-                {{ $t('course.list.otherDescription') }}
-              </p>
-            </div>
-          </div>
-
-          <NuxtLink
-            :to="localePath('/compte')"
-            class="shrink-0 rounded-xl border border-primary-link bg-white px-15 py-9 text-base leading-16 font-medium whitespace-nowrap text-primary-link no-underline"
-          >
-            <!-- Espace insécable de la maquette : le bouton est ajusté à son
-                 contenu, elle vaut 3,6px de largeur. -->
-            {{ $t('course.list.otherCta') }}&nbsp;
-          </NuxtLink>
         </div>
       </div>
 

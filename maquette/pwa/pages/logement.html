@@ -14,8 +14,14 @@
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
-<div class="screen-shell">
-  <div class="screen page-dest">
+<!--
+  @maquette-id logement
+  @frontend-route /logement
+  @frontend-file frontend-main/app/pages/logement/index.vue
+  @sync-status aligned | 2026-08-17 | commit db69933
+-->
+<div class="screen-shell" data-q-layout="mobile-shell">
+  <div data-maquette-id="logement" class="screen page-dest">
 
     <div class="dest-header">
       <div class="dest-main">
@@ -157,7 +163,7 @@
       </div>
     </div>
 
-    <nav class="bottom-nav" aria-label="Navigation principale">
+    <nav data-q-component="QBottomNav" class="bottom-nav" aria-label="Navigation principale">
       <a href="home.html" class="nav-item">
         <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
         <span>Accueil</span>

@@ -14,13 +14,19 @@
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
-<div class="screen-shell">
-  <div class="screen page-rm">
+<!--
+  @maquette-id reglages-mdp
+  @frontend-route /reglages/mot-de-passe
+  @frontend-file frontend-main/app/pages/reglages/mot-de-passe.vue
+  @sync-status aligned | 2026-08-17 | commit db69933
+-->
+<div class="screen-shell" data-q-layout="mobile-shell">
+  <div data-maquette-id="reglages-mdp" class="screen page-rm">
 
     <div class="rm-header">
       <div class="rm-main">
 
-        <header class="home-topbar">
+        <header data-q-component="QTopBar" class="home-topbar">
           <a href="reglages.html" class="home-menu-btn" aria-label="Retour">
             <img src="../assets/icons/reglages/ic-rg-back.svg" alt="" width="24" height="24" />
           </a>
@@ -117,7 +123,7 @@
       </div>
     </div>
 
-    <nav class="bottom-nav" aria-label="Navigation principale">
+    <nav data-q-component="QBottomNav" class="bottom-nav" aria-label="Navigation principale">
       <a href="home.html" class="nav-item">
         <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
         <span>Accueil</span>

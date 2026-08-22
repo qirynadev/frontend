@@ -12,8 +12,8 @@
  * | barre supérieure | `padding-bottom: 30px`, retour 24×24, logo 145×45, cloche 49×49 |
  * | réussite | illustration 276×123 `object-fit: cover` · titre 24px / 31,25px `-0.625px` insécable · sous-titre 8px au-dessus, centré |
  * | bienvenue | `padding-bottom: 20px` · encart `#f4f9f6`, bord `#f3f9f5`, `padding: 21px 10px`, `gap: 16px` |
- * | frise | rangée `min-height: 205px`, `padding-top: 10px` · séparateurs **absolus** à 25 / 50 / 75 % |
- * | étapes | icône 50×50, pastille 21×20 — une couleur par rang · description `min-height: 32px` |
+ * | frise | rangée `min-height: 150px`, `padding-top: 10px` · séparateurs **absolus** à 25 / 50 / 75 % |
+ * | étapes | icône 50×50, pastille 21×20 — une couleur par rang · **sans** description (maquette) |
  * | aide | `min-height: 91px`, bouton **absolu** à droite, centré verticalement |
  * | sous 375px | titre enroulable · le bouton d'aide passe **sous** le texte |
  *
@@ -59,10 +59,10 @@ const failed = computed(() => validation.value?.failed === true)
  * contrairement à celles du parcours langue.
  */
 const steps = [
-  { icon: 'ic-paiement-step1', tone: 'bg-paiement-step-1', titleKey: 'checkout.success.step1Title', descKey: 'checkout.success.step1Desc' },
-  { icon: 'ic-paiement-step2', tone: 'bg-paiement-step-2', titleKey: 'checkout.success.step2Title', descKey: 'checkout.success.step2Desc' },
-  { icon: 'ic-paiement-step3', tone: 'bg-success', titleKey: 'checkout.success.step3Title', descKey: 'checkout.success.step3Desc' },
-  { icon: 'ic-paiement-step4', tone: 'bg-paiement-step-4', titleKey: 'checkout.success.step4Title', descKey: 'checkout.success.step4Desc' },
+  { icon: 'ic-paiement-step1', tone: 'bg-paiement-step-1', titleKey: 'checkout.success.step1Title' },
+  { icon: 'ic-paiement-step2', tone: 'bg-paiement-step-2', titleKey: 'checkout.success.step2Title' },
+  { icon: 'ic-paiement-step3', tone: 'bg-success', titleKey: 'checkout.success.step3Title' },
+  { icon: 'ic-paiement-step4', tone: 'bg-paiement-step-4', titleKey: 'checkout.success.step4Title' },
 ] as const
 
 usePageSeo(() => ({
@@ -164,9 +164,8 @@ usePageSeo(() => ({
             {{ $t('checkout.success.stepsHeading') }}
           </h2>
 
-          <div class="relative flex min-h-205 items-start pt-10">
-            <!-- Séparateurs posés en absolu aux quarts, pas entre les colonnes :
-                 ils restent alignés quel que soit le retour à la ligne des textes. -->
+          <div class="relative flex min-h-150 items-start pt-10">
+            <!-- Séparateurs posés en absolu aux quarts, pas entre les colonnes. -->
             <QIcon
               v-for="position in ['left-[calc(25%-10px)]', 'left-[calc(50%-10px)]', 'left-[calc(75%-10px)]']"
               :key="position"
@@ -187,10 +186,7 @@ usePageSeo(() => ({
                 >{{ index + 1 }}</span>
               </div>
 
-              <div class="flex w-full flex-col items-center gap-5 text-center">
-                <p class="m-0 text-sm leading-14 font-bold text-text">{{ $t(step.titleKey) }}</p>
-                <p class="m-0 min-h-32 text-2xs leading-normal font-medium text-text">{{ $t(step.descKey) }}</p>
-              </div>
+              <p class="m-0 text-center text-sm leading-14 font-bold text-text">{{ $t(step.titleKey) }}</p>
             </div>
           </div>
         </div>

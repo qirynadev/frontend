@@ -29,8 +29,9 @@ Mesures prises sur `GET https://admin.stage.qiryna.com/api/all-data` le 12 août
 | 4 | `schoolSheets[].title` contient une **accroche marketing**, pas le nom du pays. Le vrai nom est dans `country.name` | `destination.adapter.ts` |
 | 5 | `country` a deux formes : `{ id, name, iso_alpha_2 }` sur une destination, `{ name }` seul sur une école | `toCountry` |
 | 6 | Les dates sont au format **`JJ/MM/AAAA`** (`"13/01/2026"`), pas ISO | `toIsoDate` |
-| 7 | `formations` et `details` contiennent une entrée fantôme `{ title: null, description: null }` — 428 écoles sur 570 n'ont que ça | `toNamedBlocks` |
+| 7 | `formations` et `details` contiennent une entrée fantôme `{ title: null, description: null }` — 428 écoles sur 570 n'ont que ça | `toFormations` / `toDetails` |
 | 8 | `founded_year` et `student_count` sont `null` pour **les 570 écoles** | contrat `School` (exposés, jamais inventés) |
+| 8b | **`formations[]` n'expose que `title` + `description`** — pas de `grade` ni `duration` (maquette `.ed-form-meta`) | mock `resolveFormationMeta` (`config/formation-meta-mock.ts`) : lit l’API si un jour présents, sinon infère depuis le titre, sinon « Grade Master » / « 3 ans » |
 | 9 | `hero_title`, `cta_text`, `badge_label`, `area` sont `null` pour **les 8 formules** | `toOfferSummary` (repli sur `title`) |
 | 10 | Une école a `title`, `slug` et `presentation` vides | filtre dans `toDestination` |
 | 11 | Les clés `foreignLanguages`, `costOfLiving`, `staticPages`, `livingFormulas` — que l'ancien front lisait — **n'existent pas** dans la réponse | navigation défensive : `list()` renvoie `[]` |
@@ -126,7 +127,7 @@ interface SchoolSummary {          // ce dont une liste a besoin
 }
 
 interface School extends SchoolSummary {   // ce dont une fiche a besoin
-  presentation; formations; details; foundedYear; studentCount; seo
+  presentation; formations (title, summary, sections, bodyHtml, grade, duration); details; foundedYear; studentCount; seo
 }
 ```
 

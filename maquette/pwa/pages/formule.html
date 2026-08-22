@@ -14,13 +14,20 @@
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
-<div class="screen-shell">
-  <div class="screen page-formule">
+<!--
+  @maquette-id formule
+  @frontend-route /offres/[slug]
+  @frontend-file frontend-main/app/pages/offres/[slug].vue
+  @sync-status aligned | 2026-08-17 | commit db69933
+  @notes Carrousel paliers langue
+-->
+<div class="screen-shell" data-q-layout="mobile-shell">
+  <div data-maquette-id="formule" class="screen page-formule">
 
     <div class="formule-header">
       <div class="formule-main">
 
-        <header class="formule-topbar">
+        <header data-q-component="QTopBar" class="formule-topbar">
           <a href="objectifs.html" class="formule-back" aria-label="Retour">
             <img src="../assets/icons/ic-lang-back.svg" alt="" width="24" height="24" />
           </a>
@@ -49,8 +56,8 @@
             <div class="formule-slider-viewport">
               <div class="formule-slider-track" data-formule-track>
                 <!-- Kilimandjaro -->
-                <article class="formule-card formule-card--kili" data-formule-slide data-formule-id="kili">
-                  <div class="formule-card-head">
+                <article data-q-tier="kili" data-q-component="QCard" class="formule-card formule-card--kili" data-formule-slide data-formule-id="kili">
+                  <div data-q-component="QCard" class="formule-card-head">
                     <img src="../assets/icons/ic-formule-kili.svg" alt="" class="formule-card-icon" width="36" height="36" />
                     <h2 class="formule-card-name">Kilimandjaro</h2>
                     <p class="formule-card-tagline">Pour commencer et évoluer à votre rythme&nbsp;</p>
@@ -63,18 +70,18 @@
                     <li><img src="../assets/icons/ic-formule-check-green.svg" alt="" width="12" height="12" /><span>Supports pédagogiques inclus</span></li>
                     <li><img src="../assets/icons/ic-formule-check-green.svg" alt="" width="12" height="12" /><span>Suivi personnalisé</span></li>
                   </ul>
-                  <div class="formule-card-foot">
-                    <div class="formule-card-price-block">
+                  <div data-q-component="QCard" class="formule-card-foot">
+                    <div data-q-component="QCard" class="formule-card-price-block">
                       <p class="formule-card-price">200 €</p>
                       <p class="formule-card-period">par mois</p>
                     </div>
-                    <a href="langues-post-payment.html?formule=kili" class="formule-card-btn">Choisir cette formule&nbsp;</a>
+                    <a data-q-component="QCard" href="langues-post-payment.html?formule=kili" class="formule-card-btn">Choisir cette formule&nbsp;</a>
                   </div>
                 </article>
 
                 <!-- Aconcagua -->
-                <article class="formule-card formule-card--acon" data-formule-slide data-formule-id="acon">
-                  <div class="formule-card-head">
+                <article data-q-tier="acon" data-q-component="QCard" class="formule-card formule-card--acon" data-formule-slide data-formule-id="acon">
+                  <div data-q-component="QCard" class="formule-card-head">
                     <img src="../assets/icons/ic-formule-acon.svg" alt="" class="formule-card-icon" width="36" height="36" />
                     <h2 class="formule-card-name">Aconcagua</h2>
                     <p class="formule-card-tagline">Un bon équilibre pour progresser efficacement&nbsp;</p>
@@ -87,18 +94,18 @@
                     <li><img src="../assets/icons/ic-formule-check-purple.svg" alt="" width="12" height="12" /><span>Supports pédagogiques inclus</span></li>
                     <li><img src="../assets/icons/ic-formule-check-purple.svg" alt="" width="12" height="12" /><span>Suivi personnalisé</span></li>
                   </ul>
-                  <div class="formule-card-foot">
-                    <div class="formule-card-price-block">
+                  <div data-q-component="QCard" class="formule-card-foot">
+                    <div data-q-component="QCard" class="formule-card-price-block">
                       <p class="formule-card-price">300 €</p>
                       <p class="formule-card-period">par mois</p>
                     </div>
-                    <a href="langues-post-payment.html?formule=acon" class="formule-card-btn">Choisir cette formule&nbsp;</a>
+                    <a data-q-component="QCard" href="langues-post-payment.html?formule=acon" class="formule-card-btn">Choisir cette formule&nbsp;</a>
                   </div>
                 </article>
 
                 <!-- Everest -->
-                <article class="formule-card formule-card--everest" data-formule-slide data-formule-id="everest">
-                  <div class="formule-card-head">
+                <article data-q-tier="everest" data-q-component="QCard" class="formule-card formule-card--everest" data-formule-slide data-formule-id="everest">
+                  <div data-q-component="QCard" class="formule-card-head">
                     <span class="formule-card-icon-wrap">
                       <img src="../assets/icons/ic-formule-everest.svg" alt="" class="formule-card-icon formule-card-icon--everest" width="44" height="44" />
                     </span>
@@ -113,12 +120,12 @@
                     <li><img src="../assets/icons/ic-formule-check-red.svg" alt="" width="12" height="12" /><span>Supports pédagogiques inclus</span></li>
                     <li><img src="../assets/icons/ic-formule-check-red.svg" alt="" width="12" height="12" /><span>Suivi personnalisé</span></li>
                   </ul>
-                  <div class="formule-card-foot">
-                    <div class="formule-card-price-block">
+                  <div data-q-component="QCard" class="formule-card-foot">
+                    <div data-q-component="QCard" class="formule-card-price-block">
                       <p class="formule-card-price">400 €</p>
                       <p class="formule-card-period">par mois</p>
                     </div>
-                    <a href="langues-post-payment.html?formule=everest" class="formule-card-btn formule-card-btn--solid">Choisir cette formule&nbsp;</a>
+                    <a data-q-component="QCard" href="langues-post-payment.html?formule=everest" class="formule-card-btn formule-card-btn--solid">Choisir cette formule&nbsp;</a>
                   </div>
                 </article>
               </div>
@@ -171,7 +178,7 @@
       </div>
     </div>
 
-    <nav class="bottom-nav" aria-label="Navigation principale">
+    <nav data-q-component="QBottomNav" class="bottom-nav" aria-label="Navigation principale">
       <a href="home.html" class="nav-item">
         <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
         <span>Accueil</span>

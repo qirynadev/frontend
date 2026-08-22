@@ -57,7 +57,7 @@ const localePath = useLocalePath()
 
       <div class="flex w-full items-center justify-between">
         <span class="flex min-w-0 flex-1 items-center gap-4">
-          <QIcon name="ic-dest-home" :size="9" />
+          <QIcon name="ic-dest-school" :size="9" />
           <span class="truncate text-3xs leading-[16.5px] font-semibold text-text">
             {{ $t('destination.schoolCount', destination.schoolCount) }}
           </span>

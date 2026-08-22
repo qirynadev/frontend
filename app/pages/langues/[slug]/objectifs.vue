@@ -127,28 +127,6 @@ usePageSeo(() => ({
         </button>
       </div>
 
-      <!-- Besoin d'aide pour choisir ? -->
-      <div class="w-full pt-20">
-        <div class="flex h-86 w-full items-center justify-between gap-8 rounded-xl bg-surface-2 px-9 max-xs:h-auto max-xs:min-h-86 max-xs:flex-wrap max-xs:py-12">
-          <div class="flex min-w-0 flex-1 items-start gap-11">
-            <span class="flex size-44 shrink-0 items-center justify-center rounded-full bg-primary-soft">
-              <QIcon name="ic-obj-help" :size="24" />
-            </span>
-            <div class="min-w-0">
-              <p class="m-0 text-base leading-20 font-bold text-text">{{ $t('goal.helpTitle') }}</p>
-              <p class="mt-4 mb-0 text-xs leading-16 text-text">{{ $t('goal.helpDescription') }}</p>
-            </div>
-          </div>
-
-          <NuxtLink
-            :to="localePath('/orientation')"
-            class="shrink-0 rounded-xl border border-primary-link bg-surface-2 px-11 py-9 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline"
-          >
-            {{ $t('goal.helpCta') }}
-          </NuxtLink>
-        </div>
-      </div>
-
       <!-- Commencer -->
       <div class="w-full py-20">
         <NuxtLink

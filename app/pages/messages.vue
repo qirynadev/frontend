@@ -143,80 +143,95 @@ usePageSeo(() => ({
         </button>
       </div>
 
-      <!-- Conversations -->
-      <div v-show="activeTab === 'messages'" class="msg-panel w-full min-w-0 max-w-full">
-        <template v-if="conversations.length">
-          <div class="msg-list flex w-full flex-col gap-16">
-            <article
-            v-for="conv in conversations"
-            :key="conv.id"
-            class="msg-card relative flex w-full items-start rounded-xl border border-border bg-white px-18 py-17 box-border"
-            >
-            <div
-              :class="[
-                'msg-avatar relative size-48 shrink-0 rounded-full',
-                conv.avatar.kind === 'icon' ? `msg-avatar--icon flex items-center justify-center overflow-hidden ${conv.avatar.tint}` : '',
-                conv.avatar.kind === 'illus' ? 'msg-avatar--support overflow-visible bg-transparent' : '',
-              ]"
-            >
-              <img
-                v-if="conv.avatar.kind === 'photo'"
-                :src="conv.avatar.src"
-                alt=""
-                width="48"
-                height="48"
-                class="block size-full rounded-full object-cover"
+      <!-- Panneaux empilés : hauteur stable au changement d’onglet -->
+      <div class="grid w-full min-w-0 max-w-full">
+        <!-- Conversations -->
+        <div
+          :class="[
+            'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
+            activeTab === 'messages' ? 'visible' : 'invisible pointer-events-none',
+          ]"
+          :aria-hidden="activeTab !== 'messages'"
+        >
+          <template v-if="conversations.length">
+            <div class="msg-list flex w-full flex-col gap-16">
+              <article
+              v-for="conv in conversations"
+              :key="conv.id"
+              class="msg-card relative flex w-full items-start rounded-xl border border-border bg-white px-18 py-17 box-border"
               >
-              <QIcon v-else :name="conv.avatar.icon" :size="conv.avatar.kind === 'icon' ? 24 : 48" />
-
-              <span
-                v-if="conv.online"
-                class="msg-online absolute right-0 bottom-0 flex size-14 items-center justify-center rounded-full border-2 border-white bg-msg-online box-border"
-                aria-hidden="true"
+              <div
+                :class="[
+                  'msg-avatar relative size-48 shrink-0 rounded-full',
+                  conv.avatar.kind === 'icon' ? `msg-avatar--icon flex items-center justify-center overflow-hidden ${conv.avatar.tint}` : '',
+                  conv.avatar.kind === 'illus' ? 'msg-avatar--support overflow-visible bg-transparent' : '',
+                ]"
               >
-                <img src="/img/icons/ic-msg-online.svg" alt="" width="6" height="6" class="block size-6">
-              </span>
-            </div>
+                <img
+                  v-if="conv.avatar.kind === 'photo'"
+                  :src="conv.avatar.src"
+                  alt=""
+                  width="48"
+                  height="48"
+                  class="block size-full rounded-full object-cover"
+                >
+                <QIcon v-else :name="conv.avatar.icon" :size="conv.avatar.kind === 'icon' ? 24 : 48" />
 
-            <div class="msg-body min-w-0 flex-1 pr-10 pl-16">
-              <div class="msg-identity flex w-full min-w-0 items-center">
-                <h2 class="msg-name m-0 truncate text-xl leading-20 font-semibold text-text">{{ $t(conv.nameKey) }}</h2>
-                <span :class="['msg-tag ml-6 shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[conv.tagTone]]">
-                  {{ $t(conv.tagKey) }}
+                <span
+                  v-if="conv.online"
+                  class="msg-online absolute right-0 bottom-0 flex size-14 items-center justify-center rounded-full border-2 border-white bg-msg-online box-border"
+                  aria-hidden="true"
+                >
+                  <img src="/img/icons/ic-msg-online.svg" alt="" width="6" height="6" class="block size-6">
                 </span>
               </div>
-              <p class="msg-preview m-0 mt-6 line-clamp-2 text-md leading-[19.5px] font-normal text-msg-preview">
-                {{ $t(conv.previewKey) }}
-              </p>
-            </div>
 
-            <div class="msg-aside ml-auto flex shrink-0 min-w-52 flex-col items-end justify-start gap-10 pt-2">
-              <time class="msg-time shrink-0 text-sm leading-15 font-medium text-right whitespace-nowrap text-msg-time">{{ conv.time }}</time>
-              <span
-                v-if="conv.unread > 0"
-                class="msg-unread msg-unread--count flex size-20 shrink-0 items-center justify-center rounded-full bg-msg-unread text-sm leading-15 font-bold text-white"
-                :aria-label="$t('messages.unreadCount', { count: conv.unread })"
-              >{{ conv.unread }}</span>
-              <span v-else class="msg-unread size-10 shrink-0 rounded-full bg-msg-unread" :aria-label="$t('messages.unread')" />
+              <div class="msg-body min-w-0 flex-1 pr-10 pl-16">
+                <div class="msg-identity flex w-full min-w-0 items-center">
+                  <h2 class="msg-name m-0 truncate text-xl leading-20 font-semibold text-text">{{ $t(conv.nameKey) }}</h2>
+                  <span :class="['msg-tag ml-6 shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[conv.tagTone]]">
+                    {{ $t(conv.tagKey) }}
+                  </span>
+                </div>
+                <p class="msg-preview m-0 mt-6 line-clamp-2 text-md leading-[19.5px] font-normal text-msg-preview">
+                  {{ $t(conv.previewKey) }}
+                </p>
+              </div>
+
+              <div class="msg-aside ml-auto flex shrink-0 min-w-52 flex-col items-end justify-start gap-10 pt-2">
+                <time class="msg-time shrink-0 text-sm leading-15 font-medium text-right whitespace-nowrap text-msg-time">{{ conv.time }}</time>
+                <span
+                  v-if="conv.unread > 0"
+                  class="msg-unread msg-unread--count flex size-20 shrink-0 items-center justify-center rounded-full bg-msg-unread text-sm leading-15 font-bold text-white"
+                  :aria-label="$t('messages.unreadCount', { count: conv.unread })"
+                >{{ conv.unread }}</span>
+                <span v-else class="msg-unread size-10 shrink-0 rounded-full bg-msg-unread" :aria-label="$t('messages.unread')" />
+              </div>
+              </article>
             </div>
-            </article>
+            <!-- Frère de la liste, comme dans la maquette : dans la liste, il
+                 héritait du `gap: 16px` et allongeait le bloc de 60px. -->
+            <QPager v-model:page="page" :total="totalPages" :aria-label="$t('messages.pagerLabel')" class="mt-8 mb-4" />
+          </template>
+
+          <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
+            <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noResultTitle') }}</p>
+            <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noResultDesc') }}</p>
           </div>
-          <!-- Frère de la liste, comme dans la maquette : dans la liste, il
-               héritait du `gap: 16px` et allongeait le bloc de 60px. -->
-          <QPager v-model:page="page" :total="totalPages" :aria-label="$t('messages.pagerLabel')" class="mt-8 mb-4" />
-        </template>
-
-        <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
-          <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noResultTitle') }}</p>
-          <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noResultDesc') }}</p>
         </div>
-      </div>
 
-      <!-- Notifications : vide dans la maquette -->
-      <div v-show="activeTab === 'notification'" class="msg-panel w-full min-w-0 max-w-full">
-        <div class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
-          <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.emptyTitle') }}</p>
-          <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.emptyDesc') }}</p>
+        <!-- Notifications : vide dans la maquette -->
+        <div
+          :class="[
+            'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
+            activeTab === 'notification' ? 'visible' : 'invisible pointer-events-none',
+          ]"
+          :aria-hidden="activeTab !== 'notification'"
+        >
+          <div class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
+            <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.emptyTitle') }}</p>
+            <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.emptyDesc') }}</p>
+          </div>
         </div>
       </div>
 

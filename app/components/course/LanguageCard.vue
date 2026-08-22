@@ -24,8 +24,9 @@ import { flagNameFor, presentationFor, type LanguageBadgeTone } from '~/config/l
  *
  * **L'étiquette est colorée par tonalité.** La maquette en compte sept ; le
  * champ `badge` de l'API vaut `null` sur les quatre langues du catalogue. Le
- * libellé vient donc de `config/language-badges.ts` — et **`badge` l'emporte
- * dès qu'il est renseigné**, sans changer une ligne ici.
+ * libellé vient donc de `config/language-badges.ts` (prioritaire pour coller
+ * aux titres commerciaux de la maquette). `badge` API ne sert qu’aux langues
+ * hors liste.
  */
 const props = defineProps<{ course: CourseSummary; selected: boolean }>()
 defineEmits<{ select: [slug: string] }>()
@@ -35,10 +36,14 @@ const presentation = computed(() => presentationFor(props.course.slug))
 /** Drapeau de la maquette quand elle le dessine ; celui de l'API sinon. */
 const flagName = computed(() => flagNameFor(props.course.slug, props.course.flag))
 
-/** `badge` administré > libellé éditorial de la maquette > rien. */
+/**
+ * Libellé d’étiquette : maquette d’abord (titres commerciaux validés),
+ * puis `badge` API pour une langue hors liste, sinon rien.
+ */
+const { t } = useI18n()
 const badgeLabel = computed(() => {
-  if (props.course.badge) return props.course.badge
-  return presentation.value ? undefined : null
+  if (presentation.value) return t(presentation.value.labelKey)
+  return props.course.badge
 })
 
 const toneClass: Record<LanguageBadgeTone, string> = {
@@ -89,7 +94,7 @@ const badgeClass = computed(() =>
       <span class="text-xl leading-24 font-medium whitespace-nowrap text-navy">{{ course.name }}</span>
 
       <span
-        v-if="badgeLabel !== null"
+        v-if="badgeLabel"
         :class="[
           'inline-flex items-center justify-center rounded-sm px-11 py-3 text-sm leading-15 font-medium whitespace-nowrap',
           badgeClass,
@@ -98,7 +103,7 @@ const badgeClass = computed(() =>
         <!-- Espace insécable finale de la maquette : l'étiquette étant ajustée
              à son contenu, elle vaut 3px de largeur. Elle vit ici plutôt que
              dans la traduction, où elle serait invisible et retirée. -->
-        {{ badgeLabel ?? $t(presentation!.labelKey) }}&nbsp;
+        {{ badgeLabel }}&nbsp;
       </span>
 
       <span

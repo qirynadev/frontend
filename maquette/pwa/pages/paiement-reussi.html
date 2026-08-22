@@ -14,14 +14,21 @@
   <link rel="stylesheet" href="../css/app.css" />
 </head>
 <body>
-<div class="screen-shell">
-  <div class="screen page-paiement">
+<!--
+  @maquette-id paiement-reussi
+  @frontend-route /paiement-reussi
+  @frontend-file frontend-main/app/pages/paiement-reussi.vue
+  @sync-status aligned | 2026-08-17 | commit db69933
+  @notes Tunnel domaines d'étude
+-->
+<div class="screen-shell" data-q-layout="mobile-shell">
+  <div data-maquette-id="paiement-reussi" class="screen page-paiement">
 
     <div class="paiement-header">
       <div class="paiement-main">
 
         <!-- Page Header (516:1359) -->
-        <div class="paiement-page-header">
+        <div data-q-component="QTopBar" class="paiement-page-header">
           <a href="offre-orientation.html" class="paiement-back" data-pr-back aria-label="Retour">
             <img src="../assets/icons/ic-back-dark.svg" alt="" width="24" height="24" />
           </a>
@@ -78,7 +85,6 @@
               </div>
               <div class="paiement-step-text">
                 <p class="paiement-step-title">Vérifiez votre email</p>
-                <p class="paiement-step-desc">Ouvrez l'email que nous venons de vous envoyer.</p>
               </div>
             </div>
 
@@ -91,7 +97,6 @@
               </div>
               <div class="paiement-step-text">
                 <p class="paiement-step-title">Accédez à votre espace</p>
-                <p class="paiement-step-desc">Cliquez sur le lien sécurisé pour compléter votre profil.</p>
               </div>
             </div>
 
@@ -104,7 +109,6 @@
               </div>
               <div class="paiement-step-text">
                 <p class="paiement-step-title">Déposez vos documents</p>
-                <p class="paiement-step-desc">CV, projet professionnel et autres informations nécessaires.</p>
               </div>
             </div>
 
@@ -117,7 +121,6 @@
               </div>
               <div class="paiement-step-text">
                 <p class="paiement-step-title">Nous analysons votre profil</p>
-                <p class="paiement-step-desc">Nos conseillers étudient votre dossier pour vous proposer un accompagnement sur mesure.</p>
               </div>
             </div>
           </div>
@@ -146,7 +149,7 @@
     </div>
 
     <!-- Bottom Nav (1070:209 / 418:3054) -->
-    <nav class="bottom-nav" aria-label="Navigation principale">
+    <nav data-q-component="QBottomNav" class="bottom-nav" aria-label="Navigation principale">
       <a href="home.html" class="nav-item">
         <span class="nav-item__icon"><img src="../assets/icons/nav-home.svg" alt="" width="24" height="24" /></span>
         <span>Accueil</span>
