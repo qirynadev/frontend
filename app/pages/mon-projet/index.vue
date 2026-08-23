@@ -21,21 +21,18 @@ const localePath = useLocalePath()
 const { data, apiError, isInitialLoading, refresh } = await useProjetData(locale)
 
 /**
- * Toujours les 4 rubriques (Admission, Logement, Cours de langues,
- * Orientation) — une rubrique sans commande réelle affiche une carte à 0 %
- * (`ensureAllTypes`), pas un contenu inventé. Lien Langues →
- * `/mon-projet/langues` (Figma Mon Projet - Langue). Orientation regroupe
- * tous les bilans en une seule carte, comme les langues par langue.
+ * Toujours exactement 4 cartes (Admission, Logement, Cours de langues,
+ * Orientation) — une par rubrique, jamais une par commande/langue/bilan
+ * (consigne du responsable, 2026-08-23). Une rubrique sans commande réelle
+ * affiche une carte à 0 %, pas un contenu inventé. Lien Langues →
+ * `/mon-projet/langues` (Figma Mon Projet - Langue).
  */
-const accompagnements = computed(() => {
-  const orders = data.value?.orders ?? []
-  const before = toAccompagnements(orders.filter((order) => order.serviceType === 'areaofstudy' || order.serviceType === 'costofliving'))
-  const languages = toLanguageAccompagnements(data.value?.languages ?? [], data.value?.sessions ?? [])
-  const orientation = toOrientationAccompagnement(orders.filter((order) => order.serviceType === 'profilage'), data.value?.evaluations ?? [])
-  const fromApi = [...before, ...languages, ...(orientation ? [orientation] : [])]
-
-  return ensureAllTypes(fromApi)
-})
+const accompagnements = computed(() => toAccompagnements(
+  data.value?.orders ?? [],
+  data.value?.languages ?? [],
+  data.value?.sessions ?? [],
+  data.value?.evaluations ?? [],
+))
 
 const usingMockOnly = computed(() => {
   const orders = data.value?.orders ?? []

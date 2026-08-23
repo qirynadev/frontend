@@ -2,14 +2,15 @@
 export type ProjetBadgeTone = 'purple' | 'green' | 'pink' | 'orange'
 
 /**
- * Une carte de `mon-projet/index` — une commande, pas un type de service.
+ * Une carte de `mon-projet/index` — un **type de service**, pas une commande.
  *
- * `Order` (générique, tout le domaine) devient `ProjetAccompagnement` (propre
- * à cet écran) via `toAccompagnements` : le gabarit n'a pas à connaître la
- * forme d'une commande, seulement celle d'une carte.
+ * Exactement 4 cartes, une par rubrique (école/logement/langues/orientation),
+ * quel que soit le nombre de commandes réelles derrière chacune — consigne du
+ * responsable (2026-08-23) : `useProjetData.ts` agrège toujours plusieurs
+ * commandes/langues/bilans en une seule carte par rubrique.
  */
 export interface ProjetAccompagnement {
-  /** Identifiant de la commande — plusieurs cartes peuvent partager `titleKey`. */
+  /** Identifiant de la rubrique (un par `titleKey`, jamais deux cartes du même type). */
   id: string
   /** Clé i18n du libellé de type (« Cours de langues »…), pas de la commande. */
   titleKey: string

@@ -4,16 +4,20 @@ import { orientationEvaluationProgress } from '~/utils/orientation-progress'
 import { orientationEvaluationRepo, paymentRepo, planningRepo } from '~/core/repositories'
 
 /**
- * Accompagnements suivis sur `mon-projet`.
+ * Accompagnements suivis sur `mon-projet` — exactement 4 cartes, une par
+ * rubrique (école, logement, langues, orientation), quel que soit le nombre
+ * de commandes/langues/bilans achetés dans chacune. Consigne du responsable
+ * (2026-08-23) : **une seule carte par type de service**, jamais une par
+ * commande — un client qui achète deux cours de langues ou deux bilans
+ * d'orientation voit une seule carte « Langues »/« Orientation », le détail
+ * par commande n'apparaît qu'au clic, sur l'écran dédié à ce type.
  *
- * `paymentRepo.orders()` — une commande par ligne — alimentait déjà `Order`,
- * mais rien ne l'appelait : cet écran tournait sur quatre cartes fixes, une
- * par type de service. Or un client peut acheter plusieurs formules de
- * langues, plusieurs bilans d'orientation… `mon-projet` doit lister les
- * commandes, pas les types.
- *
- * Un type de service sans configuration ci-dessous (MBA, par exemple) est
- * **écarté silencieusement** — signalé ici, pas une carte à moitié remplie.
+ * **Score = moyenne des avancements individuels.** Le nombre de produits
+ * achetés dans la rubrique est le dénominateur de la fraction — exemple du
+ * responsable : deux cours de langues différents (20h d'anglais + 30h de
+ * français) donnent un dénominateur de 2, pas la somme des heures. Chaque
+ * produit contribue son propre pourcentage (0 si non mesurable), la moyenne
+ * de ces pourcentages est le score affiché sur la carte.
  */
 interface AccompagnementTypeConfig {
   titleKey: string
@@ -54,142 +58,122 @@ const TYPE_CONFIG: Record<string, AccompagnementTypeConfig> = {
   },
 }
 
-/** Ordre d'affichage des groupes — reprend celui de `mon-projet.html`. */
+/** Ordre d'affichage des rubriques — reprend celui de `mon-projet.html`. */
 const TYPE_ORDER = ['areaofstudy', 'costofliving', 'course', 'profilage']
 
-/**
- * Sous-titre d'une commande. `course` n'arrive plus ici (voir
- * `toLanguageAccompagnements`) : les autres types n'ont pas d'équivalent réel
- * à « ESA Paris » (l'école) dans `Order` — le nom de la formule achetée sert
- * de repli.
- */
+/** Sous-titre d'une commande : nom de la formule achetée, vide si l'API n'en a pas. */
 function toSub(order: Order): string {
   return order.offer?.title ?? ''
 }
 
 /**
- * Statut affiché et avancement.
- *
- * `Order.status` ne porte que l'état du **paiement**, pas celui du dossier.
- * `pending`/`failed` valent 0 %, légitimement (rien n'a commencé). Pour une
- * commande confirmée, `order.checklist` (école/logement — voir
- * `useAdmissionData`/`useLogementData`, même formule ici pour que la carte du
- * hub et l'écran de détail affichent le même pourcentage) donne un avancement
- * réel quand il existe ; une commande antérieure au mécanisme de checklist
- * (15/08/2026) ou d'un type qui n'en a jamais (`profilage`) a une liste vide —
- * la barre reste masquée (`null`) plutôt que remplie au hasard.
+ * Statut global d'une rubrique à commandes multiples (école, logement,
+ * orientation) : `Échec` seulement si **toutes** les commandes ont échoué,
+ * `En attente` tant qu'aucune n'est confirmée, sinon l'avancement pilote le
+ * badge (`Terminé` à 100 %). Évite qu'un score à 0 % (commande confirmée
+ * mais checklist pas encore alimentée) affiche « En cours » sur une commande
+ * en réalité en échec ou pas encore payée.
  */
-function toStatus(order: Order): { statusKey: string; progressPercent: number | null } {
-  if (order.status === 'failed') return { statusKey: 'myProject.statusFailed', progressPercent: 0 }
-  if (order.status === 'pending') return { statusKey: 'myProject.statusPending', progressPercent: 0 }
-
-  if (order.checklist.length === 0) {
-    return { statusKey: 'myProject.statusInProgress', progressPercent: null }
-  }
-
-  const done = order.checklist.filter((item) => item.status === 'done').length
-  const progressPercent = Math.round((done / order.checklist.length) * 100)
-  return {
-    statusKey: progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
-    progressPercent,
-  }
+function toOverallStatus(orders: Order[], progressPercent: number): string {
+  if (orders.every((order) => order.status === 'failed')) return 'myProject.statusFailed'
+  if (!orders.some((order) => order.status === 'confirmed')) return 'myProject.statusPending'
+  return progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress'
 }
 
-function toAccompagnement(order: Order, config: AccompagnementTypeConfig): ProjetAccompagnement {
-  const { statusKey, progressPercent } = toStatus(order)
+/**
+ * Avancement d'**une** commande (0-100), même formule que
+ * `useAdmissionData`/`useLogementData` : `done/total` de sa checklist. 0 si
+ * la commande n'est pas confirmée, ou confirmée sans checklist (antérieure
+ * au mécanisme, ou type qui n'en a jamais) — un vrai zéro plutôt qu'une
+ * valeur inconnue, cohérent avec le reste de cette rubrique.
+ */
+function orderChecklistProgress(order: Order): number {
+  if (order.status !== 'confirmed' || order.checklist.length === 0) return 0
+  const done = order.checklist.filter((item) => item.status === 'done').length
+  return Math.round((done / order.checklist.length) * 100)
+}
+
+/**
+ * Une seule carte pour toutes les commandes d'un type (école ou logement) —
+ * le nombre de commandes est le dénominateur, la moyenne de leur avancement
+ * individuel le score. `null` si le client n'a aucune commande de ce type.
+ */
+function toOrderAggregateAccompagnement(orders: Order[], type: 'areaofstudy' | 'costofliving'): ProjetAccompagnement | null {
+  if (orders.length === 0) return null
+
+  const config = TYPE_CONFIG[type]!
+  const mostRecentOrder = [...orders].sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0]!
+  const progressPercent = Math.round(
+    orders.reduce((sum, order) => sum + orderChecklistProgress(order), 0) / orders.length,
+  )
 
   return {
-    id: order.id,
+    id: type,
     titleKey: config.titleKey,
-    sub: toSub(order),
-    statusKey,
+    sub: toSub(mostRecentOrder),
+    statusKey: toOverallStatus(orders, progressPercent),
     badgeTone: config.badgeTone,
     progressPercent,
     progressColor: config.progressColor,
-    advisorName: order.advisorName,
-    updatedAt: order.updatedAt ?? order.createdAt,
+    // Plusieurs commandes peuvent avoir des conseillers/dates différents —
+    // rien plutôt qu'une valeur arbitraire (même choix que langues/orientation).
+    advisorName: null,
+    updatedAt: null,
     icon: config.icon,
     to: config.to,
   }
 }
 
 /**
- * Une carte par commande — tous les types **sauf** `course` : les langues
- * suivent une règle différente (voir `toLanguageAccompagnements`), pas
- * traitée ici.
- */
-export function toAccompagnements(orders: Order[]): ProjetAccompagnement[] {
-  return [...orders]
-    .filter((order) => order.serviceType !== 'course' && order.serviceType in TYPE_CONFIG)
-    .sort((a, b) => {
-      const typeDelta = TYPE_ORDER.indexOf(a.serviceType) - TYPE_ORDER.indexOf(b.serviceType)
-      if (typeDelta !== 0) return typeDelta
-      return (b.createdAt ?? '').localeCompare(a.createdAt ?? '')
-    })
-    .map((order) => toAccompagnement(order, TYPE_CONFIG[order.serviceType]!))
-}
-
-/**
- * Une carte par **langue**, pas par commande — à la différence des trois
- * autres types : deux commandes de la même langue se regroupent en une seule
- * carte, leurs heures s'additionnent. Deux langues différentes restent deux
- * cartes. Confirmé par le responsable le 2026-08-17.
- *
- * L'avancement compte les séances **terminées** (date passée) et **expirées**
- * (non planifiées, commande vieille de plus de 90 jours — délai imposé par
- * `PlanningController::createPlanning`) sur le total d'heures achetées :
- * `sessions.filter(passée) + lessons.filter(expired) / totalHours`. Ni
- * `advisorName` ni `updatedAt` ne sont montrés : plusieurs commandes d'une
- * même langue peuvent avoir des professeurs différents, choisir lequel
- * afficher serait arbitraire.
+ * Une seule carte pour **toutes** les langues achetées, pas une par langue
+ * (règle resserrée le 2026-08-23 — auparavant une carte par langue). Le
+ * nombre de langues distinctes est le dénominateur ; chaque langue contribue
+ * son propre pourcentage (séances terminées + expirées sur ses heures
+ * achetées), la moyenne de ces pourcentages est le score affiché.
  *
  * `languages`/`sessions` viennent de `GET /plannings/unplanned` et `/planned`,
- * qui ne portent que les commandes **payées** (`en attente de vérification`,
- * `vérifié`, legacy `confirmée`/`en cours`/`terminé`) — une commande encore
- * « en attente de paiement » n'apparaît dans aucun des deux et donc pas ici.
- * Signalé, pas résolu : rattacher une telle commande à sa langue sans donnée
- * fiable pour le faire serait plus fragile que l'omettre.
+ * qui ne portent que les commandes **payées** — une commande encore « en
+ * attente de paiement » n'apparaît dans aucun des deux et donc ne compte pas
+ * dans le dénominateur. Signalé, pas résolu : rattacher une telle commande à
+ * sa langue sans donnée fiable pour le faire serait plus fragile que l'omettre.
  */
-export function toLanguageAccompagnements(languages: LanguageProgress[], sessions: PlannedSession[]): ProjetAccompagnement[] {
+export function toLanguageAccompagnement(languages: LanguageProgress[], sessions: PlannedSession[]): ProjetAccompagnement | null {
+  if (languages.length === 0) return null
+
   const config = TYPE_CONFIG.course!
   const now = Date.now()
 
-  return languages.map((language) => {
+  const perLanguagePercent = languages.map((language) => {
+    if (language.totalHours <= 0) return 0
     const completed = sessions.filter(
       (session) => session.courseId === language.courseId && session.startDate !== null && new Date(session.startDate).getTime() < now,
     ).length
     const expired = language.lessons.filter((lesson) => lesson.expired).length
-
-    const progressPercent = language.totalHours > 0
-      ? Math.min(100, Math.round(((completed + expired) / language.totalHours) * 100))
-      : null
-
-    return {
-      id: `course-${language.courseId ?? language.title}`,
-      titleKey: config.titleKey,
-      sub: language.title,
-      statusKey: progressPercent !== null && progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
-      badgeTone: config.badgeTone,
-      progressPercent,
-      progressColor: config.progressColor,
-      advisorName: null,
-      updatedAt: null,
-      icon: config.icon,
-      to: config.to,
-    }
+    return Math.min(100, Math.round(((completed + expired) / language.totalHours) * 100))
   })
+
+  const progressPercent = Math.round(perLanguagePercent.reduce((sum, pct) => sum + pct, 0) / languages.length)
+
+  return {
+    id: 'course',
+    titleKey: config.titleKey,
+    sub: '',
+    statusKey: progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
+    badgeTone: config.badgeTone,
+    progressPercent,
+    progressColor: config.progressColor,
+    advisorName: null,
+    updatedAt: null,
+    icon: config.icon,
+    to: config.to,
+  }
 }
 
 /**
- * Une seule carte pour **toute** l'orientation, quel que soit le nombre de
- * bilans (« tests E-Testing ») achetés — même principe que les langues (une
- * carte, pas une par commande), précisé par le responsable le 2026-08-23.
- * Clic → `/mon-projet/orientation`, qui liste chaque bilan en détail.
- *
- * L'avancement est la moyenne des jalons réels de chaque évaluation (même
- * calcul que `useOrientationData.ts`, voir `orientation-progress.ts`) — pas
- * `Order.checklist`, jamais alimenté pour `profilage`. `null` (donc `0`
- * affiché) si le client n'a encore aucune commande orientation.
+ * Une seule carte pour tous les bilans d'orientation (E-Testing), même
+ * principe que les langues. Le nombre de commandes orientation est le
+ * dénominateur ; une commande sans évaluation correspondante (pas encore
+ * payée, ou pas encore créée côté back-office) contribue 0.
  */
 export function toOrientationAccompagnement(
   orders: Order[],
@@ -200,20 +184,22 @@ export function toOrientationAccompagnement(
   const config = TYPE_CONFIG.profilage!
   const mostRecentOrder = [...orders].sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0]!
 
-  const progressPercent = evaluations.length > 0
-    ? Math.round(evaluations.reduce((sum, evaluation) => sum + orientationEvaluationProgress(evaluation), 0) / evaluations.length)
-    : 0
+  const perOrderPercent = orders.map((order) => {
+    const evaluation = evaluations.find((item) => item.orderId === order.id)
+    return evaluation ? orientationEvaluationProgress(evaluation) : 0
+  })
+  const progressPercent = Math.round(perOrderPercent.reduce((sum, pct) => sum + pct, 0) / orders.length)
 
   return {
     id: 'profilage',
     titleKey: config.titleKey,
     sub: toSub(mostRecentOrder),
-    statusKey: progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
+    statusKey: toOverallStatus(orders, progressPercent),
     badgeTone: config.badgeTone,
     progressPercent,
     progressColor: config.progressColor,
     // Plusieurs bilans peuvent avoir des conseillers différents — même choix
-    // que `toLanguageAccompagnements` : rien plutôt qu'un nom arbitraire.
+    // que les langues : rien plutôt qu'un nom arbitraire.
     advisorName: null,
     updatedAt: null,
     icon: config.icon,
@@ -241,8 +227,7 @@ function zeroAccompagnement(type: string): ProjetAccompagnement {
 /**
  * Garantit une carte par rubrique (école/logement/langues/orientation), dans
  * l'ordre de la maquette — un client qui n'a encore rien acheté voit les 4
- * rubriques à 0 %, pas un contenu inventé (« ESA Paris », 80 %…). Consigne du
- * responsable (2026-08-23) : un vrai zéro plutôt qu'une valeur d'exemple.
+ * rubriques à 0 %, pas un contenu inventé (« ESA Paris », 80 %…).
  */
 export function ensureAllTypes(accompagnements: ProjetAccompagnement[]): ProjetAccompagnement[] {
   const result = [...accompagnements]
@@ -255,6 +240,26 @@ export function ensureAllTypes(accompagnements: ProjetAccompagnement[]): ProjetA
 
   const order = TYPE_ORDER.map((type) => TYPE_CONFIG[type]!.titleKey)
   return result.sort((a, b) => order.indexOf(a.titleKey) - order.indexOf(b.titleKey))
+}
+
+/**
+ * Assemble les 4 cartes à partir des commandes/langues/bilans réels.
+ * Utilisé par `mon-projet/index.vue` ; extrait ici pour rester testable sans
+ * monter le composant.
+ */
+export function toAccompagnements(
+  orders: Order[],
+  languages: LanguageProgress[],
+  sessions: PlannedSession[],
+  evaluations: OrientationEvaluation[],
+): ProjetAccompagnement[] {
+  const admission = toOrderAggregateAccompagnement(orders.filter((order) => order.serviceType === 'areaofstudy'), 'areaofstudy')
+  const logement = toOrderAggregateAccompagnement(orders.filter((order) => order.serviceType === 'costofliving'), 'costofliving')
+  const langues = toLanguageAccompagnement(languages, sessions)
+  const orientation = toOrientationAccompagnement(orders.filter((order) => order.serviceType === 'profilage'), evaluations)
+
+  const fromApi = [admission, logement, langues, orientation].filter((item): item is ProjetAccompagnement => item !== null)
+  return ensureAllTypes(fromApi)
 }
 
 export async function useProjetData(locale: Ref<string>) {
