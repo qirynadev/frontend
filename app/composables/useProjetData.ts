@@ -1,6 +1,7 @@
-import type { LanguageProgress, Order, PlannedSession } from '~/core/contracts'
+import type { LanguageProgress, Order, OrientationEvaluation, PlannedSession } from '~/core/contracts'
 import type { ProjetAccompagnement, ProjetBadgeTone } from '~/core/contracts/projet'
-import { paymentRepo, planningRepo } from '~/core/repositories'
+import { orientationEvaluationProgress } from '~/utils/orientation-progress'
+import { orientationEvaluationRepo, paymentRepo, planningRepo } from '~/core/repositories'
 
 /**
  * Accompagnements suivis sur `mon-projet`.
@@ -179,16 +180,94 @@ export function toLanguageAccompagnements(languages: LanguageProgress[], session
   })
 }
 
+/**
+ * Une seule carte pour **toute** l'orientation, quel que soit le nombre de
+ * bilans (« tests E-Testing ») achetés — même principe que les langues (une
+ * carte, pas une par commande), précisé par le responsable le 2026-08-23.
+ * Clic → `/mon-projet/orientation`, qui liste chaque bilan en détail.
+ *
+ * L'avancement est la moyenne des jalons réels de chaque évaluation (même
+ * calcul que `useOrientationData.ts`, voir `orientation-progress.ts`) — pas
+ * `Order.checklist`, jamais alimenté pour `profilage`. `null` (donc `0`
+ * affiché) si le client n'a encore aucune commande orientation.
+ */
+export function toOrientationAccompagnement(
+  orders: Order[],
+  evaluations: OrientationEvaluation[],
+): ProjetAccompagnement | null {
+  if (orders.length === 0) return null
+
+  const config = TYPE_CONFIG.profilage!
+  const mostRecentOrder = [...orders].sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0]!
+
+  const progressPercent = evaluations.length > 0
+    ? Math.round(evaluations.reduce((sum, evaluation) => sum + orientationEvaluationProgress(evaluation), 0) / evaluations.length)
+    : 0
+
+  return {
+    id: 'profilage',
+    titleKey: config.titleKey,
+    sub: toSub(mostRecentOrder),
+    statusKey: progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
+    badgeTone: config.badgeTone,
+    progressPercent,
+    progressColor: config.progressColor,
+    // Plusieurs bilans peuvent avoir des conseillers différents — même choix
+    // que `toLanguageAccompagnements` : rien plutôt qu'un nom arbitraire.
+    advisorName: null,
+    updatedAt: null,
+    icon: config.icon,
+    to: config.to,
+  }
+}
+
+function zeroAccompagnement(type: string): ProjetAccompagnement {
+  const config = TYPE_CONFIG[type]!
+  return {
+    id: `empty-${type}`,
+    titleKey: config.titleKey,
+    sub: '',
+    statusKey: 'myProject.statusPending',
+    badgeTone: config.badgeTone,
+    progressPercent: 0,
+    progressColor: config.progressColor,
+    advisorName: null,
+    updatedAt: null,
+    icon: config.icon,
+    to: config.to,
+  }
+}
+
+/**
+ * Garantit une carte par rubrique (école/logement/langues/orientation), dans
+ * l'ordre de la maquette — un client qui n'a encore rien acheté voit les 4
+ * rubriques à 0 %, pas un contenu inventé (« ESA Paris », 80 %…). Consigne du
+ * responsable (2026-08-23) : un vrai zéro plutôt qu'une valeur d'exemple.
+ */
+export function ensureAllTypes(accompagnements: ProjetAccompagnement[]): ProjetAccompagnement[] {
+  const result = [...accompagnements]
+
+  for (const type of TYPE_ORDER) {
+    if (!result.some((item) => item.titleKey === TYPE_CONFIG[type]!.titleKey)) {
+      result.push(zeroAccompagnement(type))
+    }
+  }
+
+  const order = TYPE_ORDER.map((type) => TYPE_CONFIG[type]!.titleKey)
+  return result.sort((a, b) => order.indexOf(a.titleKey) - order.indexOf(b.titleKey))
+}
+
 export async function useProjetData(locale: Ref<string>) {
   return usePageData(
     'mon-projet-accompagnements',
     async () => {
-      const [orders, languages, sessions] = await Promise.all([
+      const [orders, languages, sessions, evaluations] = await Promise.all([
         paymentRepo.orders(locale.value),
         planningRepo.unplanned(locale.value),
         planningRepo.planned(locale.value),
+        orientationEvaluationRepo.list(locale.value),
       ])
-      return { orders, languages, sessions }
+      return { orders, languages, sessions, evaluations }
     },
     { watch: [locale] },
   )

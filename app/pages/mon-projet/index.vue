@@ -7,16 +7,11 @@
  * | rythme | `.mp-main` `gap: 22px` (topbar → hero → titre → liste → CTA) |
  * | topbar | `pb-0` — l’espace sous la navbar = gap parent 22px |
  * | hero | `min-h-130`, copie max 166px, illus 220×155 |
- * | cartes | progress + conseiller + date toujours visibles (mock si API vide) |
+ * | cartes | progress + conseiller + date toujours visibles (0 %/vide si aucune commande réelle) |
  *
- * Données : API via `useProjetData` ; repli / enrichissement
- * `config/projet-accompagnements-mock.ts` — voir `docs/mon-projet-mocks.md`.
+ * Données : API via `useProjetData` — voir `docs/mon-projet-mocks.md`.
  */
 import type { ProjetBadgeTone } from '~/core/contracts/projet'
-import {
-  mergeAccompagnementsWithMaquette,
-  projetAccompagnementsMock,
-} from '~/config/projet-accompagnements-mock'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -26,18 +21,20 @@ const localePath = useLocalePath()
 const { data, apiError, isInitialLoading, refresh } = await useProjetData(locale)
 
 /**
- * Toujours les 4 types maquette (Admission, Logement, Cours de langues,
- * Orientation). Lien Langues → `/mon-projet/langues` (Figma Mon Projet - Langue).
+ * Toujours les 4 rubriques (Admission, Logement, Cours de langues,
+ * Orientation) — une rubrique sans commande réelle affiche une carte à 0 %
+ * (`ensureAllTypes`), pas un contenu inventé. Lien Langues →
+ * `/mon-projet/langues` (Figma Mon Projet - Langue). Orientation regroupe
+ * tous les bilans en une seule carte, comme les langues par langue.
  */
 const accompagnements = computed(() => {
   const orders = data.value?.orders ?? []
   const before = toAccompagnements(orders.filter((order) => order.serviceType === 'areaofstudy' || order.serviceType === 'costofliving'))
   const languages = toLanguageAccompagnements(data.value?.languages ?? [], data.value?.sessions ?? [])
-  const after = toAccompagnements(orders.filter((order) => order.serviceType === 'profilage'))
-  const fromApi = [...before, ...languages, ...after]
+  const orientation = toOrientationAccompagnement(orders.filter((order) => order.serviceType === 'profilage'), data.value?.evaluations ?? [])
+  const fromApi = [...before, ...languages, ...(orientation ? [orientation] : [])]
 
-  if (fromApi.length === 0) return projetAccompagnementsMock
-  return mergeAccompagnementsWithMaquette(fromApi)
+  return ensureAllTypes(fromApi)
 })
 
 const usingMockOnly = computed(() => {
