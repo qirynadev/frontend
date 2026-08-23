@@ -10,6 +10,13 @@ export default defineNuxtConfig({
 
   future: { compatibilityVersion: 4 },
 
+  // Sans lui, un composable Nuxt (`useRequestHeaders`…) appelé après un
+  // `await` — typiquement dans un repository invoqué depuis `useAsyncData` —
+  // perd le contexte de la requête en cours (`NUXT_E1001`). `bffFetch`
+  // (`app/core/http/client.ts`) en a besoin pour transmettre le cookie de
+  // session au rendu serveur, voir son commentaire.
+  experimental: { asyncContext: true },
+
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/i18n',

@@ -1,4 +1,5 @@
 import type { ApiRequestOptions } from './api-client'
+import { useRequestHeaders } from '#imports'
 import { ApiError, toApiError } from './errors'
 
 /**
@@ -13,10 +14,13 @@ import { ApiError, toApiError } from './errors'
  * Aucun composant, aucune page n'appelle `$fetch` — la règle se vérifie d'un
  * `grep` sur `$fetch` hors de `core/http/`.
  *
- * ⚠️ Volontairement **sans composable Nuxt**. Un repository est appelé depuis un
- * `useAsyncData`, donc après un `await` : le contexte Nuxt n'y est plus garanti
- * et `useRuntimeConfig()` y lèverait `NUXT_E1001`. Le préfixe du BFF étant une
- * constante de compilation, il n'y a rien à lire dans la configuration.
+ * Volontairement **sans composable Nuxt pour la configuration** — le préfixe du
+ * BFF est une constante de compilation, `useRuntimeConfig()` n'a rien à y lire.
+ * Seule exception : `useRequestHeaders` (voir `serverCookieHeader` plus bas),
+ * nécessaire pour relayer le cookie de session au rendu serveur, fiabilisée
+ * depuis le 2026-08-24 par `experimental.asyncContext` (`nuxt.config.ts`) —
+ * avant, un repository appelé après un `await` dans `useAsyncData` perdait le
+ * contexte Nuxt et `useRuntimeConfig()` y levait `NUXT_E1001`.
  */
 
 /** Préfixe des routes BFF. Doit rester aligné sur `server/api/bff/`. */
@@ -37,10 +41,38 @@ export interface BffRequestOptions extends ApiRequestOptions {
   locale?: string
 }
 
+/**
+ * Pendant le rendu serveur, `$fetch` sur une route interne (`/api/bff/*`) est
+ * un appel HTTP à part entière — il ne transmet **pas** automatiquement le
+ * cookie de la requête entrante. Sans ce relais, la garde d'authentification
+ * (et toute donnée protégée chargée pendant le SSR) s'auto-interroge sans
+ * jamais lui passer le cookie : elle se voit systématiquement déconnectée,
+ * même quand le cookie du navigateur est parfaitement valide — c'est ce qui
+ * déconnectait une session à chaque rendu serveur (F5, navigation directe),
+ * reproduit en direct sur `stage.qiryna.com` le 2026-08-24.
+ *
+ * `useRequestHeaders` est un composable Nuxt : l'appeler ici n'était pas
+ * fiable tant qu'`experimental.asyncContext` (`nuxt.config.ts`) n'était pas
+ * actif, un repository s'exécutant après un `await` dans `useAsyncData` — le
+ * `try/catch` reste au cas où un chemin non couvert perde quand même le
+ * contexte : on ne transmet alors rien plutôt que de faire planter le rendu.
+ */
+function serverCookieHeader(): Record<string, string> {
+  if (!import.meta.server) return {}
+  try {
+    const { cookie } = useRequestHeaders(['cookie'])
+    return cookie ? { cookie } : {}
+  }
+  catch {
+    return {}
+  }
+}
+
 export async function bffFetch<T>(path: string, options: BffRequestOptions = {}): Promise<T> {
   const method = options.method ?? 'GET'
   const idempotent = method === 'GET' || method === 'PUT' || method === 'DELETE'
   const attempts = 1 + (options.retry ?? (idempotent ? 1 : 0))
+  const forwardedHeaders = serverCookieHeader()
 
   let lastError: ApiError | null = null
 
@@ -56,6 +88,7 @@ export async function bffFetch<T>(path: string, options: BffRequestOptions = {})
         headers: {
           Accept: 'application/json',
           ...(options.locale ? { lang: options.locale } : {}),
+          ...forwardedHeaders,
           ...options.headers,
         },
         timeout: options.timeoutMs ?? 20_000,
