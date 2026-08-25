@@ -1,26 +1,15 @@
 <script setup lang="ts">
-import { useCatalogStore } from '~/core/stores'
-
 /**
  * Lien « Nous contacter » / « Contacter le support ».
  *
- * ### Pourquoi ce composant existe
- *
- * La maquette écrit `href="#"` sur chacun de ces boutons : elle ne dit pas où
- * ils mènent. Il n'existe **aucun écran de contact** dans les quinze pages, et
- * aucune route côté API. Trois possibilités, donc : un lien mort, un écran
- * inventé, ou la donnée réelle.
- *
- * Le back-office expose `settings.site.email`. C'est la donnée réelle : le lien
- * ouvre le client de messagerie sur cette adresse.
- *
- * Repli si l'adresse n'est pas renseignée : la FAQ, qui est une page
- * éditoriale réellement administrée. Jamais de `#`, jamais de 404.
- *
- * Le catalogue est chargé à la demande — l'appel est mis en cache par Nitro et
- * dédoublonné par le store, donc sans effet sur les écrans qui l'ont déjà.
+ * Priorité : écran Centre d’aide (`/reglages/contact`) si la session est
+ * ouverte — c’est le formulaire produit. Sinon `mailto:` sur
+ * `settings.site.email`, sinon la FAQ.
  */
+import { useCatalogStore, useSessionStore } from '~/core/stores'
+
 const catalog = useCatalogStore()
+const session = useSessionStore()
 const localePath = useLocalePath()
 
 onMounted(() => {
@@ -28,13 +17,19 @@ onMounted(() => {
 })
 
 const email = computed(() => catalog.settings?.email ?? '')
+const contactTo = computed(() => {
+  if (session.isAuthenticated) return localePath('/reglages/contact')
+  if (email.value) return `mailto:${email.value}`
+  return localePath('/pages/faq')
+})
+const isExternal = computed(() => contactTo.value.startsWith('mailto:'))
 </script>
 
 <template>
-  <a v-if="email" :href="`mailto:${email}`">
+  <a v-if="isExternal" :href="contactTo">
     <slot />
   </a>
-  <NuxtLink v-else :to="localePath('/pages/faq')">
+  <NuxtLink v-else :to="contactTo">
     <slot />
   </NuxtLink>
 </template>

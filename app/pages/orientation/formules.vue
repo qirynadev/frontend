@@ -64,21 +64,15 @@ const tiers = [
     badgeBg: 'bg-of-badge-pele-bg',
     badgeText: 'text-of-badge-pele',
     price: 'text-tier-3',
-    button: 'border border-tier-3 bg-tier-3 text-white',
+    button: 'border border-tier-3 bg-white text-tier-3',
     checkIcon: 'ic-of-check-red',
     features: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   },
 ] as const
 
-const features = [
-  { icon: 'ic-of-feat-visio', titleKey: 'orientation.formules.featVisioTitle', subKey: 'orientation.formules.featVisioSub' },
-  { icon: 'ic-of-feat-conseillers', titleKey: 'orientation.formules.featConseillersTitle', subKey: 'orientation.formules.featConseillersSub' },
-  { icon: 'ic-of-feat-parcours', titleKey: 'orientation.formules.featParcoursTitle', subKey: 'orientation.formules.featParcoursSub' },
-]
-
 usePageSeo(() => ({
-  title: t('orientation.formules.title'),
-  description: t('orientation.formules.seoDescription'),
+  title: t('offer.title'),
+  description: t('offer.subtitle'),
 }))
 </script>
 
@@ -87,23 +81,13 @@ usePageSeo(() => ({
   <AppTopBar back :back-to="`/orientation?path=${path}`" :notifications="3" :gap="22" />
 
   <div class="flex w-full flex-col gap-22">
-    <!-- `.of-intro` — `padding-bottom: 8px` ; visuel masqué sous 420px -->
-    <div class="relative flex w-full items-start justify-between gap-8 pb-8">
-      <div class="min-w-0 flex-1">
-        <h1 class="m-0 text-exact-16 leading-normal font-semibold tracking-tight text-text">
-          {{ $t('orientation.formules.title') }}
-        </h1>
-        <p class="m-0 text-lg leading-[22.75px] text-text">
-          {{ $t('orientation.formules.subtitle') }}
-        </p>
-      </div>
-      <img
-        src="/img/orientation-formules-hero.webp"
-        alt=""
-        width="105"
-        height="105"
-        class="-mt-19 -mr-8 block h-105 w-105 shrink-0 object-cover max-[420px]:hidden"
-      >
+    <div class="w-full pb-8">
+      <h1 class="m-0 text-exact-16 leading-normal font-semibold tracking-tight text-text">
+        {{ $t('offer.title') }}
+      </h1>
+      <p class="m-0 text-lg leading-[22.75px] text-text">
+        {{ $t('offer.subtitle') }}
+      </p>
     </div>
 
     <!-- `.formule-stack` — `padding-top: 8px`, `gap: 22px` -->
@@ -167,23 +151,5 @@ usePageSeo(() => ({
         </footer>
       </article>
     </div>
-
-    <!-- `.formule-features-wrap` — pas de padding bas supplémentaire (gap parent 22px) -->
-    <div class="w-full">
-      <div class="flex w-full items-center justify-center gap-13 rounded-xl bg-white px-11 py-13 shadow-card">
-        <template v-for="(feature, index) in features" :key="feature.titleKey">
-          <span v-if="index > 0" aria-hidden="true" class="h-32 w-0 shrink-0 border-l border-tier-border" />
-          <div class="flex min-w-0 flex-1 items-center justify-center gap-5">
-            <QIcon :name="feature.icon" :size="24" />
-            <div class="flex flex-col items-start pt-6 leading-[13.125px] text-navy">
-              <p class="m-0 text-xs leading-[13.125px] font-medium">{{ $t(feature.titleKey) }}</p>
-              <p class="m-0 text-2xs leading-[13.125px] font-normal">{{ $t(feature.subKey) }}</p>
-            </div>
-          </div>
-        </template>
-      </div>
-    </div>
-
-    <TrustStrip />
   </div>
 </template>

@@ -5,8 +5,8 @@
  *
  * **UI alignée sur `/orientation/formules`** (2026-08-22) : pile verticale
  * `gap: 22px`, ruban coloré + titre/icône inline — plus de carrousel.
- * Conservé propres au logement : bandeau pays (`.ol-banner`), badges
- * « X logements proposés », palette Yukon/Comoé/Volga.
+ * Conservé propres au logement : badges « X logements proposés »,
+ * palette Yukon/Comoé/Volga.
  *
  * **Données** — `GET /livings` via `offerPageRepo`. Checkout Stripe via
  * `useCheckout` (comme `offres/[slug].vue`).
@@ -15,7 +15,6 @@
  *   orange plein), pas par nom API.
  * - **badge logements** : texte éditorial par rang (pas de `listings_count`
  *   API au 2026-08-17).
- * - **bandeau statistique** : champs absents masqués (pas de repli France).
  */
 import { offerPageRepo } from '~/core/repositories'
 
@@ -34,22 +33,6 @@ if (offer.value === null && !apiError.value) {
   throw createError({ statusCode: 404, statusMessage: t('offer.notFound'), fatal: true })
 }
 
-const living = computed(() => offer.value?.living ?? null)
-
-/** Une seule statistique par ligne, et seulement celles renseignées pour ce pays. */
-const stats = computed(() => {
-  const details = living.value
-  if (!details) return []
-  return (
-    [
-      details.depositLabel && { icon: 'ic-ol-stat-caution', value: details.depositLabel, labelKey: 'housing.offers.statCautionLabel' },
-      details.leaseDurationLabel && { icon: 'ic-ol-stat-bail', value: details.leaseDurationLabel, labelKey: 'housing.offers.statBailLabel' },
-      details.chargesLabel && { icon: 'ic-ol-stat-charges', value: details.chargesLabel, labelKey: 'housing.offers.statChargesLabel' },
-      details.averageRentLabel && { icon: 'ic-ol-stat-loyer', value: details.averageRentLabel, labelKey: 'housing.offers.statLoyerLabel' },
-    ] as const
-  ).filter((stat): stat is { icon: string, value: string, labelKey: string } => Boolean(stat))
-})
-
 /**
  * Habillage par rang : vert (1ᵉʳ) / violet mis en avant (intermédiaires) /
  * orange plein (dernier) — indépendant du nom réel de la formule.
@@ -60,9 +43,9 @@ function visualFor(index: number, total: number) {
       card: 'border-ol-yukon-border',
       name: 'text-ol-yukon-name',
       price: 'text-ol-yukon-price',
-      button: 'bg-ol-yukon-button text-white',
+      button: 'border border-ol-yukon-button bg-white text-ol-yukon-button',
       icon: 'ic-ol-yukon',
-      check: 'ic-ol-check-orange',
+      check: 'ic-of-check-red',
       isTop: true,
       ribbonBg: 'bg-ol-yukon-button',
       badgeBg: 'bg-ol-badge-yukon-bg',
@@ -77,7 +60,7 @@ function visualFor(index: number, total: number) {
       price: 'text-tier-1-price',
       button: 'border border-tier-1-line bg-white text-tier-1-line',
       icon: 'ic-ol-comoe',
-      check: 'ic-ol-check-green',
+      check: 'ic-of-check-green',
       isTop: false,
       ribbonBg: 'bg-tier-1',
       badgeBg: 'bg-ol-badge-comoe-bg',
@@ -91,7 +74,7 @@ function visualFor(index: number, total: number) {
     price: 'text-tier-2',
     button: 'border border-tier-2 bg-white text-tier-2',
     icon: 'ic-ol-volga',
-    check: 'ic-ol-check-purple',
+    check: 'ic-of-check-purple',
     isTop: false,
     ribbonBg: 'bg-tier-2',
     badgeBg: 'bg-ol-badge-volga-bg',
@@ -116,12 +99,16 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
 
 <template>
   <div>
-    <AppTopBar back back-to="/logement" :notifications="3" :gap="22" />
+    <AppTopBar
+      back
+      :back-to="`/logement/${slug}/decouverte`"
+      :notifications="3"
+      :gap="22"
+    />
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
       <template #loading>
         <div class="flex flex-col gap-16">
-          <QSkeleton variant="rect" :height="130" />
           <QSkeleton variant="text" :lines="2" />
           <QSkeleton variant="rect" :height="420" />
         </div>
@@ -129,28 +116,14 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
 
       <template v-if="offer">
         <div class="flex w-full flex-col gap-22">
-          <!-- Bandeau pays -->
-          <section class="box-border flex w-full flex-col items-center gap-24 rounded-xl bg-ol-banner-bg py-17">
-            <div class="box-border flex w-full items-center gap-10 px-13">
-              <img v-if="offer.icon" :src="offer.icon" alt="" width="24" height="24" class="block size-24 shrink-0 rounded-full object-cover">
-              <h1 class="m-0 min-w-0 flex-1 text-xl leading-normal font-semibold tracking-[-0.65px] text-text">
-                {{ living?.heroTagline || $t('housing.offers.bannerHeadline') }}
-              </h1>
-            </div>
-            <div v-if="stats.length > 0" class="box-border flex w-full items-start px-9">
-              <div v-for="stat in stats" :key="stat.icon" class="flex min-w-0 flex-1 flex-col items-center gap-5 text-center">
-                <QIcon :name="stat.icon" :size="40" />
-                <p class="m-0 mt-6 text-md leading-[13.125px] font-semibold whitespace-nowrap text-navy">{{ stat.value }}</p>
-                <p class="m-0 text-xs leading-normal font-medium text-text">{{ $t(stat.labelKey) }}</p>
-              </div>
-            </div>
-          </section>
-
           <!-- Introduction -->
           <div class="w-full pb-8">
-            <h1 class="m-0 text-exact-16 leading-22 font-semibold tracking-[0.2px] text-text">
-              {{ $t('housing.offers.introTitle') }}
+            <h1 class="m-0 text-exact-16 leading-normal font-semibold tracking-tight text-text">
+              {{ $t('offer.title') }}
             </h1>
+            <p class="m-0 text-lg leading-[22.75px] text-text">
+              {{ $t('offer.subtitle') }}
+            </p>
           </div>
 
           <QAlert
@@ -246,8 +219,6 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
           <QCard v-else variant="outlined" padding="none">
             <QEmptyState icon="ic-ol-comoe" :title="$t('offer.emptyTitle')" :description="$t('offer.emptyDescription')" />
           </QCard>
-
-          <TrustStrip />
         </div>
       </template>
     </PageState>

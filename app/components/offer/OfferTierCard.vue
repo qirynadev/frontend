@@ -61,9 +61,9 @@ const accent = computed(() => {
       card: 'border-tier-3-border',
       name: 'text-tier-3',
       price: 'text-tier-3',
-      button: 'border border-tier-3 bg-tier-3 text-white',
+      button: 'border border-tier-3 bg-white text-tier-3',
       icon: 'ic-formule-everest',
-      check: 'ic-formule-check-red',
+      check: 'ic-of-check-red',
       ribbonBg: 'bg-tier-3',
     }
   }
@@ -74,7 +74,7 @@ const accent = computed(() => {
       price: 'text-tier-1-price',
       button: 'border border-tier-1-line bg-white text-tier-1-line',
       icon: 'ic-formule-kili',
-      check: 'ic-formule-check-green',
+      check: 'ic-of-check-green',
       ribbonBg: 'bg-tier-1',
     }
   }
@@ -84,7 +84,7 @@ const accent = computed(() => {
     price: 'text-tier-2',
     button: 'border border-tier-2 bg-white text-tier-2',
     icon: 'ic-formule-acon',
-    check: 'ic-formule-check-purple',
+    check: 'ic-of-check-purple',
     ribbonBg: 'bg-tier-2',
   }
 })
@@ -178,9 +178,9 @@ const displayName = computed(() => (props.domain ? t('offer.domainCardName') : p
       <li
         v-for="feature in tier.features"
         :key="feature"
-        :class="['flex gap-10 text-lg leading-18 text-text', stacked ? 'items-start' : 'items-center']"
+        class="flex items-start gap-10 text-lg leading-18 text-text"
       >
-        <QIcon :name="accent.check" :size="12" :class="stacked ? 'mt-3 shrink-0' : ''" />
+        <QIcon :name="accent.check" :size="12" class="mt-3 shrink-0" />
         <span class="min-w-0">{{ feature }}</span>
       </li>
     </ul>

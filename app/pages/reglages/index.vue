@@ -15,8 +15,8 @@
  * partir de la troisième section — d'où `indigo` porté par la donnée plutôt
  * que par un sélecteur positionnel, plus fragile.
  *
- * Les entrées sans écran pointent `#` dans la maquette : elles restent des
- * `div`, pas des liens morts.
+ * Les entrées sans écran (informations personnelles) restent des `div`.
+ * Centre d’aide → `/reglages/contact`.
  */
 import { NuxtLink } from '#components'
 
@@ -57,7 +57,7 @@ const sections: { titleKey: string, rows: Row[] }[] = [
   {
     titleKey: 'settings.sectionOther',
     rows: [
-      { id: 'help', icon: 'ic-rg-help', titleKey: 'settings.helpTitle', descKey: 'settings.helpDesc', indigo: true },
+      { id: 'help', icon: 'ic-rg-help', titleKey: 'settings.helpTitle', descKey: 'settings.helpDesc', to: '/reglages/contact', indigo: true },
       { id: 'legal', icon: 'ic-rg-legal', titleKey: 'settings.legalTitle', descKey: 'settings.legalDesc', to: '/reglages/mentions', indigo: true },
       { id: 'logout', icon: 'ic-rg-logout', titleKey: 'settings.logoutTitle', descKey: 'settings.logoutDesc', to: '/connexion', danger: true, indigo: true },
     ],

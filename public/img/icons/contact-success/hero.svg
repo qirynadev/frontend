@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="168" viewBox="0 0 168 168" fill="none">
+  <circle cx="84" cy="84" r="84" fill="#F0EDFC"/>
+  <!-- decorative dots -->
+  <circle cx="38" cy="52" r="3.5" fill="#C4B5FD"/>
+  <circle cx="128" cy="44" r="2.5" fill="#A7F3D0"/>
+  <circle cx="136" cy="118" r="3" fill="#C4B5FD"/>
+  <circle cx="42" cy="122" r="2" fill="#86EFAC"/>
+  <!-- motion lines -->
+  <path d="M118 48L128 38M124 54L136 48M116 58L126 58" stroke="#5825FD" stroke-width="2" stroke-linecap="round"/>
+  <!-- envelope -->
+  <g transform="translate(44 52) rotate(-8 40 30)">
+    <rect x="4" y="8" width="72" height="48" rx="6" stroke="#5825FD" stroke-width="3.2" fill="#FFFFFF"/>
+    <path d="M8 12L40 36L72 12" stroke="#5825FD" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  <!-- green check badge -->
+  <circle cx="118" cy="112" r="18" fill="#16AA59"/>
+  <path d="M109.5 112.5L115.5 118.5L127 107" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
