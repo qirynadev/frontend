@@ -66,6 +66,8 @@ export function toSchoolSummary(raw: unknown, destinationSlug = '', flagBase?: s
     country: toCountry(source.country, flagBase),
     destinationSlug,
     formationCount: list(source, 'formations').filter((entry) => str(asRecord(entry), 'title') !== '').length,
+    foundedYear: optionalNum(source, 'founded_year'),
+    studentCount: optionalNum(source, 'student_count'),
   }
 }
 
@@ -80,10 +82,6 @@ export function toSchool(raw: unknown, destinationSlug = '', flagBase?: string):
     presentation,
     formations: toFormations(source.formations),
     details: toDetails(source.details),
-    // Alimentés nulle part dans le catalogue actuel : le contrat les expose
-    // quand même pour que la fiche n'ait pas à changer le jour où ils le seront.
-    foundedYear: optionalNum(source, 'founded_year'),
-    studentCount: optionalNum(source, 'student_count'),
     seo: toSeo(source, summary.title, presentation),
   }
 }

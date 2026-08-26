@@ -83,9 +83,18 @@ describe('version liste', () => {
     const summary = toSchoolSummary(rawSchoolWithFormations, 'france')
 
     expect(Object.keys(summary).sort()).toEqual(
-      ['city', 'country', 'destinationSlug', 'formationCount', 'id', 'image', 'logo', 'slug', 'title'].sort(),
+      ['city', 'country', 'destinationSlug', 'formationCount', 'foundedYear', 'id', 'image', 'logo', 'slug', 'studentCount', 'title'].sort(),
     )
     expect(summary.formationCount).toBe(1)
+  })
+
+  it('expose foundedYear et studentCount à null sans les inventer, réels le jour où l’API les alimentera', () => {
+    expect(toSchoolSummary(rawSchool).foundedYear).toBeNull()
+    expect(toSchoolSummary(rawSchool).studentCount).toBeNull()
+
+    const summary = toSchoolSummary({ ...rawSchool, founded_year: 1810, student_count: '34000' })
+    expect(summary.foundedYear).toBe(1810)
+    expect(summary.studentCount).toBe(34_000)
   })
 })
 

@@ -22,6 +22,9 @@ export interface SchoolSummary {
   formationCount: number
   /** Slugs traduits par locale quand fournis par l'API. Ex: { fr: "hec-paris", en: "hec-paris" } */
   slugs?: Record<string, string>
+  /** `null` pour la quasi-totalité du catalogue actuel — le champ existe mais n'est pas alimenté. Masqué plutôt qu'un chiffre inventé (voir `ecoles/index.vue`). */
+  foundedYear: number | null
+  studentCount: number | null
 }
 
 export interface FormationSection {
@@ -64,8 +67,5 @@ export interface School extends SchoolSummary {
   presentation: string
   formations: SchoolFormation[]
   details: SchoolDetail[]
-  /** `null` pour l'intégralité du catalogue actuel — le champ existe mais n'est pas alimenté. */
-  foundedYear: number | null
-  studentCount: number | null
   seo: SeoMeta
 }
