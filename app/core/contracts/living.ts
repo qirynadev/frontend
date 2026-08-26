@@ -33,3 +33,42 @@ export interface LivingStats {
   chargesLabel: string | null
   averageRentLabel: string | null
 }
+
+/**
+ * Liste fermée côté API (`ClientPostPurchaseData.accommodation_type`,
+ * `qiryna-backoffice`) — pas de texte libre accepté pour ce champ.
+ */
+export type LivingAccommodationType = 'apartment' | 'shared' | 'dormitory' | 'host_family' | 'other'
+
+/**
+ * Préférences de logement déjà soumises pour une commande (`GET
+ * /client-data/show`) — sert à préremplir `logement/paiement-reussi.vue`.
+ * Seules les colonnes réelles de l'API sont ici ; école/ville/occupants/
+ * préférences libres n'ont pas de colonne dédiée (voir `LivingPreferencesInput`).
+ */
+export interface LivingPreferences {
+  /** ISO `AAAA-MM-JJ`, ou `null`. */
+  arrivalDate: string | null
+  monthlyBudget: number | null
+  stayDurationMonths: number | null
+  accommodationType: LivingAccommodationType | null
+}
+
+/**
+ * Ce que le formulaire envoie à `POST /client-data/store`.
+ *
+ * École, ville, nombre d'occupants et préférences libres n'ont **aucune**
+ * colonne dédiée côté API pour une commande logement (vérifié 2026-08-24,
+ * voir `docs/directives-backend.md`) — regroupés en une note lisible dans
+ * `additionalNotes`, envoyée dans `special_requirements` (le champ libre le
+ * plus proche, documenté côté back-office pour d'autres besoins — un
+ * pis-aller en attendant de vraies colonnes, pas une perte de saisie).
+ */
+export interface LivingPreferencesInput {
+  orderId: string
+  arrivalDate: string | null
+  monthlyBudget: number | null
+  stayDurationMonths: number | null
+  accommodationType: LivingAccommodationType | null
+  additionalNotes: string
+}

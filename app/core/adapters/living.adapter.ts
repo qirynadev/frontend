@@ -1,6 +1,6 @@
-import type { Country, LivingDestination, LivingStats } from '../contracts'
+import type { Country, LivingAccommodationType, LivingDestination, LivingPreferences, LivingStats } from '../contracts'
 import { toCountry } from './common.adapter'
-import { asRecord, optionalStr, str, toUrl } from './primitives'
+import { asRecord, optionalNum, optionalStr, str, toIsoDate, toUrl } from './primitives'
 
 /**
  * Pays d'un `living`.
@@ -33,5 +33,30 @@ export function toLivingStats(raw: unknown): LivingStats {
     leaseDurationLabel: optionalStr(source, 'lease_duration_label'),
     chargesLabel: optionalStr(source, 'charges_label'),
     averageRentLabel: optionalStr(source, 'average_rent_label'),
+  }
+}
+
+const ACCOMMODATION_TYPES: readonly LivingAccommodationType[] = ['apartment', 'shared', 'dormitory', 'host_family', 'other']
+
+function toAccommodationType(value: unknown): LivingAccommodationType | null {
+  return typeof value === 'string' && (ACCOMMODATION_TYPES as readonly string[]).includes(value)
+    ? (value as LivingAccommodationType)
+    : null
+}
+
+/**
+ * Préférences logement déjà soumises (`GET /client-data/show` → `data`,
+ * déjà déballé de son enveloppe par `unwrapEnvelope`) — `null` si le client
+ * n'a encore rien renseigné pour cette commande.
+ */
+export function toLivingPreferences(raw: unknown): LivingPreferences | null {
+  if (raw === null || raw === undefined) return null
+  const source = asRecord(raw)
+
+  return {
+    arrivalDate: toIsoDate(source.planned_arrival_date),
+    monthlyBudget: optionalNum(source, 'monthly_budget_estimate'),
+    stayDurationMonths: optionalNum(source, 'stay_duration_months'),
+    accommodationType: toAccommodationType(source.accommodation_type),
   }
 }

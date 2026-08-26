@@ -20,12 +20,19 @@
  * mécanisme générique que les autres tunnels, aucun champ propre au logement à
  * ajouter côté adapter.
  *
- * Le formulaire de préférences reste un no-op côté client : aucun endpoint ne
- * l'expose encore (voir la mémoire projet — `ClientDataController` existe côté
- * API pour ce cas, mais n'a pas été câblé ici, hors du périmètre de cette
- * correction). Comportement inchangé, comme la maquette elle-même.
+ * Le formulaire de préférences est câblé sur `POST /client-data/store`
+ * (`ClientPostPurchaseData`, `service_type: 'living'` — voir
+ * `livingPreferencesRepo`). Seuls 4 champs ont une colonne dédiée côté API
+ * (arrivée, budget, durée, type de logement — ce dernier en liste fermée,
+ * d'où le menu déroulant plutôt que le texte libre de la maquette d'origine).
+ * École, ville, occupants et préférences libres n'ont aucune colonne pour ce
+ * type de commande : regroupés en une note lisible dans `special_requirements`
+ * plutôt que perdus silencieusement — voir `docs/directives-backend.md` pour
+ * la directive de vraies colonnes dédiées, et `LivingPreferencesInput` pour
+ * le détail. Préremplissage au chargement via `GET /client-data/show`.
  */
-import { paymentRepo } from '~/core/repositories'
+import type { LivingAccommodationType } from '~/core/contracts'
+import { livingPreferencesRepo, paymentRepo } from '~/core/repositories'
 
 definePageMeta({
   middleware: 'auth',
@@ -83,13 +90,93 @@ const form = reactive({
   ecole: '',
   ville: '',
   duree: '',
-  type: '',
+  type: '' as LivingAccommodationType | '',
   occupants: '',
   preferences: '',
 })
 
-/** La maquette n'envoie ce formulaire nulle part : même comportement ici. */
-function onSubmit() {}
+const accommodationOptions: { value: LivingAccommodationType; labelKey: string }[] = [
+  { value: 'apartment', labelKey: 'logementConfirmation.accommodationApartment' },
+  { value: 'shared', labelKey: 'logementConfirmation.accommodationShared' },
+  { value: 'dormitory', labelKey: 'logementConfirmation.accommodationDormitory' },
+  { value: 'host_family', labelKey: 'logementConfirmation.accommodationHostFamily' },
+  { value: 'other', labelKey: 'logementConfirmation.accommodationOther' },
+]
+
+/** Préremplit depuis une soumission précédente — seules les colonnes réelles de l'API. */
+const { data: existingPreferences } = await usePageData(
+  `logement-preferences-${orderId.value}`,
+  () => (orderId.value === '' ? Promise.resolve(null) : livingPreferencesRepo.show(orderId.value, locale.value)),
+  { watch: [orderId, locale] },
+)
+
+watchEffect(() => {
+  const existing = existingPreferences.value
+  if (!existing) return
+  if (existing.arrivalDate) form.arrivee = existing.arrivalDate
+  if (existing.monthlyBudget !== null) form.budget = String(existing.monthlyBudget)
+  if (existing.stayDurationMonths !== null) form.duree = String(existing.stayDurationMonths)
+  if (existing.accommodationType) form.type = existing.accommodationType
+})
+
+/** Premier nombre trouvé dans un texte libre (« 600 € » → 600, « 12mois » → 12). */
+function parseLeadingNumber(value: string): number | null {
+  const match = value.replace(',', '.').match(/\d+(?:\.\d+)?/)
+  if (!match) return null
+  const parsed = Number(match[0])
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+/** Idem, arrondi — `stay_duration_months` est un entier côté API. */
+function parseLeadingInt(value: string): number | null {
+  const parsed = parseLeadingNumber(value)
+  return parsed === null ? null : Math.round(parsed)
+}
+
+/**
+ * École, ville, occupants et préférences libres n'ont aucune colonne dédiée
+ * côté API pour une commande logement — regroupés ici en une note lisible,
+ * envoyée dans `special_requirements` plutôt que silencieusement perdus.
+ */
+function buildAdditionalNotes(): string {
+  const lines: string[] = []
+  if (form.ecole.trim() !== '') lines.push(t('logementConfirmation.notePrefixSchool', { value: form.ecole.trim() }))
+  if (form.ville.trim() !== '') lines.push(t('logementConfirmation.notePrefixCity', { value: form.ville.trim() }))
+  if (form.occupants.trim() !== '') lines.push(t('logementConfirmation.notePrefixOccupants', { value: form.occupants.trim() }))
+  if (form.preferences.trim() !== '') lines.push(t('logementConfirmation.notePrefixPreferences', { value: form.preferences.trim() }))
+  return lines.join('\n')
+}
+
+const submitting = ref(false)
+const submitError = ref(false)
+const submitted = ref(false)
+
+async function onSubmit(): Promise<void> {
+  if (submitting.value || orderId.value === '') return
+
+  submitting.value = true
+  submitError.value = false
+  try {
+    await livingPreferencesRepo.store(
+      {
+        orderId: orderId.value,
+        arrivalDate: form.arrivee || null,
+        monthlyBudget: parseLeadingNumber(form.budget),
+        stayDurationMonths: parseLeadingInt(form.duree),
+        accommodationType: form.type || null,
+        additionalNotes: buildAdditionalNotes(),
+      },
+      locale.value,
+    )
+    submitted.value = true
+  }
+  catch {
+    submitError.value = true
+  }
+  finally {
+    submitting.value = false
+  }
+}
 
 usePageSeo(() => ({
   title: t('logementConfirmation.seoTitle'),
@@ -235,6 +322,19 @@ usePageSeo(() => ({
           <p class="m-0 mt-2 text-base leading-[18.563px] font-normal text-rg-row-desc">{{ $t('logementConfirmation.helpIntroDesc') }}</p>
         </div>
 
+        <QAlert
+          v-if="submitted"
+          tone="success"
+          :title="$t('logementConfirmation.submitSuccessTitle')"
+          :message="$t('logementConfirmation.submitSuccessDesc')"
+        />
+        <QAlert
+          v-if="submitError"
+          tone="danger"
+          :title="$t('logementConfirmation.submitErrorTitle')"
+          :message="$t('logementConfirmation.submitErrorDesc')"
+        />
+
         <form class="flex w-full flex-col gap-10" @submit.prevent="onSubmit">
           <div class="flex w-full gap-6 max-2xs:flex-col">
             <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
@@ -284,11 +384,20 @@ usePageSeo(() => ({
               </span>
               <img src="/img/icons/ic-lp-field-chevron.svg" alt="" width="12" height="12" class="block size-12 shrink-0 rotate-90 opacity-85">
             </label>
-            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+            <label class="box-border flex flex-1 min-w-0 cursor-pointer items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
               <img src="/img/icons/ic-lp-field-type.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
               <span class="flex min-w-0 flex-1 flex-col gap-2">
                 <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldTypeLabel') }}</span>
-                <input v-model="form.type" type="text" :placeholder="$t('logementConfirmation.fieldTypePlaceholder')" class="w-full border-0 bg-transparent p-0 text-xl leading-20 font-medium text-text outline-none placeholder:font-normal placeholder:text-muted">
+                <select
+                  v-model="form.type"
+                  class="w-full border-0 bg-transparent p-0 text-xl leading-20 font-medium text-text outline-none"
+                  :class="form.type === '' ? 'text-muted' : 'text-text'"
+                >
+                  <option value="" disabled>{{ $t('logementConfirmation.fieldTypePlaceholder') }}</option>
+                  <option v-for="option in accommodationOptions" :key="option.value" :value="option.value">
+                    {{ $t(option.labelKey) }}
+                  </option>
+                </select>
               </span>
               <img src="/img/icons/ic-lp-field-chevron.svg" alt="" width="12" height="12" class="block size-12 shrink-0 rotate-90 opacity-85">
             </label>
@@ -318,9 +427,16 @@ usePageSeo(() => ({
             </span>
           </label>
 
-          <button type="submit" class="mt-10 flex w-full items-center justify-center gap-10 rounded-xl border-0 bg-primary-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white">
-            <span>{{ $t('logementConfirmation.ctaSubmit') }}</span>
-            <img src="/img/icons/ic-lp-cta-arrow.svg" alt="" width="20" height="20" class="block shrink-0">
+          <button
+            type="submit"
+            :disabled="submitting"
+            class="mt-10 flex w-full items-center justify-center gap-10 rounded-xl border-0 bg-primary-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <QSpinner v-if="submitting" size="sm" class="text-white" />
+            <template v-else>
+              <span>{{ $t('logementConfirmation.ctaSubmit') }}</span>
+              <img src="/img/icons/ic-lp-cta-arrow.svg" alt="" width="20" height="20" class="block shrink-0">
+            </template>
           </button>
         </form>
       </div>
