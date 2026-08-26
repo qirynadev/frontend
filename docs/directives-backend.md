@@ -120,7 +120,41 @@ règle afficher (la plus avancée ? la plus récente ? une moyenne) ? **Question
 produit à trancher avant tout câblage** — en l'absence de règle validée, la
 barre reste statique plutôt que d'inventer une agrégation.
 
-## 8. Optimisation API — sortir progressivement de `/all-data`
+## 8. 🔴 Bug bloquant : `POST /client-data/store` refuse toute commande logement confirmée
+
+**Reproduit en direct** (2026-08-24) sur une commande `CostOfLiving` réelle,
+statut `Vérifié` (`e65f8a4b…`, `966b839a…`) : `POST /client-data/store` (et
+donc le nouveau formulaire de préférences de `logement/paiement-reussi.vue`,
+tout juste câblé côté front) répond **404 « Commande introuvable »**, y
+compris en appelant l'API directement (donc pas un problème de relais côté
+front) :
+
+```
+curl -X POST https://admin.stage.qiryna.com/api/client-data/store \
+  -H "Authorization: Bearer <token compte de test>" \
+  -d '{"order_id":"966b839a-6e0b-42bd-903d-3cc3cc74d4f9","planned_arrival_date":"2026-09-01"}'
+→ 404 {"message":"Commande introuvable","status":false}
+```
+
+**Cause probable** : `ClientDataController::store()` (`qiryna-backoffice`)
+filtre la commande avec `->where('status', 'paid')` — une valeur littérale
+anglaise — alors que `/payment/list` (et donc l'état réel d'une commande vue
+par le client) renvoie des libellés français (`Vérifié`, `En attente de
+vérification`…) via `OrderTrackingStatusEnum`. Le même genre d'écart avait
+déjà été trouvé et corrigé côté front (`toOrderStatus`, voir mémoire projet)
+— ici c'est côté API que la comparaison de statut est fausse, sur un
+mécanisme d'écriture cette fois (pas juste de lecture). `checkStatus()`
+utilise apparemment le même filtre et serait probablement affecté de la même
+façon (non testé directement, mais code identique sur ce point).
+
+**Ce qu'il faut** : corriger la comparaison de statut dans `store()` (et
+vérifier `checkStatus()`) pour reconnaître les commandes réellement payées,
+quel que soit le libellé exact stocké — cohérent avec ce que `/payment/list`
+considère déjà comme confirmé. Tant que ce n'est pas corrigé, **aucune**
+commande logement ne peut enregistrer ses préférences, même si le
+formulaire front est fonctionnel et correctement câblé.
+
+## 9. Optimisation API — sortir progressivement de `/all-data`
 
 Rappel de l'intention déjà écrite dans `server/utils/catalog.ts` (« le seul
 fichier à modifier quand l'API sera découpée ») : `/all-data` pèse 4,4 Mo et
