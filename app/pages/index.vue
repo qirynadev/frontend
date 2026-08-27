@@ -6,7 +6,7 @@
  *
  * | Bloc | Règles reprises |
  * |---|---|
- * | bandeau | `.home-banner-wrap` `padding-top: 16px`, `margin-bottom: 24px` · `.home-banner` `aspect-ratio: 1819/865`, rayon 10 — **visuel maquette** `home-banner.png` (pas le slide API) |
+ * | bandeau | `.home-banner-wrap` `padding-top: 16px`, `margin-bottom: 24px` · `.home-banner` `aspect-ratio: 1819/865`, rayon 10 — image de `HomeContent.slides[0]` (`homeData.slides`, `/all-data`), déjà dans la bonne langue ; repli sur le visuel maquette `home-banner.png` si aucune diapositive n'existe |
  * | raccourcis | `.home-categories` `gap: 12px`, `padding-top: 0`, une seule rangée (2×2 sous 360px) |
  * | sections | `.home-section` `padding-top: 16px` · titre 18px/28px, `letter-spacing: -0.45px` · enfant non-titre `margin-top: 16px` |
  * | carte parcours | `.home-progress-card` fond `#fef4f5`, `padding: 20px`, `min-height: 154px`, illustration en absolu `right: -20px` |
@@ -48,8 +48,18 @@ const articles = computed(() => {
   return fetched.length > 0 ? fetched : fallbackArticles(t('home.news.placeholderTitle'))
 })
 
-/** Bandeau hero : visuel maquette (`pwa/assets/images/home-banner.png`), pas le slide API. */
-const bannerSrc = '/img/home-banner.webp'
+/**
+ * Bandeau hero.
+ *
+ * `HomeContent.slides[0]` (`homeData.slides`, `/all-data`) — pas
+ * `Catalog.banners` (bannières publicitaires, un tout autre contenu). Une
+ * seule diapositive existe actuellement côté back-office, déjà servie dans la
+ * bonne langue par l'API (contrairement à `banners`, `homeData` respecte
+ * l'en-tête `lang` — vérifié en direct : image différente entre `lang: fr` et
+ * `lang: en`). Repli sur le visuel maquette (`pwa/assets/images/
+ * home-banner.png`) tant qu'aucune diapositive n'existe.
+ */
+const bannerSrc = computed(() => home.value?.slides[0]?.image ?? '/img/home-banner.webp')
 
 /**
  * Progression de l'orientation.
