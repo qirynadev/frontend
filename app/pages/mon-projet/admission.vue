@@ -129,7 +129,12 @@ usePageSeo(() => ({
 
           <!-- Panneau Document -->
           <div v-show="activeTab === 'document'" class="mpa-panel w-full">
-            <MpaDocsCard :documents="admission.documents" />
+            <MpaDocsCard
+              :documents="admission.documents"
+              :order-id="admission.order.id"
+              :locked="admission.documentsLocked"
+              @sent="refresh()"
+            />
           </div>
 
           <!-- Panneau Suivi & échanges -->

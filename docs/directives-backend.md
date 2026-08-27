@@ -316,6 +316,74 @@ présent dans `/all-data` n'est pas consommé par ce front et peut être ignoré
 sans risque (à confirmer avec le back-office si son retrait de `/all-data` est
 possible côté API, dans la même logique d'allègement).
 
+## 13. ✅ Câblé : dépôt de pièces admission (`/mon-projet/admission?tab=document`)
+
+**Corrige une conclusion erronée d'une session précédente** (« aucun endpoint
+n'expose de suivi par pièce, `ClientPostPurchaseData` n'est qu'un formulaire
+global ») : en relisant `ClientDataController::store()` en entier (pas
+seulement les champs `diplomas`/`additional_documents`/`is_complete` déjà
+repérés), **quatre pièces ont bien une colonne de fichier dédiée** —
+`id_document_path`, `transcripts_path`, `language_certificate_path`,
+`cover_letter_path`. Vérifié en direct sur `stage.qiryna.com` (comptes de
+test, 2026-08-27) : upload réel via `multipart/form-data`, fichier persisté
+sur le disque `public` (`client-documents/{user}/{order}/…`) et
+téléchargeable (`GET /storage/...` → 200). Câblé côté front dans
+`admissionDocumentsRepo`/`MpaDocsCard.vue`.
+
+**Trouvé par la même occasion, sans lien avec l'onglet Document** : le bug du
+point 8 (`->where('status', 'paid')`) était déjà corrigé côté back-office au
+moment de cette session (commit `6f15259`, poussé le matin même du
+2026-08-27) — `POST /client-data/store` fonctionne désormais pour de vraies
+commandes, tous types confondus (vérifié aussi sur une commande admission).
+
+**Deux limites réelles restent, pas des bugs — des contraintes à connaître :**
+
+1. **Envoi unique, verrouillage immédiat.** `store()` met `is_complete: true`
+   dès le **premier** appel réussi, quel que soit le nombre de fichiers
+   fournis — tout appel suivant est refusé (`already-submitted`, 400), sans
+   distinction entre « dossier complet » et « un seul fichier envoyé par
+   erreur ». Contourné côté front en n'autorisant qu'un seul envoi groupé
+   (toutes les pièces choisies avant de cliquer une fois sur « Envoyer »), les
+   3 pièces obligatoires bloquant le bouton tant qu'elles ne sont pas
+   sélectionnées — mais un client qui n'a pas tout sous la main au moment de
+   l'envoi ne pourra plus jamais compléter son dossier via cette API.
+   **Ce qu'il faudrait** : découpler l'envoi de fichiers du verrouillage
+   (`is_complete` positionné par une action explicite du client — ou de
+   l'admin une fois le dossier jugé complet — plutôt qu'automatiquement à
+   chaque `store()`).
+2. **`diploma`/`recommendation` n'ont aucune colonne dédiée.** Contrairement
+   aux quatre pièces ci-dessus, le diplôme et les lettres de recommandation
+   n'ont pas de `*_path` — ils passent par `additional_documents` (tableau de
+   chemins bruts, sans métadonnée). Contourné côté front en préfixant le nom
+   de fichier envoyé (`diploma__…`/`recommendation__…`) puis en le retrouvant
+   au chargement par ce préfixe dans le chemin stocké (`Helper::getFileName`
+   ne fait que « sluggifier » le nom, le préfixe survit) — fonctionne
+   (vérifié en direct, upload + retrouvaille des deux pièces confirmés), mais
+   fragile : un même préfixe utilisé un jour pour autre chose casserait la
+   distinction. **Ce qu'il faudrait** : deux colonnes dédiées de plus,
+   `diploma_path`/`recommendation_path`, sur le même modèle que les quatre
+   déjà existantes.
+
+**Statut par pièce (validé/en attente/à téléverser) approximé, pas exact** :
+il n'existe aucun suivi de vérification **par pièce**, ni côté API ni côté
+back-office lui-même — `Order/Edit.vue` (page admin) n'a qu'un statut de
+**commande** entière (« Vérifié »/« En attente de vérification »/« Annulé »).
+Le front réutilise ce statut de commande pour toutes les pièces déjà
+envoyées : `Vérifié` → badge « Validé », sinon → badge « En attente ». C'est
+une lecture honnête d'un champ réel, pas une vérité par document — si un jour
+la vérification doit vraiment se faire pièce par pièce, il faudrait un statut
+dédié par colonne (`id_document_status`, etc.) plutôt que le seul statut de
+commande.
+
+**Point annexe découvert en testant** : `store()` exige que la commande soit
+`en attente de vérification` ou `vérifiée` (`whereIn('status', […])`) — une
+commande encore `en attente de paiement` (paiement non abouti) est refusée en
+404 « Commande introuvable », **normal et voulu**, mais ce front n'a
+actuellement aucun moyen de distinguer ces deux « en attente » différents
+pour choisir la bonne commande à afficher sur cet écran à route fixe (déjà
+documenté comme limitation dans `useAdmissionData.ts` — non traité ici,
+simplement confirmé qu'il peut se manifester en pratique).
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

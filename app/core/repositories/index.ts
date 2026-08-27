@@ -1,3 +1,4 @@
+export * from './admission-documents.repo'
 export * from './auth.repo'
 export * from './catalog.repo'
 export * from './contact.repo'

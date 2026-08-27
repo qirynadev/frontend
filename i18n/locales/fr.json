@@ -1,5 +1,6 @@
 {
   "admission": {
+    "clearSelection": "Retirer ce fichier",
     "contactAdvisor": "Contacter ma conseillère",
     "docDiploma": "Diplôme le plus élevé",
     "docGrades": "Relevés de notes",
@@ -9,10 +10,14 @@
     "docRecommendation": "Lettres de recommandation",
     "docsBannerDesc": "Les documents validés par notre équipe sont marqués en vert.",
     "docsBannerTitle": "Téléchargez tous les documents requis",
+    "docsSubmitCta": "Envoyer mes documents",
+    "docsSubmitError": "L'envoi a échoué. Réessayez dans un instant.",
+    "docsSubmitHint": "Envoi unique : une fois vos documents envoyés, vous ne pourrez plus en ajouter d'autres à ce dossier. Sélectionnez tous les fichiers que vous avez avant de confirmer.",
     "docsTitle": "Mes documents",
     "downloadDoc": "Télécharger le document",
     "emptyDescription": "Vous n'avez pas encore de dossier d'admission à suivre.",
     "emptyTitle": "Aucune admission en cours",
+    "fileSelected": "Fichier prêt",
     "fileTypePdf": "Fichier PDF",
     "fileTypePdfs": "{count} fichiers PDF",
     "helpDesc": "Votre conseillère est là pour vous accompagner à chaque étape.",

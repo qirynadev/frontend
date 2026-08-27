@@ -1,3 +1,4 @@
+export * from './admission-documents.adapter'
 export * from './area.adapter'
 export * from './common.adapter'
 export * from './course.adapter'

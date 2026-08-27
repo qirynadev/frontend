@@ -1,20 +1,34 @@
-import type { AdmissionDocument, AdmissionStep, AdmissionStepStatus } from '~/core/contracts/admission'
-import type { OrderChecklistItem } from '~/core/contracts'
-import { paymentRepo } from '~/core/repositories'
+import type { AdmissionDocument, AdmissionDocumentsState, AdmissionStep, AdmissionStepStatus } from '~/core/contracts/admission'
+import type { OrderChecklistItem, OrderStatus } from '~/core/contracts'
+import { admissionDocumentsRepo, paymentRepo } from '~/core/repositories'
 
 /**
- * Donnée d'essai tirée de `mon-projet-admission.html`, conservée telle quelle
- * (voir le commentaire de `useAdmissionData` ci-dessous — aucun endpoint réel
- * ne couvre le suivi par pièce).
+ * Statut affiché pour une pièce déjà envoyée.
+ *
+ * Il n'existe aucun suivi de vérification **par pièce** côté back-office (ni
+ * API, ni back-office lui-même : `Order/Edit.vue` ne propose qu'un statut de
+ * *commande* — « Vérifié »/« En attente de vérification »/« Annulé », voir
+ * `docs/directives-backend.md`). On réutilise donc ce statut de commande,
+ * déjà lu par `paymentRepo.orders()` (`Order.status`) : une pièce envoyée sur
+ * une commande encore « en attente de vérification » s'affiche `pending`,
+ * sur une commande « Vérifié » s'affiche `validated` — une approximation
+ * honnête (dérivée d'un champ réel), pas une vérité par document.
  */
-const DEMO_DOCUMENTS: AdmissionDocument[] = [
-  { id: 'passport', titleKey: 'admission.docPassport', required: true, fileType: 'pdf', fileCount: 1, status: 'validated', icon: '/img/icons/ic-mpa-doc-passport.png' },
-  { id: 'diploma', titleKey: 'admission.docDiploma', required: true, fileType: 'pdf', fileCount: 1, status: 'validated', icon: '/img/icons/ic-mpa-doc-diploma.png' },
-  { id: 'grades', titleKey: 'admission.docGrades', required: true, fileType: 'pdf', fileCount: 2, status: 'validated', icon: '/img/icons/ic-mpa-doc-grades.png' },
-  { id: 'language', titleKey: 'admission.docLanguage', required: false, fileType: 'pdf', fileCount: 1, status: 'pending', icon: '/img/icons/ic-mpa-doc-language.png' },
-  { id: 'letter', titleKey: 'admission.docLetter', required: false, fileType: 'pdf', fileCount: 1, status: 'upload', icon: '/img/icons/ic-mpa-doc-letter.png' },
-  { id: 'recommendation', titleKey: 'admission.docRecommendation', required: false, fileType: 'pdf', fileCount: 1, status: 'upload', icon: '/img/icons/ic-mpa-doc-recommendation.png' },
-]
+function toDocumentStatus(uploaded: boolean, orderStatus: OrderStatus): AdmissionDocument['status'] {
+  if (!uploaded) return 'upload'
+  return orderStatus === 'confirmed' ? 'validated' : 'pending'
+}
+
+function toAdmissionDocuments(state: AdmissionDocumentsState, orderStatus: OrderStatus): AdmissionDocument[] {
+  return [
+    { id: 'passport', titleKey: 'admission.docPassport', required: true, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-passport.png', formField: 'id_document', status: toDocumentStatus(state.idDocumentUrl !== null, orderStatus), downloadUrl: state.idDocumentUrl },
+    { id: 'diploma', titleKey: 'admission.docDiploma', required: true, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-diploma.png', formField: 'diploma', status: toDocumentStatus(state.diplomaUrl !== null, orderStatus), downloadUrl: state.diplomaUrl },
+    { id: 'grades', titleKey: 'admission.docGrades', required: true, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-grades.png', formField: 'transcripts', status: toDocumentStatus(state.transcriptsUrl !== null, orderStatus), downloadUrl: state.transcriptsUrl },
+    { id: 'language', titleKey: 'admission.docLanguage', required: false, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-language.png', formField: 'language_certificate', status: toDocumentStatus(state.languageCertificateUrl !== null, orderStatus), downloadUrl: state.languageCertificateUrl },
+    { id: 'letter', titleKey: 'admission.docLetter', required: false, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-letter.png', formField: 'cover_letter', status: toDocumentStatus(state.coverLetterUrl !== null, orderStatus), downloadUrl: state.coverLetterUrl },
+    { id: 'recommendation', titleKey: 'admission.docRecommendation', required: false, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-recommendation.png', formField: 'recommendation', status: toDocumentStatus(state.recommendationUrl !== null, orderStatus), downloadUrl: state.recommendationUrl },
+  ]
+}
 
 /**
  * Données de suivi d'admission école, pour `mon-projet/admission`.
@@ -37,13 +51,17 @@ const DEMO_DOCUMENTS: AdmissionDocument[] = [
  * `terminé`) — c'est elle que cet écran affiche en tant qu'étape active
  * (`current`), une lecture du statut `pending` plutôt qu'un champ à part.
  *
- * L'onglet Document (types de pièces, statut par pièce validé/en attente/à
- * téléverser) reste sur sa donnée d'essai : aucun endpoint ne l'expose.
- * `ClientPostPurchaseData` existe (`GET /client-data/show`) mais c'est un
- * formulaire à remplir une fois (`diplomas`: noms en texte libre, `additional_
- * documents`: chemins de fichiers bruts, `is_complete`: un seul booléen) — pas
- * un suivi par pièce avec un statut individuel. Rien à brancher sans inventer
- * la donnée manquante.
+ * L'onglet Document (dépôt de pièces) est câblé sur `ClientPostPurchaseData`
+ * (`GET/POST /client-data/{show,store}`, `service_type: 'area'`) via
+ * `admissionDocumentsRepo` — corrige une conclusion erronée d'une session
+ * précédente (« aucun endpoint n'expose ce suivi ») : quatre pièces ont bien
+ * une colonne de fichier dédiée (`id_document`, `transcripts`,
+ * `language_certificate`, `cover_letter`), vérifié en direct sur
+ * `stage.qiryna.com` (upload réel, fichier persisté et téléchargeable). Les
+ * deux pièces restantes (`diploma`, `recommendation`) n'ont pas de colonne
+ * dédiée et passent par `additional_documents` — voir `toAdmissionDocuments`
+ * et `docs/directives-backend.md` pour la limite que ça implique (envoi
+ * unique, verrouillé dès le premier envoi).
  */
 export async function useAdmissionData(locale: Ref<string>) {
   return usePageData(
@@ -54,10 +72,15 @@ export async function useAdmissionData(locale: Ref<string>) {
         .filter((candidate) => candidate.serviceType === 'areaofstudy')
         .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0] ?? null
 
+      const documentsState = order
+        ? await admissionDocumentsRepo.show(order.id, locale.value)
+        : { locked: false, idDocumentUrl: null, transcriptsUrl: null, languageCertificateUrl: null, coverLetterUrl: null, diplomaUrl: null, recommendationUrl: null }
+
       return {
         order,
         steps: order ? toAdmissionSteps(order.checklist) : [],
-        documents: DEMO_DOCUMENTS,
+        documents: order ? toAdmissionDocuments(documentsState, order.status) : [],
+        documentsLocked: documentsState.locked,
       }
     },
     { watch: [locale] },

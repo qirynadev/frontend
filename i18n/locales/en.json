@@ -1,5 +1,6 @@
 {
   "admission": {
+    "clearSelection": "Remove this file",
     "contactAdvisor": "Contact my advisor",
     "docDiploma": "Highest diploma",
     "docGrades": "Transcripts",
@@ -9,10 +10,14 @@
     "docRecommendation": "Recommendation letters",
     "docsBannerDesc": "Documents validated by our team are marked in green.",
     "docsBannerTitle": "Download all required documents",
+    "docsSubmitCta": "Send my documents",
+    "docsSubmitError": "Sending failed. Please try again shortly.",
+    "docsSubmitHint": "One-time submission: once your documents are sent, you won't be able to add any more to this file. Select every file you have before confirming.",
     "docsTitle": "My documents",
     "downloadDoc": "Download document",
     "emptyDescription": "You don't have an admission file to track yet.",
     "emptyTitle": "No admission in progress",
+    "fileSelected": "File ready",
     "fileTypePdf": "PDF file",
     "fileTypePdfs": "{count} PDF files",
     "helpDesc": "Your advisor is here to support you at every step.",
