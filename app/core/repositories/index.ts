@@ -1,5 +1,6 @@
 export * from './auth.repo'
 export * from './catalog.repo'
+export * from './contact.repo'
 export * from './course.repo'
 export * from './destination.repo'
 export * from './editorial.repo'

@@ -11,7 +11,7 @@ Assets : `public/img/icons/contact-success/*`, `public/img/icons/ic-contact-*`
 
 | Élément | Source | Notes |
 |---|---|---|
-| Envoi du message | — | **Pas d’endpoint** contact / support |
+| Envoi du message | `POST /send-email` | Réel, câblé 2026-08-27 (`contactRepo`) — public côté API, aucune session requise. **N'enregistre rien en base côté back-office** (e-mail seul, `TODO #56` dans le code source) : voir `docs/directives-backend.md` §9. |
 | Nom / email préremplis | `session.user` | Si connecté |
 | Politique de confidentialité | lien `/reglages/mentions` | Pas d’URL document isolée |
 

@@ -1,5 +1,6 @@
 export type * from './area'
 export type * from './common'
+export type * from './contact'
 export type * from './course'
 export type * from './destination'
 export type * from './editorial'

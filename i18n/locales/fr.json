@@ -985,6 +985,8 @@
     "subjectPlaceholder": "Sélectionnez un sujet",
     "subjectTechnical": "Problème technique",
     "submit": "Envoyer le message",
+    "submitErrorDesc": "Une erreur est survenue, réessayez dans un instant.",
+    "submitErrorTitle": "Envoi impossible",
     "subtitle": "Décrivez votre demande et nous vous répondrons par email.",
     "successBannerDesc": "Notre équipe vous contactera dans les plus brefs délais.",
     "successBannerTitle": "Vous recevrez une réponse très prochainement",

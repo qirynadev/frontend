@@ -3,17 +3,25 @@
  * Centre d’aide — Envoyer un message ← capture produit (WhatsApp 2026-08-23).
  * Succès « Demande envoyée ! » ← capture (WhatsApp 2026-08-23, 20:16).
  *
- * Aucun endpoint contact : validation locale → écran succès (données du
- * formulaire + repli `contact-success-mock.ts`). Doc : `docs/reglages-contact-mocks.md`.
+ * Câblé sur `POST /send-email` (réel côté API, public — vérifié en direct
+ * 2026-08-27) : envoie un e-mail au support, mais **n'est pas encore
+ * enregistré en base côté back-office** (`TODO #56` dans le code source
+ * réel) — donc rien de visible dans le back-office lui-même pour l'instant,
+ * seulement dans la boîte mail qui reçoit la notification. Directive écrite
+ * pour Prosper dans `docs/directives-backend.md`. Écran succès inchangé
+ * (données du formulaire + repli `contact-success-mock.ts`). Doc :
+ * `docs/reglages-contact-mocks.md`.
  *
  * Espacement vertical **22px** entre blocs majeurs (topbar → sections).
  */
 import { contactSuccessMock } from '~/config/contact-success-mock'
+import { contactRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
+import { ApiError } from '~/core/http/errors'
 
 definePageMeta({ middleware: 'auth' })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
 
@@ -35,6 +43,7 @@ const message = ref('')
 const consent = ref(false)
 const submitted = ref(false)
 const submitting = ref(false)
+const submitError = ref(false)
 
 const errors = reactive({
   subject: '',
@@ -43,6 +52,12 @@ const errors = reactive({
   message: '',
   consent: '',
 })
+
+/** L'API attend prénom/nom séparés ; un seul mot sert aux deux plutôt que d'échouer la validation. */
+function splitName(fullName: string): { firstName: string; lastName: string } {
+  const [first = '', ...rest] = fullName.trim().replace(/\s+/g, ' ').split(' ')
+  return { firstName: first, lastName: rest.join(' ') || first }
+}
 
 onMounted(() => {
   const user = session.user
@@ -63,10 +78,34 @@ function validate(): boolean {
 
 async function onSubmit(): Promise<void> {
   if (!validate()) return
+
   submitting.value = true
-  await new Promise((resolve) => setTimeout(resolve, 400))
-  submitting.value = false
-  submitted.value = true
+  submitError.value = false
+  try {
+    const { firstName, lastName } = splitName(name.value)
+    await contactRepo.send(
+      {
+        firstName,
+        lastName,
+        phone: null,
+        email: email.value.trim(),
+        subject: subjectLabel.value,
+        message: message.value.trim(),
+      },
+      locale.value,
+    )
+    submitted.value = true
+  }
+  catch (error) {
+    if (error instanceof ApiError && error.kind === 'validation') {
+      if (error.fieldErrors.email) errors.email = error.fieldErrors.email[0] ?? errors.email
+      if (error.fieldErrors.message) errors.message = error.fieldErrors.message[0] ?? errors.message
+    }
+    submitError.value = true
+  }
+  finally {
+    submitting.value = false
+  }
 }
 
 const subjectLabel = computed(() => {
@@ -189,6 +228,13 @@ usePageSeo(() => ({
             {{ $t('settingsContact.subtitle') }}
           </p>
         </section>
+
+        <QAlert
+          v-if="submitError"
+          tone="danger"
+          :title="$t('settingsContact.submitErrorTitle')"
+          :message="$t('settingsContact.submitErrorDesc')"
+        />
 
         <form class="flex w-full flex-col gap-22" @submit.prevent="onSubmit">
           <div class="flex w-full flex-col">

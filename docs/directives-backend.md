@@ -154,7 +154,41 @@ considère déjà comme confirmé. Tant que ce n'est pas corrigé, **aucune**
 commande logement ne peut enregistrer ses préférences, même si le
 formulaire front est fonctionnel et correctement câblé.
 
-## 9. Optimisation API — sortir progressivement de `/all-data`
+## 9. 🔴 Contact (`/reglages/contact`) — le message n'est enregistré nulle part côté back-office
+
+**Câblé** (2026-08-27) : le formulaire « Envoyer un message » appelle
+réellement `POST /send-email` (public, aucune session requise) — vérifié en
+direct, 201 « Votre message a bien été envoyé ».
+
+**Mais** ce que fait cet endpoint côté back-office (`MessageAction::
+sendEmail`) :
+
+```php
+public function sendEmail(array $inputs)
+{
+    // TODO: #56 save email in database
+    ...
+    Notification::route('mail', $setting['email'] ?? config('mail.from.address'))->notify(
+        new ContactMailNotification(...)
+    );
+}
+```
+
+Le message part **uniquement par e-mail**, à l'adresse configurée dans
+`Setting` (clé `site`) ou l'adresse d'expédition par défaut — **rien n'est
+enregistré en base**. Concrètement : le back-office lui-même n'a aucune trace,
+aucune liste, aucun écran pour consulter les demandes de contact. Un client
+qui envoie un message ne laisse de trace que dans une boîte mail, pas dans un
+système consultable par l'équipe support.
+
+**Ce qu'il faut** : réaliser le TODO #56 déjà noté dans le code — persister
+chaque message de contact (nom, e-mail, téléphone, sujet, message, date) dans
+une table dédiée, avec un minimum d'écran back-office pour les consulter/
+traiter. Sans ça, la fonctionnalité « fonctionne » (l'e-mail part) mais n'est
+pas exploitable en équipe (pas d'historique, pas de statut traité/non traité,
+dépend d'une seule boîte mail).
+
+## 10. Optimisation API — sortir progressivement de `/all-data`
 
 Rappel de l'intention déjà écrite dans `server/utils/catalog.ts` (« le seul
 fichier à modifier quand l'API sera découpée ») : `/all-data` pèse 4,4 Mo et

@@ -985,6 +985,8 @@
     "subjectPlaceholder": "Select a subject",
     "subjectTechnical": "Technical issue",
     "submit": "Send message",
+    "submitErrorDesc": "Something went wrong — please try again in a moment.",
+    "submitErrorTitle": "Could not send",
     "subtitle": "Describe your request and we will reply by email.",
     "successBannerDesc": "Our team will contact you as soon as possible.",
     "successBannerTitle": "You will receive a reply very soon",
