@@ -83,12 +83,19 @@ function toOverallStatus(orders: Order[], progressPercent: number): string {
 /**
  * Avancement d'**une** commande (0-100), même formule que
  * `useAdmissionData`/`useLogementData` : `done/total` de sa checklist. 0 si
- * la commande n'est pas confirmée, ou confirmée sans checklist (antérieure
- * au mécanisme, ou type qui n'en a jamais) — un vrai zéro plutôt qu'une
- * valeur inconnue, cohérent avec le reste de cette rubrique.
+ * la commande a échoué, ou n'a pas de checklist (antérieure au mécanisme, ou
+ * type qui n'en a jamais) — un vrai zéro plutôt qu'une valeur inconnue.
+ *
+ * Ne filtre plus sur `status === 'confirmed'` : la checklist est seedée dès
+ * `/payment/init` (paiement réussi), avant même qu'un statut « vérifié »
+ * n'arrive — une commande « en attente de vérification » (paiement confirmé,
+ * dossier en cours d'examen) a une checklist bien réelle, ignorée à tort par
+ * l'ancien filtre (repéré 2026-08-27 : une commande école réelle du compte de
+ * test, checklist 1/7, contribuait 0 % au lieu de 14 %). Seul un `échoué`
+ * reste exclu.
  */
 function orderChecklistProgress(order: Order): number {
-  if (order.status !== 'confirmed' || order.checklist.length === 0) return 0
+  if (order.status === 'failed' || order.checklist.length === 0) return 0
   const done = order.checklist.filter((item) => item.status === 'done').length
   return Math.round((done / order.checklist.length) * 100)
 }
