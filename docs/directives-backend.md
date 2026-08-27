@@ -120,7 +120,20 @@ règle afficher (la plus avancée ? la plus récente ? une moyenne) ? **Question
 produit à trancher avant tout câblage** — en l'absence de règle validée, la
 barre reste statique plutôt que d'inventer une agrégation.
 
-## 8. 🔴 Bug bloquant : `POST /client-data/store` refuse toute commande logement confirmée
+## 8. ✅ Corrigé : `POST /client-data/store` refuse toute commande logement confirmée
+
+**Corrigé côté API** (commit `6f15259`, *« fix(client-data): reconnaît les
+commandes réellement payées »*, poussé sur `staging` le 2026-08-27 — donc
+déployé sur `admin.stage.qiryna.com`). `store()` et `checkStatus()`
+reconnaissent maintenant les commandes réellement payées (statuts
+`OrderTrackingStatusEnum`), plus la chaîne littérale `'paid'` qui ne
+correspondait à aucune valeur stockée en base. Le formulaire de préférences
+logement (`logement/paiement-reussi.vue`) devrait fonctionner de bout en
+bout désormais — **à revérifier en direct avec une commande réelle** avant
+de considérer le sujet clos côté front.
+
+<details>
+<summary>Détail original du bug (pour mémoire)</summary>
 
 **Reproduit en direct** (2026-08-24) sur une commande `CostOfLiving` réelle,
 statut `Vérifié` (`e65f8a4b…`, `966b839a…`) : `POST /client-data/store` (et
@@ -154,6 +167,8 @@ considère déjà comme confirmé. Tant que ce n'est pas corrigé, **aucune**
 commande logement ne peut enregistrer ses préférences, même si le
 formulaire front est fonctionnel et correctement câblé.
 
+</details>
+
 ## 9. ✅ Contact (`/reglages/contact`) — résolu en utilisant le bon endpoint
 
 **Un premier câblage** (2026-08-27) utilisait `POST /send-email` (public,
@@ -184,7 +199,21 @@ message (regroupé par le front), pas dans une colonne dédiée. Si un jour la
 encore s'en servir un jour) mais n'est plus un blocage pour le contact
 client, qui passe maintenant par `/user/messages`.
 
-## 10. 🔴 Bug **critique** : `POST /auth/register` plante sur toute inscription
+## 10. ✅ Corrigé : `POST /auth/register` plantait sur toute inscription
+
+**Corrigé côté API** (commit `c691ef7`, *« fix(auth): repli ?? null sur les
+champs optionnels non fournis à l'inscription/mise à jour »*, poussé sur
+`staging` le 2026-08-27 — déployé). Corrige `register()` **et**, par la même
+occasion, `updateUserData()` (`address`/`city` — le risque repéré ci-dessous
+était donc réel, maintenant traité aussi). Testé par un test Pest dédié côté
+API (inscription sans `lc_country_id` → 201).
+
+Le contournement front (`server/api/bff/account/index.post.ts`, envoi
+explicite de `lc_country_id: null`) reste en place — inoffensif et redondant
+maintenant que l'API ne plante plus sans lui, pas nécessaire de le retirer.
+
+<details>
+<summary>Détail original du bug (pour mémoire)</summary>
 
 **Reproduit en direct** (2026-08-27, signalé par le responsable après un
 test réel) : l'inscription d'un nouveau client échoue systématiquement.
@@ -226,7 +255,43 @@ alors que les règles de validation associées sont commentées/absentes) :
 non reproduit ni testé cette fois-ci, mais mérite le même correctif
 préventif tant qu'on est dans ce fichier.
 
-## 11. Optimisation API — sortir progressivement de `/all-data`
+</details>
+
+## 11. ✅ Corrigé : achat d'une fiche école (domaine) impossible — 404 « Domaine d'étude introuvable »
+
+**Reproduit en direct** (2026-08-27) : `POST /payment/init` échouait
+systématiquement pour toute offre domaine (testé sur Management), avec
+« Domaine d'étude introuvable ». Le legacy (`./legacy`, app pré-refonte)
+fonctionnait correctement sur ce même parcours — comparaison qui a permis de
+localiser précisément le problème.
+
+**Corrigé côté API** (commit `5c39435`, *« fix(offer): résout la 404 "Domaine
+d'étude introuvable" à l'achat d'une offre école »*, poussé sur `staging`
+le 2026-08-27 — déployé), **deux bugs distincts** :
+
+1. `Offer::areaOfStudy()` appelait `$this->morphTo('model')` — ce premier
+   argument sert à la fois de préfixe de colonnes (`model_type`/`model_id`,
+   correct) **et** de clé de relation pour l'eager loading. Avec `'model'`
+   comme clé, `->with('areaOfStudy')` (utilisé par `/all-data`) peuplait
+   `relations['model']` au lieu de `relations['areaOfStudy']`, qui restait
+   `null` — d'où `offers[].area: null` pour les 8 offres domaine, malgré un
+   lien réel et correct en base. Corrigé en nommant explicitement la
+   relation et les colonnes séparément : `morphTo('areaOfStudy',
+   'model_type', 'model_id')`.
+2. `AreaController::getOffer()` faisait `respondWithSuccess($offer->resource)`
+   — `->resource` déballe le modèle Eloquent brut et contourne
+   `OfferResource::toArray()`, là où `'area' => $this->areaOfStudy` doit
+   s'exécuter. Corrigé en retirant `->resource`.
+
+Testé par l'équipe backend via Tinker (reproduction isolée de chaque bug) et
+deux nouveaux tests Pest. **Revérifié côté front le 2026-08-27** : `/all-data`
+renvoie désormais `offers[].area.id` correctement peuplé (confirmé en direct
+sur l'offre Management), et un clic réel sur « Démarrer mon accompagnement »
+redirige bien vers Stripe (`buy.stripe.com`) — le parcours d'achat école est
+rétabli de bout en bout, sans aucun changement nécessaire côté front
+(`toDomainOfferPage` utilisait déjà `area.id` en priorité).
+
+## 12. Optimisation API — sortir progressivement de `/all-data`
 
 Rappel de l'intention déjà écrite dans `server/utils/catalog.ts` (« le seul
 fichier à modifier quand l'API sera découpée ») : `/all-data` pèse 4,4 Mo et
@@ -261,3 +326,9 @@ possible côté API, dans la même logique d'allègement).
   libre de `plannings[]` sont réels et fiables, câblés dans
   `planning.adapter.ts` (`toTeacher`) et consommés par `professeur.vue` /
   `planifier.vue` via `app/utils/teacher-availability.ts`.
+- **Bonus côté back-office** : en corrigeant les points 8/10/11, l'équipe
+  backend a aussi trouvé et corrigé (commit `b218784`, `qiryna-backoffice`)
+  un crash de création de créneau professeur sans date (même famille de bug
+  — accès à une clé de tableau validée `nullable` sans repli). Pas demandé
+  explicitement, trouvé par audit du pattern déjà connu — mentionné ici pour
+  traçabilité, aucune action front associée.
