@@ -154,41 +154,79 @@ considère déjà comme confirmé. Tant que ce n'est pas corrigé, **aucune**
 commande logement ne peut enregistrer ses préférences, même si le
 formulaire front est fonctionnel et correctement câblé.
 
-## 9. 🔴 Contact (`/reglages/contact`) — le message n'est enregistré nulle part côté back-office
+## 9. ✅ Contact (`/reglages/contact`) — résolu en utilisant le bon endpoint
 
-**Câblé** (2026-08-27) : le formulaire « Envoyer un message » appelle
-réellement `POST /send-email` (public, aucune session requise) — vérifié en
-direct, 201 « Votre message a bien été envoyé ».
+**Un premier câblage** (2026-08-27) utilisait `POST /send-email` (public,
+aucune session) — fonctionnel (201, e-mail envoyé) mais son code source
+porte `// TODO: #56 save email in database` : rien n'était enregistré en
+base, donc rien de visible dans le back-office lui-même, seulement dans une
+boîte mail.
 
-**Mais** ce que fait cet endpoint côté back-office (`MessageAction::
-sendEmail`) :
+**Corrigé en trouvant le bon endpoint, déjà existant** : `POST /user/messages`
+(`MessageController::sendMessage`) fait exactement ce qu'il faut — il crée un
+vrai enregistrement `Messaging` (`sender_id` = le client connecté,
+`receiver_id` = un admin) **et** appelle en interne le même `MessageAction::
+sendEmail`. Confirmé en lisant `MessageController.php` (web/Inertia, route
+nommée `messages.index`) : son écran `Messages/Index` charge **tous** les
+`Messaging::with(['sender','receiver'])->oldest()->get()` sans filtre — c'est
+la rubrique « Messagerie » du back-office, et elle affichera bien les
+messages du formulaire de contact. Vérifié en direct (2026-08-27) : message
+réellement créé et visible via `GET /user/messages`.
 
-```php
-public function sendEmail(array $inputs)
-{
-    // TODO: #56 save email in database
-    ...
-    Notification::route('mail', $setting['email'] ?? config('mail.from.address'))->notify(
-        new ContactMailNotification(...)
-    );
-}
+**Reste un point mineur, pas bloquant** : `POST /user/messages` n'a qu'un
+champ `text` — le sujet choisi par le client n'apparaît que dans le corps du
+message (regroupé par le front), pas dans une colonne dédiée. Si un jour la
+« Messagerie » doit filtrer/trier par sujet, une colonne `subject` sur
+`Messaging` serait utile — pas nécessaire pour que ça fonctionne aujourd'hui.
+
+**Le `TODO #56` sur `/send-email` reste d'actualité pour son propre usage**
+(la page `/reglages/mentions`/autres appels publics sans session pourraient
+encore s'en servir un jour) mais n'est plus un blocage pour le contact
+client, qui passe maintenant par `/user/messages`.
+
+## 10. 🔴 Bug **critique** : `POST /auth/register` plante sur toute inscription
+
+**Reproduit en direct** (2026-08-27, signalé par le responsable après un
+test réel) : l'inscription d'un nouveau client échoue systématiquement.
+
+```
+POST /auth/register {"email":"...","password":"...","first_name":"Test","last_name":"Qiryna", ...}
+→ 500 {"message":"Undefined array key \"lc_country_id\""}
 ```
 
-Le message part **uniquement par e-mail**, à l'adresse configurée dans
-`Setting` (clé `site`) ou l'adresse d'expédition par défaut — **rien n'est
-enregistré en base**. Concrètement : le back-office lui-même n'a aucune trace,
-aucune liste, aucun écran pour consulter les demandes de contact. Un client
-qui envoie un message ne laisse de trace que dans une boîte mail, pas dans un
-système consultable par l'équipe support.
+**Cause** : `AuthController::register` (`qiryna-backoffice`) valide
+`lc_country_id` comme facultatif (`'lc_country_id' => 'nullable'`) mais
+l'utilise ensuite sans repli :
 
-**Ce qu'il faut** : réaliser le TODO #56 déjà noté dans le code — persister
-chaque message de contact (nom, e-mail, téléphone, sujet, message, date) dans
-une table dédiée, avec un minimum d'écran back-office pour les consulter/
-traiter. Sans ça, la fonctionnalité « fonctionne » (l'e-mail part) mais n'est
-pas exploitable en équipe (pas d'historique, pas de statut traité/non traité,
-dépend d'une seule boîte mail).
+```php
+$profil = Profile::create([
+    ...
+    'lc_country_id' => $data['lc_country_id'],   // plante si la clé est absente
+    ...
+]);
+```
 
-## 10. Optimisation API — sortir progressivement de `/all-data`
+Notre formulaire d'inscription ne demande pas le pays et n'envoie donc
+jamais cette clé — `$data['lc_country_id']` n'existe pas dans le tableau,
+PHP lève une erreur non interceptée par la validation (`nullable` autorise
+une valeur *nulle*, pas une clé *absente*).
+
+**Contourné côté front en attendant** (`server/api/bff/account/index.post.ts`,
+2026-08-27) : on envoie désormais `lc_country_id: null` explicitement à
+chaque inscription — confirmé en direct que ça suffit (201, compte créé).
+Mais c'est un contournement, pas une correction : n'importe quel autre
+client de cette API (mobile, intégration tierce) qui n'envoie pas cette clé
+plante de la même façon.
+
+**Ce qu'il faut** : `'lc_country_id' => $data['lc_country_id'] ?? null,`
+(une ligne). **À vérifier par la même occasion** — `updateUserData` (même
+fichier, méthode « mettre à jour mon profil », utilisée par `/compte`) a
+exactement le même risque sur `address`/`city`/`photo` (accédés sans repli,
+alors que les règles de validation associées sont commentées/absentes) :
+non reproduit ni testé cette fois-ci, mais mérite le même correctif
+préventif tant qu'on est dans ce fichier.
+
+## 11. Optimisation API — sortir progressivement de `/all-data`
 
 Rappel de l'intention déjà écrite dans `server/utils/catalog.ts` (« le seul
 fichier à modifier quand l'API sera découpée ») : `/all-data` pèse 4,4 Mo et
