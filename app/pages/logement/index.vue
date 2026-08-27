@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
- * Trouver mon logement ← `maquette/pwa/pages/logement.html`.
- *
- * La maquette réutilise la structure `.dest-*` de `destination-etude.html` :
+ * Parcours : `/logement` → `/logement/[slug]/decouverte` → `/logement/[slug]`
+ * (formules).
  * même barre supérieure, même grille, même encart d'aide. Seuls le décompte
  * (« 350+ logements ») et les visuels changent.
  *
@@ -74,7 +73,7 @@ usePageSeo(() => ({
         <NuxtLink
           v-for="destination in destinations"
           :key="destination.slug"
-          :to="localePath(`/logement/${destination.slug}`)"
+          :to="localePath(`/logement/${destination.slug}/decouverte`)"
           class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-white px-7 pt-7 pb-10 text-left text-text no-underline shadow-card box-border"
         >
           <div class="relative h-112 w-full shrink-0">
