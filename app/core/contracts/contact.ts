@@ -1,18 +1,13 @@
 /**
  * Message du formulaire « Centre d'aide » (`/reglages/contact`).
  *
- * `POST /send-email` (API, public — aucune session requise) envoie un e-mail
- * à l'adresse de support configurée côté back-office (`Setting` clé `site`) ;
- * il **n'enregistre rien en base** (`MessageAction::sendEmail`, commentaire
- * `TODO #56` dans le code source) — donc rien de visible dans le
- * back-office lui-même, seulement dans la boîte mail qui reçoit la notification.
- * Voir `docs/directives-backend.md` pour la directive correspondante.
+ * `POST /user/messages` (API, authentifié) — même mécanisme que la rubrique
+ * « Messagerie » du back-office (`Messaging::create`), visible immédiatement
+ * dans son écran admin en plus d'envoyer l'e-mail de notification. Un seul
+ * champ : le message part au nom du compte connecté, avec son profil réel
+ * (nom/e-mail saisis dans le formulaire n'ont pas de champ dédié côté API,
+ * regroupés dans `text` — voir `reglages/contact.vue`).
  */
 export interface ContactMessageInput {
-  firstName: string
-  lastName: string
-  phone: string | null
-  email: string
-  subject: string
-  message: string
+  text: string
 }

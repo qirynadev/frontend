@@ -3,13 +3,20 @@
  * Centre d’aide — Envoyer un message ← capture produit (WhatsApp 2026-08-23).
  * Succès « Demande envoyée ! » ← capture (WhatsApp 2026-08-23, 20:16).
  *
- * Câblé sur `POST /send-email` (réel côté API, public — vérifié en direct
- * 2026-08-27) : envoie un e-mail au support, mais **n'est pas encore
- * enregistré en base côté back-office** (`TODO #56` dans le code source
- * réel) — donc rien de visible dans le back-office lui-même pour l'instant,
- * seulement dans la boîte mail qui reçoit la notification. Directive écrite
- * pour Prosper dans `docs/directives-backend.md`. Écran succès inchangé
- * (données du formulaire + repli `contact-success-mock.ts`). Doc :
+ * Câblé sur `POST /user/messages` (réel côté API, authentifié — vérifié en
+ * direct 2026-08-27) : c'est le même mécanisme que la rubrique « Messagerie »
+ * du back-office (`Messaging::create`, visible immédiatement dans son écran
+ * admin `Messages/Index`, en plus d'envoyer l'e-mail de notification comme
+ * `/send-email` — voir `MessageController::sendMessage` côté back-office).
+ * Préféré à `/send-email` (essayé d'abord, gardé en repli documentaire) :
+ * celui-ci n'enregistre rien en base (`TODO #56` dans le code source réel),
+ * donc rien de visible pour l'équipe support en dehors d'une boîte mail.
+ *
+ * `POST /user/messages` n'a qu'un seul champ (`text`) et ignore tout nom/
+ * e-mail transmis — le message part **au nom du compte connecté**, avec son
+ * profil réel. Sujet/nom/e-mail saisis dans le formulaire sont donc regroupés
+ * dans ce texte plutôt que perdus. Écran succès inchangé (données du
+ * formulaire + repli `contact-success-mock.ts`). Doc :
  * `docs/reglages-contact-mocks.md`.
  *
  * Espacement vertical **22px** entre blocs majeurs (topbar → sections).
@@ -53,12 +60,6 @@ const errors = reactive({
   consent: '',
 })
 
-/** L'API attend prénom/nom séparés ; un seul mot sert aux deux plutôt que d'échouer la validation. */
-function splitName(fullName: string): { firstName: string; lastName: string } {
-  const [first = '', ...rest] = fullName.trim().replace(/\s+/g, ' ').split(' ')
-  return { firstName: first, lastName: rest.join(' ') || first }
-}
-
 onMounted(() => {
   const user = session.user
   if (!user) return
@@ -76,30 +77,33 @@ function validate(): boolean {
   return !errors.subject && !errors.name && !errors.email && !errors.message && !errors.consent
 }
 
+/**
+ * `POST /user/messages` n'a qu'un champ `text` — sujet/nom/e-mail saisis
+ * dans le formulaire sont regroupés ici plutôt que perdus (le message part
+ * de toute façon au nom du compte connecté, dont l'identité réelle prime).
+ */
+function buildMessageText(): string {
+  return [
+    t('settingsContact.messageLineSubject', { value: subjectLabel.value }),
+    t('settingsContact.messageLineName', { value: name.value.trim() }),
+    t('settingsContact.messageLineEmail', { value: email.value.trim() }),
+    '',
+    message.value.trim(),
+  ].join('\n')
+}
+
 async function onSubmit(): Promise<void> {
   if (!validate()) return
 
   submitting.value = true
   submitError.value = false
   try {
-    const { firstName, lastName } = splitName(name.value)
-    await contactRepo.send(
-      {
-        firstName,
-        lastName,
-        phone: null,
-        email: email.value.trim(),
-        subject: subjectLabel.value,
-        message: message.value.trim(),
-      },
-      locale.value,
-    )
+    await contactRepo.send({ text: buildMessageText() }, locale.value)
     submitted.value = true
   }
   catch (error) {
     if (error instanceof ApiError && error.kind === 'validation') {
-      if (error.fieldErrors.email) errors.email = error.fieldErrors.email[0] ?? errors.email
-      if (error.fieldErrors.message) errors.message = error.fieldErrors.message[0] ?? errors.message
+      errors.message = t('settingsContact.errorMessage')
     }
     submitError.value = true
   }
