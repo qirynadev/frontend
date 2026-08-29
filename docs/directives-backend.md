@@ -336,33 +336,30 @@ moment de cette session (commit `6f15259`, poussé le matin même du
 2026-08-27) — `POST /client-data/store` fonctionne désormais pour de vraies
 commandes, tous types confondus (vérifié aussi sur une commande admission).
 
-**Deux limites réelles restent, pas des bugs — des contraintes à connaître :**
+**Les deux limites ci-dessous sont résolues** (`qiryna-backoffice` commit
+`1b38ef2`, 2026-08-28 — citant explicitement ce point 13 dans son message) :
 
-1. **Envoi unique, verrouillage immédiat.** `store()` met `is_complete: true`
-   dès le **premier** appel réussi, quel que soit le nombre de fichiers
-   fournis — tout appel suivant est refusé (`already-submitted`, 400), sans
-   distinction entre « dossier complet » et « un seul fichier envoyé par
-   erreur ». Contourné côté front en n'autorisant qu'un seul envoi groupé
-   (toutes les pièces choisies avant de cliquer une fois sur « Envoyer »), les
-   3 pièces obligatoires bloquant le bouton tant qu'elles ne sont pas
-   sélectionnées — mais un client qui n'a pas tout sous la main au moment de
-   l'envoi ne pourra plus jamais compléter son dossier via cette API.
-   **Ce qu'il faudrait** : découpler l'envoi de fichiers du verrouillage
-   (`is_complete` positionné par une action explicite du client — ou de
-   l'admin une fois le dossier jugé complet — plutôt qu'automatiquement à
-   chaque `store()`).
-2. **`diploma`/`recommendation` n'ont aucune colonne dédiée.** Contrairement
-   aux quatre pièces ci-dessus, le diplôme et les lettres de recommandation
-   n'ont pas de `*_path` — ils passent par `additional_documents` (tableau de
-   chemins bruts, sans métadonnée). Contourné côté front en préfixant le nom
-   de fichier envoyé (`diploma__…`/`recommendation__…`) puis en le retrouvant
-   au chargement par ce préfixe dans le chemin stocké (`Helper::getFileName`
-   ne fait que « sluggifier » le nom, le préfixe survit) — fonctionne
-   (vérifié en direct, upload + retrouvaille des deux pièces confirmés), mais
-   fragile : un même préfixe utilisé un jour pour autre chose casserait la
-   distinction. **Ce qu'il faudrait** : deux colonnes dédiées de plus,
-   `diploma_path`/`recommendation_path`, sur le même modèle que les quatre
-   déjà existantes.
+1. ✅ **Envoi unique, verrouillage immédiat** — résolu. `store()`/
+   `storeViaToken()` ne posent plus `is_complete=true` à chaque appel : un
+   nouveau champ `finalize` (booléen) sépare « enregistrer les pièces
+   fournies » (absent/`false` — le dossier reste ouvert, le client peut
+   revenir envoyer/remplacer d'autres pièces) de « clôturer le dossier »
+   (`true` — pose `is_complete`/`completed_at`, tout envoi suivant refusé en
+   400). Un admin peut aussi rouvrir/refermer un dossier depuis
+   `Order/Edit.vue` (`POST commandes/{id}/client-data/toggle-complete`).
+   **Front reconstruit en conséquence** (2026-08-28) : `MpaDocsCard.vue`
+   envoie chaque pièce indépendamment dès qu'elle est choisie
+   (`admissionDocumentsRepo.uploadDocument`), avec un bouton séparé
+   « Finaliser mon dossier » (`admissionDocumentsRepo.finalize`) — plus de
+   sélection groupée forcée avant un unique envoi.
+2. ✅ **`diploma`/`recommendation` sans colonne dédiée** — résolu. Deux
+   nouvelles colonnes `diploma_path`/`recommendation_path` (migration
+   `2026_08_28_120000_...`), sur le même modèle que les quatre autres pièces ;
+   validation, `store()`, préremplissage et affichage/téléchargement
+   back-office mis à jour. **Front reconstruit en conséquence** : le
+   contournement par préfixe de nom de fichier dans `additional_documents[]`
+   est retiré (`admission-documents.adapter.ts` lit directement
+   `diploma_path`/`recommendation_path`, comme les quatre autres pièces).
 
 **Statut par pièce (validé/en attente/à téléverser) approximé, pas exact** :
 il n'existe aucun suivi de vérification **par pièce**, ni côté API ni côté

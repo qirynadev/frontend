@@ -1,24 +1,10 @@
 import type { AdmissionDocumentsState } from '../contracts/admission'
-import { asRecord, bool } from './primitives'
+import { asRecord, bool, toIsoDate } from './primitives'
 
 /** Chemin relatif (`client-documents/...`) → URL absolue de téléchargement. */
 function toDownloadUrl(path: unknown, storageBaseUrl: string): string | null {
   if (typeof path !== 'string' || path.trim() === '') return null
   return `${storageBaseUrl}${path.replace(/^\/+/, '')}`
-}
-
-/**
- * Retrouve, dans `additional_documents` (tableau de chemins sans métadonnée),
- * celui qu'on a envoyé pour `tag` — reconnu par le préfixe qu'on ajoute
- * nous-mêmes au nom de fichier avant l'envoi (`admissionDocumentsRepo.store`).
- * Le back-office ne fait que « sluggifier » ce nom (`Helper::getFileName`) :
- * le préfixe survit tel quel dans le chemin stocké.
- */
-function findAdditionalUrl(paths: unknown, tag: 'diploma' | 'recommendation', storageBaseUrl: string): string | null {
-  if (!Array.isArray(paths)) return null
-  const pattern = new RegExp(`/additional_\\d+_\\d+_${tag}`)
-  const match = paths.find((path): path is string => typeof path === 'string' && pattern.test(path))
-  return match ? toDownloadUrl(match, storageBaseUrl) : null
 }
 
 /**
@@ -30,6 +16,7 @@ export function toAdmissionDocumentsState(raw: unknown, storageBaseUrl: string):
   if (raw === null || raw === undefined) {
     return {
       locked: false,
+      finalizedAt: null,
       idDocumentUrl: null,
       transcriptsUrl: null,
       languageCertificateUrl: null,
@@ -42,11 +29,12 @@ export function toAdmissionDocumentsState(raw: unknown, storageBaseUrl: string):
   const source = asRecord(raw)
   return {
     locked: bool(source, 'is_complete', false),
+    finalizedAt: toIsoDate(source.completed_at),
     idDocumentUrl: toDownloadUrl(source.id_document_path, storageBaseUrl),
     transcriptsUrl: toDownloadUrl(source.transcripts_path, storageBaseUrl),
     languageCertificateUrl: toDownloadUrl(source.language_certificate_path, storageBaseUrl),
     coverLetterUrl: toDownloadUrl(source.cover_letter_path, storageBaseUrl),
-    diplomaUrl: findAdditionalUrl(source.additional_documents, 'diploma', storageBaseUrl),
-    recommendationUrl: findAdditionalUrl(source.additional_documents, 'recommendation', storageBaseUrl),
+    diplomaUrl: toDownloadUrl(source.diploma_path, storageBaseUrl),
+    recommendationUrl: toDownloadUrl(source.recommendation_path, storageBaseUrl),
   }
 }

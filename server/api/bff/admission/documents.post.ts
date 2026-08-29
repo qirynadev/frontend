@@ -2,11 +2,12 @@ import type { AdmissionDocumentsState } from '~~/app/core/contracts/admission'
 import { toAdmissionDocumentsState } from '~~/app/core/adapters'
 
 /**
- * Reçoit le `multipart/form-data` du navigateur (`admissionDocumentsRepo.store`)
- * et le relaie vers `POST /client-data/store` — un second multipart, pas un
- * simple passthrough : Nitro a déjà consommé le corps de la requête entrante
- * en le parsant (`readMultipartFormData`), impossible de le retransmettre tel
- * quel.
+ * Reçoit le `multipart/form-data` du navigateur (`admissionDocumentsRepo.
+ * uploadDocument`/`finalize` — une pièce ou `finalize=true` sans fichier, les
+ * deux passent par cette même route générique) et le relaie vers `POST
+ * /client-data/store` — un second multipart, pas un simple passthrough :
+ * Nitro a déjà consommé le corps de la requête entrante en le parsant
+ * (`readMultipartFormData`), impossible de le retransmettre tel quel.
  */
 export default defineEventHandler(async (event): Promise<AdmissionDocumentsState> => {
   const client = authClient(event)

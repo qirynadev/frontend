@@ -133,7 +133,8 @@ usePageSeo(() => ({
               :documents="admission.documents"
               :order-id="admission.order.id"
               :locked="admission.documentsLocked"
-              @sent="refresh()"
+              :finalized-at="admission.documentsFinalizedAt"
+              @changed="refresh()"
             />
           </div>
 

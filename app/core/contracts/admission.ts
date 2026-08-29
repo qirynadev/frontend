@@ -13,13 +13,13 @@ export interface AdmissionStep {
 /**
  * Champ où envoyer une pièce lors du `POST /client-data/store`.
  *
- * Quatre pièces ont une colonne dédiée côté API (`id_document`, `transcripts`,
- * `language_certificate`, `cover_letter`) — le nom du champ suffit. Les deux
- * autres (`diploma`, `recommendation`) n'ont **aucune** colonne : elles vivent
- * dans `additional_documents` (tableau de chemins sans métadonnée) et ne sont
- * distinguées que par un préfixe qu'on ajoute nous-mêmes au nom du fichier
- * avant l'envoi — voir `admissionDocumentsRepo.store` et
- * `docs/directives-backend.md` pour la limite que ça implique.
+ * Les six pièces ont chacune leur colonne dédiée côté API (`id_document_path`,
+ * `transcripts_path`, `language_certificate_path`, `cover_letter_path`,
+ * `diploma_path`, `recommendation_path` — les deux derniers depuis le
+ * 2026-08-28, `qiryna-backoffice` commit `1b38ef2` ; avant ça, `diploma`/
+ * `recommendation` transitaient par `additional_documents` avec un préfixe de
+ * nom de fichier fragile, voir l'historique de `docs/directives-backend.md`
+ * §13.2 pour ce que ça a remplacé).
  */
 export type AdmissionDocumentField = 'id_document' | 'transcripts' | 'language_certificate' | 'cover_letter' | 'diploma' | 'recommendation'
 
@@ -44,11 +44,16 @@ export interface AdmissionDocument {
  */
 export interface AdmissionDocumentsState {
   /**
-   * `is_complete` — une fois vrai, l'API refuse tout nouvel envoi pour cette
-   * commande (`already-submitted`, 400), même partiel. Contrainte du back-office,
-   * pas du front : voir `docs/directives-backend.md`.
+   * `is_complete` — devenu un verrouillage **explicite** depuis
+   * `qiryna-backoffice` `1b38ef2` (2026-08-28, `docs/directives-backend.md`
+   * §13.1) : un envoi sans `finalize=true` enregistre les pièces fournies
+   * sans clôturer le dossier (le client peut revenir compléter/remplacer).
+   * Seul `finalize=true` (bouton « Finaliser mon dossier ») pose `locked`, et
+   * l'API refuse alors tout envoi suivant (`already-submitted`, 400).
    */
   locked: boolean
+  /** `completed_at`, une fois le dossier finalisé — `null` sinon. */
+  finalizedAt: string | null
   idDocumentUrl: string | null
   transcriptsUrl: string | null
   languageCertificateUrl: string | null
