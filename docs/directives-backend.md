@@ -381,6 +381,58 @@ pour choisir la bonne commande à afficher sur cet écran à route fixe (déjà
 documenté comme limitation dans `useAdmissionData.ts` — non traité ici,
 simplement confirmé qu'il peut se manifester en pratique).
 
+## 14. 🔵 Retour Stripe après paiement langue : atterrit sur l'écran générique au lieu du sien
+
+**Reproduit en direct** (2026-08-29, signalé par le responsable après un
+achat réel) : un cours de langue payé (commande `b89ba93d-aad8-49cb-
+9463-303c43da076f`, `service_type: App\Models\Course`, cours « Apprendre
+l'anglais », `slug: anglais`) redirige après Stripe vers `/paiement-
+reussi?order_id=…` (écran générique, domaines d'étude) au lieu de
+`/langues/anglais/paiement-reussi?order_id=…` (son propre écran).
+
+**Ce n'est pas un manque de code** : `PaymentController::buildSuccessPath()`
+(commit `838bf75`, 2026-08-17) route déjà correctement par `service_type` —
+`Course` → `/langues/{slug}/paiement-reussi`, `CostOfLiving` → `/logement/
+paiement-reussi`, `Profilage` → `/orientation/paiement-reussi`, école →
+`/paiement-reussi` (repli documenté seulement si le slug ne se résout pas).
+Vérifié que ce n'est pas la cause ici : le cours `f38db26d-…` de la commande
+existe bien via `GET /courses` avec un slug réel (`anglais`), pas de repli à
+attendre. `838bf75` est un ancêtre direct de `6f15259`
+(`git merge-base --is-ancestor 838bf75 6f15259` → vrai), commit dont j'ai
+déjà vérifié en direct qu'il est bien actif sur `stage.qiryna.com` (session
+du 2026-08-27, bug de statut `client-data`) — donc `buildSuccessPath()`
+*devrait* déjà tourner en production.
+
+**Cause non identifiée côté front** : soit un déploiement qui n'a pas
+effectivement pris ce commit malgré son ancienneté (12 jours) et malgré
+`6f15259`, plus récent, confirmé actif — soit un comportement d'exécution
+qui diverge de la lecture statique du code (cache d'opcode, config
+`qiryna.front_url` d'un autre environnement, etc.). Aucun des deux n'est
+diagnosticable depuis le front — ni logs serveur, ni accès déploiement.
+
+**Ce qu'il faut** : vérifier côté back-office que `buildSuccessPath()`
+tourne réellement sur l'instance qui sert `stage.qiryna.com` (logs de
+`[PAYMENT] 🌐 URL de redirection Stripe`, déjà en place dans
+`createPayment()`, devraient suffire à trancher immédiatement — la ligne
+loggue `success_url` avant l'appel Stripe).
+
+**Contourné côté front en attendant** (`app/pages/paiement-reussi.vue`,
+2026-08-29) : cet écran générique redirige maintenant lui-même vers le bon
+tunnel (`langues/{slug}`, `logement`, `orientation`) dès que la commande
+validée n'est pas une commande école — `order.serviceType`/`serviceSlug`
+suffisent, déjà disponibles côté front. **Un filet de sécurité, pas une
+correction du fond** : ça évite l'écran trompeur au client tout de suite,
+mais laisse un aller-retour de navigation évitable, et ne dit rien sur la
+cause réelle tant qu'elle n'est pas confirmée côté back-office.
+
+**Détail sans lien direct, repéré au passage** : le front calcule déjà
+`PaymentIntent.returnPath` par tunnel (`useCheckout.ts`) mais ne l'envoie
+jamais à `POST /payment/init` (`server/api/bff/payment/init.post.ts` ne le
+transmet pas) — code mort aujourd'hui, sans incidence tant que le
+back-office calcule sa propre URL sans lire de champ client. À garder en
+tête seulement si un jour le back-office décide de laisser le front piloter
+cette URL plutôt que de la déduire lui-même de `service_type`.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
