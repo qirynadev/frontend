@@ -14,6 +14,7 @@ import {
   toMenu,
   toOfferList,
   toOrientation,
+  toOrientationOfferPage,
   toPageList,
   toPartnerList,
   toSchool,
@@ -71,15 +72,18 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
   const client = apiClient(event, locale)
   const flagBase = useRuntimeConfig(event).apiBaseUrl
 
-  // AUJOURD'HUI : un dump monolithique plus quatre appels annexes.
+  // AUJOURD'HUI : un dump monolithique plus cinq appels annexes.
   // DEMAIN : `client.request('/bootstrap')` seul.
-  const [raw, rawCourses, rawLivings, rawOrientation, rawArticles] = await Promise.all([
+  const [raw, rawCourses, rawLivings, rawOrientation, rawOrientationFormulas, rawArticles] = await Promise.all([
     client.request<Record<string, unknown>>('/all-data'),
     // Ceux-là ne doivent pas faire tomber la page d'accueil s'ils échouent :
     // le catalogue principal suffit à rendre l'essentiel du site.
     client.request<unknown>('/courses').catch(() => []),
     client.request<unknown>('/livings').catch(() => []),
     client.request<unknown>('/profilage').catch(() => null),
+    // Paliers tarifaires de l'orientation — endpoint séparé, contrairement aux
+    // langues/logements où les formules vivent déjà sous `/profilage`.
+    client.request<unknown>('/profilage/formulas').catch(() => []),
     client.request<unknown>('/articles').catch(() => []),
   ])
 
@@ -90,11 +94,12 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
   const livings: LivingDestination[] = (Array.isArray(rawLivings) ? rawLivings.map(toLivingDestination) : [])
     .filter((destination) => destination.slug !== '')
 
-  // Les trois formes tarifaires de l'API convergent vers un seul contrat.
+  // Les quatre formes tarifaires de l'API convergent vers un seul contrat.
   const offerPages: OfferPage[] = [
     ...(Array.isArray(rawCourses) ? rawCourses.map(toLanguageOfferPage) : []),
     ...(Array.isArray(raw.offers) ? raw.offers.map(toDomainOfferPage) : []),
     ...(Array.isArray(rawLivings) ? rawLivings.map(toLivingOfferPage) : []),
+    ...(rawOrientation ? [toOrientationOfferPage(rawOrientation, rawOrientationFormulas)] : []),
   ].filter((page) => page.slug !== '' && page.tiers.length > 0)
 
   // Les fiches complètes sont reconstruites depuis le même dump : c'est le seul

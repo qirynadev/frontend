@@ -66,18 +66,29 @@ export function useCheckout() {
        * `paiement-reussi.html` sont deux maquettes distinctes : la première
        * détaille cinq étapes propres à un parcours linguistique (test de
        * niveau, choix du professeur, planning, visio), la seconde en montre
-       * quatre, génériques. Logement a le sien (`logement-post-paiement.html`,
-       * qui ouvre directement sur le formulaire de préférences plutôt que sur
-       * une frise) ; orientation retombe encore sur l'écran générique.
+       * quatre, génériques. Logement et orientation ont chacun le leur
+       * (`logement-post-paiement.html`, qui ouvre directement sur le
+       * formulaire de préférences plutôt que sur une frise ;
+       * `orientation-post-paiement.html`, quatre étapes propres au bilan).
        *
        * D'où le nommage `<tunnel>/paiement-reussi` plutôt qu'un écran unique
        * paramétré : les écrans divergent par leur contenu, pas par une option.
+       *
+       * **Non transmis à l'API aujourd'hui** — `POST /payment/init` calcule sa
+       * propre URL de retour (`PaymentController::buildSuccessPath`, back-
+       * office) sans lire ce champ. Calculé quand même ici : `/paiement-
+       * reussi.vue` s'en sert comme filet de sécurité (redirige vers le bon
+       * tunnel si jamais Stripe atterrit sur l'écran générique — voir
+       * `docs/directives-backend.md` §14), et le jour où le back-office
+       * lira ce champ, rien à changer ici.
        */
       returnPath: offer.kind === 'language'
         ? localePath(`/langues/${offer.slug}/paiement-reussi`)
         : offer.kind === 'living'
           ? localePath('/logement/paiement-reussi')
-          : localePath('/paiement-reussi'),
+          : offer.kind === 'orientation'
+            ? localePath('/orientation/paiement-reussi')
+            : localePath('/paiement-reussi'),
     }
   }
 

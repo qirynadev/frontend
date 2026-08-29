@@ -70,6 +70,31 @@ export function toLivingTier(raw: unknown): OfferTier {
   }
 }
 
+/**
+ * Palier issu d'une formule d'orientation (`GET /profilage/formulas`).
+ *
+ * Même forme JSON qu'une formule de langue/logement — mais un bilan
+ * d'orientation se paie **une fois**, comme un logement (`toLivingTier`),
+ * jamais par mois : aucune des trois formules réelles (Jordan/Salarié/
+ * Spécialiste RH) ne porte `nbr_hours`.
+ */
+export function toOrientationTier(raw: unknown): OfferTier {
+  const source = asRecord(raw)
+
+  return {
+    id: str(source, 'id'),
+    name: str(source, 'title'),
+    tagline: str(source, 'description'),
+    icon: toUrl(source.icon),
+    features: toFeatures(source.items),
+    price: { amount: num(source, 'amount', 0), currency: 'EUR', mode: 'once' },
+    periodLabel: 'once',
+    hours: optionalNum(source, 'nbr_hours'),
+    stripeProductId: optionalStr(source, 'stripe_product_id'),
+    highlighted: false,
+  }
+}
+
 /** Palier unique issu d'une formule d'accompagnement (`offers[]`). */
 export function toDomainTier(raw: unknown): OfferTier {
   const source = asRecord(raw)
@@ -170,5 +195,36 @@ export function toLivingOfferPage(raw: unknown): OfferPage {
     serviceType: 'living',
     seo: toSeo(source, title, description),
     living: { ...toLivingDestination(raw), ...toLivingStats(raw) },
+  }
+}
+
+/**
+ * Page d'offre construite depuis l'orientation (`GET /profilage` +
+ * `GET /profilage/formulas` — deux appels séparés, contrairement aux langues/
+ * logements où les paliers vivent déjà sous la ressource).
+ *
+ * Route fixe (`/orientation/formules`, pas de segment dynamique) : `slug` est
+ * une constante, pas une donnée API — sert uniquement à retrouver cette page
+ * via `GET /offers/orientation`, le même mécanisme générique que les autres.
+ */
+export function toOrientationOfferPage(rawProfilage: unknown, rawFormulas: unknown): OfferPage {
+  const source = asRecord(rawProfilage)
+  const title = str(source, 'title')
+  const description = html(source, 'description')
+
+  return {
+    slug: 'orientation',
+    kind: 'orientation',
+    title,
+    description,
+    icon: toUrl(source.picture),
+    tiers: orderTiers(asArray(rawFormulas).map(toOrientationTier).filter((tier) => tier.id !== '')),
+    // Service singleton (une seule fiche « profilage » côté back-office,
+    // contrairement à une langue ou un domaine dont il existe plusieurs) —
+    // c'est son `id` que `POST /payment/init` attend en `service_id`.
+    serviceId: str(source, 'id'),
+    serviceType: 'profilage',
+    seo: toSeo(source, title, description),
+    living: null,
   }
 }
