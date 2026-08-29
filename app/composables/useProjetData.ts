@@ -61,8 +61,18 @@ const TYPE_CONFIG: Record<string, AccompagnementTypeConfig> = {
 /** Ordre d'affichage des rubriques — reprend celui de `mon-projet.html`. */
 const TYPE_ORDER = ['areaofstudy', 'costofliving', 'course', 'profilage']
 
-/** Sous-titre d'une commande : nom de la formule achetée, vide si l'API n'en a pas. */
+/**
+ * Sous-titre d'une commande.
+ *
+ * École pour l'admission (`schoolName`, ou repli sur le domaine d'étude tant
+ * qu'aucune école n'est assignée), pays pour le logement (`destinationCountry`
+ * — pas de ville côté API, voir `Order.destinationCountry`). Le nom de la
+ * formule achetée (`offer.title`) sert de repli pour les deux, et reste la
+ * valeur pour tout autre type de commande.
+ */
 function toSub(order: Order): string {
+  if (order.serviceType === 'areaofstudy') return order.schoolName ?? order.offer?.title ?? ''
+  if (order.serviceType === 'costofliving') return order.destinationCountry ?? order.offer?.title ?? ''
   return order.offer?.title ?? ''
 }
 

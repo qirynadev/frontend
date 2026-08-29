@@ -150,6 +150,10 @@ export function toOrder(raw: unknown): Order | null {
     // Langue : `teacher_name`. École/logement/orientation : `mentor_name`.
     // Jamais les deux à la fois sur une même commande.
     advisorName: optionalStr(source, 'mentor_name') ?? optionalStr(source, 'teacher_name'),
+    schoolName: optionalStr(source, 'school_name'),
+    // `destination_country` (à plat) seulement pour `areaofstudy` ; pour
+    // `costofliving`, seul `associated_service.country.name` porte le pays.
+    destinationCountry: optionalStr(source, 'destination_country') ?? optionalStr(source, 'associated_service.country.name'),
     checklist: toOrderChecklist(source.checklist),
   }
 }

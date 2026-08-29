@@ -87,6 +87,22 @@ export interface Order {
    */
   advisorName: string | null
   /**
+   * École choisie (commande `areaofstudy`) — `OrderResource` la calcule
+   * depuis `options.school`, ou à défaut la première école du domaine
+   * d'étude. `null` tant qu'aucune école n'est encore assignée. Absente pour
+   * tout autre type de commande.
+   */
+  schoolName: string | null
+  /**
+   * Pays de destination. Deux sources selon le type de commande — l'API
+   * n'expose ce champ à plat (`destination_country`) que pour `areaofstudy`
+   * (calculé depuis l'école) ; pour `costofliving`, il est toujours vide à
+   * plat et vit uniquement dans `associated_service.country.name` (vérifié en
+   * direct, 2026-08-29). Pas de ville côté API pour un logement, seulement le
+   * pays — `null` si aucune des deux sources n'est renseignée.
+   */
+  destinationCountry: string | null
+  /**
    * Suivi par étapes, quand le type de service en a un (école, logement —
    * pas orientation/profilage, jamais alimenté pour ce type côté back-office).
    * Généré à la **création** de la commande (`OrderChecklistItem::
