@@ -436,6 +436,7 @@
     "teacherLocalTime": "Heure locale du professeur (Paris)",
     "teachersPagerLabel": "Pagination des professeurs",
     "defaultSessionTitle": "Cours de langue",
+    "discoverCta": "Découvrir nos formules langues",
     "emptyDescription": "Vous n'avez pas encore acheté de formule de langue.",
     "emptyTitle": "Aucun cours de langue",
     "experienceYears": "aucune année d'expérience | 1 an d'expérience | {count} ans d'expérience",

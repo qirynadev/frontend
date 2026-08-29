@@ -436,6 +436,7 @@
     "teacherLocalTime": "Teacher local time (Paris)",
     "teachersPagerLabel": "Teachers pagination",
     "defaultSessionTitle": "Language course",
+    "discoverCta": "Discover our language packages",
     "emptyDescription": "You haven't purchased a language package yet.",
     "emptyTitle": "No language course",
     "experienceYears": "no experience yet | 1 year of experience | {count} years of experience",

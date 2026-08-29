@@ -52,6 +52,9 @@ const { data: sessions } = await usePageData(
 
 const primaryLanguage = computed(() => (languages.value ?? [])[0] ?? null)
 
+/** Vrai si le client a au moins une commande langue (planifiée ou non). */
+const hasLanguageData = computed(() => (languages.value?.length ?? 0) > 0 || (sessions.value?.length ?? 0) > 0)
+
 const progressPct = computed(() => {
   const lang = primaryLanguage.value
   if (!lang || lang.totalHours <= 0) return langueProgressFallbackPct
@@ -174,7 +177,7 @@ usePageSeo(() => ({
     <PageState
       :loading="isInitialLoading"
       :error="apiError"
-      :empty="false"
+      :empty="!hasLanguageData"
       :on-retry="() => refresh()"
     >
       <template #loading>
@@ -183,6 +186,14 @@ usePageSeo(() => ({
           <QSkeleton variant="rect" :height="41" />
           <QSkeleton v-for="i in 3" :key="i" variant="rect" :height="90" />
         </div>
+      </template>
+
+      <template #empty>
+        <QEmptyState :title="$t('languagePlanning.emptyTitle')" :description="$t('languagePlanning.emptyDescription')">
+          <template #action>
+            <QButton :to="localePath('/langues')">{{ $t('languagePlanning.discoverCta') }}</QButton>
+          </template>
+        </QEmptyState>
       </template>
 
       <div class="flex w-full flex-col gap-22">
