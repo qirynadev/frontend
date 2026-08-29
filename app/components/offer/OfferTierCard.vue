@@ -110,7 +110,7 @@ const displayName = computed(() => (props.domain ? t('offer.domainCardName') : p
 <template>
   <article
     :class="[
-      'relative box-border flex w-full min-w-0 flex-col gap-14 rounded-2xl border bg-white px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
+      'relative box-border flex w-full min-w-0 flex-col gap-8 rounded-2xl border bg-white px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
       stacked ? 'overflow-visible pt-26' : 'shrink-0 basis-full pt-22 max-2xs:pt-18',
       accent.card,
     ]"

@@ -139,7 +139,7 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
               v-for="entry in tiers"
               :key="entry.tier.id"
               :class="[
-                'relative box-border flex w-full min-w-0 flex-col gap-14 overflow-visible rounded-2xl border bg-white px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
+                'relative box-border flex w-full min-w-0 flex-col gap-8 overflow-visible rounded-2xl border bg-white px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
                 entry.visual.card,
               ]"
             >

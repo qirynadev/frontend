@@ -96,7 +96,7 @@ usePageSeo(() => ({
         v-for="tier in tiers"
         :key="tier.id"
         :class="[
-          'relative box-border flex w-full flex-col gap-14 overflow-visible rounded-2xl border bg-white px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
+          'relative box-border flex w-full flex-col gap-8 overflow-visible rounded-2xl border bg-white px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
           tier.card,
         ]"
       >
