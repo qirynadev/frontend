@@ -32,6 +32,16 @@ export interface ApiRequestOptions {
   retry?: number
   timeoutMs?: number
   signal?: AbortSignal
+  /**
+   * `false` pour recevoir la réponse telle quelle, sans passer par
+   * `unwrapEnvelope`. Nécessaire quand une clé sœur de `data` porte un signal
+   * métier que l'enveloppe déballerait sinon en silence — ex. `POST
+   * /auth/social/register`, qui répond `{ success, requires_confirmation,
+   * message, data }` : `requires_confirmation` doit rester lisible par
+   * l'appelant. Par défaut `true` (comportement historique, inchangé pour
+   * tous les autres appelants).
+   */
+  unwrap?: boolean
 }
 
 export interface ApiClient {
@@ -89,7 +99,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
           // Les tentatives sont gérées ici pour ne rejouer que ce qui doit l'être.
           retry: false,
         })
-        return unwrapEnvelope<T>(payload)
+        return requestOptions.unwrap === false ? (payload as T) : unwrapEnvelope<T>(payload)
       }
       catch (error) {
         lastError = toApiError(error, path)
