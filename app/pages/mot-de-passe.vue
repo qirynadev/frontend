@@ -58,16 +58,18 @@ const formError = ref<string | null>(null)
 const notice = ref<string | null>(null)
 const fieldErrors = ref<Record<string, string[]>>({})
 
-const { score, valid: passwordValid, missing } = usePasswordStrength(password)
+const { score, valid: passwordValid, missing, hasDisallowedChars } = usePasswordStrength(password)
 
-/** Même message que l'inscription : la règle de robustesse est celle de la maquette. */
+/** Même règle que l'inscription (`newPassword` porte le même regex côté back-office). */
 const strengthHint = computed(() => {
   if (password.value === '') return t('auth.register.strengthHint')
+  if (hasDisallowedChars.value) return t('auth.register.disallowedChars')
   if (missing.value.length === 0) return t('auth.register.strengthOk')
-  if (missing.value.length === 4) return t('auth.register.strengthHint')
+  if (missing.value.length === 5) return t('auth.register.strengthHint')
 
   const labels: Record<string, string> = {
     length: t('auth.register.missingLength'),
+    lower: t('auth.register.missingLower'),
     upper: t('auth.register.missingUpper'),
     digit: t('auth.register.missingDigit'),
     symbol: t('auth.register.missingSymbol'),

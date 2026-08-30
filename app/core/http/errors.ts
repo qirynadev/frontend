@@ -61,10 +61,32 @@ function kindFromStatus(status: number): ApiErrorKind {
   return 'unknown'
 }
 
+/**
+ * `toApiError` sert deux appelants dont la forme d'erreur diffère :
+ * - `createApiClient` (serveur, appelle l'API Laravel directement) reçoit la
+ *   forme plate de Laravel — `{ status, message, errors }` ;
+ * - `bffFetch` (client, appelle nos propres routes BFF) reçoit l'enveloppe
+ *   H3/Nitro d'un `createError({ data })` — `{ statusCode, message, data: {
+ *   message, errors } }` — où `errors` est **un niveau plus profond**, sous
+ *   `data`, plutôt qu'à la racine.
+ *
+ * Sans ce déballage, une erreur de validation (422) traversant le BFF perdait
+ * ses `fieldErrors` côté client : le formulaire retombait sur un message
+ * générique au lieu de surligner le champ fautif (repéré en direct sur
+ * l'inscription, 2026-08-30 — bug systémique, tous les écrans avec erreurs de
+ * champ étaient concernés, pas seulement l'inscription).
+ */
+function unwrapErrorPayload(payload: unknown): Record<string, unknown> {
+  if (typeof payload !== 'object' || payload === null) return {}
+  const body = payload as Record<string, unknown>
+  const nested = body.data
+  return typeof nested === 'object' && nested !== null ? (nested as Record<string, unknown>) : body
+}
+
 /** Extrait le message le plus utile d'une réponse d'erreur Laravel. */
 function extractMessage(payload: unknown, fallback: string): string {
-  if (typeof payload !== 'object' || payload === null) return fallback
-  const body = payload as Record<string, unknown>
+  const body = unwrapErrorPayload(payload)
+  if (Object.keys(body).length === 0) return fallback
 
   const errors = body.errors
   if (typeof errors === 'object' && errors !== null) {
@@ -78,8 +100,8 @@ function extractMessage(payload: unknown, fallback: string): string {
 }
 
 function extractFieldErrors(payload: unknown): Record<string, string[]> {
-  if (typeof payload !== 'object' || payload === null) return {}
-  const errors = (payload as Record<string, unknown>).errors
+  const body = unwrapErrorPayload(payload)
+  const errors = body.errors
   if (typeof errors !== 'object' || errors === null) return {}
 
   const result: Record<string, string[]> = {}

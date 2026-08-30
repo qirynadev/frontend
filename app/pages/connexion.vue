@@ -118,8 +118,14 @@ async function onSubmit(): Promise<void> {
   catch (error) {
     if (error instanceof ApiError) {
       fieldErrors.value = mapFieldErrors(error)
+      // `error.message` distingue « identifiants refusés » de « compte pas
+      // encore confirmé »/« compte désactivé » (back-office : trois échecs
+      // distincts, tous en 400 sur `POST /auth/login`) — l'écraser par un
+      // générique masquait ces deux derniers cas derrière « mot de passe
+      // incorrect », un message trompeur pour qui a le bon mot de passe mais
+      // n'a jamais entré son code de confirmation.
       formError.value = error.kind === 'validation'
-        ? t('auth.error.credentials')
+        ? (error.message || t('auth.error.credentials'))
         : error.kind === 'network' || error.kind === 'timeout'
           ? t('auth.error.network')
           : t('auth.error.generic')
