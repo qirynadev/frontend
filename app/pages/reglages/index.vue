@@ -20,8 +20,9 @@
  */
 import { NuxtLink } from '#components'
 
-definePageMeta({ middleware: 'auth' })
-
+// Accessible sans connexion — cet index n'est qu'un sommaire de liens ; seules
+// les pages qui exigent vraiment un compte (informations personnelles, mot de
+// passe, centre d'aide) portent leur propre `middleware: 'auth'`.
 const { t } = useI18n()
 const localePath = useLocalePath()
 

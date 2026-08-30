@@ -14,9 +14,10 @@
  * Le choix n'est pas encore appliqué : l'application n'a pas de thème sombre.
  * L'écran enregistre donc une préférence sans effet visible — c'est aussi ce
  * que fait la maquette, dont le bouton ne pilote rien.
+ *
+ * Accessible sans connexion : préférence purement locale, aucun appel
+ * authentifié ici.
  */
-definePageMeta({ middleware: 'auth' })
-
 const { t } = useI18n()
 
 type ThemeId = 'clair' | 'sombre' | 'systeme'

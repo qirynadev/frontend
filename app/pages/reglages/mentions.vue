@@ -13,9 +13,9 @@
  *
  * Les six documents pointent `#` dans la maquette : aucune URL n'est encore
  * arrêtée. Les lignes restent donc des `div`, pas des liens morts.
+ *
+ * Accessible sans connexion : contenu légal public, aucun appel authentifié.
  */
-definePageMeta({ middleware: 'auth' })
-
 const { t } = useI18n()
 
 const documents = [

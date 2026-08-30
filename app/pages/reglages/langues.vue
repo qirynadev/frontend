@@ -14,9 +14,10 @@
  *
  * Le choix agit réellement sur la langue de l'application : `setLocale` pose le
  * cookie `qiryna_locale` et réécrit l'URL selon `prefix_except_default`.
+ *
+ * Accessible sans connexion : c'est une préférence d'affichage (cookie), pas
+ * une donnée de compte — aucun appel authentifié ici.
  */
-definePageMeta({ middleware: 'auth' })
-
 const { t, locale, setLocale } = useI18n()
 
 type LocaleCode = 'fr' | 'en'
