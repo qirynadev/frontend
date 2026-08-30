@@ -508,6 +508,39 @@ signature entre les deux versions majeures, puis redéployer. Le SDK brut
 utilisé côté élève (`@zoom/videosdk`, front) n'est pas concerné — versions
 et paquets différents, aucune action nécessaire de ce côté.
 
+## 17. 🔴 Onglet « Notification » (`/messages`) — seul le nouveau message écrit dans `notifications`
+
+**Câblé** (2026-08-30) : `/messages` a désormais deux onglets réels — Messages
+(`GET /user/messages`, déjà utilisé par `/reglages/contact`) et Notification
+(`GET /user/notifications`, `unread-count`, `{id}/read`, tous déjà exposés côté
+`qiryna-backoffice` et fonctionnels). Rien de mock : les deux onglets affichent
+ce que l'API renvoie, vide compris.
+
+**Ce qui manque** : `NotificationController`/`AppNotification` existent et
+fonctionnent, mais un seul déclencheur les utilise —
+`MessageController::sendMessage` (nouveau message reçu). Tous les autres
+événements listés par le produit pour cet onglet (confirmation d'achat/
+paiement, mise à jour de statut de commande, confirmation d'inscription à une
+formation, rappel avant séance) ont chacun leur classe `Notification` dédiée
+(`OrderCompletedNotification`, `OrderVerificationStatusNotification`,
+`PlanningReminderNotification`, `CourseExpiryWarningNotification`…) mais leur
+`via()` ne renvoie que `['mail']` — rien n'est écrit dans la table
+`notifications`, donc rien n'apparaîtra jamais dans ce flux tant que ces
+classes ne gagnent pas `'database'` dans leur `via()` (comme
+`AppNotification`, qui est déjà générique et conçue pour ça d'après son
+commentaire source : *"Use for any event that should appear in a user's
+notification feed (new message, order update, etc.)"*).
+
+**Ce qu'il faut, côté `qiryna-backoffice`** : pour chaque événement que le
+produit veut voir dans ce flux, soit ajouter `'database'` au `via()` de la
+notification existante (avec un `toArray()`/`toDatabase()` qui produise
+`{type, title, body, url}`, la forme lue par `NotificationResource`), soit
+faire `->notify(new AppNotification(...))` en plus de l'e-mail au même endroit
+que l'action déclenchante — exactement le patron déjà en place dans
+`MessageController::sendMessage`. Sans ça, l'onglet restera généralement vide
+pour un compte qui n'a jamais reçu de message d'un conseiller, même actif sur
+la plateforme (commandes payées, formations en cours…).
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

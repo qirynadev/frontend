@@ -86,7 +86,7 @@ function goBack() {
 
     <!-- Droite : cloche + pastille -->
     <NuxtLink
-      :to="localePath('/compte')"
+      :to="localePath({ path: '/messages', query: { tab: 'notification' } })"
       class="relative flex size-49 shrink-0 items-center justify-center no-underline"
       :aria-label="notifications > 0 ? $t('nav.notificationsCount', notifications) : $t('nav.notifications')"
     >
