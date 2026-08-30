@@ -433,6 +433,49 @@ back-office calcule sa propre URL sans lire de champ client. À garder en
 tête seulement si un jour le back-office décide de laisser le front piloter
 cette URL plutôt que de la déduire lui-même de `service_type`.
 
+## 15. 🔴 Objectifs d'apprentissage (`/langues/{slug}/objectifs`) — 100 % éditorial front, à administrer
+
+Les 6 objectifs proposés sur cet écran (Examens internationaux, Conversation,
+Anglais professionnel, Remise à niveau, Admission internationale, Autre) ne
+viennent d'aucun endpoint API — ils vivent entièrement dans
+`app/config/language-goals.ts` (id/icône/teinte) et les traductions
+`i18n/locales/{fr,en}.json` (clés `goal.*`). Rien à câbler aujourd'hui, ce
+n'est pas une question de qualité : la donnée n'existe simplement pas
+côté back-office.
+
+**Corrigé en attendant côté front (2026-08-30)** : les textes citaient
+l'anglais explicitement (« Anglais professionnel », « Améliorez votre
+anglais… », examens « IELTS, TOEFL, TOEIC, Cambridge » — tous propres à
+l'anglais) alors que l'écran sert n'importe quelle langue du catalogue.
+Les clés `goal.professional`, `goal.professionalDesc`, `goal.examsDesc`,
+`goal.admissionDesc` interpolent maintenant `{language}` (le nom réel de la
+langue du cours, déjà utilisé par `goal.seoTitle`) pour rester génériques
+tant que ces textes restent en dur.
+
+**Ce qu'il faut, pour rendre ces objectifs éditables depuis le back-office**
+un endpoint (ex. `GET /language-goals`) exposant, par objectif :
+- `id` (slug stable — sert de valeur à l'`objectif` transmis dans l'URL de
+  l'étape suivante, `/offres/{slug}?objectif={id}`, donc ne doit pas changer
+  une fois publié) ;
+- `label` et `description` traduits (respectant l'en-tête `lang`, comme
+  `/all-data` le fait déjà pour le reste du contenu éditorial) ;
+- `popular` (ou équivalent) — un seul objectif porte aujourd'hui l'étiquette
+  « Populaire », en dur sur le premier (`exams`) ;
+- un `order` d'affichage, si l'admin doit pouvoir réordonner.
+
+**Volontairement hors périmètre de cet endpoint** : l'icône et la teinte de
+pastille (`icon`/`tint` dans `language-goals.ts`) restent des assets front,
+pas du contenu éditorial — pas la peine de les administrer, un identifiant
+front (`id`) suffit à les résoudre côté client, comme c'est déjà le cas.
+
+**Point produit à trancher avec le back-office** : ces objectifs sont-ils
+globaux (les 6 mêmes pour toutes les langues, ce qu'implique l'écran
+actuel) ou personnalisables par langue (ex. proposer un objectif spécifique
+pour le chinois qui n'aurait pas de sens pour l'espagnol) ? La réponse
+change la forme de l'endpoint (`GET /language-goals` global vs `GET
+/courses/{slug}/goals` par langue) — à clarifier avant de le spécifier
+définitivement.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
