@@ -115,6 +115,7 @@
       "missing": "Still missing: {list}.",
       "missingDigit": "a digit",
       "missingLength": "8 characters",
+      "missingLower": "a lowercase letter",
       "missingSymbol": "a symbol ({'@'}$!%*?&-_#)",
       "missingUpper": "an uppercase letter",
       "resend": "Resend the code",
