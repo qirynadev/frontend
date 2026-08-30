@@ -12,15 +12,6 @@ export interface LangueProgressStep {
   status: LangueProgressStepStatus
 }
 
-export interface LangueSessionCardMock {
-  id: string
-  title: string
-  timeLabel: string
-  dateLabel: string
-  /** ISO pour countdown / tri ; optionnel. */
-  startAt: string
-}
-
 export interface LangueNextCourseMock {
   dateLabel: string
   timeLabel: string
@@ -36,77 +27,8 @@ export const langueProgressSteps: LangueProgressStep[] = [
   { id: '4', labelKey: 'languageProject.step5', status: 'todo' },
 ]
 
-/** Cartes « Cours planifiés » — contenu Figma Langue 1 si l’API n’a pas de séances. */
-export const languePlannedSessionsMock: LangueSessionCardMock[] = [
-  {
-    id: 'mock-1',
-    title: "Cours d'anglais advanced",
-    timeLabel: '10:00 – 11:00 (1h)',
-    dateLabel: 'Mercredi 21 mai 2024',
-    startAt: '2024-05-21T10:00:00',
-  },
-  {
-    id: 'mock-2',
-    title: "Cours d'anglais advanced",
-    timeLabel: '16:00 – 17:00 (1h)',
-    dateLabel: 'Mercredi 21 mai 2024',
-    startAt: '2024-05-21T16:00:00',
-  },
-  {
-    id: 'mock-3',
-    title: "Cours d'anglais advanced",
-    timeLabel: '10:00 – 11:00 (1h)',
-    dateLabel: 'Jeudi 23 mai 2024',
-    startAt: '2024-05-23T10:00:00',
-  },
-  {
-    id: 'mock-4',
-    title: "Cours d'anglais advanced",
-    timeLabel: '16:00 – 17:00 (1h)',
-    dateLabel: 'Jeudi 23 mai 2024',
-    startAt: '2024-05-23T16:00:00',
-  },
-]
-
-export interface LangueUnplannedCardMock {
-  id: string
-  title: string
-  durationLabel: string
-  /** Chemin relatif si lien mock ; `null` = bouton inerte. */
-  to: string | null
-}
-
 /** Course / order démo pour le CTA « Planifier » → écran Professeur. */
 export const LANGUE_DEMO_COURSE_ID = 'demo'
-export const LANGUE_DEMO_ORDER_ID = 'demo-order'
-
-/** Cartes « Cours à planifier » — Figma `862:241` Mon Projet - Langues 2. */
-export const langueUnplannedSessionsMock: LangueUnplannedCardMock[] = [
-  {
-    id: 'unplanned-1',
-    title: "Cours d'anglais advanced",
-    durationLabel: '60 min',
-    to: `/mon-projet/langues/${LANGUE_DEMO_COURSE_ID}/professeur?order=${LANGUE_DEMO_ORDER_ID}&lang=${encodeURIComponent('Anglais')}`,
-  },
-  {
-    id: 'unplanned-2',
-    title: "Cours d'anglais advanced",
-    durationLabel: '60 min',
-    to: `/mon-projet/langues/${LANGUE_DEMO_COURSE_ID}/professeur?order=${LANGUE_DEMO_ORDER_ID}&lang=${encodeURIComponent('Anglais')}`,
-  },
-  {
-    id: 'unplanned-3',
-    title: "Cours d'anglais advanced",
-    durationLabel: '60 min',
-    to: `/mon-projet/langues/${LANGUE_DEMO_COURSE_ID}/professeur?order=${LANGUE_DEMO_ORDER_ID}&lang=${encodeURIComponent('Anglais')}`,
-  },
-  {
-    id: 'unplanned-4',
-    title: "Cours d'anglais advanced",
-    durationLabel: '60 min',
-    to: `/mon-projet/langues/${LANGUE_DEMO_COURSE_ID}/professeur?order=${LANGUE_DEMO_ORDER_ID}&lang=${encodeURIComponent('Anglais')}`,
-  },
-]
 
 export type LangueTeacherAvailabilityTone = 'today' | 'tomorrow' | 'soon' | 'later'
 

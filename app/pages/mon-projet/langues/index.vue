@@ -13,11 +13,12 @@ import type { LanguageProgress, PlannedSession } from '~/core/contracts'
 import { planningRepo } from '~/core/repositories'
 import {
   langueNextCourseMock,
-  languePlannedSessionsMock,
   langueProgressFallbackPct,
   langueProgressSteps,
-  langueUnplannedSessionsMock,
 } from '~/config/projet-langue-mock'
+
+/** Cartes par page, sur les deux onglets (planifiés / à planifier). */
+const CARDS_PER_PAGE = 5
 
 definePageMeta({ middleware: 'auth' })
 
@@ -80,40 +81,48 @@ function formatSessionDate(iso: string | null): string {
   return raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
-const plannedCards = computed(() => {
-  const api = sessions.value ?? []
-  if (api.length > 0) {
-    return api.map((session) => ({
-      id: session.id,
-      title: session.title || t('languagePlanning.defaultSessionTitle'),
-      timeLabel: formatSessionTime(session),
-      dateLabel: formatSessionDate(session.startDate),
-    }))
-  }
-  return languePlannedSessionsMock
-})
+/** Cartes onglet « planifiés » — vide si aucune séance n'est planifiée, pas de repli fictif. */
+const plannedCards = computed(() => (sessions.value ?? []).map((session) => ({
+  id: session.id,
+  title: session.title || t('languagePlanning.defaultSessionTitle'),
+  timeLabel: formatSessionTime(session),
+  dateLabel: formatSessionDate(session.startDate),
+})))
 
-/** Cartes onglet « à planifier » — API si dispo, sinon mock Langues 2. */
-const unplannedCards = computed(() => {
-  const list = languages.value ?? []
-  const fromApi = list.flatMap((language: LanguageProgress) =>
-    language.lessons.map((lesson, index) => {
-      const lang = encodeURIComponent(language.title)
-      const to = language.courseId === null
-        ? null
-        : lesson.needsTeacher
-          ? `/mon-projet/langues/${language.courseId}/professeur?order=${lesson.orderId}&lang=${lang}`
-          : `/mon-projet/langues/${language.courseId}/planifier?order=${lesson.orderId}&teacher=${lesson.teacher?.id ?? ''}&lang=${lang}`
-      return {
-        id: `${language.title}-${lesson.orderId}-${index}`,
-        title: language.title || t('languagePlanning.defaultSessionTitle'),
-        durationLabel: t('languageProject.duration60'),
-        to,
-      }
-    }),
-  )
-  return fromApi.length > 0 ? fromApi : langueUnplannedSessionsMock
-})
+/** Cartes onglet « à planifier » — vide si tout est déjà planifié, pas de repli fictif. */
+const unplannedCards = computed(() => (languages.value ?? []).flatMap((language: LanguageProgress) =>
+  language.lessons.map((lesson, index) => {
+    const lang = encodeURIComponent(language.title)
+    const to = language.courseId === null
+      ? null
+      : lesson.needsTeacher
+        ? `/mon-projet/langues/${language.courseId}/professeur?order=${lesson.orderId}&lang=${lang}`
+        : `/mon-projet/langues/${language.courseId}/planifier?order=${lesson.orderId}&teacher=${lesson.teacher?.id ?? ''}&lang=${lang}`
+    return {
+      id: `${language.title}-${lesson.orderId}-${index}`,
+      title: language.title || t('languagePlanning.defaultSessionTitle'),
+      durationLabel: t('languageProject.duration60'),
+      to,
+    }
+  }),
+))
+
+/** Pagination client des deux listes, indépendante l'une de l'autre. */
+function usePagedList<T>(list: Ref<T[]>) {
+  const page = ref(1)
+  const totalPages = computed(() => Math.max(1, Math.ceil(list.value.length / CARDS_PER_PAGE)))
+  const paged = computed(() => {
+    const start = (page.value - 1) * CARDS_PER_PAGE
+    return list.value.slice(start, start + CARDS_PER_PAGE)
+  })
+  watch(totalPages, (total) => {
+    if (page.value > total) page.value = total
+  })
+  return { page, totalPages, paged }
+}
+
+const { page: plannedPage, totalPages: plannedTotalPages, paged: pagedPlannedCards } = usePagedList(plannedCards)
+const { page: unplannedPage, totalPages: unplannedTotalPages, paged: pagedUnplannedCards } = usePagedList(unplannedCards)
 
 const countdownTarget = computed(() => {
   const upcoming = (sessions.value ?? [])
@@ -343,8 +352,14 @@ usePageSeo(() => ({
               ]"
               :aria-hidden="activeTab !== 'planned'"
             >
+              <QEmptyState
+                v-if="plannedCards.length === 0"
+                icon="clock"
+                :title="$t('languagePlanning.plannedEmptyTitle')"
+                :description="$t('languagePlanning.plannedEmptyDescription')"
+              />
               <article
-                v-for="card in plannedCards"
+                v-for="card in pagedPlannedCards"
                 :key="card.id"
                 class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
               >
@@ -371,6 +386,14 @@ usePageSeo(() => ({
                   <span>{{ $t('languageProject.connect') }}</span>
                 </button>
               </article>
+
+              <QPager
+                v-if="plannedTotalPages > 1"
+                v-model:page="plannedPage"
+                :total="plannedTotalPages"
+                :aria-label="$t('languagePlanning.plannedPagerLabel')"
+                class="!px-0"
+              />
             </div>
 
             <!-- Cours à planifier (Langues 2) -->
@@ -381,8 +404,14 @@ usePageSeo(() => ({
               ]"
               :aria-hidden="activeTab !== 'unplanned'"
             >
+              <QEmptyState
+                v-if="unplannedCards.length === 0"
+                icon="clock"
+                :title="$t('languagePlanning.unplannedEmptyTitle')"
+                :description="$t('languagePlanning.unplannedEmptyDescription')"
+              />
               <article
-                v-for="card in unplannedCards"
+                v-for="card in pagedUnplannedCards"
                 :key="card.id"
                 class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
               >
@@ -413,6 +442,14 @@ usePageSeo(() => ({
                   <span>{{ $t('languageProject.schedule') }}</span>
                 </button>
               </article>
+
+              <QPager
+                v-if="unplannedTotalPages > 1"
+                v-model:page="unplannedPage"
+                :total="unplannedTotalPages"
+                :aria-label="$t('languagePlanning.unplannedPagerLabel')"
+                class="!px-0"
+              />
             </div>
           </div>
         </section>

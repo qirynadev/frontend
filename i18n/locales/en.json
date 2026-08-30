@@ -449,6 +449,9 @@
     "noTeacherAvailableDescription": "No teacher has a free slot right now. Please try again later.",
     "noTeacherAvailableTitle": "No teacher available",
     "planNext": "Schedule a session",
+    "plannedEmptyDescription": "You don't have any scheduled sessions yet.",
+    "plannedEmptyTitle": "No scheduled sessions",
+    "plannedPagerLabel": "Scheduled sessions pagination",
     "seoDescription": "Track your hours and schedule your next sessions.",
     "seoTitle": "My language courses",
     "teacherStepIntro": "These teachers teach this language and have open slots.",
@@ -462,6 +465,9 @@
     "guaranteeTitle": "Satisfaction guaranteed",
     "guaranteeDesc": "If the first class isn't a fit, we'll offer another teacher at no cost.",
     "title": "My language courses",
+    "unplannedEmptyDescription": "You don't have any sessions to schedule yet.",
+    "unplannedEmptyTitle": "Nothing to schedule",
+    "unplannedPagerLabel": "Sessions to schedule pagination",
     "upcomingTitle": "Upcoming sessions"
   },
   "languageProject": {

@@ -449,6 +449,9 @@
     "noTeacherAvailableDescription": "Aucun professeur n'a de créneau libre pour le moment. Réessayez plus tard.",
     "noTeacherAvailableTitle": "Aucun professeur disponible",
     "planNext": "Planifier une séance",
+    "plannedEmptyDescription": "Vous n'avez aucune séance planifiée pour le moment.",
+    "plannedEmptyTitle": "Aucune séance planifiée",
+    "plannedPagerLabel": "Pagination des séances planifiées",
     "seoDescription": "Suivez vos heures de cours et planifiez vos prochaines séances.",
     "seoTitle": "Mes cours de langues",
     "teacherStepIntro": "Ces professeurs enseignent cette langue et ont des créneaux disponibles.",
@@ -462,6 +465,9 @@
     "guaranteeTitle": "Satisfaction garantie",
     "guaranteeDesc": "Si le premier cours ne vous convient pas, nous vous proposons un autre professeur sans frais.",
     "title": "Mes cours de langues",
+    "unplannedEmptyDescription": "Vous n'avez aucune séance à planifier pour le moment.",
+    "unplannedEmptyTitle": "Rien à planifier",
+    "unplannedPagerLabel": "Pagination des séances à planifier",
     "upcomingTitle": "Séances à venir"
   },
   "languageProject": {
