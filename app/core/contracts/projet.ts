@@ -25,6 +25,11 @@ export interface ProjetAccompagnement {
    * remplie d'un chiffre inventé.
    */
   progressPercent: number | null
+  /**
+   * `false` quand la rubrique n'a aucune commande réelle derrière elle — la
+   * carte affiche alors 0 % et n'est plus cliquable (rien à consulter).
+   */
+  hasOrder: boolean
   /** Couleur de remplissage de la barre, propre à chaque type de service. */
   progressColor: string
   /** `null` tant qu'aucun professeur/conseiller n'est assigné à la commande. */

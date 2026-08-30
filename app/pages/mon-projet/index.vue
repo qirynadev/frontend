@@ -12,6 +12,7 @@
  * Données : API via `useProjetData` — voir `docs/mon-projet-mocks.md`.
  */
 import type { ProjetBadgeTone } from '~/core/contracts/projet'
+import { NuxtLink } from '#components'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -105,11 +106,15 @@ usePageSeo(() => ({
           <p v-if="usingMockOnly" class="sr-only">
             {{ $t('myProject.mockNotice') }}
           </p>
-          <NuxtLink
+          <component
+            :is="item.hasOrder ? NuxtLink : 'div'"
             v-for="item in accompagnements"
             :key="item.id"
-            :to="localePath(item.to)"
-            class="mp-card flex w-full flex-col rounded-xl border border-mp-card-border bg-white p-17 text-inherit no-underline box-border"
+            :to="item.hasOrder ? localePath(item.to) : undefined"
+            :class="[
+              'mp-card flex w-full flex-col rounded-xl border border-mp-card-border bg-white p-17 text-inherit no-underline box-border',
+              item.hasOrder ? '' : 'cursor-default',
+            ]"
           >
             <div class="mp-card-top flex w-full items-start justify-between gap-8">
               <div class="mp-card-main flex min-w-0 flex-1 items-center gap-12">
@@ -126,7 +131,7 @@ usePageSeo(() => ({
                   <span class="mp-card-sub mt-2 text-exact-12-5 font-normal text-mp-sub">{{ item.sub }}</span>
                 </span>
               </div>
-              <img class="mp-card-chevron h-16 w-18 shrink-0 mt-8 object-contain opacity-70" src="/img/icons/ic-rg-chevron.svg" alt="" width="8" height="16">
+              <img v-if="item.hasOrder" class="mp-card-chevron h-16 w-18 shrink-0 mt-8 object-contain opacity-70" src="/img/icons/ic-rg-chevron.svg" alt="" width="8" height="16">
             </div>
 
             <!-- Maquette : barre toujours présente -->
@@ -151,7 +156,7 @@ usePageSeo(() => ({
                 {{ $t('myProject.updatedDaysAgo', daysSince(item.updatedAt)) }}
               </span>
             </div>
-          </NuxtLink>
+          </component>
         </div>
 
         <aside class="mp-cta flex h-86 min-h-86 w-full items-center justify-between gap-8 rounded-xl bg-surface-2 px-9 box-border">

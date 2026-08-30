@@ -131,6 +131,7 @@ function toOrderAggregateAccompagnement(orders: Order[], type: 'areaofstudy' | '
     statusKey: toOverallStatus(orders, progressPercent),
     badgeTone: config.badgeTone,
     progressPercent,
+    hasOrder: true,
     progressColor: config.progressColor,
     // Plusieurs commandes peuvent avoir des conseillers/dates différents —
     // rien plutôt qu'une valeur arbitraire (même choix que langues/orientation).
@@ -178,6 +179,7 @@ export function toLanguageAccompagnement(languages: LanguageProgress[], sessions
     statusKey: progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
     badgeTone: config.badgeTone,
     progressPercent,
+    hasOrder: true,
     progressColor: config.progressColor,
     advisorName: null,
     updatedAt: null,
@@ -214,6 +216,7 @@ export function toOrientationAccompagnement(
     statusKey: toOverallStatus(orders, progressPercent),
     badgeTone: config.badgeTone,
     progressPercent,
+    hasOrder: true,
     progressColor: config.progressColor,
     // Plusieurs bilans peuvent avoir des conseillers différents — même choix
     // que les langues : rien plutôt qu'un nom arbitraire.
@@ -233,6 +236,7 @@ function zeroAccompagnement(type: string): ProjetAccompagnement {
     statusKey: 'myProject.statusPending',
     badgeTone: config.badgeTone,
     progressPercent: 0,
+    hasOrder: false,
     progressColor: config.progressColor,
     advisorName: null,
     updatedAt: null,

@@ -19,25 +19,51 @@
  * 2. `GET /articles` renvoie un tableau vide : les deux cartes de la maquette
  *    servent de contenu de repli (`config/home-articles.ts`).
  */
-import { articleRepo, catalogRepo } from '~/core/repositories'
+import { articleRepo, catalogRepo, orientationEvaluationRepo, paymentRepo, planningRepo } from '~/core/repositories'
+import { useSessionStore } from '~/core/stores'
 import { homeCategories } from '~/config/home-categories'
 import { fallbackArticles } from '~/config/home-articles'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
+const session = useSessionStore()
+
+/**
+ * Avancement moyen de tous les accompagnements du client (école, logement,
+ * langues, orientation) — 0 % pour un visiteur non connecté, qui n'a par
+ * définition aucune commande. Réutilise `toAccompagnements` (même agrégation
+ * que `mon-projet/index.vue`) plutôt qu'un calcul dédié.
+ */
+async function loadJourneyProgress(): Promise<number> {
+  if (!session.isAuthenticated) return 0
+
+  const [orders, languages, sessions, evaluations] = await Promise.all([
+    paymentRepo.orders(locale.value),
+    planningRepo.unplanned(locale.value),
+    planningRepo.planned(locale.value),
+    orientationEvaluationRepo.list(locale.value),
+  ])
+  const accompagnements = toAccompagnements(orders, languages, sessions, evaluations)
+  if (accompagnements.length === 0) return 0
+
+  const total = accompagnements.reduce((sum, item) => sum + (item.progressPercent ?? 0), 0)
+  return Math.round(total / accompagnements.length)
+}
 
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
   'home',
   async () => {
-    const [catalog, articles] = await Promise.all([
+    const [catalog, articles, progress] = await Promise.all([
       catalogRepo.load(locale.value),
       articleRepo.list(locale.value).catch(() => []),
+      loadJourneyProgress(),
     ])
-    return { catalog, articles }
+    return { catalog, articles, progress }
   },
   // Le back-office sert de vraies traductions : changer de langue doit
-  // recharger le contenu, pas seulement les libellés d'interface.
-  { watch: [locale] },
+  // recharger le contenu, pas seulement les libellés d'interface. Idem si la
+  // session change (connexion/déconnexion) : l'avancement doit suivre.
+  { watch: [locale, () => session.isAuthenticated] },
 )
 
 const home = computed(() => data.value?.catalog.home ?? null)
@@ -62,12 +88,11 @@ const articles = computed(() => {
 const bannerSrc = computed(() => home.value?.slides[0]?.image ?? '/img/home-banner.webp')
 
 /**
- * Progression de l'orientation.
- *
- * Valeur de la maquette tant qu'aucune session n'existe. L'anneau est composé
- * des deux SVG fournis (fond + remplissage), comme dans `home.html`.
+ * Progression affichée dans l'anneau — 0 % si non connecté, sinon la moyenne
+ * de tous les accompagnements du client (`loadJourneyProgress`). L'anneau est
+ * composé des deux SVG fournis (fond + remplissage), comme dans `home.html`.
  */
-const progress = 60
+const progress = computed(() => data.value?.progress ?? 0)
 
 /** Menu latéral (`home-menu` de la maquette). */
 const menuOpen = ref(false)
