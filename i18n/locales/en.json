@@ -1094,6 +1094,9 @@
     "backToSchedule": "Back to my project",
     "cameraOff": "Turn camera on",
     "cameraOn": "Turn camera off",
+    "chat": "Chat",
+    "chatEmpty": "No messages yet",
+    "chatPlaceholder": "Message…",
     "connectError": "Couldn't join the session. Please try again in a moment.",
     "endedDesc": "This session has ended.",
     "endedTitle": "Session ended",
@@ -1107,9 +1110,15 @@
     "networkWeak": "Weak connection",
     "notFoundDesc": "This session doesn't exist or wasn't created properly.",
     "notFoundTitle": "Session not found",
+    "reactions": "Reactions",
     "reconnecting": "Reconnecting…",
     "seoTitle": "Video session",
     "tooEarlyDesc": "Come back 2 minutes before your session starts to join it.",
-    "tooEarlyTitle": "Not time yet"
+    "tooEarlyTitle": "Not time yet",
+    "whiteboard": "Whiteboard",
+    "whiteboardClear": "Clear all",
+    "whiteboardClose": "Close",
+    "whiteboardEraser": "Eraser",
+    "whiteboardPen": "Pen"
   }
 }
