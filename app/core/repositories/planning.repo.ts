@@ -38,4 +38,10 @@ export const planningRepo = {
   book(input: { planningId: string; orderId: string; title: string; startAt: string; endAt: string }, locale?: string): Promise<{ ok: boolean }> {
     return bffFetch<{ ok: boolean }>('/plannings/create', { method: 'POST', body: input, locale })
   },
+
+  /** Signature JWT pour rejoindre la session Zoom Video SDK d'une séance planifiée. */
+  async zoomSignature(sessionName: string, locale?: string): Promise<string> {
+    const { signature } = await bffFetch<{ signature: string }>('/plannings/zoom-jwt', { method: 'POST', body: { sessionName }, locale })
+    return signature
+  },
 }

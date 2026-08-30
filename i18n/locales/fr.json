@@ -1089,5 +1089,27 @@
     "support": "Accompagnement garanti",
     "support1": "Accompagnement",
     "support2": "garanti"
+  },
+  "videoCall": {
+    "backToSchedule": "Retour à mon projet",
+    "cameraOff": "Activer la caméra",
+    "cameraOn": "Couper la caméra",
+    "connectError": "Impossible de rejoindre la séance. Réessayez dans quelques instants.",
+    "endedDesc": "Cette séance est terminée.",
+    "endedTitle": "Séance terminée",
+    "fullscreen": "Plein écran",
+    "joining": "Connexion à la séance…",
+    "leave": "Quitter",
+    "micOff": "Activer le micro",
+    "micOn": "Couper le micro",
+    "networkGood": "Bonne connexion",
+    "networkMedium": "Connexion moyenne",
+    "networkWeak": "Connexion faible",
+    "notFoundDesc": "Cette séance n'existe pas ou n'a pas pu être créée correctement.",
+    "notFoundTitle": "Séance introuvable",
+    "reconnecting": "Reconnexion en cours…",
+    "seoTitle": "Séance vidéo",
+    "tooEarlyDesc": "Revenez 2 minutes avant le début de votre séance pour la rejoindre.",
+    "tooEarlyTitle": "Pas encore l'heure"
   }
 }

@@ -1089,5 +1089,27 @@
     "support": "Guided every step",
     "support1": "Guided",
     "support2": "end to end"
+  },
+  "videoCall": {
+    "backToSchedule": "Back to my project",
+    "cameraOff": "Turn camera on",
+    "cameraOn": "Turn camera off",
+    "connectError": "Couldn't join the session. Please try again in a moment.",
+    "endedDesc": "This session has ended.",
+    "endedTitle": "Session ended",
+    "fullscreen": "Fullscreen",
+    "joining": "Joining the session…",
+    "leave": "Leave",
+    "micOff": "Turn mic on",
+    "micOn": "Turn mic off",
+    "networkGood": "Good connection",
+    "networkMedium": "Average connection",
+    "networkWeak": "Weak connection",
+    "notFoundDesc": "This session doesn't exist or wasn't created properly.",
+    "notFoundTitle": "Session not found",
+    "reconnecting": "Reconnecting…",
+    "seoTitle": "Video session",
+    "tooEarlyDesc": "Come back 2 minutes before your session starts to join it.",
+    "tooEarlyTitle": "Not time yet"
   }
 }

@@ -61,6 +61,7 @@ export function toPlannedSession(raw: unknown): PlannedSession {
     // `title` est une saisie libre à la réservation, pas une clé de
     // regroupement fiable — `order.associated_service.id` l'est.
     courseId: optionalStr(asRecord(dig(source, 'order.associated_service')), 'id'),
+    meetingSessionName: optionalStr(source, 'meeting.session_name'),
   }
 }
 

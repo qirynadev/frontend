@@ -39,6 +39,16 @@ function setTab(tab: TabId) {
   void router.replace({ query: { ...route.query, tab } })
 }
 
+/** Horloge d'affichage — countdown et fenêtre de rejointure (`canJoinSession`) en dépendent. */
+const nowTick = ref(Date.now())
+let nowTickTimer: ReturnType<typeof setInterval> | null = null
+onMounted(() => {
+  nowTickTimer = setInterval(() => { nowTick.value = Date.now() }, 1000)
+})
+onBeforeUnmount(() => {
+  if (nowTickTimer) clearInterval(nowTickTimer)
+})
+
 const { data: languages, apiError, isInitialLoading, refresh } = await usePageData(
   'langues-unplanned',
   () => planningRepo.unplanned(locale.value),
@@ -81,12 +91,30 @@ function formatSessionDate(iso: string | null): string {
   return raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
+/**
+ * Rejoignable dès 2 min avant le début, jusqu'à la fin — même principe que
+ * l'ancien projet (legacy, fenêtre de 15 min), fenêtre resserrée à 2 min à la
+ * demande du responsable (2026-08-30).
+ */
+const JOIN_WINDOW_MS = 2 * 60 * 1000
+function canJoinSession(session: PlannedSession): boolean {
+  if (!session.startDate || !session.endDate || !session.meetingSessionName) return false
+  const start = new Date(session.startDate).getTime()
+  const end = new Date(session.endDate).getTime()
+  return nowTick.value >= start - JOIN_WINDOW_MS && nowTick.value < end
+}
+
+function joinSession(sessionId: string) {
+  void router.push(localePath(`/mon-projet/langues/visio/${sessionId}`))
+}
+
 /** Cartes onglet « planifiés » — vide si aucune séance n'est planifiée, pas de repli fictif. */
 const plannedCards = computed(() => (sessions.value ?? []).map((session) => ({
   id: session.id,
   title: session.title || t('languagePlanning.defaultSessionTitle'),
   timeLabel: formatSessionTime(session),
   dateLabel: formatSessionDate(session.startDate),
+  canJoin: canJoinSession(session),
 })))
 
 /** Cartes onglet « à planifier » — vide si tout est déjà planifié, pas de repli fictif. */
@@ -136,15 +164,6 @@ const countdownTarget = computed(() => {
   return Date.now() + (22 * 3600 + 18 * 60 + 35) * 1000
 })
 
-const nowTick = ref(Date.now())
-let countdownTimer: ReturnType<typeof setInterval> | null = null
-onMounted(() => {
-  countdownTimer = setInterval(() => { nowTick.value = Date.now() }, 1000)
-})
-onBeforeUnmount(() => {
-  if (countdownTimer) clearInterval(countdownTimer)
-})
-
 const countdownParts = computed(() => {
   const diff = Math.max(0, countdownTarget.value - nowTick.value)
   const totalSec = Math.floor(diff / 1000)
@@ -154,11 +173,13 @@ const countdownParts = computed(() => {
   return { h, m, s }
 })
 
-const nextCourseLabels = computed(() => {
-  const apiNext = (sessions.value ?? [])
-    .filter(s => s.startDate && new Date(s.startDate).getTime() > Date.now())
-    .sort((a, b) => new Date(a.startDate!).getTime() - new Date(b.startDate!).getTime())[0]
+/** Prochaine séance réelle (déjà planifiée), pas encore terminée — `null` si aucune. */
+const nextSession = computed(() => (sessions.value ?? [])
+  .filter(s => s.endDate && new Date(s.endDate).getTime() > nowTick.value)
+  .sort((a, b) => new Date(a.startDate ?? 0).getTime() - new Date(b.startDate ?? 0).getTime())[0] ?? null)
 
+const nextCourseLabels = computed(() => {
+  const apiNext = nextSession.value
   if (apiNext) {
     return {
       dateLabel: formatSessionDate(apiNext.startDate),
@@ -170,6 +191,17 @@ const nextCourseLabels = computed(() => {
     timeLabel: langueNextCourseMock.timeLabel,
   }
 })
+
+const canJoinNext = computed(() => {
+  const session = nextSession.value
+  return session !== null && canJoinSession(session)
+})
+
+function joinNextSession() {
+  const session = nextSession.value
+  if (!session || !canJoinNext.value) return
+  joinSession(session.id)
+}
 
 usePageSeo(() => ({
   title: t('languageProject.seoTitle'),
@@ -380,7 +412,12 @@ usePageSeo(() => ({
                 </div>
                 <button
                   type="button"
-                  class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]"
+                  :disabled="!card.canJoin"
+                  :class="[
+                    'inline-flex shrink-0 items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]',
+                    card.canJoin ? 'cursor-pointer' : 'cursor-not-allowed opacity-40',
+                  ]"
+                  @click="joinSession(card.id)"
                 >
                   <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
                   <span>{{ $t('languageProject.connect') }}</span>
@@ -503,7 +540,12 @@ usePageSeo(() => ({
               </div>
               <button
                 type="button"
-                class="mt-12 inline-flex cursor-pointer items-center justify-center gap-6 rounded-full border-0 bg-white px-14 py-8 text-[10px] leading-16 font-semibold text-[#fc037f]"
+                :disabled="!canJoinNext"
+                :class="[
+                  'mt-12 inline-flex items-center justify-center gap-6 rounded-full border-0 bg-white px-14 py-8 text-[10px] leading-16 font-semibold text-[#fc037f]',
+                  canJoinNext ? 'cursor-pointer' : 'cursor-not-allowed opacity-50',
+                ]"
+                @click="joinNextSession"
               >
                 <img src="/img/icons/mpl-langue/connect-video.svg" alt="" width="14" height="14" class="block size-14">
                 <span>{{ $t('languageProject.connect') }}</span>

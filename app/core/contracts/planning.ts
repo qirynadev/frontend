@@ -79,4 +79,10 @@ export interface PlannedSession {
   teacher: PlanningTeacherSummary | null
   /** `order.associated_service.id` — apparie une séance à sa `LanguageProgress`. */
   courseId: string | null
+  /**
+   * `meeting.session_name` — identifiant de la session Zoom Video SDK créée à
+   * la réservation (`PlanningAction::createMeeting`). `null` si la séance n'a
+   * jamais eu de session créée (échec de création côté back-office).
+   */
+  meetingSessionName: string | null
 }
