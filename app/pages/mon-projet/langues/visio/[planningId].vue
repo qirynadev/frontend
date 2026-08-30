@@ -15,7 +15,10 @@
 import { planningRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 
-definePageMeta({ middleware: 'auth' })
+// `bottomNav: false` : la barre basse (position fixed) recouvrait la barre de
+// contrôle de l'appel (caméra/micro/quitter), elle-même fixée en bas de
+// l'écran — signalé en direct (2026-08-30) après un test réel sur stage.
+definePageMeta({ middleware: 'auth', bottomNav: false })
 
 const route = useRoute()
 const { t, locale } = useI18n()

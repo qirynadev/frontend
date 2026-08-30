@@ -476,6 +476,38 @@ change la forme de l'endpoint (`GET /language-goals` global vs `GET
 /courses/{slug}/goals` par langue) — à clarifier avant de le spécifier
 définitivement.
 
+## 16. 🔴 Espace professeur (`qiryna-backoffice`) — la visio ne se connecte plus, SDK Zoom obsolète
+
+**Pas un bug de `qiryna-front`** — reproduit par le responsable en direct
+(2026-08-30) sur `admin.stage.qiryna.com/espace-professeur/meeting/{id}`,
+qui vit entièrement dans `qiryna-backoffice` (`resources/js/Pages/
+AuthTeacher/Meeting.vue`), une application distincte de ce dépôt. Signalé
+ici uniquement parce que ça bloque le même parcours (séance de cours) que
+la visio élève tout juste câblée côté front, et que je n'ai ni accès de
+déploiement ni le code source modifiable de ce dépôt-là depuis ici.
+
+**Symptôme** : en rejoignant une séance en tant que professeur, la page
+affiche indéfiniment un spinner de chargement, avec un bandeau Zoom natif
+« UIKit : la version actuelle du SDK n'est plus prise en charge, veuillez
+passer à la dernière version. » — la session ne se connecte jamais.
+
+**Cause probable** : `qiryna-backoffice/package.json` épingle `@zoom/
+videosdk-ui-toolkit` en `^1.10.8-2` — un composant de plus haut niveau que
+le `@zoom/videosdk` (SDK brut) utilisé côté front pour l'élève, propre au
+côté professeur (`uitoolkit.joinSession(...)` dans `Meeting.vue`).
+`npm view @zoom/videosdk-ui-toolkit versions` liste la dernière version
+publiée à `2.5.0-1` : la ligne `1.x` est plusieurs versions majeures
+derrière, cohérent avec un rejet côté service Zoom plutôt qu'une panne
+locale.
+
+**Ce qu'il faut** : dans `qiryna-backoffice`, monter `@zoom/
+videosdk-ui-toolkit` vers une version `2.x` récente, vérifier que `config`
+(`videoSDKJWT`/`sessionName`/`userName`/`features`/`language`) et l'API
+`uitoolkit.joinSession/onSessionClosed/onSessionJoined` n'ont pas changé de
+signature entre les deux versions majeures, puis redéployer. Le SDK brut
+utilisé côté élève (`@zoom/videosdk`, front) n'est pas concerné — versions
+et paquets différents, aucune action nécessaire de ce côté.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
