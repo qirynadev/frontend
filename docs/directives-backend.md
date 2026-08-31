@@ -299,14 +299,22 @@ sert de source unique pour du contenu qui n'a souvent aucun rapport entre
 lui. Chaque fois qu'un écran de cette session s'appuie dessus, la demande
 d'endpoint dédié correspondante :
 
-- **Prestations d'offre domaine** (point 1) : `offers[].items` vient
-  aujourd'hui de `/all-data`. Demander un endpoint dédié par offre (ex.
-  `GET /offers/{id}` ou `GET /areas-of-studies/{id}/offer`) — ce qu'`/offres/
-  [domaine]` affiche n'a besoin que d'une seule offre, pas du dump entier.
 - ✅ **Formations d'école** — résolu le 2026-08-31 (voir point 20) :
   `GET /schools/{id}/formations` existe désormais, `grade`/`duration`
   compris, câblé côté front (`[school].vue` ne dépend plus de `/all-data`
   pour son onglet Formations).
+- 🔴 **Fiche école complète, prestations d'offre domaine** — routes déjà
+  disponibles (`GET /schools/{id}`, `GET /areas-of-studies/offer/{id}`),
+  mais **bloquées par un problème de résolution slug→UUID** commun aux
+  deux : voir point 21.
+- **Listes destinations/écoles** : `GET /school-files` existe (fiches pays,
+  sans pagination) mais réutilise `SchoolFileResource`, qui embarque
+  toujours chaque école en entier (formations/détails/présentation) — pas
+  plus léger que `/all-data` pour lister des écoles. Le vrai allègement des
+  listes vient de `GET /schools/{countryId}/{areaId}` (déjà utilisé par
+  `ecoles/index.vue`, paginé 5 par page). À confirmer avec Prosper que
+  `/school-files` est bien pensé pour les seules infos pays (titre, stats,
+  bandeau), pas pour transporter les écoles rattachées.
 
 **Pas concerné, déjà dédié** : les professeurs (`/teachers`, `/user/plannings/
 teachers/{courseId}`) ont déjà leurs propres endpoints — le champ `teachers`
@@ -624,6 +632,46 @@ minutes plus tard : réponse correcte (`[{title, description, grade,
 duration}]`). Si un futur endpoint fraîchement ajouté par le back-office
 semble ignorer son propre code, revérifier après quelques minutes avant de
 conclure à un bug plutôt qu'à un déploiement encore en cours.
+
+## 21. 🔴 Bloquant : résoudre un slug en UUID pour `/schools/{id}` et `/areas-of-studies/offer/{id}`
+
+Plan de priorité transmis par Prosper (par le responsable, 2026-08-31) pour
+sortir la fiche école et la page offre de `/all-data`, dans l'ordre :
+
+1. Fiche école → `GET /schools/{id}` + `GET /schools/{id}/formations` — 85 %
+   du poids d'un coup. Formations déjà câblées côté front (point 20).
+2. `/offres/[domaine]` → `GET /areas-of-studies/offer/{id}` — 13 % de plus.
+3. Listes destinations/écoles → `GET /school-files` + `GET /schools/
+   {countryId}/{areaId}` — déjà utilisé pour ce second endpoint.
+
+**Ce qui bloque les points 1 et 2** : ces deux routes n'acceptent que
+l'UUID — `SchoolAction::get()` fait `School::find($schoolId)`,
+`OfferAction::get()` fait `Offer::find($offerId)`, aucune des deux ne
+cherche par slug. Le front, lui, route ces deux écrans **par slug**
+(`/destinations/{destSlug}/ecoles/{schoolSlug}`, `/offres/{offerSlug}`) —
+un choix voulu pour des URL lisibles et partageables, à ne pas changer pour
+router par UUID à la place (casserait les liens déjà partagés et le
+référencement, ces deux écrans ayant un SEO réel — `useContractSeo`/
+`useSchoolSchemaOrg`). Aucune route de résolution slug→UUID n'existe
+aujourd'hui pour ni l'une ni l'autre ressource.
+
+**Demande** : un petit endpoint de résolution par slug pour chacune des
+deux ressources — par exemple :
+
+- `GET /schools?slug={slug}` (ou `/schools/by-slug/{slug}`) → l'école
+  complète directement (économise un aller-retour côté front, qui a de
+  toute façon besoin de la fiche entière juste après).
+- Pour l'offre, l'équivalent : `GET /areas-of-studies/offer/by-slug/{slug}`
+  — ou si plus simple côté back-office, un moyen de la retrouver depuis le
+  domaine d'études (l'offre est déjà rattachée à un `AreaOfStudy`).
+
+Une fois ces deux résolutions disponibles, les deux écrans peuvent
+abandonner `/all-data` en entier (pas seulement les formations).
+
+**Décidé avec le responsable (2026-08-31)** : ne pas contourner côté front
+en attendant (ex. faire transiter l'UUID via la navigation interne depuis
+les pages de liste) — remonter le besoin à Prosper plutôt que maintenir un
+contournement.
 
 ## Pour mémoire — pas des écarts, aucune action requise
 
