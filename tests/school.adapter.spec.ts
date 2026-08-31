@@ -23,8 +23,9 @@ describe('réponse nominale', () => {
     expect(school.formations[0]?.summary).not.toContain('Le lycéen')
     expect(school.formations[0]?.bodyHtml).toContain('Bachelor international')
     expect(school.formations[0]?.sections.some((s) => s.label === 'Cible')).toBe(true)
-    expect(school.formations[0]?.grade).toBe('Grade Bachelor')
-    expect(school.formations[0]?.duration).toBe('3 ans')
+    // Ni grade ni durée dans la réponse brute : « - », pas une valeur devinée depuis le titre.
+    expect(school.formations[0]?.grade).toBe('-')
+    expect(school.formations[0]?.duration).toBe('-')
     expect(school.details).toHaveLength(1)
     expect(school.details[0]?.title).toBe('Classement')
   })

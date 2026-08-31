@@ -600,6 +600,23 @@ silencieusement disparaître le contenu de l'onglet, sans erreur nulle part.
 dans un champ générique. Fiabilise l'onglet et évite qu'un renommage anodin
 dans l'admin casse silencieusement l'affichage.
 
+## 20. 🔵 Suggestion : `grade`/`duration` par formation (fiche école)
+
+**Pas un bug côté front** — corrigé le 2026-08-31. Chaque formation d'une
+fiche école (`School.formations[]`) n'a que `title`/`description` côté
+back-office (confirmé sur le formulaire admin, `resources/js/Pages/School/
+Edit.vue` : aucun champ grade/durée dans le repeater formations). La
+maquette affiche pourtant un grade et une durée par formation
+(`.ed-form-meta`, ex. « Grade Master · 3 ans ») : un mock front
+(`config/formation-meta-mock.ts`) devinait ces valeurs depuis le titre
+(« Bachelor » → Grade Bachelor, etc.) ou repliait sur des valeurs fréquentes
+de la maquette — retiré, remplacé par `-` quand l'API ne fournit rien.
+
+**Suggestion** : deux champs `grade`/`duration` (ou `duration_label`) par
+entrée du repeater formations, au même titre que `title`/`description`.
+`toFormations()` (`school.adapter.ts`) les lit déjà s'ils arrivent un jour —
+aucun changement front nécessaire après l'ajout côté API.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

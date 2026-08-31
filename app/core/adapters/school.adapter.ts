@@ -1,5 +1,4 @@
 import type { School, SchoolDetail, SchoolFormation, SchoolSummary } from '../contracts'
-import { resolveFormationMeta } from '~/config/formation-meta-mock'
 import { parseFormationDescription } from '~/utils/formation-content'
 import { toCountry, toSeo } from './common.adapter'
 import { asArray, asRecord, html, list, optionalNum, optionalStr, str, toUrl } from './primitives'
@@ -11,10 +10,13 @@ import { asArray, asRecord, html, list, optionalNum, optionalStr, str, toUrl } f
  * une entrée fantôme `{ title: null, description: null }` — 428 des 570 écoles
  * du catalogue de recette n'ont que ça. On les écarte ici, une fois.
  *
- * **Grade / durée** : l’API ne les expose pas (clés absentes, vérifié
- * 2026-08-22 sur NEOMA et le catalogue). Mock documenté dans
- * `config/formation-meta-mock.ts` + `ARCHITECTURE-API.md`, en attendant
- * `grade` / `duration` côté back-office.
+ * **Grade / durée** : l'API ne les expose pas (clés absentes, vérifié à
+ * nouveau le 2026-08-31 sur le catalogue et le formulaire admin — la fiche
+ * école n'a que `title`/`description` par formation). Un mock précédent
+ * (`config/formation-meta-mock.ts`) devinait un grade/une durée depuis le
+ * titre ou repliait sur « Grade Master »/« 3 ans » : retiré, une valeur
+ * inventée n'est pas préférable à une absence honnête. `-` tant que le
+ * back-office n'alimente pas ces champs (voir `docs/directives-backend.md`).
  */
 function toFormations(raw: unknown): SchoolFormation[] {
   return asArray(raw)
@@ -23,19 +25,14 @@ function toFormations(raw: unknown): SchoolFormation[] {
       const title = str(source, 'title')
       const description = html(source, 'description')
       const parsed = parseFormationDescription(description)
-      const meta = resolveFormationMeta(
-        title,
-        optionalStr(source, 'grade'),
-        optionalStr(source, 'duration') ?? optionalStr(source, 'duration_label'),
-      )
       return {
         title,
         description,
         summary: parsed.summary,
         sections: parsed.sections,
         bodyHtml: parsed.bodyHtml,
-        grade: meta.grade,
-        duration: meta.duration,
+        grade: optionalStr(source, 'grade') ?? '-',
+        duration: optionalStr(source, 'duration') ?? optionalStr(source, 'duration_label') ?? '-',
       }
     })
     .filter((block) => block.title !== '')

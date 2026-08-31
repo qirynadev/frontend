@@ -43,15 +43,9 @@ export interface SchoolFormation {
   sections: FormationSection[]
   /** Paragraphes libres hors rubriques — corps détaillé de la modale. */
   bodyHtml: string
-  /**
-   * Grade affiché sur la carte (`.ed-form-meta`).
-   * Absent de l’API stage → mock via `resolveFormationMeta` (documenté).
-   */
+  /** Grade affiché sur la carte (`.ed-form-meta`). `-` tant que l'API ne l'expose pas. */
   grade: string
-  /**
-   * Durée / année(s) affichée sur la carte.
-   * Absent de l’API stage → mock via `resolveFormationMeta` (documenté).
-   */
+  /** Durée / année(s) affichée sur la carte. `-` tant que l'API ne l'expose pas. */
   duration: string
 }
 
