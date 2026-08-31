@@ -172,7 +172,7 @@ useSchoolSchemaOrg(school)
 </script>
 
 <template>
-  <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" :notifications="3" :gap="0" />
+  <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" :gap="0" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
     <template #loading>

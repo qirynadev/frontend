@@ -89,7 +89,7 @@ usePageSeo(() => ({
 
 <template>
   <div class="flex w-full flex-col gap-22 pb-22">
-    <AppTopBar back back-to="/logement" :notifications="3" :gap="0" />
+    <AppTopBar back back-to="/logement" :gap="0" />
 
     <!-- Intro -->
     <section class="w-full">

@@ -103,7 +103,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <AppTopBar back :back-to="`/destinations/${slug}`" :notifications="3" :gap="22" />
+  <AppTopBar back :back-to="`/destinations/${slug}`" :gap="22" />
 
   <!-- Carrousel de domaines (.le-domains) -->
   <div class="box-border flex w-full flex-col items-stretch gap-22">

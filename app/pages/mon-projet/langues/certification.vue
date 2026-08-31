@@ -29,7 +29,7 @@ usePageSeo(() => ({
 
 <template>
   <div class="flex w-full flex-col gap-22 pb-22">
-    <AppTopBar back back-to="/mon-projet/langues" :notifications="3" :gap="0" />
+    <AppTopBar back back-to="/mon-projet/langues" :gap="0" />
 
     <!-- Ma progression 100 % -->
     <section

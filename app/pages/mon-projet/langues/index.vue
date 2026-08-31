@@ -226,7 +226,7 @@ usePageSeo(() => ({
 <template>
   <!-- gap-22 = topbar → Ma progression (et entre sections) ; TopBar gap=0 pour éviter un double 22 -->
   <div class="flex w-full flex-col gap-22 pb-22">
-    <AppTopBar back back-to="/mon-projet" :notifications="3" :gap="0" />
+    <AppTopBar back back-to="/mon-projet" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"

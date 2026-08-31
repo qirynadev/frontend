@@ -79,7 +79,7 @@ usePageSeo(() => ({
     <div class="page-mon-projet">
       <div class="projet-main">
         <!-- Topbar : Logo + Cloche de notifications -->
-        <AppTopBar :notifications="3" />
+        <AppTopBar />
 
         <!-- Hero : Titre + Illustration -->
         <section class="projet-hero relative flex w-full items-start gap-10 pt-30 pb-70" aria-labelledby="projet-title">

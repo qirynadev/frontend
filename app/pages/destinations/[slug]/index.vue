@@ -88,7 +88,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
 </script>
 
 <template>
-  <AppTopBar back back-to="/destinations" :notifications="3" :gap="22" />
+  <AppTopBar back back-to="/destinations" :gap="22" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
     <template #loading>

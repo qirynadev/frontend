@@ -44,12 +44,14 @@
 import type { NotificationItem } from '~/core/contracts/notification'
 import type { MessageAuthor } from '~/core/contracts/message'
 import { messageRepo, notificationRepo } from '~/core/repositories'
+import { useNotificationsStore } from '~/core/stores'
 
 definePageMeta({ middleware: 'auth' })
 
 const route = useRoute()
 const { t, d, locale } = useI18n()
 const localePath = useLocalePath()
+const notificationsStore = useNotificationsStore()
 
 type TabId = 'messages' | 'notification'
 const activeTab = ref<TabId>(route.query.tab === 'notification' ? 'notification' : 'messages')
@@ -74,16 +76,11 @@ const {
   { watch: [notifPage, locale] },
 )
 
-const {
-  data: unread,
-  refresh: refreshUnreadCount,
-} = await usePageData('messages-unread-count', () => notificationRepo.unreadCount(locale.value), { watch: [locale] })
-
 const isInitialLoading = computed(() => threadsLoading.value || notifLoading.value)
 const apiError = computed(() => threadsError.value ?? notifError.value)
 
 function refresh() {
-  return Promise.all([refreshThreads(), refreshNotifications(), refreshUnreadCount()])
+  return Promise.all([refreshThreads(), refreshNotifications(), notificationsStore.refresh(locale.value)])
 }
 
 /** `.msg-tag--*` (`app.css`). Rôle réel → étiquette/teinte ; repli sur « Équipe Qiryna ». */
@@ -113,7 +110,8 @@ const filteredThreads = computed(() => {
 })
 
 const unreadTotal = computed(() => (threads.value ?? []).reduce((n, entry) => n + (entry.unreadCount > 0 ? 1 : 0), 0))
-const notificationsBadge = computed(() => unread.value?.count ?? 0)
+/** Même compte que la cloche (`AppTopBar`) — un seul store, jamais deux sources qui pourraient diverger. */
+const notificationsBadge = computed(() => notificationsStore.unreadCount)
 
 /**
  * Heure, « Hier », ou date — même convention que la maquette
@@ -148,8 +146,10 @@ function isInternalPath(url: string): boolean {
 
 /**
  * `usePageData` (donc `useAsyncData`) renvoie un `shallowRef` — muter
- * `item.read` ou `unread.value.count` en place ne déclenche aucun rendu.
- * Chaque mise à jour réassigne `.value` en entier.
+ * `item.read` en place ne déclenche aucun rendu, `notifications.value` est
+ * réassigné en entier. Le compte non lu, lui, vit dans `notificationsStore`
+ * (partagé avec la cloche) : `markRead` renvoie déjà le compte à jour, pas
+ * besoin de le recalculer ni de le refaire chercher.
  */
 async function openNotification(item: NotificationItem) {
   if (!item.read) {
@@ -161,7 +161,7 @@ async function openNotification(item: NotificationItem) {
           items: notifications.value.items.map(entry => (entry.id === item.id ? { ...entry, read: true } : entry)),
         }
       }
-      if (unread.value) unread.value = { count: result.count }
+      notificationsStore.setCount(result.count)
     }
     catch {
       // La navigation ne doit pas dépendre du succès du marquage.
@@ -185,7 +185,7 @@ usePageSeo(() => ({
   <div class="page-msg flex flex-1 flex-col">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="msg-main flex w-full max-w-full flex-col overflow-x-hidden box-border">
-      <AppTopBar :back="true" back-to="/" :notifications="notificationsBadge" />
+      <AppTopBar :back="true" back-to="/" />
 
       <!-- Accroche -->
       <section class="msg-hero relative flex min-h-118 items-start gap-10 pb-60 box-border" aria-labelledby="messages-title">

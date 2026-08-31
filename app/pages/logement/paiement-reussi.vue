@@ -187,7 +187,7 @@ usePageSeo(() => ({
 
 <template>
   <div>
-    <AppTopBar back :back-to="backTo" :notifications="3" :gap="0" />
+    <AppTopBar back :back-to="backTo" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"

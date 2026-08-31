@@ -273,7 +273,7 @@ usePageSeo(() => ({
 
 <template>
   <div class="flex w-full flex-col gap-20 pb-22">
-    <AppTopBar back :back-to="backToProfesseur" :notifications="3" :gap="0" />
+    <AppTopBar back :back-to="backToProfesseur" :gap="0" />
 
     <div>
       <h1 class="m-0 text-[20px] leading-normal font-semibold tracking-[-0.65px] text-[#191919]">

@@ -69,7 +69,7 @@ usePageSeo(() => ({
 
     <div class="page-mp flex flex-1 flex-col bg-white">
       <div class="mp-main flex w-full max-w-full flex-col gap-22 box-border">
-        <AppTopBar :back="true" back-to="/" :notifications="3" :gap="0" />
+        <AppTopBar :back="true" back-to="/" :gap="0" />
 
         <section class="mp-hero relative flex w-full min-h-130 items-start gap-10" aria-labelledby="projet-title">
           <div class="mp-hero-copy relative z-1 min-w-0 max-w-166 flex-1">

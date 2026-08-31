@@ -104,7 +104,7 @@ usePageSeo(() => ({
 <template>
   <!-- Rythme vertical porté par le conteneur (`gap: var(--lpp-block-gap)` = 22px). -->
   <div class="flex flex-col gap-22">
-    <AppTopBar back :back-to="`/orientation/formules?path=${path}`" :notifications="3" :gap="0" />
+    <AppTopBar back :back-to="`/orientation/formules?path=${path}`" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"

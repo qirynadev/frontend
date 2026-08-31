@@ -76,7 +76,7 @@ usePageSeo(() => ({
   <div class="page-rg flex flex-1 flex-col">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="rg-main flex w-full max-w-full flex-col gap-15 box-border">
-      <AppTopBar :back="true" back-to="/" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/" :gap="0" />
 
       <section class="rg-intro w-full">
         <h1 class="m-0 text-4xl leading-normal font-semibold tracking-[-0.65px] text-text">

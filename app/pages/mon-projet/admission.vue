@@ -49,7 +49,7 @@ usePageSeo(() => ({
          layout mobile ; ne pas les doubler ici (cf. `mon-projet/index.vue`). -->
     <div class="mpa-main flex flex-col gap-22 box-border">
       <!-- Topbar : Retour + Logo + Cloche de notifications -->
-      <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/mon-projet" :gap="0" />
 
       <PageState
         :loading="isInitialLoading"

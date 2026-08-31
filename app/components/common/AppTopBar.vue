@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useNotificationsStore, useSessionStore } from '~/core/stores'
+
 /**
  * Barre supérieure des écrans publics.
  *
@@ -15,6 +17,13 @@
  * Le bouton retour utilise l'historique quand il existe et retombe sur un
  * chemin explicite sinon — sans quoi une arrivée directe depuis un moteur de
  * recherche laisserait l'utilisateur dans une impasse.
+ *
+ * La pastille de la cloche lit `useNotificationsStore()` directement plutôt
+ * qu'une prop : un compte partagé par toute l'app, jamais une valeur figée
+ * recopiée page par page (`:notifications="3"` sur les 26 pages avant ce
+ * correctif). Se recharge à chaque montage — donc à chaque navigation,
+ * puisqu'`AppTopBar` vit dans chaque page plutôt que dans un layout
+ * persistant — pour rester exact quelle que soit la page affichée.
  */
 const props = withDefaults(
   defineProps<{
@@ -24,8 +33,6 @@ const props = withDefaults(
     backTo?: string
     /** Bouton menu à gauche (accueil uniquement). */
     menu?: boolean
-    /** Nombre de notifications. `0` masque la pastille. */
-    notifications?: number
     /**
      * Espace sous la barre, en px.
      *
@@ -35,7 +42,7 @@ const props = withDefaults(
      */
     gap?: 0 | 16 | 22 | 30
   }>(),
-  { back: false, backTo: '/', menu: false, notifications: 0, gap: 30 },
+  { back: false, backTo: '/', menu: false, gap: 30 },
 )
 
 const gapClass: Record<number, string> = { 0: 'pb-0', 16: 'pb-16', 22: 'pb-22', 30: 'pb-30' }
@@ -44,6 +51,15 @@ const emit = defineEmits<{ openMenu: [] }>()
 
 const router = useRouter()
 const localePath = useLocalePath()
+const session = useSessionStore()
+const notificationsStore = useNotificationsStore()
+const { locale } = useI18n()
+
+const notifications = computed(() => notificationsStore.unreadCount)
+
+onMounted(() => {
+  if (session.isAuthenticated) notificationsStore.refresh(locale.value)
+})
 
 function goBack() {
   if (import.meta.client && window.history.length > 1) {

@@ -101,7 +101,7 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
 
 <template>
   <!-- `gap: 22` = espace topbar → intro (`.page-of .formule-main { gap: 22px }`) -->
-  <AppTopBar back :back-to="`/orientation?path=${path}`" :notifications="3" :gap="22" />
+  <AppTopBar back :back-to="`/orientation?path=${path}`" :gap="22" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
     <template #loading>

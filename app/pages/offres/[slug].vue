@@ -38,7 +38,7 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
 
 <template>
   <div>
-    <AppTopBar back :back-to="backTo" :notifications="3" :gap="22" />
+    <AppTopBar back :back-to="backTo" :gap="22" />
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
       <template #loading>

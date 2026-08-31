@@ -102,7 +102,6 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
     <AppTopBar
       back
       :back-to="`/logement/${slug}/decouverte`"
-      :notifications="3"
       :gap="22"
     />
 

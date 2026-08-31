@@ -104,7 +104,7 @@ usePageSeo(() => ({
 
 <template>
   <div>
-    <AppTopBar menu :gap="0" :notifications="3" @open-menu="menuOpen = true" />
+    <AppTopBar menu :gap="0" @open-menu="menuOpen = true" />
     <AppSideMenu v-model:open="menuOpen" />
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">

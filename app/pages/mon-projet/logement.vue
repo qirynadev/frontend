@@ -101,7 +101,7 @@ usePageSeo(() => ({
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="mpl-main flex flex-col box-border">
       <!-- `gap: 0` : pas de retrait sous la barre, le bandeau vient à 8px. -->
-      <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/mon-projet" :gap="0" />
 
       <PageState
         :loading="isInitialLoading"

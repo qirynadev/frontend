@@ -179,7 +179,7 @@ usePageSeo(() => ({
 <template>
   <div class="page-contact flex flex-1 flex-col">
     <div class="flex w-full max-w-full flex-col gap-22 box-border">
-      <AppTopBar :back="true" back-to="/reglages" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/reglages" :gap="0" />
 
       <!-- ── Succès « Demande envoyée ! » ── -->
       <template v-if="submitted">

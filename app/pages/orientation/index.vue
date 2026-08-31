@@ -51,7 +51,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <AppTopBar back back-to="/" :notifications="3" :gap="0" />
+  <AppTopBar back back-to="/" :gap="0" />
 
   <!-- Introduction -->
   <div class="mt-22 w-full">
