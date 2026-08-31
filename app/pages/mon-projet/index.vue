@@ -145,7 +145,10 @@ usePageSeo(() => ({
               </span>
             </div>
 
-            <div class="mp-card-meta mt-12 flex w-full items-center justify-between gap-8 border-t border-mp-divider pt-5 box-border">
+            <!-- Conseiller/date : n'ont de sens que pour une commande réelle
+                 (`advisorName`/`updatedAt` valent toujours `null` sinon) —
+                 sans quoi une carte à 0 % affichait « Conseiller : » vide. -->
+            <div v-if="item.hasOrder" class="mp-card-meta mt-12 flex w-full items-center justify-between gap-8 border-t border-mp-divider pt-5 box-border">
               <span class="mp-meta-person inline-flex min-w-0 items-center gap-6 text-exact-11-5 font-medium text-slate">
                 <img src="/img/icons/ic-user.svg" alt="" width="11" height="11" class="size-11 shrink-0 opacity-70">
                 <span>{{ $t('myProject.advisorLabel') }}<strong class="font-medium text-navy-2">{{ item.advisorName }}</strong></span>
