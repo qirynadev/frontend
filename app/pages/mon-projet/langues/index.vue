@@ -10,10 +10,9 @@
  * Mock : `config/projet-langue-mock.ts` + `docs/mon-projet-langue-mocks.md`.
  */
 import type { LanguageProgress, PlannedSession } from '~/core/contracts'
-import { planningRepo } from '~/core/repositories'
+import { paymentRepo, planningRepo } from '~/core/repositories'
 import {
   langueNextCourseMock,
-  langueProgressFallbackPct,
   langueProgressSteps,
 } from '~/config/projet-langue-mock'
 
@@ -61,15 +60,29 @@ const { data: sessions } = await usePageData(
   { watch: [locale] },
 )
 
-const primaryLanguage = computed(() => (languages.value ?? [])[0] ?? null)
+const { data: orders } = await usePageData(
+  'langues-orders',
+  () => paymentRepo.orders(locale.value),
+  { watch: [locale] },
+)
 
 /** Vrai si le client a au moins une commande langue (planifiée ou non). */
 const hasLanguageData = computed(() => (languages.value?.length ?? 0) > 0 || (sessions.value?.length ?? 0) > 0)
 
+const courseOrders = computed(() => (orders.value ?? []).filter((order) => order.serviceType === 'course'))
+
+/**
+ * Avancement d'une commande de langue (étapes de la commande — `Order.checklist`
+ * — pas les heures planifiées) ; moyenne de toutes les commandes langue s'il y
+ * en a plusieurs (demande du responsable, 2026-08-30 — même principe que les
+ * cartes de `mon-projet/index.vue`). 0 % sans commande plutôt qu'une valeur
+ * inventée.
+ */
 const progressPct = computed(() => {
-  const lang = primaryLanguage.value
-  if (!lang || lang.totalHours <= 0) return langueProgressFallbackPct
-  return Math.min(100, Math.round((lang.totalPlanned / lang.totalHours) * 100))
+  const list = courseOrders.value
+  if (list.length === 0) return 0
+  const total = list.reduce((sum, order) => sum + orderChecklistProgress(order), 0)
+  return Math.round(total / list.length)
 })
 
 function formatSessionTime(session: PlannedSession): string {

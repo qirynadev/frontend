@@ -203,6 +203,3 @@ export const langueNextCourseMock: LangueNextCourseMock = {
   /** Relatif : ~22h18m35s après chargement de la page (affichage Figma). */
   startsAt: '',
 }
-
-/** Progress % affiché quand aucune heure API (maquette 50 %). */
-export const langueProgressFallbackPct = 50
