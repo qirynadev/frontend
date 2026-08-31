@@ -43,9 +43,9 @@ export interface SchoolFormation {
   sections: FormationSection[]
   /** Paragraphes libres hors rubriques — corps détaillé de la modale. */
   bodyHtml: string
-  /** Grade affiché sur la carte (`.ed-form-meta`). `-` tant que l'API ne l'expose pas. */
+  /** Grade affiché sur la carte (`.ed-form-meta`). `-` si le back-office ne l'a pas renseigné. */
   grade: string
-  /** Durée / année(s) affichée sur la carte. `-` tant que l'API ne l'expose pas. */
+  /** Durée / année(s) affichée sur la carte. `-` si le back-office ne l'a pas renseigné. */
   duration: string
 }
 
@@ -59,7 +59,12 @@ export interface SchoolDetail {
 export interface School extends SchoolSummary {
   /** HTML de présentation. Chaîne vide si l'API n'a rien renvoyé. */
   presentation: string
-  formations: SchoolFormation[]
+  /**
+   * Pas ici : `GET /schools/{id}/formations` (directives-backend §12), un
+   * appel dédié — plus besoin de faire porter les formations par la fiche
+   * complète (`/all-data`) pour n'afficher qu'un onglet. Voir
+   * `schoolRepo.formations()`.
+   */
   details: SchoolDetail[]
   seo: SeoMeta
 }

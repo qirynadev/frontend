@@ -9,9 +9,11 @@
  * `display: none` littéral : même résultat visuel, accessible aux lecteurs
  * d'écran.
  *
- * Formations : une seule icône `.ed-form-icon` (`ic-ed-form-1`), méta
- * grade + durée (`.ed-form-meta`, mockés tant que l’API ne les expose pas),
+ * Formations : une seule icône `.ed-form-icon` (`ic-ed-form-1`), méta grade +
+ * durée (`.ed-form-meta`, réels depuis le 2026-08-31, `-` si non renseignés),
  * accroche courte limitée à 3 lignes (`line-clamp-3`), détail en modale.
+ * Récupérées via `GET /schools/{id}/formations` (directives-backend §12),
+ * pas la fiche complète — `School` ne les porte plus (`school.adapter.ts`).
  *
  * CTA `.ed-float-cta` : flottant comme la maquette (hide au scroll down),
  * et **ancré en fin de flux** quand le contenu est court ou qu'on atteint
@@ -29,11 +31,20 @@ const destinationSlug = computed(() => String(route.params.slug ?? ''))
 const schoolSlug = computed(() => String(route.params.school ?? ''))
 const domaine = computed(() => String(route.query.domaine ?? 'architecture'))
 
-const { data: school, apiError, isInitialLoading, refresh } = await usePageData(
+const { data, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
-  () => schoolRepo.bySlug(schoolSlug.value, locale.value),
+  async () => {
+    const school = await schoolRepo.bySlug(schoolSlug.value, locale.value)
+    // Formations : appel dédié (§12), pas la fiche complète — a besoin de
+    // l'UUID de l'école, donc après sa résolution par slug.
+    const formations = school ? await schoolRepo.formations(school.id, locale.value) : []
+    return { school, formations }
+  },
   { watch: [schoolSlug, locale] },
 )
+
+const school = computed(() => data.value?.school ?? null)
+const formations = computed(() => data.value?.formations ?? [])
 
 if (school.value === null && !apiError.value) {
   throw createError({ statusCode: 404, statusMessage: t('school.detail.notFound'), fatal: true })
@@ -312,7 +323,7 @@ useSchoolSchemaOrg(school)
             :aria-hidden="activeTab !== 'formations'"
           >
             <button
-              v-for="formation in school.formations"
+              v-for="formation in formations"
               :key="formation.title"
               type="button"
               class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-white p-20 text-left text-text shadow-card"

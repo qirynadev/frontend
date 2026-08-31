@@ -303,12 +303,10 @@ d'endpoint dédié correspondante :
   aujourd'hui de `/all-data`. Demander un endpoint dédié par offre (ex.
   `GET /offers/{id}` ou `GET /areas-of-studies/{id}/offer`) — ce qu'`/offres/
   [domaine]` affiche n'a besoin que d'une seule offre, pas du dump entier.
-- **Formations d'école** (point 2) : `schoolSheets[*].schools[*].formations[]`
-  vient aussi de `/all-data`. En plus d'ajouter `grade`/`duration` (point 2),
-  demander que les formations d'une école soient exposées par un endpoint
-  dédié (ex. `GET /schools/{id}/formations`) plutôt que noyées dans le dump —
-  `GET /schools/{countryId}/{areaId}` existe déjà pour lister les écoles d'un
-  domaine, un complément par école serait cohérent avec ce qui existe.
+- ✅ **Formations d'école** — résolu le 2026-08-31 (voir point 20) :
+  `GET /schools/{id}/formations` existe désormais, `grade`/`duration`
+  compris, câblé côté front (`[school].vue` ne dépend plus de `/all-data`
+  pour son onglet Formations).
 
 **Pas concerné, déjà dédié** : les professeurs (`/teachers`, `/user/plannings/
 teachers/{courseId}`) ont déjà leurs propres endpoints — le champ `teachers`
@@ -600,22 +598,32 @@ silencieusement disparaître le contenu de l'onglet, sans erreur nulle part.
 dans un champ générique. Fiabilise l'onglet et évite qu'un renommage anodin
 dans l'admin casse silencieusement l'affichage.
 
-## 20. 🔵 Suggestion : `grade`/`duration` par formation (fiche école)
+## 20. ✅ Résolu : `grade`/`duration` par formation + endpoint dédié (fiche école)
 
-**Pas un bug côté front** — corrigé le 2026-08-31. Chaque formation d'une
-fiche école (`School.formations[]`) n'a que `title`/`description` côté
-back-office (confirmé sur le formulaire admin, `resources/js/Pages/School/
-Edit.vue` : aucun champ grade/durée dans le repeater formations). La
-maquette affiche pourtant un grade et une durée par formation
-(`.ed-form-meta`, ex. « Grade Master · 3 ans ») : un mock front
-(`config/formation-meta-mock.ts`) devinait ces valeurs depuis le titre
-(« Bachelor » → Grade Bachelor, etc.) ou repliait sur des valeurs fréquentes
-de la maquette — retiré, remplacé par `-` quand l'API ne fournit rien.
+Écrit initialement le 2026-08-31 comme suggestion (chaque formation n'avait
+que `title`/`description` côté back-office, un mock front devinait grade/
+durée depuis le titre — retiré le même jour, `-` en repli). **Déjà résolu
+au moment de l'écriture** : le commit `591cc9a` (Prosper, poussé sur
+`staging` la veille) avait ajouté exactement ces deux champs **et** un
+endpoint dédié, `GET /schools/{id}/formations` — la suite du point 12
+ci-dessus (formations d'école) était donc déjà traitée sans qu'on le sache.
 
-**Suggestion** : deux champs `grade`/`duration` (ou `duration_label`) par
-entrée du repeater formations, au même titre que `title`/`description`.
-`toFormations()` (`school.adapter.ts`) les lit déjà s'ils arrivent un jour —
-aucun changement front nécessaire après l'ajout côté API.
+Câblé côté front le jour même :
+- `server/api/bff/schools/[id]/formations.get.ts` (nouveau) : relaie
+  l'endpoint dédié, adapté via `toFormations()` (déjà exportée).
+- `schoolRepo.formations(schoolId, locale)`.
+- `[school].vue` : l'onglet Formations vient de cet appel dédié, plus de
+  `/all-data` — `School` (contrat) ne porte plus `formations` du tout.
+
+**Piège rencontré en vérifiant** : juste après le push, la route répondait
+encore avec la forme **paginée** de `GET /schools/{countryId}/{areaId}`
+(route préexistante — `/schools/{n'importe quoi}/{n'importe quoi}` la
+matchait aussi, y compris `/schools/{uuid}/formations`), signe que le
+déploiement n'avait pas encore rattrapé le commit. Revérifié quelques
+minutes plus tard : réponse correcte (`[{title, description, grade,
+duration}]`). Si un futur endpoint fraîchement ajouté par le back-office
+semble ignorer son propre code, revérifier après quelques minutes avant de
+conclure à un bug plutôt qu'à un déploiement encore en cours.
 
 ## Pour mémoire — pas des écarts, aucune action requise
 

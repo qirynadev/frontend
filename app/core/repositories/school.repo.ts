@@ -1,4 +1,4 @@
-import type { School, SchoolSummary } from '../contracts'
+import type { School, SchoolFormation, SchoolSummary } from '../contracts'
 import { ApiError } from '../http/errors'
 import { bffFetch } from '../http/client'
 
@@ -61,6 +61,21 @@ export const schoolRepo = {
     }
     catch (error) {
       if (error instanceof ApiError && error.kind === 'notFound') return null
+      throw error
+    }
+  },
+
+  /**
+   * Formations d'une école, à l'unité (`GET /schools/{id}/formations`,
+   * directives-backend §12) — pas `/all-data` : `id` est l'UUID de l'école
+   * (`School.id`), pas son slug.
+   */
+  async formations(schoolId: string, locale?: string): Promise<SchoolFormation[]> {
+    try {
+      return await bffFetch<SchoolFormation[]>(`/schools/${encodeURIComponent(schoolId)}/formations`, { locale })
+    }
+    catch (error) {
+      if (error instanceof ApiError && error.kind === 'notFound') return []
       throw error
     }
   },

@@ -4,21 +4,23 @@ import { toCountry, toSeo } from './common.adapter'
 import { asArray, asRecord, html, list, optionalNum, optionalStr, str, toUrl } from './primitives'
 
 /**
- * Formations de la fiche école.
+ * Formations d'une école — consommée par `GET /schools/{id}/formations`
+ * (directives-backend §12), un appel dédié, **pas** `toSchool()`/`/all-data`
+ * : la fiche complète n'a plus besoin de porter les formations pour que
+ * l'onglet « Formations » les affiche (voir `schoolRepo.formations()`).
  *
  * Les tableaux `formations` / `details` de l'API contiennent presque toujours
  * une entrée fantôme `{ title: null, description: null }` — 428 des 570 écoles
  * du catalogue de recette n'ont que ça. On les écarte ici, une fois.
  *
- * **Grade / durée** : l'API ne les expose pas (clés absentes, vérifié à
- * nouveau le 2026-08-31 sur le catalogue et le formulaire admin — la fiche
- * école n'a que `title`/`description` par formation). Un mock précédent
- * (`config/formation-meta-mock.ts`) devinait un grade/une durée depuis le
- * titre ou repliait sur « Grade Master »/« 3 ans » : retiré, une valeur
- * inventée n'est pas préférable à une absence honnête. `-` tant que le
- * back-office n'alimente pas ces champs (voir `docs/directives-backend.md`).
+ * **Grade / durée** : réels depuis le 2026-08-31 (`SchoolController::
+ * getFormations`, `grade`/`duration` par formation côté back-office) — un
+ * mock précédent (`config/formation-meta-mock.ts`) devinait ces valeurs
+ * depuis le titre ou repliait sur « Grade Master »/« 3 ans », retiré le même
+ * jour. `-` seulement si le back-office ne les a pas renseignés pour cette
+ * formation précise.
  */
-function toFormations(raw: unknown): SchoolFormation[] {
+export function toFormations(raw: unknown): SchoolFormation[] {
   return asArray(raw)
     .map((entry) => {
       const source = asRecord(entry)
@@ -77,7 +79,6 @@ export function toSchool(raw: unknown, destinationSlug = '', flagBase?: string):
   return {
     ...summary,
     presentation,
-    formations: toFormations(source.formations),
     details: toDetails(source.details),
     seo: toSeo(source, summary.title, presentation),
   }
