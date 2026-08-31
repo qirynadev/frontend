@@ -3,21 +3,29 @@
  * Centre d’aide — Envoyer un message ← capture produit (WhatsApp 2026-08-23).
  * Succès « Demande envoyée ! » ← capture (WhatsApp 2026-08-23, 20:16).
  *
- * Câblé sur `POST /user/messages` (réel côté API, authentifié — vérifié en
- * direct 2026-08-27) : c'est le même mécanisme que la rubrique « Messagerie »
- * du back-office (`Messaging::create`, visible immédiatement dans son écran
- * admin `Messages/Index`, en plus d'envoyer l'e-mail de notification comme
- * `/send-email` — voir `MessageController::sendMessage` côté back-office).
- * Préféré à `/send-email` (essayé d'abord, gardé en repli documentaire) :
- * celui-ci n'enregistre rien en base (`TODO #56` dans le code source réel),
- * donc rien de visible pour l'équipe support en dehors d'une boîte mail.
+ * Accessible sans connexion (2026-08-30, sur demande explicite) : cet écran
+ * sert aussi de simple page de contact public. Deux chemins selon la
+ * session :
  *
- * `POST /user/messages` n'a qu'un seul champ (`text`) et ignore tout nom/
- * e-mail transmis — le message part **au nom du compte connecté**, avec son
- * profil réel. Sujet/nom/e-mail saisis dans le formulaire sont donc regroupés
- * dans ce texte plutôt que perdus. Écran succès inchangé (données du
- * formulaire + repli `contact-success-mock.ts`). Doc :
- * `docs/reglages-contact-mocks.md`.
+ * - **connecté** — `POST /user/messages` (authentifié, vérifié en direct
+ *   2026-08-27) : même mécanisme que la rubrique « Messagerie » du
+ *   back-office (`Messaging::create`, visible immédiatement dans son écran
+ *   admin `Messages/Index`), en plus de l'e-mail de notification. Un seul
+ *   champ (`text`) et ignore tout nom/e-mail transmis — le message part **au
+ *   nom du compte connecté**, avec son profil réel. C'est pourquoi les champs
+ *   Nom/E-mail sont **préremplis et désactivés** dans ce cas : les modifier
+ *   n'aurait aucun effet côté back-office, le laisser croire le contraire
+ *   serait trompeur.
+ * - **non connecté** — `POST /send-email` (public, `messages/public.post.ts`)
+ *   : aucun compte pour fournir nom/e-mail à sa place, ces champs restent
+ *   donc éditables. N'enregistre rien en base (`TODO #56` dans le code
+ *   source réel de cette route) — e-mail de notification seulement, voir
+ *   `docs/directives-backend.md`.
+ *
+ * Sujet/nom/e-mail saisis dans le formulaire n'ont pas de champ dédié côté
+ * `/user/messages` : regroupés dans `text` plutôt que perdus (chemin
+ * connecté uniquement). Écran succès inchangé (données du formulaire + repli
+ * `contact-success-mock.ts`). Doc : `docs/reglages-contact-mocks.md`.
  *
  * Espacement vertical **22px** entre blocs majeurs (topbar → sections).
  */
@@ -26,11 +34,10 @@ import { contactRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 import { ApiError } from '~/core/http/errors'
 
-definePageMeta({ middleware: 'auth' })
-
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
+const isAuthenticated = computed(() => session.isAuthenticated)
 
 const MESSAGE_MAX = 1000
 
@@ -92,13 +99,33 @@ function buildMessageText(): string {
   ].join('\n')
 }
 
+/**
+ * `POST /send-email` exige `first_name`/`last_name` séparés — le formulaire
+ * n'a qu'un champ Nom unique. Coupé sur le premier espace ; un nom sans
+ * espace sert pour les deux plutôt que d'envoyer un `last_name` vide (rejeté
+ * par la validation du back-office).
+ */
+function splitName(): { firstName: string, lastName: string } {
+  const parts = name.value.trim().split(/\s+/)
+  return { firstName: parts[0] ?? '', lastName: parts.slice(1).join(' ') || parts[0] || '' }
+}
+
 async function onSubmit(): Promise<void> {
   if (!validate()) return
 
   submitting.value = true
   submitError.value = false
   try {
-    await contactRepo.send({ text: buildMessageText() }, locale.value)
+    if (isAuthenticated.value) {
+      await contactRepo.send({ text: buildMessageText() }, locale.value)
+    }
+    else {
+      const { firstName, lastName } = splitName()
+      await contactRepo.sendPublic(
+        { firstName, lastName, email: email.value.trim(), subject: subjectLabel.value, message: message.value.trim() },
+        locale.value,
+      )
+    }
     submitted.value = true
   }
   catch (error) {
@@ -282,10 +309,11 @@ usePageSeo(() => ({
               v-model="name"
               type="text"
               autocomplete="name"
+              :disabled="isAuthenticated"
               :placeholder="$t('settingsContact.namePlaceholder')"
               :aria-invalid="!!errors.name || undefined"
               :class="[
-                'box-border w-full rounded-xl border bg-white px-16 py-15 text-xl leading-20 font-medium text-text outline-none placeholder:text-muted',
+                'box-border w-full rounded-xl border bg-white px-16 py-15 text-xl leading-20 font-medium text-text outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
                 errors.name ? 'border-danger' : 'border-border focus:border-primary',
               ]"
             >
@@ -302,10 +330,11 @@ usePageSeo(() => ({
               type="email"
               autocomplete="email"
               inputmode="email"
+              :disabled="isAuthenticated"
               :placeholder="$t('settingsContact.emailPlaceholder')"
               :aria-invalid="!!errors.email || undefined"
               :class="[
-                'box-border w-full rounded-xl border bg-white px-16 py-15 text-xl leading-20 font-medium text-text outline-none placeholder:text-muted',
+                'box-border w-full rounded-xl border bg-white px-16 py-15 text-xl leading-20 font-medium text-text outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
                 errors.email ? 'border-danger' : 'border-border focus:border-primary',
               ]"
             >

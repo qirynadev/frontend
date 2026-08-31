@@ -541,6 +541,44 @@ que l'action déclenchante — exactement le patron déjà en place dans
 pour un compte qui n'a jamais reçu de message d'un conseiller, même actif sur
 la plateforme (commandes payées, formations en cours…).
 
+## 18. ✅ Contourné : `POST /send-email` plante sans le champ `phone`
+
+**Reproduit en direct** (2026-08-30, en rendant `/reglages/contact`
+accessible sans connexion — voir commit du jour) : notre nouvelle route
+publique n'envoyait pas de champ `phone` (le formulaire ne le demande pas),
+et `POST /send-email` répondait **500** (page d'erreur Laravel brute, pas un
+422 de validation).
+
+```
+curl -X POST https://admin.stage.qiryna.com/api/send-email \
+  -d '{"first_name":"Test","last_name":"Automatique","email":"...","subject":"general","message":"..."}'
+→ 500 Internal Server Error
+```
+
+**Cause** : même motif exactement que le point 10 (`lc_country_id`).
+`FrontendDataController::sendEmail()` valide `phone` en `nullable` (optionnel),
+mais `MessageAction::sendEmail()` y accède ensuite sans repli :
+
+```php
+Notification::route('mail', ...)->notify(
+    new ContactMailNotification(
+        ...
+        phone: $inputs['phone'],   // plante si la clé est absente
+        ...
+    )
+);
+```
+
+`attachment`/`image`, juste en dessous, ont bien `?? null` — seul `phone` en
+est privé. Confirmé qu'envoyer `phone: ""` explicitement suffit (201, e-mail
+bien reçu par le réglage `site.email`).
+
+**Contourné côté front** (`server/api/bff/messages/public.post.ts`) : envoie
+désormais `phone: ''` à chaque appel. **Ce qu'il faut, côté API** :
+`'phone' => $inputs['phone'] ?? null,` (une ligne, comme le correctif déjà
+appliqué à `lc_country_id`) — le contournement front reste inoffensif après
+correction, pas la peine de le retirer.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

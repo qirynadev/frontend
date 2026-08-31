@@ -1,5 +1,5 @@
 /**
- * Message du formulaire « Centre d'aide » (`/reglages/contact`).
+ * Message du formulaire « Centre d'aide » (`/reglages/contact`), compte connecté.
  *
  * `POST /user/messages` (API, authentifié) — même mécanisme que la rubrique
  * « Messagerie » du back-office (`Messaging::create`), visible immédiatement
@@ -10,4 +10,18 @@
  */
 export interface ContactMessageInput {
   text: string
+}
+
+/**
+ * Même formulaire, visiteur non connecté (`/reglages/contact` accessible sans
+ * session, 2026-08-30). `POST /send-email` (API, public) n'enregistre rien en
+ * base — e-mail seulement, voir `docs/directives-backend.md` — mais accepte
+ * de vraies coordonnées puisqu'aucun compte ne les fournit à sa place.
+ */
+export interface PublicContactMessageInput {
+  firstName: string
+  lastName: string
+  email: string
+  subject: string
+  message: string
 }
