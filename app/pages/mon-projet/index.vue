@@ -30,8 +30,6 @@ const { data, apiError, isInitialLoading, refresh } = await useProjetData(locale
  */
 const accompagnements = computed(() => toAccompagnements(
   data.value?.orders ?? [],
-  data.value?.languages ?? [],
-  data.value?.sessions ?? [],
   data.value?.evaluations ?? [],
 ))
 

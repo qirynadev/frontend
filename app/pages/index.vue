@@ -19,7 +19,7 @@
  * 2. `GET /articles` renvoie un tableau vide : les deux cartes de la maquette
  *    servent de contenu de repli (`config/home-articles.ts`).
  */
-import { articleRepo, catalogRepo, orientationEvaluationRepo, paymentRepo, planningRepo } from '~/core/repositories'
+import { articleRepo, catalogRepo, orientationEvaluationRepo, paymentRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 import { homeCategories } from '~/config/home-categories'
 import { fallbackArticles } from '~/config/home-articles'
@@ -37,13 +37,11 @@ const session = useSessionStore()
 async function loadJourneyProgress(): Promise<number> {
   if (!session.isAuthenticated) return 0
 
-  const [orders, languages, sessions, evaluations] = await Promise.all([
+  const [orders, evaluations] = await Promise.all([
     paymentRepo.orders(locale.value),
-    planningRepo.unplanned(locale.value),
-    planningRepo.planned(locale.value),
     orientationEvaluationRepo.list(locale.value),
   ])
-  const accompagnements = toAccompagnements(orders, languages, sessions, evaluations)
+  const accompagnements = toAccompagnements(orders, evaluations)
   if (accompagnements.length === 0) return 0
 
   const total = accompagnements.reduce((sum, item) => sum + (item.progressPercent ?? 0), 0)

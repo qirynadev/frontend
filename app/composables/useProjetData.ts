@@ -1,4 +1,4 @@
-import type { LanguageProgress, Order, OrientationEvaluation, PlannedSession } from '~/core/contracts'
+import type { Order, OrientationEvaluation } from '~/core/contracts'
 import type { ProjetAccompagnement, ProjetBadgeTone } from '~/core/contracts/projet'
 import { orientationEvaluationProgress } from '~/utils/orientation-progress'
 import { orientationEvaluationRepo, paymentRepo, planningRepo } from '~/core/repositories'
@@ -143,40 +143,28 @@ function toOrderAggregateAccompagnement(orders: Order[], type: 'areaofstudy' | '
 }
 
 /**
- * Une seule carte pour **toutes** les langues achetées, pas une par langue
- * (règle resserrée le 2026-08-23 — auparavant une carte par langue). Le
- * nombre de langues distinctes est le dénominateur ; chaque langue contribue
- * son propre pourcentage (séances terminées + expirées sur ses heures
- * achetées), la moyenne de ces pourcentages est le score affiché.
- *
- * `languages`/`sessions` viennent de `GET /plannings/unplanned` et `/planned`,
- * qui ne portent que les commandes **payées** — une commande encore « en
- * attente de paiement » n'apparaît dans aucun des deux et donc ne compte pas
- * dans le dénominateur. Signalé, pas résolu : rattacher une telle commande à
- * sa langue sans donnée fiable pour le faire serait plus fragile que l'omettre.
+ * Une seule carte pour **toutes** les commandes de langue, pas une par langue
+ * (règle resserrée le 2026-08-23). Avancement basé sur les étapes de chaque
+ * commande (`Order.checklist`, même mécanisme qu'admission/logement) plutôt
+ * que sur les heures planifiées — décision du responsable, 2026-08-30, reprise
+ * ici pour que la carte et le détail (`/mon-projet/langues`) affichent le même
+ * principe de calcul. Le nombre de commandes est le dénominateur ; chacune
+ * contribue son propre pourcentage, la moyenne de ces pourcentages est le
+ * score affiché.
  */
-export function toLanguageAccompagnement(languages: LanguageProgress[], sessions: PlannedSession[]): ProjetAccompagnement | null {
-  if (languages.length === 0) return null
+export function toLanguageAccompagnement(orders: Order[]): ProjetAccompagnement | null {
+  if (orders.length === 0) return null
 
   const config = TYPE_CONFIG.course!
-  const now = Date.now()
-
-  const perLanguagePercent = languages.map((language) => {
-    if (language.totalHours <= 0) return 0
-    const completed = sessions.filter(
-      (session) => session.courseId === language.courseId && session.startDate !== null && new Date(session.startDate).getTime() < now,
-    ).length
-    const expired = language.lessons.filter((lesson) => lesson.expired).length
-    return Math.min(100, Math.round(((completed + expired) / language.totalHours) * 100))
-  })
-
-  const progressPercent = Math.round(perLanguagePercent.reduce((sum, pct) => sum + pct, 0) / languages.length)
+  const progressPercent = Math.round(
+    orders.reduce((sum, order) => sum + orderChecklistProgress(order), 0) / orders.length,
+  )
 
   return {
     id: 'course',
     titleKey: config.titleKey,
     sub: '',
-    statusKey: progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress',
+    statusKey: toOverallStatus(orders, progressPercent),
     badgeTone: config.badgeTone,
     progressPercent,
     hasOrder: true,
@@ -264,19 +252,17 @@ export function ensureAllTypes(accompagnements: ProjetAccompagnement[]): ProjetA
 }
 
 /**
- * Assemble les 4 cartes à partir des commandes/langues/bilans réels.
+ * Assemble les 4 cartes à partir des commandes/bilans réels.
  * Utilisé par `mon-projet/index.vue` ; extrait ici pour rester testable sans
  * monter le composant.
  */
 export function toAccompagnements(
   orders: Order[],
-  languages: LanguageProgress[],
-  sessions: PlannedSession[],
   evaluations: OrientationEvaluation[],
 ): ProjetAccompagnement[] {
   const admission = toOrderAggregateAccompagnement(orders.filter((order) => order.serviceType === 'areaofstudy'), 'areaofstudy')
   const logement = toOrderAggregateAccompagnement(orders.filter((order) => order.serviceType === 'costofliving'), 'costofliving')
-  const langues = toLanguageAccompagnement(languages, sessions)
+  const langues = toLanguageAccompagnement(orders.filter((order) => order.serviceType === 'course'))
   const orientation = toOrientationAccompagnement(orders.filter((order) => order.serviceType === 'profilage'), evaluations)
 
   const fromApi = [admission, logement, langues, orientation].filter((item): item is ProjetAccompagnement => item !== null)
