@@ -183,10 +183,8 @@ usePageSeo(() => ({
               <p class="m-0 pt-4 pb-2 text-md leading-[17.875px] text-progress-text">
                 {{ $t('home.progress.desc') }}
               </p>
-              <!-- Provisoire (demande du responsable, 2026-08-31) : /mon-projet/apercu
-                   pour relecture, avant qu'une destination définitive ne soit tranchée. -->
               <NuxtLink
-                :to="localePath('/mon-projet/apercu')"
+                :to="localePath('/mon-projet')"
                 class="mt-6 inline-flex cursor-pointer rounded-lg bg-progress-btn px-13 py-8 text-base leading-16 font-semibold text-white no-underline"
               >
                 {{ $t('home.progress.cta') }}
