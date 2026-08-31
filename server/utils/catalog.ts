@@ -121,7 +121,7 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
     banners: toBannerList(raw.banners),
     partners: toPartnerList(raw.partners),
     // Le catalogue d'amorçage ne transporte que les résumés : pas d'écoles.
-    destinations: destinations.map(({ schools: _s, description: _d, seo: _seo, ...summary }) => summary),
+    destinations: destinations.map(({ schools: _s, description: _d, seo: _seo, stats: _st, ...summary }) => summary),
     offers: offers.map(({ id, slug, title, heroTitle, badgeLabel, icon, price }) => ({
       id,
       slug,

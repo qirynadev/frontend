@@ -268,11 +268,7 @@
       "notFound": "Destination introuvable",
       "seeSchools": "Voir les écoles | Voir l’école | Voir les {count} écoles",
       "statCountry": "Code pays",
-      "statNobel": "Prix Nobel\nen 2023",
-      "statRanking": "destination d’études dans le monde",
-      "statSchools": "Écoles partenaires",
-      "statStudents": "Étudiants internationaux",
-      "statUniversities": "Universités et\ngrandes écoles"
+      "statSchools": "Écoles partenaires"
     },
     "list": {
       "emptyDescription": "Nos destinations sont en cours de publication. Revenez très vite.",

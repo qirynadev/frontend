@@ -58,6 +58,12 @@ export const rawDestination = {
   country: { id: 73, name: 'France', iso_alpha_2: 'FR' },
   schools: [rawSchool, rawSchoolWithFormations],
   nbr_schools: 108,
+  stats: [
+    { value: '295', label: 'Universités et grandes écoles' },
+    { value: '550 000', label: 'Étudiants internationaux' },
+    { value: null, label: 'destination d’études dans le monde' },
+    { value: '138', label: null },
+  ],
 }
 
 export const rawOffer = {

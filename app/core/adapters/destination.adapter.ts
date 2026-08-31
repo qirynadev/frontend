@@ -1,7 +1,20 @@
-import type { Destination, DestinationSummary } from '../contracts'
+import type { Destination, DestinationStat, DestinationSummary } from '../contracts'
 import { toCountry, toSeo } from './common.adapter'
 import { toSchoolSummary } from './school.adapter'
-import { asRecord, dedupeBySlug, html, list, num, str, toUrl, warnDataIssue } from './primitives'
+import { asArray, asRecord, dedupeBySlug, html, list, num, str, toUrl, warnDataIssue } from './primitives'
+
+/**
+ * Statistiques éditoriales du bandeau d'excellence — libellé et valeur libres
+ * par pays (`SchoolFile.stats`), jamais complétées à 4 côté front : une entrée
+ * manquante ou vide affiche un « - », elle n'est pas remplacée par une donnée
+ * inventée.
+ */
+function toDestinationStats(raw: unknown): DestinationStat[] {
+  return asArray(raw).map((entry) => ({
+    value: str(entry, 'value'),
+    label: str(entry, 'label'),
+  }))
+}
 
 /**
  * Le champ `title` de l'API ne contient **pas** le nom de la destination mais
@@ -57,6 +70,7 @@ export function toDestination(raw: unknown, flagBase?: string): Destination {
     description,
     schools: uniqueSchools,
     schoolCount: uniqueSchools.length,
+    stats: toDestinationStats(source.stats),
     seo: toSeo(source, summary.title, description),
   }
 }

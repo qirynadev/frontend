@@ -104,7 +104,7 @@ function toOverallStatus(orders: Order[], progressPercent: number): string {
  * test, checklist 1/7, contribuait 0 % au lieu de 14 %). Seul un `échoué`
  * reste exclu.
  */
-function orderChecklistProgress(order: Order): number {
+export function orderChecklistProgress(order: Order): number {
   if (order.status === 'failed' || order.checklist.length === 0) return 0
   const done = order.checklist.filter((item) => item.status === 'done').length
   return Math.round((done / order.checklist.length) * 100)

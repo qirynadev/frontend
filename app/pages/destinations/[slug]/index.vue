@@ -10,9 +10,11 @@
  * utilisait une grille 2/4 colonnes calée sur 425px : coïncidait par hasard à
  * 375px, divergeait ailleurs.
  *
- * `destination.detail.statUniversities`/`statNobel` portent un retour à la
- * ligne littéral (`\n` + `whitespace-pre-line`) : la maquette les coupe avec
- * `<br>`, interdit dans une clé i18n (rejette le fichier de locale entier).
+ * Les 4 pastilles affichent `destination.stats` (`SchoolFile.stats`,
+ * back-office) : libellé et valeur saisis librement par pays, jusqu'à 4
+ * entrées — jamais une clé i18n fixe, chaque pays a son propre texte (voir
+ * `docs/directives-backend.md`). Une entrée absente ou vide affiche « - »,
+ * pas une valeur inventée.
  *
  * Domaines réels de la destination (`destinationRepo.areas`), pas le
  * catalogue générique d'offres : deux destinations n'ont pas les mêmes — la
@@ -44,6 +46,29 @@ const { data, apiError, isInitialLoading, refresh } = await usePageData(
 
 const destination = computed(() => data.value?.destination ?? null)
 const areas = computed(() => data.value?.areas ?? [])
+
+/**
+ * Les 4 pastilles du bandeau sont une position fixe (icône décorative), pas
+ * une catégorie fixe : `SchoolFile.stats` est un libellé + une valeur saisis
+ * librement par pays (back-office), jusqu'à 4 entrées, parfois moins — voir
+ * `docs/directives-backend.md`. Une entrée absente ou vide affiche « - »,
+ * jamais une valeur inventée (ex-repli « 350+ »/« 430 000+ » retiré).
+ */
+const STAT_SLOTS = [
+  { icon: 'ic-dom-stat-uni', bg: 'bg-dom-stat-uni-bg' },
+  { icon: 'ic-dom-stat-globe', bg: 'bg-dom-stat-globe-bg' },
+  { icon: 'ic-dom-stat-podium', bg: 'bg-dom-stat-podium-bg' },
+  { icon: 'ic-dom-stat-nobel', bg: 'bg-dom-stat-nobel-bg' },
+] as const
+
+const stats = computed(() => {
+  const real = destination.value?.stats ?? []
+  return STAT_SLOTS.map((slot, index) => ({
+    ...slot,
+    value: real[index]?.value || '-',
+    label: real[index]?.label || '-',
+  }))
+})
 
 if (data.value && !data.value.destination) {
   throw createError({ statusCode: 404, statusMessage: t('destination.detail.notFound'), fatal: true })
@@ -77,12 +102,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
 
         <div class="box-border flex w-full items-start px-9 max-2xs:flex-wrap max-2xs:gap-12">
           <div
-            v-for="stat in [
-              { icon: 'ic-dom-stat-uni', bg: 'bg-dom-stat-uni-bg', value: destination.schoolCount > 0 ? `${destination.schoolCount}+` : '350+', labelKey: 'destination.detail.statUniversities' },
-              { icon: 'ic-dom-stat-globe', bg: 'bg-dom-stat-globe-bg', value: '430 000+', labelKey: 'destination.detail.statStudents' },
-              { icon: 'ic-dom-stat-podium', bg: 'bg-dom-stat-podium-bg', value: '3ème', labelKey: 'destination.detail.statRanking' },
-              { icon: 'ic-dom-stat-nobel', bg: 'bg-dom-stat-nobel-bg', value: '8', labelKey: 'destination.detail.statNobel' },
-            ]"
+            v-for="stat in stats"
             :key="stat.icon"
             class="flex min-w-0 flex-1 flex-col items-center gap-5 [&:not(:first-child)]:px-4 max-2xs:flex-[1_1_40%]"
           >
@@ -93,7 +113,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
               {{ stat.value }}
             </p>
             <p class="m-0 min-h-32 text-xs leading-normal font-medium whitespace-pre-line text-text text-center">
-              {{ $t(stat.labelKey) }}
+              {{ stat.label }}
             </p>
           </div>
         </div>
