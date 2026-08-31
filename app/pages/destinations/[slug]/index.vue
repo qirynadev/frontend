@@ -16,6 +16,16 @@
  * `docs/directives-backend.md`). Une entrée absente ou vide affiche « - »,
  * pas une valeur inventée.
  *
+ * Le titre du bandeau (`destination.tagline`, le champ back-office `title`,
+ * requis) est éditorial et propre à chaque pays (ex. Chine : « Puissance
+ * académique émergente et innovation à grande échelle ») — l'ancien
+ * `destination.detail.bannerTitle` affichait « {pays}, une destination
+ * d'excellence » identique pour tous, en ignorant ce champ. Repli sur le nom
+ * du pays si jamais vide (ne devrait pas arriver, le champ est requis côté
+ * back-office). `subtitle` existe aussi côté back-office (accroche
+ * secondaire par pays) mais n'a pas d'emplacement dans cette maquette —
+ * non affiché, à considérer séparément si besoin.
+ *
  * Domaines réels de la destination (`destinationRepo.areas`), pas le
  * catalogue générique d'offres : deux destinations n'ont pas les mêmes — la
  * France n'a que Management et Médecine quand la plupart en ont cinq
@@ -97,7 +107,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
         <h1
           class="m-0 w-full box-border pl-35 max-2xs:pl-12 text-xl max-2xs:text-lg font-semibold leading-normal tracking-[-0.65px] text-text"
         >
-          {{ $t('destination.detail.bannerTitle', { country: destination.title }) }}
+          {{ destination.tagline || destination.title }}
         </h1>
 
         <div class="box-border flex w-full items-start px-9 max-2xs:flex-wrap max-2xs:gap-12">

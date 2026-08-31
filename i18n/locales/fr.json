@@ -259,7 +259,6 @@
   },
   "destination": {
     "detail": {
-      "bannerTitle": "{country}, une destination d’excellence ",
       "domainSchoolCount": "Aucune école | 1 école | {count} écoles",
       "domainsEmpty": "Aucun domaine d’étude publié pour l’instant.",
       "domainsSubtitle": "Nos formules d’accompagnement par spécialité",

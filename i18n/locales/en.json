@@ -259,7 +259,6 @@
   },
   "destination": {
     "detail": {
-      "bannerTitle": "{country}, a destination of excellence",
       "domainSchoolCount": "No school | 1 school | {count} schools",
       "domainsEmpty": "No fields of study published yet.",
       "domainsSubtitle": "Our support packages by specialism",
