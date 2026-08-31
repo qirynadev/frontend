@@ -12,12 +12,15 @@
  * | carte parcours | `.home-progress-card` fond `#fef4f5`, `padding: 20px`, `min-height: 154px`, illustration en absolu `right: -20px` |
  * | actualités | `.home-news-scroll` défilement horizontal, `gap: 16px`, cartes de 322px |
  *
- * Deux écarts de **données**, pas de rendu :
- * 1. la progression « 60 % » est propre à un compte connecté ; le tunnel public
- *    n'a pas de session. La valeur affichée reste celle de la maquette tant que
- *    l'authentification n'existe pas (Lot 5) ;
- * 2. `GET /articles` renvoie un tableau vide : les deux cartes de la maquette
- *    servent de contenu de repli (`config/home-articles.ts`).
+ * Écart de **données**, pas de rendu : `GET /articles` renvoie un tableau
+ * vide, les deux cartes de la maquette servent de contenu de repli
+ * (`config/home-articles.ts`).
+ *
+ * L'anneau « Continuez votre parcours » affiche la moyenne réelle de tous les
+ * accompagnements du client (`loadJourneyProgress`, 0 % si non connecté) —
+ * dessiné en SVG (`progressRingOffset`), pas les deux icônes statiques de la
+ * maquette (`ic-home-progress-bg/-fill`) dont le remplissage était figé à un
+ * pourcentage arbitraire, sans rapport avec le nombre affiché à côté.
  */
 import { articleRepo, catalogRepo, orientationEvaluationRepo, paymentRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
@@ -87,10 +90,21 @@ const bannerSrc = computed(() => home.value?.slides[0]?.image ?? '/img/home-bann
 
 /**
  * Progression affichée dans l'anneau — 0 % si non connecté, sinon la moyenne
- * de tous les accompagnements du client (`loadJourneyProgress`). L'anneau est
- * composé des deux SVG fournis (fond + remplissage), comme dans `home.html`.
+ * de tous les accompagnements du client (`loadJourneyProgress`).
  */
 const progress = computed(() => data.value?.progress ?? 0)
+
+/**
+ * Anneau dessiné en SVG, dasharray/dashoffset pilotés par `progress` — pas
+ * les deux icônes statiques de la maquette (`ic-home-progress-bg/-fill`),
+ * dont le remplissage était une forme figée à un pourcentage arbitraire,
+ * sans rapport avec le nombre affiché à côté. Même rayon (25,5) et mêmes
+ * couleurs que ces icônes, pour un rendu identique mais réellement piloté
+ * par la donnée.
+ */
+const PROGRESS_RING_RADIUS = 25.5
+const progressRingCircumference = 2 * Math.PI * PROGRESS_RING_RADIUS
+const progressRingOffset = computed(() => progressRingCircumference * (1 - progress.value / 100))
 
 /** Menu latéral (`home-menu` de la maquette). */
 const menuOpen = ref(false)
@@ -142,10 +156,21 @@ usePageSeo(() => ({
 
         <div class="relative mt-16 min-h-154 overflow-hidden rounded-xl bg-progress-bg p-20 shadow-xs">
           <div class="relative z-1 flex max-w-[calc(100%-100px)] items-start gap-16 max-3xs:max-w-full">
-            <!-- Anneau : les deux SVG de la maquette, superposés -->
+            <!-- Anneau : tracé SVG dynamique, conforme au taux affiché -->
             <div class="relative size-56 shrink-0">
-              <QIcon name="ic-home-progress-bg" :size="56" class="absolute inset-0" />
-              <QIcon name="ic-home-progress-fill" :size="56" class="absolute inset-0" />
+              <svg class="absolute inset-0 -rotate-90" viewBox="0 0 56 56" width="56" height="56" aria-hidden="true">
+                <circle cx="28" cy="28" r="25.5" fill="none" stroke="#FCE3E6" stroke-width="5" />
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="25.5"
+                  fill="none"
+                  stroke="#EF2344"
+                  stroke-width="5"
+                  :stroke-dasharray="progressRingCircumference"
+                  :stroke-dashoffset="progressRingOffset"
+                />
+              </svg>
               <span class="absolute top-20 left-15 text-xl leading-20 font-medium tracking-[0.1px] text-progress-value">
                 {{ progress }}%
               </span>
@@ -158,8 +183,10 @@ usePageSeo(() => ({
               <p class="m-0 pt-4 pb-2 text-md leading-[17.875px] text-progress-text">
                 {{ $t('home.progress.desc') }}
               </p>
+              <!-- Provisoire (demande du responsable, 2026-08-31) : /mon-projet/apercu
+                   pour relecture, avant qu'une destination définitive ne soit tranchée. -->
               <NuxtLink
-                :to="localePath('/orientation')"
+                :to="localePath('/mon-projet/apercu')"
                 class="mt-6 inline-flex cursor-pointer rounded-lg bg-progress-btn px-13 py-8 text-base leading-16 font-semibold text-white no-underline"
               >
                 {{ $t('home.progress.cta') }}

@@ -30,28 +30,42 @@
  * Les quatre cartes de service restent le contenu illustratif de la
  * maquette (Orientation/Langue/Logement fixes, pas les commandes réelles de
  * l'utilisateur) : cet écran est un aperçu au sens maquette du terme, distinct
- * de la liste réelle par commande de `mon-projet/index.vue`. La progression et
- * les compteurs, eux, déjà dérivés des vraies commandes dans l'implémentation
- * récupérée, sont conservés tels quels.
+ * de la liste réelle par commande de `mon-projet/index.vue`.
+ *
+ * La progression et les compteurs, eux, sont réels — recalculés le
+ * 2026-08-31 sur `toAccompagnements` (même agrégation que
+ * `mon-projet/index.vue` et l'anneau de la home) plutôt que sur un ratio
+ * `commandes confirmées / total` propre à cet écran : deux endroits qui
+ * affichent « votre avancement global » sans jamais donner le même chiffre
+ * aurait été plus trompeur qu'utile.
  */
-import { paymentRepo } from '~/core/repositories'
+import { orientationEvaluationRepo, paymentRepo } from '~/core/repositories'
 
 definePageMeta({ middleware: 'auth' })
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const { data: orders, apiError, isInitialLoading, refresh } = await usePageData(
+const { data, apiError, isInitialLoading, refresh } = await usePageData(
   'mon-projet-apercu',
-  () => paymentRepo.orders(locale.value),
+  async () => {
+    const [orders, evaluations] = await Promise.all([
+      paymentRepo.orders(locale.value),
+      orientationEvaluationRepo.list(locale.value),
+    ])
+    return { orders, evaluations }
+  },
   { watch: [locale] },
 )
 
-/** Progression globale dérivée des commandes ou 65% par défaut (maquette). */
+/** Toujours 4 entrées (une par rubrique), 0 %/« en attente » si le client n'a encore rien acheté. */
+const accompagnements = computed(() => toAccompagnements(data.value?.orders ?? [], data.value?.evaluations ?? []))
+
+/** Moyenne des 4 rubriques — même calcul que `mon-projet/index.vue` et l'anneau de la home. */
 const progressPct = computed(() => {
-  if (!orders.value || orders.value.length === 0) return 65
-  const confirmed = orders.value.filter(o => o.status === 'confirmed').length
-  return Math.min(100, Math.round((confirmed / orders.value.length) * 100))
+  const list = accompagnements.value
+  if (list.length === 0) return 0
+  return Math.round(list.reduce((sum, item) => sum + (item.progressPercent ?? 0), 0) / list.length)
 })
 
 /** Calcul du stroke-dasharray SVG pour le graphique (rayon r=34.5 -> circonférence ≈ 216.77). */
@@ -61,10 +75,15 @@ const dashArray = computed(() => {
   return `${filled.toFixed(1)} ${circumference.toFixed(2)}`
 })
 
-/** Compteurs de statuts. */
-const statsDoneCount = computed(() => orders.value?.filter(o => o.status === 'confirmed').length ?? 2)
-const statsProgressCount = computed(() => orders.value?.filter(o => o.status === 'pending').length ?? 1)
-const statsUpcomingCount = computed(() => 1)
+/**
+ * Compteurs de statuts — répartition des 4 rubriques par `statusKey`
+ * (`toOverallStatus`) : Terminé, En cours, ou « À venir » (regroupe en
+ * attente et échec, aucune des deux ne progressant réellement). Somme
+ * toujours égale à 4, `ensureAllTypes` garantissant une entrée par rubrique.
+ */
+const statsDoneCount = computed(() => accompagnements.value.filter(item => item.statusKey === 'myProject.statusDone').length)
+const statsProgressCount = computed(() => accompagnements.value.filter(item => item.statusKey === 'myProject.statusInProgress').length)
+const statsUpcomingCount = computed(() => accompagnements.value.length - statsDoneCount.value - statsProgressCount.value)
 
 usePageSeo(() => ({
   title: t('projectOverview.seoTitle'),
