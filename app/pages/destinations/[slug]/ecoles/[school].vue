@@ -84,6 +84,22 @@ const tabs = computed(() => {
 
 const activeTab = ref('formations')
 
+/**
+ * Onglet « Points forts » : pas un champ dédié côté back-office, un champ
+ * additionnel dynamique parmi d'autres (`School.details[]`, libellé +
+ * description libres) que l'admin nomme conventionnellement « Points Forts »
+ * pour cet usage — voir `docs/directives-backend.md` pour la suggestion d'un
+ * vrai champ dédié. On ne montrait jusqu'ici que le libellé (`d.title`,
+ * littéralement « Points Forts ») dans une puce, jamais le contenu réel
+ * (`d.description`, du HTML) : repéré en direct sur IMT Atlantique
+ * (2026-08-31). Comparaison insensible à la casse/aux espaces, ce champ étant
+ * saisi à la main par l'admin.
+ */
+const strengthsHtml = computed(() => {
+  const match = school.value?.details.find((d) => d.title.trim().toLowerCase() === 'points forts')
+  return match?.description ?? ''
+})
+
 const activeFormation = ref<SchoolFormation | null>(null)
 const formationModalOpen = computed({
   get: () => activeFormation.value !== null,
@@ -342,9 +358,7 @@ useSchoolSchemaOrg(school)
             ]"
             :aria-hidden="activeTab !== 'points'"
           >
-            <ul v-if="school.details.length > 0" class="m-0 flex list-disc flex-col gap-12 pl-18">
-              <li v-for="d in school.details" :key="d.title" class="text-lg leading-21 text-text">{{ d.title }}</li>
-            </ul>
+            <RichText v-if="strengthsHtml" :content="strengthsHtml" />
             <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
           </div>
         </div>

@@ -579,6 +579,27 @@ désormais `phone: ''` à chaque appel. **Ce qu'il faut, côté API** :
 appliqué à `lc_country_id`) — le contournement front reste inoffensif après
 correction, pas la peine de le retirer.
 
+## 19. 🔵 Suggestion : un vrai champ dédié pour « Points forts » (fiche école)
+
+**Pas un bug côté front** — corrigé le 2026-08-31 : la fiche école
+(`/destinations/{slug}/ecoles/{ecole}`, onglet « Points forts ») n'affichait
+que le libellé du champ (littéralement « Points Forts »), jamais son contenu
+réel. `School.details[]` est un mécanisme de champs additionnels
+**génériques** (libellé + description libres, saisis par l'admin), pas un
+champ dédié — l'admin utilise la convention `title: "Points Forts"` pour ce
+qui doit apparaître dans cet onglet, mais rien ne garantit cette
+orthographe/cette convention dans le temps (accent, casse, pluriel…). Le
+front fait maintenant `details.find(d => d.title.trim().toLowerCase() ===
+'points forts')`, tolérant sur la casse — mais une faute de frappe de
+l'admin dans le libellé (« Point fort », « Points forts de l'école »…) fait
+silencieusement disparaître le contenu de l'onglet, sans erreur nulle part.
+
+**Suggestion** (remontée par le responsable) : un vrai champ dédié
+`points_forts` (ou équivalent) sur `SchoolFile`/`School`, au même titre que
+`description`/`subtitle`, plutôt que de dépendre d'une convention de nommage
+dans un champ générique. Fiabilise l'onglet et évite qu'un renommage anodin
+dans l'admin casse silencieusement l'affichage.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
