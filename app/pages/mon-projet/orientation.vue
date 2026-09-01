@@ -25,33 +25,23 @@
  * d'orientation — voir `useOrientationData` pour les trois jalons réels qui
  * les remplacent.
  */
-import { orientationEvaluationRepo } from '~/core/repositories'
-
 definePageMeta({ middleware: 'auth' })
 
 const { t, locale } = useI18n()
 
 const { data: orientation, apiError, isInitialLoading, refresh } = await useOrientationData(locale)
 
-const reportPending = ref(false)
-
-/** Les URL de PDF ne sont pas portées par la liste (`has_pdf` seul) — second appel à la demande. */
-async function openReport() {
+/**
+ * `/api/bff/etesting/{id}/pdf` sert désormais le PDF en octets bruts
+ * (`Content-Type: application/pdf`), pas un JSON d'URL — PT-TESTS renvoie le
+ * PDF en base64 brut, jamais une URL à ouvrir. Plus besoin d'un aller-retour
+ * avant d'ouvrir : le navigateur charge/affiche directement cette adresse,
+ * comme un lien de téléchargement normal.
+ */
+function openReport() {
   const evaluation = orientation.value?.evaluation
-  if (!evaluation || reportPending.value) return
-
-  reportPending.value = true
-  try {
-    const pdf = await orientationEvaluationRepo.pdf(evaluation.id, locale.value)
-    const url = pdf.synthese ?? pdf.programme ?? pdf.detail ?? pdf.programmeDetail ?? pdf.candidat
-    if (url) window.open(url, '_blank', 'noopener')
-  }
-  catch {
-    // Action secondaire : un échec ne bloque pas la page, l'utilisateur peut réessayer.
-  }
-  finally {
-    reportPending.value = false
-  }
+  if (!evaluation) return
+  window.open(`/api/bff/etesting/${evaluation.id}/pdf`, '_blank', 'noopener')
 }
 
 const infoKeys = [
@@ -185,8 +175,7 @@ usePageSeo(() => ({
               </span>
               <button
                 type="button"
-                :disabled="reportPending"
-                class="mpo-profile-btn flex flex-1 cursor-pointer items-center justify-center rounded-xl border-0 bg-mpo-btn px-16 py-10 text-md leading-[16.5px] font-semibold text-center whitespace-nowrap text-white disabled:opacity-50"
+                class="mpo-profile-btn flex flex-1 cursor-pointer items-center justify-center rounded-xl border-0 bg-mpo-btn px-16 py-10 text-md leading-[16.5px] font-semibold text-center whitespace-nowrap text-white"
                 @click="openReport"
               >
                 {{ $t('projectOrientation.seeReport') }}

@@ -1,4 +1,4 @@
-import type { EvaluationState, OrientationEvaluation, OrientationEvaluationPdf, RestitutionState } from '../contracts'
+import type { EvaluationState, OrientationEvaluation, RestitutionState } from '../contracts'
 import { asArray, asRecord, bool, num, optionalStr, str, toIsoDate, toUrl } from './primitives'
 
 /**
@@ -47,15 +47,4 @@ export function toOrientationEvaluationList(raw: unknown): OrientationEvaluation
   return asArray(raw)
     .map(toOrientationEvaluation)
     .filter((evaluation): evaluation is OrientationEvaluation => evaluation !== null)
-}
-
-export function toOrientationEvaluationPdf(raw: unknown): OrientationEvaluationPdf {
-  const source = asRecord(raw)
-  return {
-    synthese: toUrl(source.pdf_synthese),
-    detail: toUrl(source.pdf_detail),
-    candidat: toUrl(source.pdf_candidat),
-    programme: toUrl(source.programme_pdf),
-    programmeDetail: toUrl(source.programme_pdf_detail),
-  }
 }
