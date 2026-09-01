@@ -673,6 +673,113 @@ en attendant (ex. faire transiter l'UUID via la navigation interne depuis
 les pages de liste) — remonter le besoin à Prosper plutôt que maintenir un
 contournement.
 
+## 22. 🔴 Parcours cours de langue : étapes de checklist fictives après la planification
+
+Analyse du parcours client complet (relu avec le responsable, 2026-09-01),
+confronté au code front **et** back-office. Tout ce qui précède la
+planification des séances fonctionne réellement (achat, paiement, e-mail de
+confirmation, choix du professeur, réservation de créneau, rappel avant
+séance, visio Zoom). À partir de là, trois maillons sont **fictifs** :
+
+**1. Le test de niveau n'est jamais réellement déclenché pour une commande
+de langue.** `ETestingAction::bookForOrder()` (réservation d'une évaluation
+externe PT‑TESTS) existe et fonctionne, mais dans
+`StripeWebhookController::handleCheckoutCompleted()` :
+
+```php
+if ($newStatus === OrderTrackingStatusEnum::VERIFIED && $order->service_type === Profilage::class) {
+    ...->bookForOrder($order);
+}
+```
+
+Filtré sur `Profilage::class` uniquement — jamais `Course::class`. Aucun
+e-mail « passez votre test de niveau » n'est donc jamais envoyé pour une
+commande de langue. Le modèle `Formula` (utilisé par les commandes `course`
+comme par `profilage`) porte déjà les mêmes champs `etesting_type`/
+`etesting_refs` : probablement réutilisable directement, à condition qu'une
+formule de langue ait ce paramétrage renseigné en admin.
+
+Symptôme révélateur côté checklist — `OrderChecklistStepEnum::courseSteps()`
+marque `LEVEL_TEST` **« terminé » automatiquement à l'achat** :
+```php
+// Cours : inscription + test de niveau terminés à l'achat, "cours en cours" actif, reste à venir.
+Course::class => [OrderChecklistStepEnum::courseSteps(), 3, 4],
+```
+Le pourcentage affiché côté front (`orderChecklistProgress`, câblé le
+2026-08-31) est un reflet honnête de cette donnée — mais la donnée
+elle-même compte un test jamais passé comme fait.
+
+**2. `MIDTERM_EVALUATION` et `FINAL_CERTIFICATION` ne sont l'un ni l'autre
+reliés à quoi que ce soit de réel.** Aucune notification n'existe pour
+« résultat d'évaluation disponible » ni « certification disponible »
+(`app/Notifications/` ne contient que paiement, rappel de séance, expiration
+de cours, statut de vérification). Aucun mécanisme ne permet à l'équipe
+Qiryna de déposer un résultat d'évaluation ou un certificat de fin de
+formation contre une commande — voir point 23, ce besoin est commun aux
+autres parcours.
+
+**3. `mon-projet/langues/certification.vue` (front) est un mockup, pas un
+écran incomplet.** `100%` codé en dur, 4 étapes toutes « done » codées en
+dur, bouton « Voir mon rapport » sans action, page non paramétrée par
+commande (pas de `courseId`/`orderId` dans la route). À reconstruire une
+fois les points 1 et 2 réglés — inutile avant.
+
+**Aujourd'hui, le seul chemin vers 100 %** : bascule manuelle par un employé
+depuis le back-office (`Order/Edit.vue`, `OrderController::
+updateChecklistItem`, déjà fonctionnel pour n'importe quelle étape) — rien
+n'automatise `midterm_evaluation`/`final_certification`.
+
+## 23. 🔴 Mécanisme générique manquant : livrables de commande (résultats, rapports, certifications, documents utiles)
+
+En vérifiant le point 22, le même trou se retrouve **à l'identique** sur
+les autres parcours à checklist — pas la peine d'attendre une relecture
+narrative de chacun, le code des checklists suffit à le confirmer :
+
+- **Logement** (`OrderChecklistStepEnum::livingSteps()`) : `HOUSING_SHEET`
+  (fiche logement), `NEIGHBORHOOD_SHEET` (fiche quartier) et
+  `CONTRACT_SIGNED` (contrat signé) sont des étapes qui, par nature,
+  devraient chacune livrer un document — recherché dans tout le code
+  (front + back), **aucune des trois n'a de mécanisme de dépôt/consultation,
+  seulement le libellé de l'étape**.
+- **Admission école** (`schoolSteps()`) : `ADMISSION_OBTAINED` (dernière
+  étape) — l'obtention d'une admission s'accompagne normalement d'une
+  lettre d'acceptation ou d'un document équivalent délivré par l'école,
+  aujourd'hui sans aucune place pour l'accueillir.
+- **Langue** (`courseSteps()`) : rapport de test de niveau, certificat de
+  fin de formation — voir point 22.
+- **Orientation** : seul cas déjà résolu, mais par un mécanisme différent —
+  `ETestingEvaluation`/`orientationEvaluationRepo.pdf()` sert des PDF
+  **générés par le service externe PT‑TESTS**, pas déposés par un employé.
+  Ne couvre donc que ce que PT‑TESTS produit lui-même, rien qu'un
+  conseiller Qiryna voudrait ajouter à la main.
+
+**Ce qui existe déjà et ne convient pas à ce besoin** :
+`ClientPostPurchaseData`/`ClientDataController` est un mécanisme de dépôt
+de documents, mais dans le sens **client → dossier** (pièce d'identité,
+diplôme, certificat de langue *fourni par le candidat* pour son admission).
+Le besoin ici est inverse : **Qiryna/l'équipe → client**, un document ou
+résultat que le client doit recevoir/consulter, pas fournir.
+
+**Suggestion** : un mécanisme générique par commande plutôt que quatre
+solutions ad hoc — par exemple une table `order_deliverables` (ou un champ
+JSON sur `Order`, au même modèle que `SchoolFile.stats`/`details`) avec au
+minimum `order_id`, `label` (libellé libre ou lié à un `step_key` de
+checklist), `type` (rapport, certificat, document), `file_path` ou
+`external_url`, `delivered_at` — visible et gérable depuis `Order/Edit.vue`
+côté admin, exposé en lecture par l'API pour l'espace client. Un seul
+mécanisme, réutilisable pour la fiche logement, la fiche admission, le
+rapport de langue et tout futur parcours à checklist.
+
+**Sur la suite** : le responsable a proposé deux options — (a) attendre et
+faire la même relecture de parcours client pour chacun des 3 autres
+parcours existants avant d'élaborer un chantier back-office consolidé, ou
+(b) avancer cas par cas. Vu que la vérification ci-dessus n'a demandé
+qu'une relecture des checklists déjà en main (pas une nouvelle narration
+complète par parcours), **cas par cas est déjà possible sans attendre** :
+les besoins concrets par parcours sont listés ci-dessus, suffisants pour
+lancer un chantier back-office unique et bien élaboré dès maintenant,
+plutôt que quatre demandes séparées dans le temps.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
