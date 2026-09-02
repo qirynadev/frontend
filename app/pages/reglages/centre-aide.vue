@@ -124,12 +124,12 @@ usePageSeo(() => ({
         </div>
       </section>
 
-      <!-- Sécurité -->
-      <aside class="box-border flex w-full items-center rounded-[10px] bg-ca-secure p-20">
-        <img :src="`${ICON}/ic-ca-shield.svg`" alt="" width="40" height="40" class="mr-12 block size-40 shrink-0">
-        <div class="min-w-0 flex-1 pr-16">
-          <p class="m-0 text-xl leading-21 font-bold text-ca-heading">{{ $t('settingsHelp.secureTitle') }}</p>
-          <p class="m-0 mt-4 text-base leading-[16.5px] font-normal text-ca-muted">{{ $t('settingsHelp.secureDesc') }}</p>
+      <!-- Sécurité — même typo callout (titre 12 / desc 10) -->
+      <aside class="box-border flex w-full items-center gap-16 rounded-xl bg-ca-secure px-9 py-20">
+        <img :src="`${ICON}/ic-ca-shield.svg`" alt="" width="44" height="44" class="block size-44 shrink-0">
+        <div class="min-w-0 flex-1">
+          <p class="m-0 text-base leading-20 font-bold text-ca-heading">{{ $t('settingsHelp.secureTitle') }}</p>
+          <p class="m-0 mt-4 text-sm leading-16 font-normal text-ca-muted">{{ $t('settingsHelp.secureDesc') }}</p>
         </div>
         <img
           :src="`${ICON}/illu-lock.png`"

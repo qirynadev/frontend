@@ -1,16 +1,16 @@
 <script setup lang="ts">
 /**
- * Mon Projet - Langue ← Figma (étape 3)
- * - Onglet planifiés : `860:4150` « Mon Projet - Langue 1 »
- * - Onglet à planifier : `862:241` « Mon Projet - Langues 2 »
- * - Étape 5 (certification) : `/mon-projet/langues/certification` ← `863:1956`
- * - CTA Planifier → `/mon-projet/langues/.../professeur` ← `865:2982`
+ * Mon Projet - Langue — frise mock en 3 étapes.
+ * - Étape 1 : carte « Votre test de niveau » (CTA → étape 2)
+ * - Étape 2 : prochain cours + onglets planifiés / à planifier
+ * - Étape 3 : `/mon-projet/langues/certification` (Test final)
  *
- * Espacement topbar → contenu : **22px** ; sections : **22px**.
+ * Query `?etape=1|2` (défaut 1). Espacement **22px**.
  * Mock : `config/projet-langue-mock.ts` + `docs/mon-projet-langue-mocks.md`.
  */
 import type { LanguageProgress, PlannedSession } from '~/core/contracts'
 import { planningRepo } from '~/core/repositories'
+import type { LangueProgressStep, LangueProgressStepStatus } from '~/config/projet-langue-mock'
 import {
   langueNextCourseMock,
   languePlannedSessionsMock,
@@ -18,6 +18,7 @@ import {
   langueProgressSteps,
   langueUnplannedSessionsMock,
 } from '~/config/projet-langue-mock'
+import { NuxtLink } from '#components'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -25,8 +26,14 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 type TabId = 'planned' | 'unplanned'
+type MockEtape = 1 | 2
+
 const route = useRoute()
 const router = useRouter()
+
+/** Arrivée = étape 1 (icône non cochée) ; `?etape=2` après le CTA mock. */
+const mockEtape = computed<MockEtape>(() => (route.query.etape === '2' ? 2 : 1))
+
 const activeTab = ref<TabId>(
   route.query.tab === 'unplanned' || route.query.tab === 'planned'
     ? route.query.tab
@@ -37,6 +44,32 @@ function setTab(tab: TabId) {
   activeTab.value = tab
   void router.replace({ query: { ...route.query, tab } })
 }
+
+/** Mock : passer le test de niveau → étape 2 (cours). */
+function completeLevelTest() {
+  void router.replace({ query: { ...route.query, etape: '2' } })
+}
+
+const displaySteps = computed<LangueProgressStep[]>(() =>
+  langueProgressSteps.map((step) => {
+    const id = Number(step.id)
+    let status: LangueProgressStepStatus = 'todo'
+    if (mockEtape.value === 1) {
+      status = id === 1 ? 'current' : 'todo'
+    }
+    else {
+      if (id === 1) status = 'done'
+      else if (id === 2) status = 'current'
+      else status = 'todo'
+    }
+    return {
+      ...step,
+      status,
+      // Lien Test final uniquement à l’étape 2
+      to: mockEtape.value === 2 && step.to ? step.to : undefined,
+    }
+  }),
+)
 
 const { data: languages, apiError, isInitialLoading, refresh } = await usePageData(
   'langues-unplanned',
@@ -57,6 +90,8 @@ const progressPct = computed(() => {
   if (!lang || lang.totalHours <= 0) return langueProgressFallbackPct
   return Math.min(100, Math.round((lang.totalPlanned / lang.totalHours) * 100))
 })
+
+const displayProgressPct = computed(() => (mockEtape.value === 1 ? 0 : progressPct.value))
 
 function formatSessionTime(session: PlannedSession): string {
   if (!session.startDate || !session.endDate) return ''
@@ -201,7 +236,7 @@ usePageSeo(() => ({
               </p>
             </div>
             <div class="flex shrink-0 flex-col items-end">
-              <p class="m-0 text-[24px] leading-30 font-bold text-[#fc037f]">{{ progressPct }}%</p>
+              <p class="m-0 text-[24px] leading-30 font-bold text-[#fc037f]">{{ displayProgressPct }}%</p>
               <p class="m-0 text-[12px] leading-16 font-medium tracking-[0.3px] text-[#0a142f]">
                 {{ $t('languageProject.progressDone') }}
               </p>
@@ -210,80 +245,82 @@ usePageSeo(() => ({
 
           <div class="w-full pt-16">
             <div class="h-6 w-full overflow-hidden rounded-full bg-[#e8e8ff]">
-              <div class="h-6 rounded-full bg-[#fc037f]" :style="{ width: `${progressPct}%` }" />
+              <div class="h-6 rounded-full bg-[#fc037f]" :style="{ width: `${displayProgressPct}%` }" />
             </div>
           </div>
 
           <div class="relative flex w-full items-start justify-between pt-24">
-            <div class="pointer-events-none absolute top-41 left-47 right-47 h-0 border-t border-[#e5e7eb]" aria-hidden="true" />
-            <template v-for="step in langueProgressSteps" :key="step.id">
-              <NuxtLink
-                v-if="step.labelKey === 'languageProject.step5'"
-                :to="localePath('/mon-projet/langues/certification')"
-                class="relative z-1 flex w-64 flex-col items-center gap-8 no-underline"
+            <!-- Ligne centrée sur les pastilles 32px (top 16px), 3 colonnes. -->
+            <div
+              class="pointer-events-none absolute top-40 left-[16.67%] right-[16.67%] z-0 border-t border-[#e5e7eb]"
+              aria-hidden="true"
+            />
+            <component
+              :is="step.to ? NuxtLink : 'div'"
+              v-for="step in displaySteps"
+              :key="step.id"
+              :to="step.to ? localePath(step.to) : undefined"
+              :class="[
+                'relative z-1 flex w-64 flex-col items-center gap-8',
+                step.to ? 'no-underline' : '',
+              ]"
+            >
+              <span
+                v-if="step.status === 'done'"
+                class="flex size-32 items-center justify-center rounded-full bg-[#fb027d]"
               >
-                <span
-                  v-if="step.status === 'done'"
-                  class="flex size-32 items-center justify-center rounded-full bg-[#fb027d]"
-                >
-                  <img src="/img/icons/mpl-langue/check.svg" alt="" width="16" height="16" class="block size-16">
-                </span>
-                <span
-                  v-else-if="step.status === 'current'"
-                  class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#fb027d]">{{ step.id }}</span>
-                </span>
-                <span
-                  v-else
-                  class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
-                </span>
-                <p
-                  :class="[
-                    'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
-                    step.status === 'current' ? 'font-semibold text-black' : '',
-                    step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
-                    step.status === 'done' ? 'font-normal text-black' : '',
-                  ]"
-                >{{ $t(step.labelKey) }}</p>
-              </NuxtLink>
-              <div
+                <img src="/img/icons/mpl-langue/check.svg" alt="" width="16" height="16" class="block size-16">
+              </span>
+              <span
+                v-else-if="step.status === 'current'"
+                class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-white"
+              >
+                <span class="text-[14px] leading-24 font-medium text-[#fb027d]">{{ step.id }}</span>
+              </span>
+              <span
                 v-else
-                class="relative z-1 flex w-64 flex-col items-center gap-8"
+                class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-white"
               >
-                <span
-                  v-if="step.status === 'done'"
-                  class="flex size-32 items-center justify-center rounded-full bg-[#fb027d]"
-                >
-                  <img src="/img/icons/mpl-langue/check.svg" alt="" width="16" height="16" class="block size-16">
-                </span>
-                <span
-                  v-else-if="step.status === 'current'"
-                  class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#fb027d]">{{ step.id }}</span>
-                </span>
-                <span
-                  v-else
-                  class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
-                </span>
-                <p
-                  :class="[
-                    'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
-                    step.status === 'current' ? 'font-semibold text-black' : '',
-                    step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
-                    step.status === 'done' ? 'font-normal text-black' : '',
-                  ]"
-                >{{ $t(step.labelKey) }}</p>
-              </div>
-            </template>
+                <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
+              </span>
+              <p
+                :class="[
+                  'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
+                  step.status === 'current' ? 'font-semibold text-black' : '',
+                  step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
+                  step.status === 'done' ? 'font-normal text-black' : '',
+                ]"
+              >{{ $t(step.labelKey) }}</p>
+            </component>
           </div>
         </section>
 
+        <!-- Étape 1 : Votre test de niveau -->
+        <section
+          v-if="mockEtape === 1"
+          class="mpo-test-card w-full rounded-xl border border-mpo-test-border bg-mpo-test-bg px-11 py-17 shadow-2xs box-border"
+        >
+          <div class="mpo-test-top flex items-start gap-12">
+            <div class="mpo-test-illus mpo-test-illus--clipboard size-85 shrink-0 overflow-hidden">
+              <img src="/img/mpo-test-clipboard.png" alt="" width="85" height="85" class="block size-85 object-cover">
+            </div>
+            <div class="mpo-test-copy flex min-w-0 flex-1 flex-col gap-15 pt-4">
+              <h2 class="m-0 text-xl leading-[18.75px] font-bold text-mpo-heading">{{ $t('languageProject.levelTestTitle') }}</h2>
+              <p class="m-0 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">{{ $t('languageProject.levelTestDesc') }}</p>
+              <button
+                type="button"
+                class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
+                @click="completeLevelTest"
+              >
+                <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                <span>{{ $t('languageProject.levelTestCta') }}</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Étape 2 : prochain cours + listes -->
+        <template v-if="mockEtape === 2">
         <!-- Prochain cours : hauteur au contenu ; compteur responsive (s → m masqués) -->
         <aside
           class="box-border flex w-full flex-col rounded-2xl p-16 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
@@ -458,6 +495,7 @@ usePageSeo(() => ({
             </article>
           </div>
         </section>
+        </template>
       </div>
     </PageState>
   </div>

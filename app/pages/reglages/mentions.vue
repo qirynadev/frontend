@@ -55,7 +55,7 @@ usePageSeo(() => ({
         </span>
         <div class="rml-trust-copy min-w-0 flex-1">
           <p class="rml-trust-title m-0 text-base leading-20 font-bold text-text">{{ $t('settingsLegal.trustTitle') }}</p>
-          <p class="rml-trust-desc m-0 mt-4 text-xs leading-16 font-normal text-text">{{ $t('settingsLegal.trustDesc') }}</p>
+          <p class="rml-trust-desc m-0 mt-4 text-sm leading-16 font-normal text-text">{{ $t('settingsLegal.trustDesc') }}</p>
         </div>
       </aside>
 

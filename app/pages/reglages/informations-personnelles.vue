@@ -33,6 +33,29 @@ const city = ref('')
 
 const photoUrl = computed(() => session.user?.profile.photo ?? session.user?.avatar ?? null)
 
+/** Aperçu local après sélection (pas d’API upload). */
+const localPhoto = ref<string | null>(null)
+const displayPhoto = computed(() => localPhoto.value ?? photoUrl.value)
+
+const fileInput = useTemplateRef<HTMLInputElement>('fileInput')
+
+function openPhotoPicker() {
+  fileInput.value?.click()
+}
+
+function onPhotoSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
+  localPhoto.value = URL.createObjectURL(file)
+  input.value = ''
+}
+
+onBeforeUnmount(() => {
+  if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
+})
+
 onMounted(() => {
   const user = session.user
   const profile = user?.profile
@@ -96,29 +119,44 @@ usePageSeo(() => ({
         </h2>
 
         <div class="mt-16 flex h-88 w-full items-center">
-          <div class="relative flex size-72 shrink-0 items-center justify-center overflow-hidden rounded-full bg-rp-avatar-bg">
-            <img
-              v-if="photoUrl"
-              :src="photoUrl"
-              alt=""
-              class="absolute inset-0 size-full object-cover"
-              width="72"
-              height="72"
+          <!-- Cercle avatar (overflow) + pastille caméra hors cercle, cliquable -->
+          <div class="relative size-72 shrink-0">
+            <div class="flex size-72 items-center justify-center overflow-hidden rounded-full bg-rp-avatar-bg">
+              <img
+                v-if="displayPhoto"
+                :src="displayPhoto"
+                alt=""
+                class="size-full object-cover"
+                width="72"
+                height="72"
+              >
+              <img
+                v-else
+                :src="`${ICON}/ic-rp-avatar-user.svg`"
+                alt=""
+                width="32"
+                height="32"
+                class="block size-32"
+              >
+            </div>
+
+            <button
+              type="button"
+              class="absolute top-[52px] left-[45px] z-1 flex size-27 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-rp-camera-border bg-rp-avatar-bg p-0"
+              :aria-label="$t('settingsPersonal.photoCta')"
+              @click="openPhotoPicker"
             >
-            <img
-              v-else
-              :src="`${ICON}/ic-rp-avatar-user.svg`"
-              alt=""
-              width="32"
-              height="32"
-              class="relative z-0 block size-32"
+              <img :src="`${ICON}/ic-rp-camera.svg`" alt="" width="16" height="16" class="block size-16">
+            </button>
+
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/*"
+              class="sr-only"
+              tabindex="-1"
+              @change="onPhotoSelected"
             >
-            <span
-              class="absolute top-[52px] left-[45px] z-1 flex size-27 items-center justify-center overflow-hidden rounded-full border border-rp-camera-border bg-rp-avatar-bg"
-              aria-hidden="true"
-            >
-              <img :src="`${ICON}/ic-rp-camera.svg`" alt="" width="32" height="32" class="block size-32 max-w-none">
-            </span>
           </div>
 
           <div class="flex min-w-0 flex-1 flex-col items-start pl-16">
@@ -128,6 +166,7 @@ usePageSeo(() => ({
             <button
               type="button"
               class="mt-8 box-border flex h-34 w-[140.766px] cursor-pointer items-center justify-center rounded-lg border border-rp-photo-cta-border bg-transparent px-0 text-xl leading-20 font-medium text-rp-photo-cta"
+              @click="openPhotoPicker"
             >
               {{ $t('settingsPersonal.photoCta') }}
             </button>
