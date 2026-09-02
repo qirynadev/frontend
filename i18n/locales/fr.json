@@ -775,7 +775,8 @@
       }
     },
     "methodTitle": "Notre méthode en 4 étapes",
-    "pathBadge": "Populaire",
+    "pathBadgePopular": "Populaire",
+    "pathBadgeRecommended": "Recommandé",
     "pathChildDesc": "J'accompagne mon enfant dans ses choix d'orientation.",
     "pathChildTitle": "Orientation pour mon enfant",
     "pathMeDesc": "Je suis étudiant et je cherche ma voie.",

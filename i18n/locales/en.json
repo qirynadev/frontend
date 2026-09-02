@@ -775,7 +775,8 @@
       }
     },
     "methodTitle": "Our 4-step method",
-    "pathBadge": "Popular",
+    "pathBadgePopular": "Popular",
+    "pathBadgeRecommended": "Recommended",
     "pathChildDesc": "I'm supporting my child through their career choices.",
     "pathChildTitle": "Guidance for my child",
     "pathMeDesc": "I'm a student looking for my path.",

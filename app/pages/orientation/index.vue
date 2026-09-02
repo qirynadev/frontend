@@ -40,8 +40,26 @@ const steps = [
 ]
 
 const paths = [
-  { id: 'moi' as const, icon: 'ic-osp-path-me', bg: 'bg-osp-path-me-bg', iconSize: 24, titleKey: 'orientation.pathMeTitle', descKey: 'orientation.pathMeDesc' },
-  { id: 'enfant' as const, icon: 'ic-osp-path-child', bg: 'bg-osp-path-child-bg', iconSize: 20, titleKey: 'orientation.pathChildTitle', descKey: 'orientation.pathChildDesc' },
+  {
+    id: 'moi' as const,
+    icon: 'ic-osp-path-me',
+    bg: 'bg-osp-path-me-bg',
+    iconSize: 24,
+    titleKey: 'orientation.pathMeTitle',
+    descKey: 'orientation.pathMeDesc',
+    badgeKey: 'orientation.pathBadgePopular',
+    badgeClass: 'bg-lang-populaire-bg text-lang-populaire',
+  },
+  {
+    id: 'enfant' as const,
+    icon: 'ic-osp-path-child',
+    bg: 'bg-osp-path-child-bg',
+    iconSize: 20,
+    titleKey: 'orientation.pathChildTitle',
+    descKey: 'orientation.pathChildDesc',
+    badgeKey: 'orientation.pathBadgeRecommended',
+    badgeClass: 'bg-osp-path-badge-bg text-osp-path-badge',
+  },
 ]
 
 usePageSeo(() => ({
@@ -162,8 +180,13 @@ usePageSeo(() => ({
           <span class="flex min-w-0 flex-1 flex-col items-start">
             <span class="flex flex-wrap items-start gap-6 max-2xs:flex-col max-2xs:gap-4">
               <span class="text-lg leading-[16.25px] font-semibold text-text">{{ $t(p.titleKey) }}</span>
-              <span class="whitespace-nowrap rounded-md bg-osp-path-badge-bg px-6 py-2 text-2xs leading-12 font-medium text-osp-path-badge">
-                {{ $t('orientation.pathBadge') }}
+              <span
+                :class="[
+                  'whitespace-nowrap rounded-md px-6 py-2 text-2xs leading-12 font-medium',
+                  p.badgeClass,
+                ]"
+              >
+                {{ $t(p.badgeKey) }}
               </span>
             </span>
             <span class="mt-2 text-exact-10-5 leading-[15.75px] font-normal text-text">{{ $t(p.descKey) }}</span>
