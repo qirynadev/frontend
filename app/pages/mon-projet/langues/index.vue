@@ -8,6 +8,17 @@
  *
  * Espacement topbar → contenu : **22px** ; sections : **22px**.
  * Mock : `config/projet-langue-mock.ts` + `docs/mon-projet-langue-mocks.md`.
+ *
+ * **Verrou « test de niveau »** (réintroduit 2026-09-02, sur demande
+ * explicite du responsable) : bloque l'accès aux cours/planification tant
+ * que l'étape 1 n'est pas « validée ». **Purement cosmétique** — aucune
+ * donnée API ne permet de savoir si un test de niveau a réellement eu lieu
+ * pour une commande de langue (voir `docs/directives-backend.md` §22/§24) :
+ * `completeLevelTest()` se contente de poser `?etape=2` dans l'URL, sans
+ * appel serveur. L'état n'est donc pas fiable (perdu au rechargement sans le
+ * paramètre, contournable en éditant l'URL) — un vrai verrou demandera le
+ * développement back-office documenté en §24 avant de pouvoir remplacer ce
+ * mock par une vérification réelle.
  */
 import type { LanguageProgress, PlannedSession } from '~/core/contracts'
 import { paymentRepo, planningRepo } from '~/core/repositories'
@@ -27,6 +38,7 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 type TabId = 'planned' | 'unplanned'
+type MockEtape = 1 | 2
 const route = useRoute()
 const router = useRouter()
 const activeTab = ref<TabId>(
@@ -38,6 +50,14 @@ const activeTab = ref<TabId>(
 function setTab(tab: TabId) {
   activeTab.value = tab
   void router.replace({ query: { ...route.query, tab } })
+}
+
+/** Arrivée = étape 1 (test de niveau) ; `?etape=2` après le CTA mock. */
+const mockEtape = computed<MockEtape>(() => (route.query.etape === '2' ? 2 : 1))
+
+/** Mock : passer le test de niveau → étape 2 (cours). Voir le docblock ci-dessus. */
+function completeLevelTest() {
+  void router.replace({ query: { ...route.query, etape: '2' } })
 }
 
 /** Horloge d'affichage — countdown et fenêtre de rejointure (`canJoinSession`) en dépendent. */
@@ -88,18 +108,27 @@ const progressPct = computed(() => {
 })
 
 /**
- * Statut des 3 pastilles (« Ma progression ») dérivé de `progressPct` — le
+ * Statut des 3 pastilles (« Ma progression »). Tant que le test de niveau
+ * (mock, voir docblock) n'est pas « validé », seule l'étape 1 est affichée
+ * comme en cours. Une fois passé, le reste dérive de `progressPct` — le
  * détail des étapes internes (`Order.checklist`) n'a pas de règle validée
  * pour ce cumul (§7, `docs/directives-backend.md`) : plutôt qu'inventer une
  * agrégation, seul le pourcentage déjà tranché par le responsable alimente
- * ces trois pastilles.
+ * ces deux dernières pastilles.
  */
 const progressSteps = computed(() => langueProgressSteps.map((step, index) => {
+  if (mockEtape.value === 1) {
+    const status: LangueProgressStepStatus = index === 0 ? 'current' : 'todo'
+    return { ...step, status }
+  }
   const status: LangueProgressStepStatus = progressPct.value >= 100
     ? 'done'
     : index === 0 ? 'done' : index === 1 ? 'current' : 'todo'
   return { ...step, status }
 }))
+
+/** 0 % tant que le test de niveau n'est pas « validé » — cohérent avec la pastille 1. */
+const displayProgressPct = computed(() => (mockEtape.value === 1 ? 0 : progressPct.value))
 
 function formatSessionTime(session: PlannedSession): string {
   if (!session.startDate || !session.endDate) return ''
@@ -282,7 +311,7 @@ usePageSeo(() => ({
               </p>
             </div>
             <div class="flex shrink-0 flex-col items-end">
-              <p class="m-0 text-[24px] leading-30 font-bold text-[#fc037f]">{{ progressPct }}%</p>
+              <p class="m-0 text-[24px] leading-30 font-bold text-[#fc037f]">{{ displayProgressPct }}%</p>
               <p class="m-0 text-[12px] leading-16 font-medium tracking-[0.3px] text-[#0a142f]">
                 {{ $t('languageProject.progressDone') }}
               </p>
@@ -291,7 +320,7 @@ usePageSeo(() => ({
 
           <div class="w-full pt-16">
             <div class="h-6 w-full overflow-hidden rounded-full bg-[#e8e8ff]">
-              <div class="h-6 rounded-full bg-[#fc037f]" :style="{ width: `${progressPct}%` }" />
+              <div class="h-6 rounded-full bg-[#fc037f]" :style="{ width: `${displayProgressPct}%` }" />
             </div>
           </div>
 
@@ -341,8 +370,95 @@ usePageSeo(() => ({
           </div>
         </section>
 
+        <!-- Étape 1 : Votre test de niveau (mock, voir docblock) -->
+        <section
+          v-if="mockEtape === 1"
+          class="mpo-test-card w-full rounded-xl border border-mpo-test-border bg-mpo-test-bg px-11 py-17 shadow-2xs box-border"
+        >
+          <div class="mpo-test-top flex items-start gap-12">
+            <div class="mpo-test-illus mpo-test-illus--clipboard size-85 shrink-0 overflow-hidden">
+              <img src="/img/mpo-test-clipboard.png" alt="" width="85" height="85" class="block size-85 object-cover">
+            </div>
+            <div class="mpo-test-copy flex min-w-0 flex-1 flex-col gap-15 pt-4">
+              <h2 class="m-0 text-xl leading-[18.75px] font-bold text-mpo-heading">{{ $t('languageProject.levelTestTitle') }}</h2>
+              <p class="m-0 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">{{ $t('languageProject.levelTestDesc') }}</p>
+              <button
+                type="button"
+                class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
+                @click="completeLevelTest"
+              >
+                <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                <span>{{ $t('languageProject.levelTestCta') }}</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Prochain cours : hauteur au contenu ; compteur responsive (s → m masqués) -->
+        <aside
+          v-if="mockEtape === 2"
+          class="box-border flex w-full flex-col rounded-2xl p-16 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
+          style="background-image: linear-gradient(157.8deg, #4f46e5 0%, #ff0055 100%)"
+        >
+          <div class="flex w-full items-stretch gap-10">
+            <div class="flex min-w-0 flex-1 flex-col justify-center">
+              <div class="flex items-center gap-8">
+                <span class="relative size-28 shrink-0 overflow-hidden">
+                  <img src="/img/icons/mpl-langue/next-cal.svg" alt="" width="28" height="28" class="block size-28">
+                </span>
+                <h2 class="m-0 text-[13px] leading-20 font-semibold text-white">{{ $t('languageProject.nextTitle') }}</h2>
+              </div>
+              <div class="flex flex-col gap-4 pt-8">
+                <p class="m-0 flex items-center gap-8 text-[10px] leading-16 font-normal text-white/90">
+                  <img src="/img/icons/mpl-langue/next-date.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                  <span>{{ nextCourseLabels.dateLabel }}</span>
+                </p>
+                <p class="m-0 flex items-center gap-8 text-[10px] leading-16 font-normal text-white/90">
+                  <img src="/img/icons/mpl-langue/next-clock.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                  <span>{{ nextCourseLabels.timeLabel }}</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Séparateur + bloc compteur décalés vers la gauche -->
+            <div class="-ml-8 flex shrink-0 items-stretch gap-8">
+              <div class="w-px shrink-0 self-stretch bg-white/20" aria-hidden="true" />
+
+              <div class="flex flex-col items-center justify-center">
+                <p class="m-0 pb-6 text-[12px] leading-16 font-normal text-white">{{ $t('languageProject.startsIn') }}</p>
+                <div class="flex items-center gap-6">
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
+                    <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.h }}</span>
+                    <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitH') }}</span>
+                  </div>
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white max-2xs:hidden">
+                    <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.m }}</span>
+                    <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitMin') }}</span>
+                  </div>
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white max-xs:hidden">
+                    <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.s }}</span>
+                    <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitS') }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    :disabled="!canJoinNext"
+                    :class="[
+                      'inline-flex size-40 shrink-0 items-center justify-center rounded-full border-0 bg-white p-0',
+                      canJoinNext ? 'cursor-pointer' : 'cursor-not-allowed opacity-50',
+                    ]"
+                    :aria-label="$t('languageProject.connect')"
+                    @click="joinNextSession"
+                  >
+                    <img src="/img/icons/mpl-langue/connect-video.svg" alt="" width="16" height="16" class="block size-16">
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
         <!-- Onglets + listes (grille empilée = hauteur stable au changement d’onglet) -->
-        <section class="flex w-full flex-col gap-22">
+        <section v-if="mockEtape === 2" class="flex w-full flex-col gap-22">
           <div
             class="box-border flex h-41 w-full items-stretch rounded-[6px] border border-[#efeff7] bg-[#f8f8fd] p-px"
             role="tablist"
@@ -495,69 +611,6 @@ usePageSeo(() => ({
             </div>
           </div>
         </section>
-
-        <!-- Prochain cours : icône plus petite, proche du titre ; infos calées à gauche -->
-        <aside
-          class="box-border flex min-h-151 w-full flex-col rounded-2xl p-20 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
-          style="background-image: linear-gradient(157.8deg, #4f46e5 0%, #ff0055 100%)"
-        >
-          <div class="flex w-full items-start gap-10">
-            <div class="flex min-w-0 flex-1 flex-col">
-              <div class="flex items-center gap-8">
-                <span class="relative size-28 shrink-0 overflow-hidden">
-                  <img src="/img/icons/mpl-langue/next-cal.svg" alt="" width="28" height="28" class="block size-28">
-                </span>
-                <h2 class="m-0 text-[13px] leading-28 font-semibold text-white">{{ $t('languageProject.nextTitle') }}</h2>
-              </div>
-              <div class="flex flex-col gap-6 pt-8">
-                <p class="m-0 flex items-center gap-8 text-[10px] leading-20 font-normal text-white/90">
-                  <img src="/img/icons/mpl-langue/next-date.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                  <span>{{ nextCourseLabels.dateLabel }}</span>
-                </p>
-                <p class="m-0 flex items-center gap-8 text-[10px] leading-20 font-normal text-white/90">
-                  <img src="/img/icons/mpl-langue/next-clock.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                  <span>{{ nextCourseLabels.timeLabel }}</span>
-                </p>
-                <p class="m-0 flex items-center gap-8 text-[10px] leading-20 font-normal text-white/90">
-                  <img src="/img/icons/mpl-langue/next-video.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                  <span>{{ $t('languageProject.visio') }}</span>
-                </p>
-              </div>
-            </div>
-
-            <div class="mx-4 h-96 w-px shrink-0 bg-white/20" aria-hidden="true" />
-
-            <div class="flex shrink-0 flex-col items-center">
-              <p class="m-0 pb-8 text-[12px] leading-16 font-normal text-white">{{ $t('languageProject.startsIn') }}</p>
-              <div class="flex items-start gap-8">
-                <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
-                  <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.h }}</span>
-                  <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitH') }}</span>
-                </div>
-                <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
-                  <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.m }}</span>
-                  <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitMin') }}</span>
-                </div>
-                <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
-                  <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.s }}</span>
-                  <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitS') }}</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                :disabled="!canJoinNext"
-                :class="[
-                  'mt-12 inline-flex items-center justify-center gap-6 rounded-full border-0 bg-white px-14 py-8 text-[10px] leading-16 font-semibold text-[#fc037f]',
-                  canJoinNext ? 'cursor-pointer' : 'cursor-not-allowed opacity-50',
-                ]"
-                @click="joinNextSession"
-              >
-                <img src="/img/icons/mpl-langue/connect-video.svg" alt="" width="14" height="14" class="block size-14">
-                <span>{{ $t('languageProject.connect') }}</span>
-              </button>
-            </div>
-          </div>
-        </aside>
       </div>
     </PageState>
   </div>

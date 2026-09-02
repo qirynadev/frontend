@@ -780,6 +780,46 @@ les besoins concrets par parcours sont listés ci-dessus, suffisants pour
 lancer un chantier back-office unique et bien élaboré dès maintenant,
 plutôt que quatre demandes séparées dans le temps.
 
+## 24. 🔴 Verrou « test de niveau » avant planification (`/mon-projet/langues`) — remis en front à titre cosmétique, pas de contrôle réel possible aujourd'hui
+
+**Demande produit (2026-09-02)** : sur `/mon-projet/langues`, l'accès aux
+onglets « cours planifiés »/« à planifier » et au bloc « prochain cours » ne
+doit s'ouvrir qu'une fois le test de niveau du client validé — jusque-là,
+seule une carte « Votre test de niveau » avec un CTA doit s'afficher.
+
+**Remis en front, mais purement cosmétique** (`mon-projet/langues/index.vue`,
+`mockEtape`) : le CTA pose `?etape=2` dans l'URL, sans aucun appel API — état
+non persisté (perdu au rechargement sans le paramètre), contournable en
+éditant l'URL à la main. Réintroduit tel quel car **le point 22 a déjà établi
+qu'aucune donnée réelle n'existe pour distinguer** un client qui a passé son
+test de niveau de celui qui ne l'a pas passé : `ETestingAction::bookForOrder()`
+n'est jamais déclenché pour une commande `Course` (filtré sur
+`Profilage::class` uniquement), et `OrderChecklistStepEnum::courseSteps()`
+marque `LEVEL_TEST` « terminé » automatiquement à l'achat, sans rapport avec
+un test réellement passé.
+
+**Ce qu'il faut pour remplacer ce mock par un vrai verrou** — reprend
+exactement la correction déjà proposée au point 22 :
+1. Débrider `StripeWebhookController::handleCheckoutCompleted()` pour
+   déclencher `ETestingAction::bookForOrder()` aussi sur `Course::class` (pas
+   seulement `Profilage::class`), à condition qu'une formule de langue porte
+   bien `etesting_type`/`etesting_refs` en admin.
+2. Exposer un statut réel et interrogeable côté client — soit via
+   `GET /etesting/evaluations` (déjà utilisé côté orientation,
+   `orientationEvaluationRepo`) filtré par commande, soit un champ dédié sur
+   l'`Order`/le `Course` (`level_test_status` ou équivalent) si le test de
+   niveau langue ne doit pas forcément passer par PT-TESTS.
+3. Une fois ce statut réel disponible, `mockEtape` se remplace par une
+   lecture de ce statut (`etat_eval`/équivalent) — le front sait déjà
+   dériver un affichage à 3 états depuis ce genre de donnée (voir
+   `mon-projet/orientation.vue`/`useOrientationData.ts`, même famille de
+   problème côté profilage).
+
+**Tant que ceci n'est pas fait** : le verrou actuel est un théâtre de
+validation, pas un contrôle — n'importe quel client peut le contourner en
+ajoutant `?etape=2` à l'URL. Acceptable temporairement sur demande explicite
+du responsable, mais à ne pas présenter comme un vrai contrôle métier.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
