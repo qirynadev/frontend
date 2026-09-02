@@ -3,7 +3,7 @@
  * Parcours : `/logement` → `/logement/[slug]/decouverte` → `/logement/[slug]`
  * (formules).
  * même barre supérieure, même grille, même encart d'aide. Seuls le décompte
- * (« 350+ logements ») et les visuels changent.
+ * (villes couvertes) et les visuels changent.
  *
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
@@ -19,14 +19,17 @@
  * six qu'affichait l'ancienne liste statique (`config/logement-destinations.ts`,
  * supprimé) : pas d'Allemagne, faute de formule publiée côté back-office.
  * Mêmes cartes, même structure `DestinationCard` que `destinations/index.vue` —
- * portée ici en ligne plutôt qu'en composant partagé, le badge « 350+
- * logements » (toujours éditorial, l'API ne compte pas les logements) la
- * distinguant de la grille école.
+ * portée ici en ligne plutôt qu'en composant partagé ; le badge affiche le
+ * nombre de villes (`cityCount`) quand l'API le fournit, sinon un libellé
+ * éditorial « 350+ villes ». Voir `docs/logement-mocks.md`.
  */
 import { livingRepo } from '~/core/repositories'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
+
+/** Repli éditorial tant que `/livings` n'expose pas `cities_count`. */
+const FALLBACK_CITY_COUNT = 350
 
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
   'logement-destinations',
@@ -35,6 +38,12 @@ const { data, apiError, isInitialLoading, refresh } = await usePageData(
 )
 
 const destinations = computed(() => data.value ?? [])
+
+function cityLabel(count: number | null): string {
+  const n = count ?? FALLBACK_CITY_COUNT
+  if (count === null) return t('housing.countLabel', { count: n })
+  return t('housing.cityCount', n)
+}
 
 usePageSeo(() => ({
   title: t('housing.seoTitle'),
@@ -109,7 +118,7 @@ usePageSeo(() => ({
               <span class="flex min-w-0 flex-1 items-center gap-4">
                 <QIcon name="ic-log-home" :size="9" />
                 <span class="truncate text-3xs leading-[16.5px] font-semibold text-text">
-                  {{ $t('housing.countLabel') }}
+                  {{ cityLabel(destination.cityCount) }}
                 </span>
               </span>
               <QIcon name="ic-log-chevron" :size="9" />

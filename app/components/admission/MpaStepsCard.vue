@@ -69,10 +69,6 @@ onUnmounted(() => {
   <section class="mpa-steps-card w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-white p-17 px-1 box-border">
     <div class="mpa-steps-head flex items-center justify-between gap-12 px-19 pb-16">
       <h2 class="m-0 text-xl leading-[25.5px] font-bold text-[#0b0b0b]">{{ $t('admission.stepsTitle') }}</h2>
-      <a href="#" class="mpa-steps-link inline-flex items-center gap-4 text-exact-11-5 leading-[19.5px] font-semibold text-[#4f18f6] no-underline whitespace-nowrap">
-        <span>{{ $t('admission.stepsViewDetail') }}</span>
-        <img src="/img/icons/ic-rg-chevron.svg" alt="" width="7" height="10" class="block h-10 w-7">
-      </a>
     </div>
 
     <div ref="stepsContainerRef" class="mpa-steps relative flex flex-col gap-16 px-16">
@@ -124,7 +120,6 @@ onUnmounted(() => {
             <template v-else-if="step.status === 'current'">{{ $t('admission.statusCurrent') }}</template>
             <template v-else>{{ $t('admission.statusSoon') }}</template>
           </span>
-          <span v-if="step.completedAt" class="mpa-step-date mt-2 text-xs leading-[15.75px] font-medium text-[#222]">{{ step.completedAt }}</span>
         </div>
       </article>
     </div>

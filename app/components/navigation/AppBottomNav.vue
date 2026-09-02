@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavItem } from '~/design-system/types'
-import { bottomNavEntries, resolveActiveNavId, resolveGuestIcon } from '~/config/navigation'
+import { bottomNavEntries, resolveActiveNavId } from '~/config/navigation'
 
 /**
  * Navigation principale du produit.
@@ -11,6 +11,8 @@ import { bottomNavEntries, resolveActiveNavId, resolveGuestIcon } from '~/config
  * - les chemins sont localisés ici (`/messages` → `/en/messages`) ;
  * - l'onglet actif se **déduit de la route courante**, il n'est jamais passé à
  *   la main par une page.
+ *
+ * Même barre partout (y compris auth) : logo Orientation inclus.
  */
 
 const { t, locale } = useI18n()
@@ -30,24 +32,15 @@ const unlocalizedPath = computed(() => {
 })
 
 const items = computed<NavItem[]>(() =>
-  bottomNavEntries.map((entry) => {
-    /**
-     * Sur les écrans d'authentification, la maquette remplace l'icône de
-     * l'onglet Orientation par une icône standard — appliquée aux deux
-     * champs pour que ça reste vrai quel que soit l'onglet actif ici (voir
-     * `resolveGuestIcon`).
-     */
-    const guestIcon = resolveGuestIcon(entry, unlocalizedPath.value)
-    return {
-      id: entry.id,
-      to: localePath(entry.to),
-      label: t(entry.labelKey),
-      icon: guestIcon?.icon ?? entry.icon,
-      iconActive: guestIcon?.icon ?? entry.iconActive,
-      iconWidth: guestIcon?.width ?? entry.iconWidth,
-      iconHeight: guestIcon?.height ?? entry.iconHeight,
-    }
-  }),
+  bottomNavEntries.map((entry) => ({
+    id: entry.id,
+    to: localePath(entry.to),
+    label: t(entry.labelKey),
+    icon: entry.icon,
+    iconActive: entry.iconActive,
+    iconWidth: entry.iconWidth,
+    iconHeight: entry.iconHeight,
+  })),
 )
 
 const active = computed(() => resolveActiveNavId(unlocalizedPath.value))

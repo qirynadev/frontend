@@ -15,6 +15,11 @@ export interface LivingDestination {
   /** Accroche marketing (le `title` de l'API), ex. « Votre logement étudiant en France, en toute sécurité ». */
   tagline: string
   photo: string | null
+  /**
+   * Nombre de villes couvertes pour ce pays.
+   * `null` si l'API ne l'expose pas — la carte retombe alors sur le libellé éditorial.
+   */
+  cityCount: number | null
 }
 
 /**

@@ -15,8 +15,8 @@
  * partir de la troisième section — d'où `indigo` porté par la donnée plutôt
  * que par un sélecteur positionnel, plus fragile.
  *
- * Les entrées sans écran (informations personnelles) restent des `div`.
- * Centre d’aide → `/reglages/contact`.
+ * Centre d’aide → `/reglages/centre-aide` → formulaire `/reglages/contact`.
+ * Informations personnelles → `/reglages/informations-personnelles`.
  */
 import { NuxtLink } from '#components'
 
@@ -43,7 +43,7 @@ const sections: { titleKey: string, rows: Row[] }[] = [
   {
     titleKey: 'settings.sectionAccount',
     rows: [
-      { id: 'personal', icon: 'ic-rg-person', titleKey: 'settings.personalTitle', descKey: 'settings.personalDesc' },
+      { id: 'personal', icon: 'ic-rg-person', titleKey: 'settings.personalTitle', descKey: 'settings.personalDesc', to: '/reglages/informations-personnelles' },
       { id: 'password', icon: 'ic-rg-lock', titleKey: 'settings.passwordTitle', descKey: 'settings.passwordDesc', to: '/reglages/mot-de-passe' },
     ],
   },
@@ -57,7 +57,7 @@ const sections: { titleKey: string, rows: Row[] }[] = [
   {
     titleKey: 'settings.sectionOther',
     rows: [
-      { id: 'help', icon: 'ic-rg-help', titleKey: 'settings.helpTitle', descKey: 'settings.helpDesc', to: '/reglages/contact', indigo: true },
+      { id: 'help', icon: 'ic-rg-help', titleKey: 'settings.helpTitle', descKey: 'settings.helpDesc', to: '/reglages/centre-aide', indigo: true },
       { id: 'legal', icon: 'ic-rg-legal', titleKey: 'settings.legalTitle', descKey: 'settings.legalDesc', to: '/reglages/mentions', indigo: true },
       { id: 'logout', icon: 'ic-rg-logout', titleKey: 'settings.logoutTitle', descKey: 'settings.logoutDesc', to: '/connexion', danger: true, indigo: true },
     ],

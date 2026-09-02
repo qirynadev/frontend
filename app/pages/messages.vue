@@ -2,26 +2,12 @@
 /**
  * Messages ← `maquette/pwa/pages/messages.html`.
  *
- * | Bloc | Règles reprises de `app.css` |
- * |---|---|
- * | accroche | `.msg-hero` `min-height: 118px`, `padding-bottom: 60px` · copie plafonnée à 170px · illustration 190×150 ancrée en haut à droite |
- * | onglets | `.msg-tabs` `padding: 7px`, filet `#e6e5f2` · actif sur `#3b2cf2`, pastille décalée à `right: -21px` |
- * | barre d'outils | `.msg-search` et `.msg-filter` `padding: 11px 17px`, rayon 8 · filtre large de 101px |
- * | carte | `.msg-card` `padding: 17px 18px` · avatar 48×48 · corps `padding: 0 10px 0 16px` |
- * | carte | nom 14px/20px tronqué · étiquette 9px/13,5px · aperçu 11px/19,5px sur 2 lignes |
- * | vide | `.msg-empty` `padding: 28px 16px`, centré |
- * | sécurité | `.msg-secure` `min-height: 86px`, illustration 116×78 |
- *
- * Trois formes d'avatar coexistent dans la maquette : photo 48×48, icône 24×24
- * sur fond teinté, et illustration 48×48 sans fond.
- *
- * Le champ de recherche garde le `padding: 1px` que le navigateur applique aux
- * `input` : le preflight Tailwind le supprime, et la barre perd 2px.
- *
- * La recherche filtre la liste sur le nom et l'aperçu. Le bouton « Filtrer »
- * reste inerte : la maquette ne définit aucun critère.
+ * Liste des conversations ; détail en **modale** (même pattern que
+ * `.ed-form-modal` fiche école). Recherche / filtre retirés.
+ * Voir `docs/messages-mocks.md`.
  */
-import { messageConversations } from '~/config/messages-conversations'
+import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
+import { messageConversations, type MessageConversation } from '~/config/messages-conversations'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -29,7 +15,18 @@ const { t } = useI18n()
 
 type TabId = 'messages' | 'notification'
 const activeTab = ref<TabId>('messages')
-const query = ref('')
+const selected = ref<MessageConversation | null>(null)
+
+const threadOpen = computed({
+  get: () => selected.value !== null,
+  set: (value: boolean) => { if (!value) selected.value = null },
+})
+
+const threadMessages = computed(() => {
+  const conv = selected.value
+  if (!conv) return [] as string[]
+  return conv.threadKeys?.length ? conv.threadKeys : [conv.previewKey]
+})
 
 /**
  * Pagination décorative, comme dans la maquette (`data-pages="4"`) : la liste
@@ -49,15 +46,12 @@ const tagClass = {
   blue: 'msg-tag--blue bg-msg-tag-blue-bg text-msg-tag-blue',
 }
 
-const conversations = computed(() => {
-  const q = query.value.trim().toLowerCase()
-  if (!q) return messageConversations
-  return messageConversations.filter(c =>
-    t(c.nameKey).toLowerCase().includes(q) || t(c.previewKey).toLowerCase().includes(q))
-})
-
 const unreadTotal = computed(() =>
   messageConversations.reduce((n, c) => n + (c.unread > 0 ? 1 : 0), 0))
+
+function openConversation(conv: MessageConversation) {
+  selected.value = conv
+}
 
 usePageSeo(() => ({
   title: t('messages.seoTitle'),
@@ -68,11 +62,9 @@ usePageSeo(() => ({
 
 <template>
   <div class="page-msg flex flex-1 flex-col">
-    <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="msg-main flex w-full max-w-full flex-col overflow-x-hidden box-border">
       <AppTopBar :back="true" back-to="/" :notifications="3" />
 
-      <!-- Accroche -->
       <section class="msg-hero relative flex min-h-118 items-start gap-10 pb-60 box-border" aria-labelledby="messages-title">
         <div class="msg-hero-copy relative z-1 min-w-0 max-w-170 flex-1">
           <h1 id="messages-title" class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] text-text">
@@ -87,7 +79,6 @@ usePageSeo(() => ({
         </div>
       </section>
 
-      <!-- Onglets -->
       <div class="msg-tabs flex w-full items-center rounded-xl border border-border p-7 box-border" role="tablist" :aria-label="$t('messages.tabsLabel')">
         <button
           type="button"
@@ -125,27 +116,7 @@ usePageSeo(() => ({
         </button>
       </div>
 
-      <!-- Recherche et filtre -->
-      <div class="msg-toolbar mt-15 mb-10 flex w-full gap-10">
-        <label class="msg-search flex min-w-0 flex-1 items-center gap-12 rounded-lg border border-border bg-white px-17 py-11 box-border">
-          <img src="/img/icons/ic-msg-search.svg" alt="" width="18" height="18" class="block size-18 shrink-0">
-          <input
-            v-model="query"
-            type="search"
-            autocomplete="off"
-            :placeholder="$t('messages.searchPlaceholder')"
-            class="min-w-0 flex-1 border-0 bg-transparent p-1 text-xl leading-20 font-normal text-text outline-0 placeholder:text-muted"
-          >
-        </label>
-        <button type="button" class="msg-filter flex w-101 shrink-0 cursor-pointer items-center gap-12 rounded-lg border border-border bg-white px-17 py-11 text-xl leading-20 font-medium text-text box-border">
-          <img src="/img/icons/ic-msg-filter.svg" alt="" width="15" height="14" class="block h-14 w-15 shrink-0">
-          <span>{{ $t('messages.filter') }}</span>
-        </button>
-      </div>
-
-      <!-- Panneaux empilés : hauteur stable au changement d’onglet -->
-      <div class="grid w-full min-w-0 max-w-full">
-        <!-- Conversations -->
+      <div class="mt-15 grid w-full min-w-0 max-w-full">
         <div
           :class="[
             'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
@@ -153,64 +124,64 @@ usePageSeo(() => ({
           ]"
           :aria-hidden="activeTab !== 'messages'"
         >
-          <template v-if="conversations.length">
+          <template v-if="messageConversations.length">
             <div class="msg-list flex w-full flex-col gap-16">
-              <article
-              v-for="conv in conversations"
-              :key="conv.id"
-              class="msg-card relative flex w-full items-start rounded-xl border border-border bg-white px-18 py-17 box-border"
+              <button
+                v-for="conv in messageConversations"
+                :key="conv.id"
+                type="button"
+                class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-white px-18 py-17 text-left box-border"
+                @click="openConversation(conv)"
               >
-              <div
-                :class="[
-                  'msg-avatar relative size-48 shrink-0 rounded-full',
-                  conv.avatar.kind === 'icon' ? `msg-avatar--icon flex items-center justify-center overflow-hidden ${conv.avatar.tint}` : '',
-                  conv.avatar.kind === 'illus' ? 'msg-avatar--support overflow-visible bg-transparent' : '',
-                ]"
-              >
-                <img
-                  v-if="conv.avatar.kind === 'photo'"
-                  :src="conv.avatar.src"
-                  alt=""
-                  width="48"
-                  height="48"
-                  class="block size-full rounded-full object-cover"
+                <div
+                  :class="[
+                    'msg-avatar relative size-48 shrink-0 rounded-full',
+                    conv.avatar.kind === 'icon' ? `msg-avatar--icon flex items-center justify-center overflow-hidden ${conv.avatar.tint}` : '',
+                    conv.avatar.kind === 'illus' ? 'msg-avatar--support overflow-visible bg-transparent' : '',
+                  ]"
                 >
-                <QIcon v-else :name="conv.avatar.icon" :size="conv.avatar.kind === 'icon' ? 24 : 48" />
+                  <img
+                    v-if="conv.avatar.kind === 'photo'"
+                    :src="conv.avatar.src"
+                    alt=""
+                    width="48"
+                    height="48"
+                    class="block size-full rounded-full object-cover"
+                  >
+                  <QIcon v-else :name="conv.avatar.icon" :size="conv.avatar.kind === 'icon' ? 24 : 48" />
 
-                <span
-                  v-if="conv.online"
-                  class="msg-online absolute right-0 bottom-0 flex size-14 items-center justify-center rounded-full border-2 border-white bg-msg-online box-border"
-                  aria-hidden="true"
-                >
-                  <img src="/img/icons/ic-msg-online.svg" alt="" width="6" height="6" class="block size-6">
-                </span>
-              </div>
-
-              <div class="msg-body min-w-0 flex-1 pr-10 pl-16">
-                <div class="msg-identity flex w-full min-w-0 items-center">
-                  <h2 class="msg-name m-0 truncate text-xl leading-20 font-semibold text-text">{{ $t(conv.nameKey) }}</h2>
-                  <span :class="['msg-tag ml-6 shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[conv.tagTone]]">
-                    {{ $t(conv.tagKey) }}
+                  <span
+                    v-if="conv.online"
+                    class="msg-online absolute right-0 bottom-0 flex size-14 items-center justify-center rounded-full border-2 border-white bg-msg-online box-border"
+                    aria-hidden="true"
+                  >
+                    <img src="/img/icons/ic-msg-online.svg" alt="" width="6" height="6" class="block size-6">
                   </span>
                 </div>
-                <p class="msg-preview m-0 mt-6 line-clamp-2 text-md leading-[19.5px] font-normal text-msg-preview">
-                  {{ $t(conv.previewKey) }}
-                </p>
-              </div>
 
-              <div class="msg-aside ml-auto flex shrink-0 min-w-52 flex-col items-end justify-start gap-10 pt-2">
-                <time class="msg-time shrink-0 text-sm leading-15 font-medium text-right whitespace-nowrap text-msg-time">{{ conv.time }}</time>
-                <span
-                  v-if="conv.unread > 0"
-                  class="msg-unread msg-unread--count flex size-20 shrink-0 items-center justify-center rounded-full bg-msg-unread text-sm leading-15 font-bold text-white"
-                  :aria-label="$t('messages.unreadCount', { count: conv.unread })"
-                >{{ conv.unread }}</span>
-                <span v-else class="msg-unread size-10 shrink-0 rounded-full bg-msg-unread" :aria-label="$t('messages.unread')" />
-              </div>
-              </article>
+                <div class="msg-body min-w-0 flex-1 pr-10 pl-16">
+                  <div class="msg-identity flex w-full min-w-0 items-center">
+                    <h2 class="msg-name m-0 truncate text-xl leading-20 font-semibold text-text">{{ $t(conv.nameKey) }}</h2>
+                    <span :class="['msg-tag ml-6 shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[conv.tagTone]]">
+                      {{ $t(conv.tagKey) }}
+                    </span>
+                  </div>
+                  <p class="msg-preview m-0 mt-6 line-clamp-2 text-md leading-[19.5px] font-normal text-msg-preview">
+                    {{ $t(conv.previewKey) }}
+                  </p>
+                </div>
+
+                <div class="msg-aside ml-auto flex shrink-0 min-w-52 flex-col items-end justify-start gap-10 pt-2">
+                  <time class="msg-time shrink-0 text-sm leading-15 font-medium text-right whitespace-nowrap text-msg-time">{{ conv.time }}</time>
+                  <span
+                    v-if="conv.unread > 0"
+                    class="msg-unread msg-unread--count flex size-20 shrink-0 items-center justify-center rounded-full bg-msg-unread text-sm leading-15 font-bold text-white"
+                    :aria-label="$t('messages.unreadCount', { count: conv.unread })"
+                  >{{ conv.unread }}</span>
+                  <span v-else class="msg-unread size-10 shrink-0 rounded-full bg-msg-unread" :aria-label="$t('messages.unread')" />
+                </div>
+              </button>
             </div>
-            <!-- Frère de la liste, comme dans la maquette : dans la liste, il
-                 héritait du `gap: 16px` et allongeait le bloc de 60px. -->
             <QPager v-model:page="page" :total="totalPages" :aria-label="$t('messages.pagerLabel')" class="mt-8 mb-4" />
           </template>
 
@@ -220,7 +191,6 @@ usePageSeo(() => ({
           </div>
         </div>
 
-        <!-- Notifications : vide dans la maquette -->
         <div
           :class="[
             'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
@@ -235,7 +205,6 @@ usePageSeo(() => ({
         </div>
       </div>
 
-      <!-- Échanges sécurisés -->
       <aside class="msg-secure mt-16 flex min-h-86 w-full max-w-full items-center justify-between gap-8 overflow-hidden rounded-xl bg-surface-2 px-9 py-8 box-border">
         <div class="msg-secure-left flex min-w-0 flex-1 items-start gap-11">
           <span class="msg-secure-icon size-44 shrink-0 overflow-hidden">
@@ -250,4 +219,68 @@ usePageSeo(() => ({
       </aside>
     </div>
   </div>
+
+  <!-- Modale conversation : slide bas→haut + corps scrollable -->
+  <DialogRoot v-model:open="threadOpen">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
+      <DialogContent
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex h-[75dvh] min-h-[75vh] w-full max-w-shell flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in"
+      >
+        <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
+          <div class="flex min-w-0 flex-1 items-center gap-12 pr-8">
+            <div
+              v-if="selected"
+              :class="[
+                'msg-avatar relative size-40 shrink-0 rounded-full',
+                selected.avatar.kind === 'icon' ? `msg-avatar--icon flex items-center justify-center overflow-hidden ${selected.avatar.tint}` : '',
+                selected.avatar.kind === 'illus' ? 'msg-avatar--support overflow-visible bg-transparent' : '',
+              ]"
+            >
+              <img
+                v-if="selected.avatar.kind === 'photo'"
+                :src="selected.avatar.src"
+                alt=""
+                width="40"
+                height="40"
+                class="block size-full rounded-full object-cover"
+              >
+              <QIcon v-else :name="selected.avatar.icon" :size="selected.avatar.kind === 'icon' ? 20 : 40" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <DialogTitle class="m-0 truncate text-xl leading-21 font-bold text-navy">
+                {{ selected ? $t(selected.nameKey) : '' }}
+              </DialogTitle>
+              <div v-if="selected" class="mt-4 flex min-w-0 items-center gap-8">
+                <span :class="['msg-tag shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[selected.tagTone]]">
+                  {{ $t(selected.tagKey) }}
+                </span>
+                <time class="text-sm leading-15 font-medium text-msg-time">{{ selected.time }}</time>
+              </div>
+            </div>
+          </div>
+          <DialogClose
+            class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-2 p-0"
+            :aria-label="$t('ds.sheet.close')"
+          >
+            <QIcon name="ic-menu-close" :size="14" />
+          </DialogClose>
+        </header>
+
+        <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-20 pt-16 pb-[calc(24px+env(safe-area-inset-bottom,0px))]">
+          <div class="flex flex-col gap-12">
+            <article
+              v-for="(key, index) in threadMessages"
+              :key="`${key}-${index}`"
+              class="msg-bubble max-w-[85%] self-start rounded-2xl rounded-tl-md bg-surface-2 px-16 py-14 box-border"
+            >
+              <p class="m-0 text-lg leading-[22px] font-normal whitespace-pre-line text-text">
+                {{ $t(key) }}
+              </p>
+            </article>
+          </div>
+        </div>
+      </DialogContent>
+    </DialogPortal>
+  </DialogRoot>
 </template>

@@ -66,8 +66,8 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
             :message="$t(checkoutErrorKey)"
           />
 
-          <!-- Domaine : carte unique -->
-          <div v-if="isDomain && tiers.length > 0" class="w-full">
+          <!-- Domaine : carte unique (même pile visuelle que langue / orientation) -->
+          <div v-if="isDomain && tiers.length > 0" class="w-full pt-8">
             <OfferTierCard
               :tier="tiers[0]!"
               :index="0"

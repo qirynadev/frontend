@@ -11,7 +11,7 @@
 Entrée : carte « Cours de langues » sur `/mon-projet`  
 Config : `app/config/projet-langue-mock.ts`  
 Assets : `public/img/icons/mpl-langue/*`, `public/img/icons/mpl-prof/*`, `public/img/mpl-prof/*`  
-Doc professeurs : `docs/mon-projet-professeur-mocks.md`
+Doc professeurs / créneaux 2 h : `docs/mon-projet-professeur-mocks.md`
 
 ## Source API
 

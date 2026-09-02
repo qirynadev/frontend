@@ -19,9 +19,12 @@ describe('onglet actif', () => {
     expect(resolveActiveNavId('/ecoles/hec-paris')).toBe('orientation')
     expect(resolveActiveNavId('/destinations/france')).toBe('orientation')
     expect(resolveActiveNavId('/offres/mba')).toBe('orientation')
-    // L’authentification appartient à l’onglet Compte.
+    // L’authentification et les réglages appartiennent à l’onglet Compte
+    // (`/compte` redirige vers `/reglages`).
     expect(resolveActiveNavId('/connexion')).toBe('account')
     expect(resolveActiveNavId('/inscription')).toBe('account')
+    expect(resolveActiveNavId('/reglages')).toBe('account')
+    expect(resolveActiveNavId('/reglages/mot-de-passe')).toBe('account')
     expect(resolveActiveNavId('/paiement/reussi')).toBe('project')
   })
 

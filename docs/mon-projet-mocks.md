@@ -32,5 +32,8 @@ Enrichissement : `enrichAccompagnementFromMock()` — complète carte par carte 
 | Carte Admission | `/mon-projet/admission` |
 | Carte Logement | `/mon-projet/logement` |
 
+Doc destinations logement (badge villes) : `docs/logement-mocks.md`  
+Doc messages : `docs/messages-mocks.md`
+
 Les 4 cartes maquette sont **toujours** affichées : types manquants côté API
 injectés via `mergeAccompagnementsWithMaquette()`.

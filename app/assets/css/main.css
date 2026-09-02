@@ -406,6 +406,60 @@
   --color-rg-danger-bg: #fef2f2;
   --color-rg-danger-desc: #2b2b2b;
 
+  /* ─── Réglages — infos personnelles (Figma `1553:1020`) ───────── */
+  --color-rp-card-border: #e5e7eb;
+  --color-rp-avatar-bg: #f1effd;
+  --color-rp-tile-bg: #f1eef9;
+  --color-rp-photo-hint: #33363e;
+  --color-rp-photo-cta-border: #6d5caa;
+  --color-rp-photo-cta: #3420c0;
+  --color-rp-label: #6b7280;
+  --color-rp-input: #111827;
+  --color-rp-camera-border: #f7f7f7;
+  --color-rp-delete-bg: rgb(254 226 226 / 0.6);
+
+  /* ─── Réglages — Centre d’aide / contact (Figma 1586 / 1572) ──── */
+  --color-ca-banner: #f5f3ff;
+  --color-ca-banner-border: rgb(245 243 255 / 0.5);
+  --color-ca-heading: #111827;
+  --color-ca-muted: #4b5563;
+  --color-ca-item: #2f2f2f;
+  --color-ca-row-border: #f3f4f6;
+  --color-ca-online-bg: #dffbe5;
+  --color-ca-online: #377438;
+  --color-ca-secure: #f6f4ff;
+  --color-cf-label: #161616;
+  --color-cf-input: #e5e7eb;
+  --color-cf-placeholder: #9ca3af;
+  --color-cf-consent: #f7f1fd;
+  --color-cf-consent-check: #3b28cc;
+  --color-cf-consent-text: #374151;
+  --color-cf-consent-link: #3b28cc;
+  --color-cf-cta: #491bf0;
+  --color-cf-success-bg: #ecfdf5;
+  --color-cf-success-border: #f0fdf4;
+  --color-cf-success-dot: #0bb354;
+  --color-cf-summary-bg: #f5f3ff;
+  --color-cf-summary-border: rgb(245 243 255 / 0.8);
+  --color-cf-summary-icon: #e8e4fb;
+  --color-cf-summary-label: #242424;
+  --color-cf-summary-value: #0b1536;
+  --color-cf-summary-divider: rgb(229 231 235 / 0.6);
+
+  /* ─── Logement sûr / découverte (Figma `1591:2293`) ───────────── */
+  --color-ls-muted: #4b5563;
+  --color-ls-pain-border: #f4f4f5;
+  --color-ls-step-1: #2aa5c5;
+  --color-ls-step-2: #d3248d;
+  --color-ls-step-3: #e08915;
+  --color-ls-step-4: #329d59;
+  --color-ls-step-line: #d3d2d7;
+  --color-ls-step-label: #0b1536;
+  --color-ls-engage-bg: #f5f0ff;
+  --color-ls-engage-border: #ece4ff;
+  --color-ls-engage-icon: #ede5fc;
+  --color-ls-engage-desc: #545456;
+
   /* Plusieurs écrans (`domaines-etude.html` `.dom-card-meta--bold`, entre
      autres) sortent ponctuellement de la police de marque pour ce prix ou
      ce chiffre mis en avant. */
@@ -586,6 +640,10 @@
   --shadow-2xs: 0 1px 1px rgb(0 0 0 / 0.05);
   /* Carte des réglages (`reglages.html`). */
   --shadow-rg: 0 2px 10px -3px rgb(6 81 237 / 0.05);
+  /* Cartes infos personnelles (Figma `1553:1020`). */
+  --shadow-rp-card: 0 2px 4px rgb(0 0 0 / 0.05);
+  /* Cartes pain points logement sûr (Figma `1591:2293`). */
+  --shadow-ls-pain: 0 2px 5px rgb(0 0 0 / 0.03);
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
   --shadow-sm: 0 0 2px rgb(0 0 0 / 0.1);
   --shadow-soft: 0 2px 4px rgb(241 245 249 / 0.5);
@@ -618,8 +676,19 @@
   --breakpoint-shell: 768px;
   --container-shell: 768px;
 
-  /* ─── Durées ──────────────────────────────────────────────────── */
+  /* ─── Durées / animations ─────────────────────────────────────── */
   --ease-out-quick: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Bottom sheet fiche école / messages — entrée bas → haut */
+  --animate-ed-form-modal-in: ed-form-modal-in 0.28s var(--ease-out-quick) both;
+}
+
+@keyframes ed-form-modal-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════

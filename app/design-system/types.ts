@@ -57,7 +57,7 @@ export interface NavItem {
   label: string
   /** Fichier de `public/img/icons/`, sans extension. */
   icon: string
-  /** Variante fournie par la maquette pour l'état actif. */
+  /** Variante fournie par la maquette pour l'état actif (sauf Orientation). */
   iconActive?: string
   /** Dimensions relevées dans `app.css` — 24×24, ou 36×34 pour « Orientation ». */
   iconWidth: number

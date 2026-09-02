@@ -2,9 +2,8 @@
 /**
  * Lien « Nous contacter » / « Contacter le support ».
  *
- * Priorité : écran Centre d’aide (`/reglages/contact`) si la session est
- * ouverte — c’est le formulaire produit. Sinon `mailto:` sur
- * `settings.site.email`, sinon la FAQ.
+ * Priorité : hub Centre d’aide (`/reglages/centre-aide`) si la session est
+ * ouverte. Sinon `mailto:` sur `settings.site.email`, sinon la FAQ.
  */
 import { useCatalogStore, useSessionStore } from '~/core/stores'
 
@@ -18,7 +17,7 @@ onMounted(() => {
 
 const email = computed(() => catalog.settings?.email ?? '')
 const contactTo = computed(() => {
-  if (session.isAuthenticated) return localePath('/reglages/contact')
+  if (session.isAuthenticated) return localePath('/reglages/centre-aide')
   if (email.value) return `mailto:${email.value}`
   return localePath('/pages/faq')
 })

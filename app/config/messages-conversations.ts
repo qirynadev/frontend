@@ -7,6 +7,11 @@ export interface MessageConversation {
   tagKey: string
   tagTone: MessageTagTone
   previewKey: string
+  /**
+   * Fil de messages pour la modale (clés i18n).
+   * Absent → `[previewKey]` seul.
+   */
+  threadKeys?: string[]
   /** Horodatage tel que la maquette l'affiche : heure, « Hier », ou date. */
   time: string
   /** Nombre de non-lus ; `0` affiche la pastille pleine sans chiffre. */
@@ -24,6 +29,9 @@ export interface MessageConversation {
  * Données d'essai : l'API n'expose pas encore de messagerie. Les horodatages
  * restent des chaînes brutes, comme dans la maquette — les formater
  * supposerait des dates réelles que rien ne fournit.
+ *
+ * Détail : clic → modale (≥ ¾ écran, slide bas→haut), fil = `threadKeys`
+ * (scroll interne si le contenu dépasse). Voir `docs/messages-mocks.md`.
  */
 export const messageConversations: MessageConversation[] = [
   {
@@ -32,6 +40,14 @@ export const messageConversations: MessageConversation[] = [
     tagKey: 'messages.tagAdvisorF',
     tagTone: 'purple',
     previewKey: 'messages.previewOrientation',
+    threadKeys: [
+      'messages.threadOrientation1',
+      'messages.threadOrientation2',
+      'messages.threadOrientation3',
+      'messages.threadOrientation4',
+      'messages.threadOrientation5',
+      'messages.previewOrientation',
+    ],
     time: '10:30',
     unread: 2,
     online: true,
@@ -43,6 +59,11 @@ export const messageConversations: MessageConversation[] = [
     tagKey: 'messages.tagAdvisorM',
     tagTone: 'green',
     previewKey: 'messages.previewLanguages',
+    threadKeys: [
+      'messages.threadLanguages1',
+      'messages.threadLanguages2',
+      'messages.previewLanguages',
+    ],
     time: 'Hier',
     unread: 0,
     online: true,

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /**
- * Centre d’aide — Envoyer un message ← capture produit (WhatsApp 2026-08-23).
- * Succès « Demande envoyée ! » ← capture (WhatsApp 2026-08-23, 20:16).
+ * Réglages — Envoyer un message ← Figma `1572:3457`.
+ * Confirmation de demande ← Figma `1572:3044`.
  *
- * Aucun endpoint contact : validation locale → écran succès (données du
- * formulaire + repli `contact-success-mock.ts`). Doc : `docs/reglages-contact-mocks.md`.
- *
- * Espacement vertical **22px** entre blocs majeurs (topbar → sections).
+ * Entrée hub : `/reglages/centre-aide`. Pas d’endpoint contact :
+ * validation locale → confirmation (session + repli mock).
+ * Espacement **22px** entre blocs majeurs. Doc : `docs/reglages-contact-mocks.md`.
  */
 import { contactSuccessMock } from '~/config/contact-success-mock'
 import { useSessionStore } from '~/core/stores'
@@ -18,6 +17,8 @@ const localePath = useLocalePath()
 const session = useSessionStore()
 
 const MESSAGE_MAX = 1000
+const FORM_ICON = '/img/icons/contact-form'
+const SUCCESS_ICON = '/img/icons/contact-success'
 
 const subjects = [
   { id: 'general', labelKey: 'settingsContact.subjectGeneral' },
@@ -81,19 +82,19 @@ const summaryEmail = computed(() => email.value.trim() || contactSuccessMock.ema
 const summaryRows = computed(() => [
   {
     id: 'subject',
-    icon: '/img/icons/contact-success/row-subject.svg',
+    icon: `${SUCCESS_ICON}/row-subject.svg`,
     labelKey: 'settingsContact.successSubjectLabel',
     value: subjectLabel.value,
   },
   {
     id: 'name',
-    icon: '/img/icons/contact-success/row-user.svg',
+    icon: `${SUCCESS_ICON}/row-user.svg`,
     labelKey: 'settingsContact.successNameLabel',
     value: summaryName.value,
   },
   {
     id: 'email',
-    icon: '/img/icons/contact-success/row-email.svg',
+    icon: `${SUCCESS_ICON}/row-email.svg`,
     labelKey: 'settingsContact.successEmailLabel',
     value: summaryEmail.value,
   },
@@ -109,62 +110,57 @@ usePageSeo(() => ({
 <template>
   <div class="page-contact flex flex-1 flex-col">
     <div class="flex w-full max-w-full flex-col gap-22 box-border">
-      <AppTopBar :back="true" back-to="/reglages" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/reglages/centre-aide" :notifications="3" :gap="0" />
 
-      <!-- ── Succès « Demande envoyée ! » ── -->
+      <!-- ── Confirmation de demande (Figma 1572:3044) ── -->
       <template v-if="submitted">
         <section class="flex w-full flex-col items-center text-center" role="status">
           <img
-            src="/img/icons/contact-success/hero.svg"
+            :src="`${SUCCESS_ICON}/hero.png`"
             alt=""
-            width="168"
-            height="168"
-            class="block size-168"
+            width="160"
+            height="106"
+            class="block h-106 w-160 object-contain"
           >
-          <h1 class="m-0 pt-16 text-4xl leading-normal font-semibold tracking-[-0.65px] text-navy">
+          <h1 class="m-0 mt-0 text-5xl leading-[31.25px] font-semibold tracking-[-0.625px] text-text">
             {{ $t('settingsContact.successTitle') }}
           </h1>
-          <p class="m-0 mt-6 text-xl leading-[22.75px] font-normal text-muted-2">
+          <p class="m-0 text-xl leading-normal font-normal text-text">
             {{ $t('settingsContact.successSubtitle') }}
           </p>
         </section>
 
-        <aside class="box-border flex w-full items-start gap-12 rounded-xl bg-success-bg px-14 py-14">
-          <img
-            src="/img/icons/contact-success/check.svg"
-            alt=""
-            width="24"
-            height="24"
-            class="mt-2 block size-24 shrink-0"
-          >
-          <div class="min-w-0 flex-1">
-            <p class="m-0 text-base leading-18 font-bold text-navy">
+        <aside class="box-border flex w-full items-start rounded-[10px] border border-cf-success-border bg-cf-success-bg p-16">
+          <span class="mr-12 mt-2 flex size-28 shrink-0 items-center justify-center rounded-full bg-cf-success-dot">
+            <img :src="`${SUCCESS_ICON}/check-banner.svg`" alt="" width="16" height="16" class="block size-16">
+          </span>
+          <div class="min-w-0 flex-1 pt-2">
+            <p class="m-0 text-lg leading-[19.25px] font-semibold text-black">
               {{ $t('settingsContact.successBannerTitle') }}
             </p>
-            <p class="m-0 mt-4 text-sm leading-16 font-normal text-navy">
+            <p class="m-0 mt-2 text-base leading-[17.875px] font-normal text-black">
               {{ $t('settingsContact.successBannerDesc') }}
             </p>
           </div>
         </aside>
 
         <section
-          class="box-border flex w-full flex-col rounded-[16px] bg-surface px-4 py-4"
+          class="box-border flex w-full flex-col rounded-[10px] border border-cf-summary-border bg-cf-summary-bg p-20 shadow-2xs"
           :aria-label="$t('settingsContact.successSummaryLabel')"
         >
           <template v-for="(row, index) in summaryRows" :key="row.id">
-            <div class="flex w-full items-center gap-12 px-12 py-14">
-              <span class="flex size-40 shrink-0 items-center justify-center rounded-full bg-primary-bg">
-                <img :src="row.icon" alt="" width="18" height="18" class="block size-18">
+            <div class="flex w-full items-center">
+              <span class="mr-16 flex size-48 shrink-0 items-center justify-center rounded-full bg-cf-summary-icon">
+                <img :src="row.icon" alt="" width="24" height="24" class="block size-24">
               </span>
               <div class="min-w-0 flex-1">
-                <p class="m-0 text-sm leading-15 font-normal text-muted-2">{{ $t(row.labelKey) }}</p>
-                <p class="m-0 mt-2 text-xl leading-20 font-semibold text-navy">{{ row.value }}</p>
+                <p class="m-0 text-lg leading-[18.75px] font-normal text-cf-summary-label">{{ $t(row.labelKey) }}</p>
+                <p class="m-0 mt-2 text-xl leading-[22.5px] font-bold text-cf-summary-value">{{ row.value }}</p>
               </div>
             </div>
-            <!-- Séparateur inset : fine ligne grise, pas pleine largeur -->
             <div
               v-if="index < summaryRows.length - 1"
-              class="mx-20 h-0 border-t border-[#E8E8F0]"
+              class="my-16 ml-64 h-px w-[calc(100%-64px)] bg-cf-summary-divider"
               aria-hidden="true"
             />
           </template>
@@ -172,38 +168,38 @@ usePageSeo(() => ({
 
         <NuxtLink
           :to="localePath('/')"
-          class="box-border flex w-full items-center justify-center gap-10 rounded-xl bg-primary-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white no-underline"
+          class="box-border flex w-full items-center justify-center gap-10 rounded-[10px] bg-primary-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white no-underline"
         >
-          <img src="/img/icons/contact-success/home.svg" alt="" width="20" height="20" class="block size-20 shrink-0">
+          <img :src="`${SUCCESS_ICON}/home.svg`" alt="" width="15" height="15" class="block size-15 shrink-0">
           <span>{{ $t('settingsContact.successHomeCta') }}</span>
         </NuxtLink>
       </template>
 
-      <!-- ── Formulaire ── -->
+      <!-- ── Envoyer un message (Figma 1572:3457) ── -->
       <template v-else>
         <section class="w-full">
-          <h1 class="m-0 text-4xl leading-normal font-semibold tracking-[-0.65px] text-navy">
+          <h1 class="m-0 text-4xl leading-normal font-semibold tracking-[-0.65px] text-text">
             {{ $t('settingsContact.title') }}
           </h1>
-          <p class="m-0 mt-2 text-lg leading-[22.75px] font-normal text-muted-2">
+          <p class="m-0 text-xl leading-21 font-normal text-ca-muted">
             {{ $t('settingsContact.subtitle') }}
           </p>
         </section>
 
-        <form class="flex w-full flex-col gap-22" @submit.prevent="onSubmit">
+        <form class="flex w-full flex-col gap-12" @submit.prevent="onSubmit">
           <div class="flex w-full flex-col">
-            <label for="contact-subject" class="mb-8 text-xl leading-20 font-semibold text-navy">
+            <label for="contact-subject" class="text-xl leading-21 font-medium text-cf-label">
               {{ $t('settingsContact.subjectLabel') }}
             </label>
-            <div class="relative">
+            <div class="relative mt-4">
               <select
                 id="contact-subject"
                 v-model="subject"
                 :aria-invalid="!!errors.subject || undefined"
                 :class="[
-                  'box-border w-full appearance-none rounded-xl border bg-white py-15 pr-44 pl-16 text-xl leading-20 font-medium outline-none',
-                  subject ? 'text-text' : 'text-muted',
-                  errors.subject ? 'border-danger' : 'border-border focus:border-primary',
+                  'box-border w-full appearance-none rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal outline-none',
+                  subject ? 'text-text' : 'text-cf-placeholder',
+                  errors.subject ? 'border-danger' : 'border-cf-input',
                 ]"
               >
                 <option value="" disabled>{{ $t('settingsContact.subjectPlaceholder') }}</option>
@@ -212,11 +208,11 @@ usePageSeo(() => ({
                 </option>
               </select>
               <img
-                src="/img/icons/ic-contact-chevron.svg"
+                :src="`${FORM_ICON}/ic-cf-chevron.svg`"
                 alt=""
-                width="12"
-                height="8"
-                class="pointer-events-none absolute top-1/2 right-16 -translate-y-1/2"
+                width="20"
+                height="20"
+                class="pointer-events-none absolute top-1/2 right-12 size-20 -translate-y-1/2"
                 aria-hidden="true"
               >
             </div>
@@ -224,7 +220,7 @@ usePageSeo(() => ({
           </div>
 
           <div class="flex w-full flex-col">
-            <label for="contact-name" class="mb-8 text-xl leading-20 font-semibold text-navy">
+            <label for="contact-name" class="text-xl leading-21 font-medium text-cf-label">
               {{ $t('settingsContact.nameLabel') }}
             </label>
             <input
@@ -235,15 +231,15 @@ usePageSeo(() => ({
               :placeholder="$t('settingsContact.namePlaceholder')"
               :aria-invalid="!!errors.name || undefined"
               :class="[
-                'box-border w-full rounded-xl border bg-white px-16 py-15 text-xl leading-20 font-medium text-text outline-none placeholder:text-muted',
-                errors.name ? 'border-danger' : 'border-border focus:border-primary',
+                'mt-4 box-border w-full rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder',
+                errors.name ? 'border-danger' : 'border-cf-input',
               ]"
             >
             <p v-if="errors.name" class="mt-6 mb-0 text-xs leading-16 text-danger">{{ errors.name }}</p>
           </div>
 
           <div class="flex w-full flex-col">
-            <label for="contact-email" class="mb-8 text-xl leading-20 font-semibold text-navy">
+            <label for="contact-email" class="text-xl leading-21 font-medium text-cf-label">
               {{ $t('settingsContact.emailLabel') }}
             </label>
             <input
@@ -255,40 +251,39 @@ usePageSeo(() => ({
               :placeholder="$t('settingsContact.emailPlaceholder')"
               :aria-invalid="!!errors.email || undefined"
               :class="[
-                'box-border w-full rounded-xl border bg-white px-16 py-15 text-xl leading-20 font-medium text-text outline-none placeholder:text-muted',
-                errors.email ? 'border-danger' : 'border-border focus:border-primary',
+                'mt-4 box-border w-full rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder',
+                errors.email ? 'border-danger' : 'border-cf-input',
               ]"
             >
             <p v-if="errors.email" class="mt-6 mb-0 text-xs leading-16 text-danger">{{ errors.email }}</p>
           </div>
 
           <div class="flex w-full flex-col">
-            <label for="contact-message" class="mb-8 text-xl leading-20 font-semibold text-navy">
+            <label for="contact-message" class="text-xl leading-21 font-medium text-cf-label">
               {{ $t('settingsContact.messageLabel') }}
             </label>
             <div
               :class="[
-                'relative box-border w-full rounded-xl border bg-white',
-                errors.message ? 'border-danger' : 'border-border focus-within:border-primary',
+                'relative mt-4 box-border w-full rounded-[12px] border bg-white',
+                errors.message ? 'border-danger' : 'border-cf-input',
               ]"
             >
               <textarea
                 id="contact-message"
                 v-model="message"
-                rows="5"
                 :maxlength="MESSAGE_MAX"
                 :placeholder="$t('settingsContact.messagePlaceholder')"
                 :aria-invalid="!!errors.message || undefined"
-                class="box-border min-h-120 w-full resize-none rounded-xl border-0 bg-transparent px-16 pt-15 pb-32 text-xl leading-20 font-medium text-text outline-none placeholder:text-muted"
+                class="box-border h-157 w-full resize-none rounded-[12px] border-0 bg-transparent px-12 pt-12 pb-36 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder"
               />
-              <span class="pointer-events-none absolute right-14 bottom-12 text-sm leading-15 text-muted" aria-live="polite">
+              <span class="pointer-events-none absolute right-12 bottom-12 text-base leading-18 font-medium text-ca-muted" aria-live="polite">
                 {{ message.length }}/{{ MESSAGE_MAX }}
               </span>
             </div>
             <p v-if="errors.message" class="mt-6 mb-0 text-xs leading-16 text-danger">{{ errors.message }}</p>
           </div>
 
-          <div class="box-border flex w-full items-start gap-12 rounded-xl bg-surface-2 px-14 py-14">
+          <div class="mt-8 box-border flex w-full items-start gap-10 rounded-[16px] bg-cf-consent p-16">
             <input
               id="contact-consent"
               v-model="consent"
@@ -296,16 +291,16 @@ usePageSeo(() => ({
               name="consent"
               :aria-invalid="!!errors.consent || undefined"
               :class="[
-                'mt-2 size-18 shrink-0 cursor-pointer appearance-none rounded-sm border-2 bg-white',
-                'checked:border-primary-link checked:bg-primary-link',
-                errors.consent ? 'border-danger' : 'border-primary-link',
+                'mt-2 size-14 shrink-0 cursor-pointer appearance-none rounded-[4px] border-[1.2px] bg-white',
+                'checked:border-cf-consent-check checked:bg-cf-consent-check',
+                errors.consent ? 'border-danger' : 'border-cf-consent-check',
               ]"
             >
-            <label for="contact-consent" class="min-w-0 flex-1 cursor-pointer text-base leading-[18px] font-medium text-navy">
+            <label for="contact-consent" class="min-w-0 flex-1 cursor-pointer text-exact-13-5 leading-[18.563px] font-normal text-cf-consent-text">
               {{ $t('settingsContact.consentBefore') }}
               <NuxtLink
                 :to="localePath('/reglages/mentions')"
-                class="font-semibold text-primary-link no-underline"
+                class="font-medium text-cf-consent-link no-underline"
                 @click.stop
               >
                 {{ $t('settingsContact.privacyLink') }}
@@ -313,14 +308,14 @@ usePageSeo(() => ({
               {{ $t('settingsContact.consentAfter') }}
             </label>
           </div>
-          <p v-if="errors.consent" class="-mt-10 mb-0 text-xs leading-16 text-danger">{{ errors.consent }}</p>
+          <p v-if="errors.consent" class="m-0 text-xs leading-16 text-danger">{{ errors.consent }}</p>
 
-          <div class="flex w-full flex-col gap-12">
+          <div class="mt-8 flex w-full flex-col">
             <button
               type="submit"
               :disabled="submitting"
               :class="[
-                'flex w-full cursor-pointer items-center justify-center rounded-xl border-0 bg-primary-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white',
+                'flex w-full cursor-pointer items-center justify-center rounded-[10px] border-0 bg-cf-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white',
                 submitting ? 'cursor-not-allowed opacity-70' : '',
               ]"
             >
@@ -328,8 +323,8 @@ usePageSeo(() => ({
               <span v-else>{{ $t('settingsContact.submit') }}</span>
             </button>
 
-            <p class="m-0 flex items-center justify-center gap-6 text-sm leading-15 text-muted">
-              <img src="/img/icons/ic-contact-lock.svg" alt="" width="12" height="14" class="block shrink-0" aria-hidden="true">
+            <p class="m-0 mt-0 flex h-47 items-center justify-center gap-6 text-exact-12-5 leading-[18.75px] text-ca-muted">
+              <img :src="`${FORM_ICON}/ic-cf-lock.svg`" alt="" width="16" height="16" class="block size-16 shrink-0" aria-hidden="true">
               <span>{{ $t('settingsContact.secureNote') }}</span>
             </p>
           </div>

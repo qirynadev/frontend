@@ -22,6 +22,11 @@ const props = withDefaults(
     back?: boolean
     /** Destination de repli quand il n'y a pas d'historique. */
     backTo?: string
+    /**
+     * Intercepte le retour (ex. fermer un détail inline).
+     * Si défini, remplace l’historique / `backTo`.
+     */
+    backHandler?: () => void
     /** Bouton menu à gauche (accueil uniquement). */
     menu?: boolean
     /** Nombre de notifications. `0` masque la pastille. */
@@ -35,7 +40,7 @@ const props = withDefaults(
      */
     gap?: 0 | 16 | 22 | 30
   }>(),
-  { back: false, backTo: '/', menu: false, notifications: 0, gap: 30 },
+  { back: false, backTo: '/', backHandler: undefined, menu: false, notifications: 0, gap: 30 },
 )
 
 const gapClass: Record<number, string> = { 0: 'pb-0', 16: 'pb-16', 22: 'pb-22', 30: 'pb-30' }
@@ -46,6 +51,10 @@ const router = useRouter()
 const localePath = useLocalePath()
 
 function goBack() {
+  if (props.backHandler) {
+    props.backHandler()
+    return
+  }
   if (import.meta.client && window.history.length > 1) {
     router.back()
     return

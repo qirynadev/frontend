@@ -284,7 +284,64 @@ usePageSeo(() => ({
           </div>
         </section>
 
-        <!-- Onglets + listes (grille empilée = hauteur stable au changement d’onglet) -->
+        <!-- Prochain cours : hauteur au contenu ; compteur responsive (s → m masqués) -->
+        <aside
+          class="box-border flex w-full flex-col rounded-2xl p-16 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
+          style="background-image: linear-gradient(157.8deg, #4f46e5 0%, #ff0055 100%)"
+        >
+          <div class="flex w-full items-stretch gap-10">
+            <div class="flex min-w-0 flex-1 flex-col justify-center">
+              <div class="flex items-center gap-8">
+                <span class="relative size-28 shrink-0 overflow-hidden">
+                  <img src="/img/icons/mpl-langue/next-cal.svg" alt="" width="28" height="28" class="block size-28">
+                </span>
+                <h2 class="m-0 text-[13px] leading-20 font-semibold text-white">{{ $t('languageProject.nextTitle') }}</h2>
+              </div>
+              <div class="flex flex-col gap-4 pt-8">
+                <p class="m-0 flex items-center gap-8 text-[10px] leading-16 font-normal text-white/90">
+                  <img src="/img/icons/mpl-langue/next-date.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                  <span>{{ nextCourseLabels.dateLabel }}</span>
+                </p>
+                <p class="m-0 flex items-center gap-8 text-[10px] leading-16 font-normal text-white/90">
+                  <img src="/img/icons/mpl-langue/next-clock.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                  <span>{{ nextCourseLabels.timeLabel }}</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Séparateur + bloc compteur décalés vers la gauche -->
+            <div class="-ml-8 flex shrink-0 items-stretch gap-8">
+              <div class="w-px shrink-0 self-stretch bg-white/20" aria-hidden="true" />
+
+              <div class="flex flex-col items-center justify-center">
+                <p class="m-0 pb-6 text-[12px] leading-16 font-normal text-white">{{ $t('languageProject.startsIn') }}</p>
+                <div class="flex items-center gap-6">
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
+                    <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.h }}</span>
+                    <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitH') }}</span>
+                  </div>
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white max-2xs:hidden">
+                    <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.m }}</span>
+                    <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitMin') }}</span>
+                  </div>
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white max-xs:hidden">
+                    <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.s }}</span>
+                    <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitS') }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="inline-flex size-40 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0"
+                    :aria-label="$t('languageProject.connect')"
+                  >
+                    <img src="/img/icons/mpl-langue/connect-video.svg" alt="" width="16" height="16" class="block size-16">
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Onglets + listes : hauteur = panneau actif uniquement (pas de scroll fantôme) -->
         <section class="flex w-full flex-col gap-22">
           <div
             class="box-border flex h-41 w-full items-stretch rounded-[6px] border border-[#efeff7] bg-[#f8f8fd] p-px"
@@ -323,146 +380,84 @@ usePageSeo(() => ({
             </button>
           </div>
 
-          <div class="grid w-full">
-            <!-- Cours planifiés (Langue 1) -->
-            <div
-              :class="[
-                'col-start-1 row-start-1 flex w-full flex-col gap-12',
-                activeTab === 'planned' ? 'visible' : 'invisible pointer-events-none',
-              ]"
-              :aria-hidden="activeTab !== 'planned'"
+          <!-- Cours planifiés -->
+          <div
+            v-show="activeTab === 'planned'"
+            class="flex w-full flex-col gap-12"
+            role="tabpanel"
+            :aria-hidden="activeTab !== 'planned'"
+          >
+            <article
+              v-for="card in plannedCards"
+              :key="card.id"
+              class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
             >
-              <article
-                v-for="card in plannedCards"
-                :key="card.id"
-                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
-              >
-                <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
-                <span class="relative size-44 shrink-0 overflow-hidden">
-                  <img src="/img/icons/mpl-langue/session-cal.svg" alt="" width="44" height="44" class="block size-44">
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-[#0a142f]">{{ card.title }}</h2>
-                  <p class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
-                    <img src="/img/icons/mpl-langue/clock.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                    <span>{{ card.timeLabel }}</span>
-                  </p>
-                  <p class="m-0 flex items-center gap-6 pt-2 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
-                    <img src="/img/icons/mpl-langue/calendar.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                    <span>{{ card.dateLabel }}</span>
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]"
-                >
-                  <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
-                  <span>{{ $t('languageProject.connect') }}</span>
-                </button>
-              </article>
-            </div>
-
-            <!-- Cours à planifier (Langues 2) -->
-            <div
-              :class="[
-                'col-start-1 row-start-1 flex w-full flex-col gap-12',
-                activeTab === 'unplanned' ? 'visible' : 'invisible pointer-events-none',
-              ]"
-              :aria-hidden="activeTab !== 'unplanned'"
-            >
-              <article
-                v-for="card in unplannedCards"
-                :key="card.id"
-                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
-              >
-                <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
-                <span class="relative size-44 shrink-0 overflow-hidden">
-                  <img src="/img/icons/mpl-langue/session-cal.svg" alt="" width="44" height="44" class="block size-44">
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-[#0a142f]">{{ card.title }}</h2>
-                  <p class="m-0 pt-4 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
-                    {{ card.durationLabel }}
-                  </p>
-                </div>
-                <NuxtLink
-                  v-if="card.to"
-                  :to="localePath(card.to)"
-                  class="inline-flex shrink-0 items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa] no-underline"
-                >
-                  <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
-                  <span>{{ $t('languageProject.schedule') }}</span>
-                </NuxtLink>
-                <button
-                  v-else
-                  type="button"
-                  class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]"
-                >
-                  <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
-                  <span>{{ $t('languageProject.schedule') }}</span>
-                </button>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <!-- Prochain cours : icône plus petite, proche du titre ; infos calées à gauche -->
-        <aside
-          class="box-border flex min-h-151 w-full flex-col rounded-2xl p-20 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
-          style="background-image: linear-gradient(157.8deg, #4f46e5 0%, #ff0055 100%)"
-        >
-          <div class="flex w-full items-start gap-10">
-            <div class="flex min-w-0 flex-1 flex-col">
-              <div class="flex items-center gap-8">
-                <span class="relative size-28 shrink-0 overflow-hidden">
-                  <img src="/img/icons/mpl-langue/next-cal.svg" alt="" width="28" height="28" class="block size-28">
-                </span>
-                <h2 class="m-0 text-[13px] leading-28 font-semibold text-white">{{ $t('languageProject.nextTitle') }}</h2>
-              </div>
-              <div class="flex flex-col gap-6 pt-8">
-                <p class="m-0 flex items-center gap-8 text-[10px] leading-20 font-normal text-white/90">
-                  <img src="/img/icons/mpl-langue/next-date.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                  <span>{{ nextCourseLabels.dateLabel }}</span>
+              <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
+              <span class="relative size-44 shrink-0 overflow-hidden">
+                <img src="/img/icons/mpl-langue/session-cal.svg" alt="" width="44" height="44" class="block size-44">
+              </span>
+              <div class="min-w-0 flex-1">
+                <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-[#0a142f]">{{ card.title }}</h2>
+                <p class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
+                  <img src="/img/icons/mpl-langue/clock.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                  <span>{{ card.timeLabel }}</span>
                 </p>
-                <p class="m-0 flex items-center gap-8 text-[10px] leading-20 font-normal text-white/90">
-                  <img src="/img/icons/mpl-langue/next-clock.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                  <span>{{ nextCourseLabels.timeLabel }}</span>
+                <p class="m-0 flex items-center gap-6 pt-2 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
+                  <img src="/img/icons/mpl-langue/calendar.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
+                  <span>{{ card.dateLabel }}</span>
                 </p>
-                <p class="m-0 flex items-center gap-8 text-[10px] leading-20 font-normal text-white/90">
-                  <img src="/img/icons/mpl-langue/next-video.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                  <span>{{ $t('languageProject.visio') }}</span>
-                </p>
-              </div>
-            </div>
-
-            <div class="mx-4 h-96 w-px shrink-0 bg-white/20" aria-hidden="true" />
-
-            <div class="flex shrink-0 flex-col items-center">
-              <p class="m-0 pb-8 text-[12px] leading-16 font-normal text-white">{{ $t('languageProject.startsIn') }}</p>
-              <div class="flex items-start gap-8">
-                <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
-                  <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.h }}</span>
-                  <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitH') }}</span>
-                </div>
-                <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
-                  <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.m }}</span>
-                  <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitMin') }}</span>
-                </div>
-                <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
-                  <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.s }}</span>
-                  <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitS') }}</span>
-                </div>
               </div>
               <button
                 type="button"
-                class="mt-12 inline-flex cursor-pointer items-center justify-center gap-6 rounded-full border-0 bg-white px-14 py-8 text-[10px] leading-16 font-semibold text-[#fc037f]"
+                class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]"
               >
-                <img src="/img/icons/mpl-langue/connect-video.svg" alt="" width="14" height="14" class="block size-14">
+                <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
                 <span>{{ $t('languageProject.connect') }}</span>
               </button>
-            </div>
+            </article>
           </div>
-        </aside>
+
+          <!-- Cours à planifier -->
+          <div
+            v-show="activeTab === 'unplanned'"
+            class="flex w-full flex-col gap-12"
+            role="tabpanel"
+            :aria-hidden="activeTab !== 'unplanned'"
+          >
+            <article
+              v-for="card in unplannedCards"
+              :key="card.id"
+              class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
+            >
+              <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
+              <span class="relative size-44 shrink-0 overflow-hidden">
+                <img src="/img/icons/mpl-langue/session-cal.svg" alt="" width="44" height="44" class="block size-44">
+              </span>
+              <div class="min-w-0 flex-1">
+                <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-[#0a142f]">{{ card.title }}</h2>
+                <p class="m-0 pt-4 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
+                  {{ card.durationLabel }}
+                </p>
+              </div>
+              <NuxtLink
+                v-if="card.to"
+                :to="localePath(card.to)"
+                class="inline-flex shrink-0 items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa] no-underline"
+              >
+                <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
+                <span>{{ $t('languageProject.schedule') }}</span>
+              </NuxtLink>
+              <button
+                v-else
+                type="button"
+                class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]"
+              >
+                <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
+                <span>{{ $t('languageProject.schedule') }}</span>
+              </button>
+            </article>
+          </div>
+        </section>
       </div>
     </PageState>
   </div>

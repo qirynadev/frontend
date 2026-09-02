@@ -192,6 +192,14 @@ usePageSeo(() => ({
         </div>
       </template>
 
+      <NuxtLink
+        v-if="confirmed"
+        :to="localePath('/mon-projet')"
+        class="box-border block w-full rounded-xl bg-primary px-16 py-16 text-center text-xl leading-20 font-semibold whitespace-nowrap text-white no-underline shadow-ed-float-cta"
+      >
+        {{ $t('checkout.success.completeFileCta') }}
+      </NuxtLink>
+
       <!-- Une question ? -->
       <div>
         <div class="relative flex min-h-91 items-center justify-between gap-8 rounded-xl bg-surface-2 p-9">

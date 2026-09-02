@@ -10,7 +10,6 @@ export interface DomainAreaVisual {
   chipIcon: AnyIconName
   chipIconSize: number
   chipIconHeight: number
-  metaBold: boolean
 }
 
 const DEFAULT: DomainAreaVisual = {
@@ -20,7 +19,6 @@ const DEFAULT: DomainAreaVisual = {
   chipIcon: 'ic-dom-sci',
   chipIconSize: 18,
   chipIconHeight: 18,
-  metaBold: true,
 }
 
 /** Slugs maquette (`data-domaine`) → habillage pixel mesuré sur `domaines-etude.html` / `liste-ecole.html`. */
@@ -32,7 +30,6 @@ const BY_SLUG: Record<string, Partial<DomainAreaVisual>> = {
     chipIcon: 'ic-le-chip-arch',
     chipIconSize: 11,
     chipIconHeight: 14,
-    metaBold: false,
   },
   management: {
     cardVariant: 'mgmt',
@@ -41,7 +38,6 @@ const BY_SLUG: Record<string, Partial<DomainAreaVisual>> = {
     chipIcon: 'ic-le-chip-mgmt',
     chipIconSize: 16,
     chipIconHeight: 14,
-    metaBold: false,
   },
   ingenierie: {
     cardIcon: 'ic-dom-ing',

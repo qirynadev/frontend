@@ -1,13 +1,12 @@
 /**
  * Source unique de la navigation principale.
  *
- * La maquette répète le même bloc `<nav class="bottom-nav">` dans ses 15 pages,
- * avec la classe `active` déplacée à la main. Ici, une seule liste.
+ * Une seule liste pour toutes les pages (accueil, auth, tunnels) — même
+ * bottom-nav que `home.html`, y compris le logo Orientation agrandi.
  *
  * Les icônes sont les fichiers de la maquette (`public/img/icons/`). Elle fournit
- * une variante `-active` pour trois des cinq onglets ; `iconActive` reste
- * indéfini pour les autres, et l'onglet actif se distingue alors par la seule
- * couleur du libellé — exactement comme dans `home.html`.
+ * une variante `-active` (violet) pour Accueil / Messages / Projet / Compte ;
+ * Orientation garde toujours le logo Qiryna, seul le libellé passe en actif.
  */
 
 export interface NavEntry {
@@ -19,7 +18,7 @@ export interface NavEntry {
   labelKey: string
   /** Fichier de `public/img/icons/`, sans extension. */
   icon: string
-  /** Variante fournie par la maquette pour l'état actif. */
+  /** Variante fournie par la maquette pour l'état actif (couleur). */
   iconActive?: string
   /** Dimensions d'affichage relevées dans `app.css`. */
   iconWidth: number
@@ -32,22 +31,10 @@ export interface NavEntry {
    * niveau.
    */
   match?: string[]
-  /**
-   * Icône de repli sur `AUTH_PATHS` (`connexion.html`/`inscription.html`/
-   * `mot-de-passe.html`) : la maquette y remplace l'icône normale par celle-ci
-   * sur ces trois écrans précis, avant même de regarder `iconActive`.
-   */
-  guestIcon?: string
-  guestIconWidth?: number
-  guestIconHeight?: number
 }
 
 /**
- * Écrans d'authentification, avant toute connexion.
- *
- * Sert deux entrées : `account.match` (l'onglet « Compte » s'y allume) et
- * `orientation.guestIcon` (voir plus bas) — les deux dérivent de la même
- * réalité, un seul endroit pour la changer.
+ * Écrans d'authentification — l'onglet « Compte » s'y allume.
  */
 const AUTH_PATHS = ['/connexion', '/inscription', '/mot-de-passe']
 
@@ -66,6 +53,7 @@ export const bottomNavEntries: NavEntry[] = [
     to: '/messages',
     labelKey: 'nav.messages',
     icon: 'nav-messages',
+    iconActive: 'nav-messages-active',
     iconWidth: 24,
     iconHeight: 24,
   },
@@ -73,16 +61,11 @@ export const bottomNavEntries: NavEntry[] = [
     id: 'orientation',
     to: '/orientation',
     labelKey: 'nav.orientation',
-    // La maquette utilise le logo Qiryna, affiché plus grand que les autres.
+    // Logo Qiryna partout (accueil = référence) — jamais teinté à l'actif.
     icon: 'ic-orientation-logo',
     iconWidth: 36,
     iconHeight: 34,
     match: ['/destinations', '/ecoles', '/domaines', '/offres', '/langues'],
-    // Sur les écrans d'authentification, icône standard (24×24), comme les
-    // autres onglets — la maquette n'y reprend pas le logo agrandi.
-    guestIcon: 'nav-orientation',
-    guestIconWidth: 24,
-    guestIconHeight: 24,
   },
   {
     id: 'project',
@@ -102,27 +85,10 @@ export const bottomNavEntries: NavEntry[] = [
     iconActive: 'nav-compte-active',
     iconWidth: 24,
     iconHeight: 24,
-    match: AUTH_PATHS,
+    // `/compte` redirige vers `/reglages` ; auth + réglages allument l'onglet.
+    match: [...AUTH_PATHS, '/reglages'],
   },
 ]
-
-/**
- * Icône « invité » d'une entrée sur `AUTH_PATHS`, si le chemin (déjà
- * délocalisé) y correspond et que l'entrée en définit une — `null` sinon,
- * pour laisser l'appelant garder l'icône par défaut de l'entrée.
- *
- * Ne remplace pas la résolution active/inactive de `QBottomNav` : c'est à
- * l'appelant (`AppBottomNav`) d'appliquer ce résultat aux deux champs
- * `icon`/`iconActive` avant de les lui passer, pour qu'elle reste correcte
- * quel que soit l'onglet actif sur ces écrans.
- */
-export function resolveGuestIcon(entry: NavEntry, path: string): { icon: string, width: number, height: number } | null {
-  if (!entry.guestIcon) return null
-  const normalized = path.replace(/\/+$/, '') || '/'
-  const isGuestPath = AUTH_PATHS.some((p) => normalized === p || normalized.startsWith(`${p}/`))
-  if (!isGuestPath) return null
-  return { icon: entry.guestIcon, width: entry.guestIconWidth ?? entry.iconWidth, height: entry.guestIconHeight ?? entry.iconHeight }
-}
 
 /**
  * Déduit l'onglet actif d'un chemin.

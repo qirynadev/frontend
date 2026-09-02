@@ -7,7 +7,7 @@ import { DOMAIN_OFFER_FEATURE_IDS } from '~/config/offer-domain-features'
  *
  * | Mode | Usage |
  * |---|---|
- * | `domain` | Palier unique domaine (`offre-orientation.html`) — badge « Offre unique » |
+ * | `domain` | Palier unique domaine — même pile que langue/orientation (ruban + titre/icône) |
  * | `stacked` | Pile langue (comme `/orientation/formules`) — ruban coloré + titre/icône inline |
  * | défaut | Carte classique (icône au-dessus du nom) — fallback |
  *
@@ -99,30 +99,38 @@ const domainFeatures = computed(() => {
 })
 
 const displayName = computed(() => (props.domain ? t('offer.domainCardName') : props.tier.name))
+
+/** Domaine = même composition que la pile formules (ruban + titre/icône). */
+const asStack = computed(() => props.stacked || props.domain)
+
+const ribbonLabel = computed(() => {
+  if (props.domain) return t('offer.domainBadge')
+  return tagline.value
+})
 </script>
 
 <template>
   <article
     :class="[
       'relative box-border flex w-full min-w-0 flex-col gap-8 rounded-2xl border bg-white px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
-      stacked ? 'overflow-visible pt-26' : 'shrink-0 basis-full pt-22 max-2xs:pt-18',
+      asStack ? 'overflow-visible pt-26' : 'shrink-0 basis-full pt-22 max-2xs:pt-18',
       accent.card,
     ]"
   >
-    <!-- Ruban (pile langue / orientation) — accroche sur le ruban -->
+    <!-- Ruban (pile langue / orientation / domaine) -->
     <span
-      v-if="stacked && tagline"
+      v-if="asStack && ribbonLabel"
       :class="[
         'absolute -top-11 left-14 z-1 inline-flex max-w-[calc(100%-28px)] items-center justify-center rounded-full px-12 py-4 text-center text-md leading-14 font-semibold text-white',
         accent.ribbonBg,
       ]"
     >
-      {{ tagline }}
+      {{ ribbonLabel }}
     </span>
 
     <header class="flex w-full flex-col items-center">
       <!-- Titre + icône sur une ligne (mode pile) -->
-      <div v-if="stacked" class="flex w-full flex-row items-center justify-center gap-8">
+      <div v-if="asStack" class="flex w-full flex-row items-center justify-center gap-8">
         <span
           v-if="isTop"
           class="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tier-3-bg"
@@ -130,12 +138,18 @@ const displayName = computed(() => (props.domain ? t('offer.domainCardName') : p
           <QIcon :name="accent.icon" :size="44" />
         </span>
         <QIcon v-else :name="accent.icon" :size="36" />
-        <h2 :class="['m-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', accent.name]">
+        <h2
+          :class="[
+            'm-0 text-4xl leading-28 font-semibold max-2xs:text-3xl',
+            domain ? 'text-center whitespace-normal' : 'whitespace-nowrap',
+            accent.name,
+          ]"
+        >
           {{ displayName }}
         </h2>
       </div>
 
-      <!-- Disposition classique (domaine / fallback) -->
+      <!-- Disposition classique (fallback) -->
       <template v-else>
         <span
           v-if="isTop"
@@ -150,17 +164,10 @@ const displayName = computed(() => (props.domain ? t('offer.domainCardName') : p
         </h2>
       </template>
 
-      <span
-        v-if="domain"
-        class="mt-8 inline-flex items-center justify-center rounded-exact-5 bg-of-badge-jordan-bg px-6 text-sm leading-[16.5px] font-semibold whitespace-nowrap text-of-badge-jordan"
-      >
-        {{ $t('offer.domainBadge') }}
-      </span>
-
-      <p v-if="domain" class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
+      <p v-if="domain" class="m-0 max-w-260 pt-8 text-center text-lg leading-18 text-text">
         {{ $t('offer.domainIncluded') }}
       </p>
-      <p v-else-if="!stacked && tagline" class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
+      <p v-else-if="!asStack && tagline" class="m-0 max-w-260 pt-6 text-center text-lg leading-18 text-text">
         {{ tagline }}
       </p>
 
@@ -185,7 +192,7 @@ const displayName = computed(() => (props.domain ? t('offer.domainCardName') : p
       </li>
     </ul>
 
-    <footer :class="['flex w-full flex-col items-center gap-8 pt-8', stacked ? 'mt-8' : 'mt-auto']">
+    <footer :class="['flex w-full flex-col items-center gap-8 pt-8', asStack ? 'mt-8' : 'mt-auto']">
       <div class="flex flex-col items-center gap-2">
         <p :class="['m-0 text-6xl leading-[1.1] font-semibold whitespace-nowrap max-2xs:text-5xl', accent.price]">
           {{ n(tier.price.amount, 'currency') }}
