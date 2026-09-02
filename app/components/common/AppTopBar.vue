@@ -31,6 +31,11 @@ const props = withDefaults(
     back?: boolean
     /** Destination de repli quand il n'y a pas d'historique. */
     backTo?: string
+    /**
+     * Intercepte le retour (ex. fermer un détail inline).
+     * Si défini, remplace l’historique / `backTo`.
+     */
+    backHandler?: () => void
     /** Bouton menu à gauche (accueil uniquement). */
     menu?: boolean
     /**
@@ -62,6 +67,10 @@ onMounted(() => {
 })
 
 function goBack() {
+  if (props.backHandler) {
+    props.backHandler()
+    return
+  }
   if (import.meta.client && window.history.length > 1) {
     router.back()
     return

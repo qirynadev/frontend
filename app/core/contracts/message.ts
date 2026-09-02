@@ -17,6 +17,15 @@ export interface MessageAuthor {
   online: boolean
 }
 
+export interface MessageItem {
+  id: string
+  text: string
+  /** ISO, reconstruit depuis `created_date`/`created_time`. */
+  createdAt: string
+  /** Envoyé par l'utilisateur connecté (`sent`), plutôt que reçu (`received`). */
+  mine: boolean
+}
+
 export interface MessageThread {
   /** Identifiant de l'interlocuteur — pas de fil réel côté API. */
   id: string
@@ -25,4 +34,6 @@ export interface MessageThread {
   /** ISO, reconstruit depuis `created_date`/`created_time` (l'API ne renvoie pas de vrai timestamp ici). */
   lastMessageAt: string
   unreadCount: number
+  /** Fil complet avec l'interlocuteur, chronologique (plus ancien en premier). */
+  messages: MessageItem[]
 }

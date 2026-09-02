@@ -9,7 +9,7 @@
  * | progression | `.mpo-progress` `padding: 25px 19px` · titre 18px/28px · pourcentage 24px/30px rose |
  * | jalons | 5 pastilles de 32px, libellés 10px/12,5px · trait de liaison positionné par script |
  * | profil | `.mpo-profile-card` fond `#fff6f9`, illustration 109×102 · badge + bouton à parts égales |
- * | test | `.mpo-test-card` `padding: 17px 11px` · deux illustrations encadrant la copie, la seconde alignée en bas |
+ * | test | `.mpo-test-card` `padding: 17px 11px` · illustration clipboard + copie / CTA |
  * | à savoir | `.mpo-info` fond `#f4f7fb` · puces cerclées 16px, texte 12,5px/17,188px |
  * | aide | `.mpo-support` fond `#fff6f8`, bouton contourné rose |
  *
@@ -185,13 +185,13 @@ usePageSeo(() => ({
 
           <!-- Test d'orientation -->
           <section v-if="orientation.evaluation.testUrl" class="mpo-test-card mt-20 w-full rounded-xl border border-mpo-test-border bg-mpo-test-bg px-11 py-17 shadow-2xs box-border">
-            <div class="mpo-test-top flex items-start gap-8">
+            <div class="mpo-test-top flex items-start gap-12">
               <div class="mpo-test-illus mpo-test-illus--clipboard size-85 shrink-0 overflow-hidden">
                 <img src="/img/mpo-test-clipboard.png" alt="" width="85" height="85" class="block size-85 object-cover">
               </div>
               <div class="mpo-test-copy flex min-w-0 flex-1 flex-col gap-15 pt-4">
                 <h2 class="m-0 text-xl leading-[18.75px] font-bold text-mpo-heading">{{ $t('projectOrientation.testTitle') }}</h2>
-                <p class="m-0 mt-4 pr-4 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">{{ $t('projectOrientation.testDesc') }}</p>
+                <p class="m-0 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">{{ $t('projectOrientation.testDesc') }}</p>
                 <a
                   :href="orientation.evaluation.testUrl"
                   target="_blank"
@@ -201,9 +201,6 @@ usePageSeo(() => ({
                   <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                   <span>{{ $t('projectOrientation.retakeTest') }}</span>
                 </a>
-              </div>
-              <div class="mpo-test-illus mpo-test-illus--laptop h-81 w-96 shrink-0 self-end overflow-hidden">
-                <img src="/img/mpo-test-laptop.png" alt="" width="96" height="81" class="block h-81 w-96 object-cover">
               </div>
             </div>
           </section>

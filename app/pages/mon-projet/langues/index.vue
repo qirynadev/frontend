@@ -11,10 +11,12 @@
  */
 import type { LanguageProgress, PlannedSession } from '~/core/contracts'
 import { paymentRepo, planningRepo } from '~/core/repositories'
+import type { LangueProgressStepStatus } from '~/config/projet-langue-mock'
 import {
   langueNextCourseMock,
   langueProgressSteps,
 } from '~/config/projet-langue-mock'
+import { NuxtLink } from '#components'
 
 /** Cartes par page, sur les deux onglets (planifiés / à planifier). */
 const CARDS_PER_PAGE = 5
@@ -84,6 +86,20 @@ const progressPct = computed(() => {
   const total = list.reduce((sum, order) => sum + orderChecklistProgress(order), 0)
   return Math.round(total / list.length)
 })
+
+/**
+ * Statut des 3 pastilles (« Ma progression ») dérivé de `progressPct` — le
+ * détail des étapes internes (`Order.checklist`) n'a pas de règle validée
+ * pour ce cumul (§7, `docs/directives-backend.md`) : plutôt qu'inventer une
+ * agrégation, seul le pourcentage déjà tranché par le responsable alimente
+ * ces trois pastilles.
+ */
+const progressSteps = computed(() => langueProgressSteps.map((step, index) => {
+  const status: LangueProgressStepStatus = progressPct.value >= 100
+    ? 'done'
+    : index === 0 ? 'done' : index === 1 ? 'current' : 'todo'
+  return { ...step, status }
+}))
 
 function formatSessionTime(session: PlannedSession): string {
   if (!session.startDate || !session.endDate) return ''
@@ -280,72 +296,48 @@ usePageSeo(() => ({
           </div>
 
           <div class="relative flex w-full items-start justify-between pt-24">
-            <div class="pointer-events-none absolute top-41 left-47 right-47 h-0 border-t border-[#e5e7eb]" aria-hidden="true" />
-            <template v-for="step in langueProgressSteps" :key="step.id">
-              <NuxtLink
-                v-if="step.labelKey === 'languageProject.step5'"
-                :to="localePath('/mon-projet/langues/certification')"
-                class="relative z-1 flex w-64 flex-col items-center gap-8 no-underline"
+            <!-- Ligne centrée sur les pastilles 32px (top 16px), 3 colonnes. -->
+            <div
+              class="pointer-events-none absolute top-40 left-[16.67%] right-[16.67%] z-0 border-t border-[#e5e7eb]"
+              aria-hidden="true"
+            />
+            <component
+              :is="step.to ? NuxtLink : 'div'"
+              v-for="step in progressSteps"
+              :key="step.id"
+              :to="step.to ? localePath(step.to) : undefined"
+              :class="[
+                'relative z-1 flex w-64 flex-col items-center gap-8',
+                step.to ? 'no-underline' : '',
+              ]"
+            >
+              <span
+                v-if="step.status === 'done'"
+                class="flex size-32 items-center justify-center rounded-full bg-[#fb027d]"
               >
-                <span
-                  v-if="step.status === 'done'"
-                  class="flex size-32 items-center justify-center rounded-full bg-[#fb027d]"
-                >
-                  <img src="/img/icons/mpl-langue/check.svg" alt="" width="16" height="16" class="block size-16">
-                </span>
-                <span
-                  v-else-if="step.status === 'current'"
-                  class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#fb027d]">{{ step.id }}</span>
-                </span>
-                <span
-                  v-else
-                  class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
-                </span>
-                <p
-                  :class="[
-                    'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
-                    step.status === 'current' ? 'font-semibold text-black' : '',
-                    step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
-                    step.status === 'done' ? 'font-normal text-black' : '',
-                  ]"
-                >{{ $t(step.labelKey) }}</p>
-              </NuxtLink>
-              <div
+                <img src="/img/icons/mpl-langue/check.svg" alt="" width="16" height="16" class="block size-16">
+              </span>
+              <span
+                v-else-if="step.status === 'current'"
+                class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-white"
+              >
+                <span class="text-[14px] leading-24 font-medium text-[#fb027d]">{{ step.id }}</span>
+              </span>
+              <span
                 v-else
-                class="relative z-1 flex w-64 flex-col items-center gap-8"
+                class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-white"
               >
-                <span
-                  v-if="step.status === 'done'"
-                  class="flex size-32 items-center justify-center rounded-full bg-[#fb027d]"
-                >
-                  <img src="/img/icons/mpl-langue/check.svg" alt="" width="16" height="16" class="block size-16">
-                </span>
-                <span
-                  v-else-if="step.status === 'current'"
-                  class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#fb027d]">{{ step.id }}</span>
-                </span>
-                <span
-                  v-else
-                  class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-white"
-                >
-                  <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
-                </span>
-                <p
-                  :class="[
-                    'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
-                    step.status === 'current' ? 'font-semibold text-black' : '',
-                    step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
-                    step.status === 'done' ? 'font-normal text-black' : '',
-                  ]"
-                >{{ $t(step.labelKey) }}</p>
-              </div>
-            </template>
+                <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
+              </span>
+              <p
+                :class="[
+                  'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
+                  step.status === 'current' ? 'font-semibold text-black' : '',
+                  step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
+                  step.status === 'done' ? 'font-normal text-black' : '',
+                ]"
+              >{{ $t(step.labelKey) }}</p>
+            </component>
           </div>
         </section>
 

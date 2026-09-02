@@ -2,7 +2,7 @@
 /**
  * Créneau Professeur ← Figma `858:3603`.
  *
- * API : `planningRepo.events` → créneaux libres découpés en 1h.
+ * API : `planningRepo.events` → créneaux libres découpés en **2 h**.
  * Mock (demo / API vide) : dates + heures Figma (`langueCreneauHoursMock`).
  * « Confirmer le créneau » → `/mon-projet/langues?tab=planned`.
  * Voir `docs/mon-projet-professeur-mocks.md`.
@@ -83,15 +83,16 @@ const teacherCard = computed(() => {
 interface HourSlot { blockId: string; start: Date; end: Date; label: string }
 
 const MIN_LEAD_MS = 2 * 60 * 60 * 1000
+const SLOT_MS = 2 * 60 * 60 * 1000
 
-function hourlySlots(block: CalendarSlot): HourSlot[] {
+function sessionSlots(block: CalendarSlot): HourSlot[] {
   const slots: HourSlot[] = []
   let cursor = new Date(block.startDate)
   const end = new Date(block.endDate)
   const tf = new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' })
 
-  while (cursor.getTime() + 3_600_000 <= end.getTime()) {
-    const next = new Date(cursor.getTime() + 3_600_000)
+  while (cursor.getTime() + SLOT_MS <= end.getTime()) {
+    const next = new Date(cursor.getTime() + SLOT_MS)
     if (cursor.getTime() >= Date.now() + MIN_LEAD_MS) {
       slots.push({
         blockId: block.id,
@@ -109,7 +110,7 @@ function dayKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-/** Mock : 7 jours à partir de demain, créneaux Figma 09h–20h. */
+/** Mock : 7 jours à partir de demain, créneaux de 2 h (09h–21h). */
 function buildMockSlots(): HourSlot[] {
   const slots: HourSlot[] = []
   const base = new Date()
@@ -121,7 +122,7 @@ function buildMockSlots(): HourSlot[] {
       const [h, m] = hour.split(':').map(Number)
       const start = new Date(day)
       start.setHours(h!, m!, 0, 0)
-      const end = new Date(start.getTime() + 3_600_000)
+      const end = new Date(start.getTime() + SLOT_MS)
       const tf = new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' })
       slots.push({
         blockId: `mock-${dayKey(day)}-${hour}`,
@@ -137,7 +138,7 @@ function buildMockSlots(): HourSlot[] {
 const availableSlots = computed<HourSlot[]>(() => {
   const apiSlots = (events.value ?? [])
     .filter(event => event.free)
-    .flatMap(hourlySlots)
+    .flatMap(sessionSlots)
     .sort((a, b) => a.start.getTime() - b.start.getTime())
   if (apiSlots.length > 0) return apiSlots
   return buildMockSlots()

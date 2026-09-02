@@ -21,7 +21,7 @@ Assets : `public/img/icons/mpl-prof/*`, `public/img/mpl-prof/*`, `public/img/ico
 | qualification (TEFL…) | **oui** (2026-08-22) | `formations[0].diploma` — câblé ; qualité éditoriale encore inégale selon le profil (accepté en dev), voir `docs/directives-backend.md` §3 |
 | disponibilité + couleur | **oui** (2026-08-22) | dérivée de `plannings[]` (déjà incluse dans la réponse), voir `app/utils/teacher-availability.ts` |
 | prix « À partir de » | **non** | Figma = « - » ; pas un écart, voir `docs/directives-backend.md` |
-| recherche / filtres UI | local | filtres = bouton inerte |
+| recherche / filtres UI | — | **retirés** (liste complète, pagination seule) |
 | bandeau satisfaction | **non** | copy Figma mock |
 | pagination | client | **4 professeurs / page** (`QPager`) |
 
@@ -29,8 +29,8 @@ Assets : `public/img/icons/mpl-prof/*`, `public/img/mpl-prof/*`, `public/img/ico
 
 | Élément | API | Notes |
 |---|---|---|
-| Créneaux libres | `planningRepo.events` | Blocs découpés en 1h |
-| Dates / heures Figma | **non** si vide | `langueCreneauHoursMock` (09h–20h, 7 jours) |
+| Créneaux libres | `planningRepo.events` | Blocs libres découpés en **créneaux de 2 h** |
+| Dates / heures | **non** si vide | `langueCreneauHoursMock` : départs `09 / 11 / 13 / 15 / 17 / 19`, durée **2 h**, 7 jours |
 | Confirmer | `planningRepo.book` | Contourné en demo |
 | Après confirmation | — | → `/mon-projet/langues?tab=planned` |
 
@@ -44,4 +44,4 @@ Sur parcours demo, `assignTeacher` / `book` sont **contournés**.
 
 ## Parcours
 
-`/mon-projet/langues` → **Cours à planifier** → **Planifier** → Professeur → **Choisir** → Créneau → **Confirmer le créneau** → `/mon-projet/langues?tab=planned`
+`/mon-projet/langues` → **Cours à planifier** → **Planifier** → Professeur → **Choisir** → Créneau (2 h) → **Confirmer le créneau** → `/mon-projet/langues?tab=planned`

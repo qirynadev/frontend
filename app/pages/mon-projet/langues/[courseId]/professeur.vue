@@ -45,8 +45,6 @@ const { data: teachers, apiError, isInitialLoading, refresh } = await usePageDat
   { watch: [courseId, locale] },
 )
 
-const searchQuery = ref('')
-
 interface TeacherCardView {
   id: string
   fullName: string
@@ -96,19 +94,11 @@ function fromMock(teacher: LangueTeacherCardMock): TeacherCardView {
 
 const displayTeachers = computed<TeacherCardView[]>(() => {
   const api = teachers.value ?? []
-  const list = api.length > 0 ? api.map(fromApi) : langueTeachersMock.map(fromMock)
-  const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return list
-  return list.filter((teacher) => {
-    const hay = [teacher.fullName, teacher.countryLabel, teacher.qualification].filter(Boolean).join(' ').toLowerCase()
-    return hay.includes(q)
-  })
+  return api.length > 0 ? api.map(fromApi) : langueTeachersMock.map(fromMock)
 })
 
 const TEACHERS_PER_PAGE = LANGUE_TEACHERS_PER_PAGE
 const page = ref(1)
-
-watch(searchQuery, () => { page.value = 1 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(displayTeachers.value.length / TEACHERS_PER_PAGE)))
 
@@ -160,27 +150,6 @@ usePageSeo(() => ({
     <h1 class="m-0 text-[20px] leading-normal font-semibold tracking-[-0.65px] text-[#191919]">
       {{ $t('languagePlanning.teachersAvailableTitle') }}
     </h1>
-
-    <div class="flex w-full items-stretch gap-10">
-      <label class="relative min-w-0 flex-1">
-        <span class="pointer-events-none absolute top-1/2 left-14 z-1 flex -translate-y-1/2">
-          <img src="/img/icons/mpl-prof/search.svg" alt="" width="16" height="16" class="block size-16">
-        </span>
-        <input
-          v-model="searchQuery"
-          type="search"
-          :placeholder="$t('languagePlanning.searchTeacher')"
-          class="box-border h-45 w-full rounded-[10px] border border-[#e5e7eb] bg-white py-13 pr-17 pl-37 text-[13px] leading-normal text-[#383838] shadow-[0_1px_2px_rgba(0,0,0,0.05)] outline-none"
-        >
-      </label>
-      <button
-        type="button"
-        class="inline-flex h-45 shrink-0 cursor-pointer items-center justify-center gap-8 rounded-[10px] border border-[#aea2fd] bg-white px-17 text-[13px] leading-[19.5px] font-bold text-[#0a142f] shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
-      >
-        <img src="/img/icons/mpl-prof/filters.svg" alt="" width="16" height="16" class="block size-16">
-        <span>{{ $t('languagePlanning.filters') }}</span>
-      </button>
-    </div>
 
     <QAlert v-if="assignError" tone="danger" :title="$t('languagePlanning.assignErrorTitle')" />
 

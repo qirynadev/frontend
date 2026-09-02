@@ -15,9 +15,9 @@
  * Récupérées via `GET /schools/{id}/formations` (directives-backend §12),
  * pas la fiche complète — `School` ne les porte plus (`school.adapter.ts`).
  *
- * CTA `.ed-float-cta` : flottant comme la maquette (hide au scroll down),
- * et **ancré en fin de flux** quand le contenu est court ou qu'on atteint
- * le bas (onglet présentation) pour ne pas masquer le texte.
+ * CTA `.ed-float-cta` : flottant comme la maquette (hide au scroll down).
+ * Contenu court (pas de scroll) → CTA **épinglé** en bas d’écran.
+ * Bas de page → CTA **ancré** dans le flux (`mt-22`), même rythme pour tous les onglets.
  */
 import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { schoolRepo } from '~/core/repositories'
@@ -93,7 +93,7 @@ const tabs = computed(() => {
   ]
 })
 
-const activeTab = ref('formations')
+const activeTab = ref('presentation')
 
 /**
  * Onglet « Points forts » : pas un champ dédié côté back-office, un champ
@@ -118,11 +118,11 @@ const formationModalOpen = computed({
 })
 
 /**
- * CTA : `docked` = dans le flux (fin de contenu) · `floating` = fixed
- * comme `.ed-float-cta` maquette, avec hide/show au scroll.
+ * CTA : `docked` = dans le flux (fin de contenu, `mt-22`) · `floating` =
+ * fixed (épinglé si contenu court, ou hide/show au scroll sinon).
  */
 const floatCtaVisible = ref(true)
-const floatCtaDocked = ref(true)
+const floatCtaDocked = ref(false)
 let scrollTarget: HTMLElement | Window = window
 let lastScroll = 0
 let ticking = false
@@ -150,8 +150,13 @@ function updateFloatCtaFromScroll() {
   const noOverflow = max <= 8
   const delta = st - lastScroll
 
-  // Contenu court ou bas de page → CTA juste après le contenu (pas par-dessus).
-  if (noOverflow || atBottom) {
+  // Pas de scroll : CTA épinglé en bas d’écran (toujours visible).
+  if (noOverflow) {
+    floatCtaDocked.value = false
+    floatCtaVisible.value = true
+  }
+  // Bas de page : CTA ancré dans le flux (même espacement sur tous les onglets).
+  else if (atBottom) {
     floatCtaDocked.value = true
     floatCtaVisible.value = true
   }
@@ -185,8 +190,12 @@ onBeforeUnmount(() => {
 
 watch(activeTab, async () => {
   await nextTick()
-  lastScroll = scrollTop()
+  // Hauteur propre à l’onglet actif : repartir du haut pour recalculer le CTA.
+  if (scrollTarget === window) window.scrollTo(0, 0)
+  else (scrollTarget as HTMLElement).scrollTop = 0
+  lastScroll = 0
   updateFloatCtaFromScroll()
+  requestAnimationFrame(() => updateFloatCtaFromScroll())
 })
 
 watch(activeFormation, (value) => {
@@ -302,26 +311,14 @@ useSchoolSchemaOrg(school)
           </button>
         </div>
 
-        <!-- Panneaux empilés : hauteur stable au changement d’onglet -->
-        <div class="grid w-full pt-22">
-          <div
-            :class="[
-              'col-start-1 row-start-1 w-full',
-              activeTab === 'presentation' ? 'visible' : 'invisible pointer-events-none',
-            ]"
-            :aria-hidden="activeTab !== 'presentation'"
-          >
+        <!-- Hauteur = onglet actif (pour ancrage / épingle CTA cohérents) -->
+        <div class="w-full pt-22">
+          <div v-show="activeTab === 'presentation'" class="w-full">
             <RichText v-if="school.presentation" :content="school.presentation" />
             <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
           </div>
 
-          <div
-            :class="[
-              'col-start-1 row-start-1 flex w-full flex-col gap-16',
-              activeTab === 'formations' ? 'visible' : 'invisible pointer-events-none',
-            ]"
-            :aria-hidden="activeTab !== 'formations'"
-          >
+          <div v-show="activeTab === 'formations'" class="flex w-full flex-col gap-16">
             <button
               v-for="formation in formations"
               :key="formation.title"

@@ -6,11 +6,11 @@
  * |---|---|
  * | accroche | `.msg-hero` `min-height: 118px`, `padding-bottom: 60px` · copie plafonnée à 170px · illustration 190×150 ancrée en haut à droite |
  * | onglets | `.msg-tabs` `padding: 7px`, filet `#e6e5f2` · actif sur `#3b2cf2`, pastille décalée à `right: -21px` |
- * | barre d'outils | `.msg-search` et `.msg-filter` `padding: 11px 17px`, rayon 8 · filtre large de 101px |
  * | carte | `.msg-card` `padding: 17px 18px` · avatar 48×48 · corps `padding: 0 10px 0 16px` |
  * | carte | nom 14px/20px tronqué · étiquette 9px/13,5px · aperçu 11px/19,5px sur 2 lignes |
  * | vide | `.msg-empty` `padding: 28px 16px`, centré |
  * | sécurité | `.msg-secure` `min-height: 86px`, illustration 116×78 |
+ * | modale conversation | même pattern que `.ed-form-modal` fiche école — slide bas→haut, ≥ ¾ écran, corps scrollable |
  *
  * **Données réelles** (2026-08-30) : les deux onglets appelaient jusqu'ici du
  * contenu figé (`config/messages-conversations.ts`, six conversations
@@ -19,16 +19,17 @@
  *
  * - **Messages** — `GET /user/messages` ne connaît pas la conversation,
  *   seulement deux tas `sent`/`received` ; `toMessageThreads`
- *   (`core/adapters/message.adapter.ts`) reconstitue un fil par
- *   interlocuteur. En pratique un seul apparaît : toute la messagerie route
- *   vers un unique compte admin (même constat côté Legacy,
+ *   (`core/adapters/message.adapter.ts`) reconstitue un fil complet par
+ *   interlocuteur (pour la modale), plus l'aperçu/horodatage du plus récent
+ *   (pour la carte de liste). En pratique un seul fil apparaît : toute la
+ *   messagerie route vers un unique compte admin (même constat côté Legacy,
  *   `messageCounterpart.ts`). Trois avatars coexistaient dans la maquette
  *   (photo/icône/illustration) pour distinguer des conseillers fictifs par
  *   métier ; l'API ne renvoie qu'un avatar généré par interlocuteur réel — un
- *   seul rendu suffit. La pagination était déjà documentée comme décorative
- *   (« l'API n'expose pas de messagerie ») : `GET /user/messages` ne pagine
- *   pas non plus, le `QPager` de cet onglet est retiré plutôt que rejoué à
- *   vide.
+ *   seul rendu suffit, y compris dans la modale. La recherche/filtre et la
+ *   pagination de cet onglet (2026-08-22, Figma) sont retirées : décoratives
+ *   dans la maquette (« l'API n'expose pas de messagerie »), et `GET
+ *   /user/messages` ne pagine ni ne filtre non plus côté réel.
  * - **Notification** — `GET /user/notifications`, paginée côté API
  *   (`meta.current_page`/`last_page`) : `QPager` y a un sens réel. Achats,
  *   statuts de commande, rappels… seul un nouveau message écrit aujourd'hui
@@ -36,13 +37,16 @@
  *   `docs/directives-backend.md` pour les événements qui n'y écrivent pas
  *   encore (paiement, inscription, rappel : e-mail seulement).
  *
- * La recherche continue de filtrer uniquement l'onglet Messages, comme avant
- * — un flux de notifications se parcourt par pagination, pas par recherche
- * texte. Le bouton « Filtrer » reste inerte : la maquette ne définit aucun
- * critère.
+ * **Modale de conversation** (Figma, 2026-09) : au clic sur une carte de
+ * messages, affiche le fil complet en bulles. Contrairement à la maquette
+ * (bulles toutes identiques, aucune conversation à deux voix dans les six
+ * exemples figés), le fil réel contient de vrais messages envoyés *et*
+ * reçus : les bulles distinguent les deux (`message.mine`), sans quoi une
+ * conversation à deux voix serait illisible.
  */
+import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
+import type { MessageAuthor, MessageThread } from '~/core/contracts/message'
 import type { NotificationItem } from '~/core/contracts/notification'
-import type { MessageAuthor } from '~/core/contracts/message'
 import { messageRepo, notificationRepo } from '~/core/repositories'
 import { useNotificationsStore } from '~/core/stores'
 
@@ -55,8 +59,17 @@ const notificationsStore = useNotificationsStore()
 
 type TabId = 'messages' | 'notification'
 const activeTab = ref<TabId>(route.query.tab === 'notification' ? 'notification' : 'messages')
-const query = ref('')
 const notifPage = ref(1)
+const selected = ref<MessageThread | null>(null)
+
+const threadOpen = computed({
+  get: () => selected.value !== null,
+  set: (value: boolean) => { if (!value) selected.value = null },
+})
+
+function openConversation(entry: MessageThread) {
+  selected.value = entry
+}
 
 const {
   data: threads,
@@ -100,14 +113,6 @@ const tagClass: Record<string, string> = {
 function roleTag(role: string): { key: string, tone: 'purple' | 'green' | 'orange' | 'pink' | 'violet' | 'blue' } {
   return ROLE_TAGS[role] ?? { key: 'messages.tagTeam', tone: 'violet' }
 }
-
-const filteredThreads = computed(() => {
-  const q = query.value.trim().toLowerCase()
-  const list = threads.value ?? []
-  if (!q) return list
-  return list.filter(entry =>
-    entry.counterpart.name.toLowerCase().includes(q) || entry.previewText.toLowerCase().includes(q))
-})
 
 const unreadTotal = computed(() => (threads.value ?? []).reduce((n, entry) => n + (entry.unreadCount > 0 ? 1 : 0), 0))
 /** Même compte que la cloche (`AppTopBar`) — un seul store, jamais deux sources qui pourraient diverger. */
@@ -244,27 +249,9 @@ usePageSeo(() => ({
         </button>
       </div>
 
-      <!-- Recherche et filtre — ne s'applique qu'aux messages : une notification se parcourt par pagination. -->
-      <div class="msg-toolbar mt-15 mb-10 flex w-full gap-10">
-        <label class="msg-search flex min-w-0 flex-1 items-center gap-12 rounded-lg border border-border bg-white px-17 py-11 box-border">
-          <img src="/img/icons/ic-msg-search.svg" alt="" width="18" height="18" class="block size-18 shrink-0">
-          <input
-            v-model="query"
-            type="search"
-            autocomplete="off"
-            :placeholder="$t('messages.searchPlaceholder')"
-            class="min-w-0 flex-1 border-0 bg-transparent p-1 text-xl leading-20 font-normal text-text outline-0 placeholder:text-muted"
-          >
-        </label>
-        <button type="button" class="msg-filter flex w-101 shrink-0 cursor-pointer items-center gap-12 rounded-lg border border-border bg-white px-17 py-11 text-xl leading-20 font-medium text-text box-border">
-          <img src="/img/icons/ic-msg-filter.svg" alt="" width="15" height="14" class="block h-14 w-15 shrink-0">
-          <span>{{ $t('messages.filter') }}</span>
-        </button>
-      </div>
-
       <PageState :loading="isInitialLoading" :error="apiError" :on-retry="refresh">
         <template #loading>
-          <div class="flex flex-col gap-16">
+          <div class="mt-15 flex flex-col gap-16">
             <QSkeleton variant="rect" :height="88" />
             <QSkeleton variant="rect" :height="88" />
             <QSkeleton variant="rect" :height="88" />
@@ -272,7 +259,7 @@ usePageSeo(() => ({
         </template>
 
         <!-- Panneaux empilés : hauteur stable au changement d’onglet -->
-        <div class="grid w-full min-w-0 max-w-full">
+        <div class="mt-15 grid w-full min-w-0 max-w-full">
           <!-- Conversations -->
           <div
             :class="[
@@ -281,12 +268,14 @@ usePageSeo(() => ({
             ]"
             :aria-hidden="activeTab !== 'messages'"
           >
-            <template v-if="filteredThreads.length">
+            <template v-if="(threads ?? []).length">
               <div class="msg-list flex w-full flex-col gap-16">
-                <article
-                  v-for="entry in filteredThreads"
+                <button
+                  v-for="entry in threads"
                   :key="entry.id"
-                  class="msg-card relative flex w-full items-start rounded-xl border border-border bg-white px-18 py-17 box-border"
+                  type="button"
+                  class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-white px-18 py-17 text-left box-border"
+                  @click="openConversation(entry)"
                 >
                   <div class="msg-avatar relative size-48 shrink-0 overflow-hidden rounded-full">
                     <img
@@ -332,19 +321,13 @@ usePageSeo(() => ({
                       :aria-label="$t('messages.unreadCount', { count: entry.unreadCount })"
                     >{{ entry.unreadCount }}</span>
                   </div>
-                </article>
+                </button>
               </div>
             </template>
 
             <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
-              <template v-if="query.trim() !== ''">
-                <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noResultTitle') }}</p>
-                <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noResultDesc') }}</p>
-              </template>
-              <template v-else>
-                <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noMessagesTitle') }}</p>
-                <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noMessagesDesc') }}</p>
-              </template>
+              <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noMessagesTitle') }}</p>
+              <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noMessagesDesc') }}</p>
             </div>
           </div>
 
@@ -419,4 +402,68 @@ usePageSeo(() => ({
       </aside>
     </div>
   </div>
+
+  <!-- Modale conversation : slide bas→haut + corps scrollable -->
+  <DialogRoot v-model:open="threadOpen">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
+      <DialogContent
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex h-[75dvh] min-h-[75vh] w-full max-w-shell flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in"
+      >
+        <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
+          <div class="flex min-w-0 flex-1 items-center gap-12 pr-8">
+            <div v-if="selected" class="msg-avatar relative size-40 shrink-0 overflow-hidden rounded-full">
+              <img
+                v-if="selected.counterpart.avatar"
+                :src="selected.counterpart.avatar"
+                alt=""
+                width="40"
+                height="40"
+                class="block size-full rounded-full object-cover"
+              >
+              <span
+                v-else
+                class="flex size-full items-center justify-center rounded-full bg-msg-avatar-target text-lg font-semibold text-white"
+                aria-hidden="true"
+              >{{ avatarInitial(selected.counterpart) }}</span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <DialogTitle class="m-0 truncate text-xl leading-21 font-bold text-navy">
+                {{ selected ? selected.counterpart.name : '' }}
+              </DialogTitle>
+              <div v-if="selected" class="mt-4 flex min-w-0 items-center gap-8">
+                <span :class="['msg-tag shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[roleTag(selected.counterpart.role).tone]]">
+                  {{ $t(roleTag(selected.counterpart.role).key) }}
+                </span>
+                <time class="text-sm leading-15 font-medium text-msg-time">{{ formatRelativeTime(selected.lastMessageAt) }}</time>
+              </div>
+            </div>
+          </div>
+          <DialogClose
+            class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-2 p-0"
+            :aria-label="$t('ds.sheet.close')"
+          >
+            <QIcon name="ic-menu-close" :size="14" />
+          </DialogClose>
+        </header>
+
+        <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-20 pt-16 pb-[calc(24px+env(safe-area-inset-bottom,0px))]">
+          <div class="flex flex-col gap-12">
+            <article
+              v-for="message in selected?.messages ?? []"
+              :key="message.id"
+              :class="[
+                'msg-bubble max-w-[85%] rounded-2xl px-16 py-14 box-border',
+                message.mine ? 'self-end rounded-tr-md bg-primary-soft' : 'self-start rounded-tl-md bg-surface-2',
+              ]"
+            >
+              <p class="m-0 text-lg leading-[22px] font-normal whitespace-pre-line text-text">
+                {{ message.text }}
+              </p>
+            </article>
+          </div>
+        </div>
+      </DialogContent>
+    </DialogPortal>
+  </DialogRoot>
 </template>

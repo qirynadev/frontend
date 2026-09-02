@@ -140,7 +140,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
             v-for="area in areas"
             :key="area.id"
             :to="localePath(`/destinations/${destination.slug}/ecoles?domaine=${area.slug}`)"
-            class="box-border flex w-full items-center justify-between gap-4 rounded-xl border-0 bg-white py-17 px-11 text-text no-underline shadow-card"
+            class="box-border flex w-full items-center justify-between gap-4 rounded-xl border border-tier-border bg-white py-17 px-11 text-text no-underline"
           >
             <div class="flex min-w-0 flex-1 items-center gap-10">
               <div
@@ -169,12 +169,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
               </div>
               <div class="flex min-w-0 flex-col items-start leading-tight">
                 <span class="text-sm font-semibold leading-21 text-navy truncate max-2xs:whitespace-normal">{{ area.title }}</span>
-                <span
-                  :class="[
-                    'pt-2 text-xs leading-[16.5px] text-dom-card-meta truncate whitespace-nowrap',
-                    domainAreaVisual(area.slug).metaBold ? 'font-jakarta font-bold' : 'font-medium',
-                  ]"
-                >
+                <span class="pt-2 text-xs leading-[16.5px] font-medium text-dom-card-meta truncate whitespace-nowrap">
                   {{ $t('destination.detail.domainSchoolCount', area.schoolCount) }}
                 </span>
               </div>

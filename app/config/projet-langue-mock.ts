@@ -10,6 +10,8 @@ export interface LangueProgressStep {
   id: string
   labelKey: string
   status: LangueProgressStepStatus
+  /** Lien optionnel (ex. Test final → écran certification). */
+  to?: string
 }
 
 export interface LangueNextCourseMock {
@@ -20,11 +22,18 @@ export interface LangueNextCourseMock {
   startsAt: string
 }
 
-export const langueProgressSteps: LangueProgressStep[] = [
+/** 3 étapes : Test de niveau → Cours en cours → Test final (statuts gérés dans la page mock). */
+export const langueProgressSteps: Omit<LangueProgressStep, 'status'>[] = [
+  { id: '1', labelKey: 'languageProject.step1' },
+  { id: '2', labelKey: 'languageProject.step2' },
+  { id: '3', labelKey: 'languageProject.step3', to: '/mon-projet/langues/certification' },
+]
+
+/** Étapes toutes validées — écran Test final (`/mon-projet/langues/certification`). */
+export const langueCertificationSteps: LangueProgressStep[] = [
   { id: '1', labelKey: 'languageProject.step1', status: 'done' },
   { id: '2', labelKey: 'languageProject.step2', status: 'done' },
-  { id: '3', labelKey: 'languageProject.step3', status: 'current' },
-  { id: '4', labelKey: 'languageProject.step5', status: 'todo' },
+  { id: '3', labelKey: 'languageProject.step3', status: 'done' },
 ]
 
 /** Course / order démo pour le CTA « Planifier » → écran Professeur. */
@@ -176,23 +185,14 @@ export const langueTeachersMock: LangueTeacherCardMock[] = [
   },
 ]
 
-/** Créneaux mock — Figma `858:3603` Créneau Professeur (si calendrier API vide). */
+/** Créneaux mock — pas de 2 h (09h–21h) si calendrier API vide. */
 export const langueCreneauHoursMock = [
-  '09:00', '10:00', '11:00', '12:00',
-  '13:00', '14:00', '15:00', '16:00',
-  '17:00', '18:00', '19:00', '20:00',
+  '09:00', '11:00', '13:00', '15:00', '17:00', '19:00',
 ] as const
 
 export const LANGUE_TEACHERS_PER_PAGE = 4
 
-/** Étapes toutes validées — Figma `863:1956` Mon Projet - Langues 4 (certification). */
-export const langueCertificationSteps: LangueProgressStep[] = [
-  { id: '1', labelKey: 'languageProject.step1', status: 'done' },
-  { id: '2', labelKey: 'languageProject.step2', status: 'done' },
-  { id: '3', labelKey: 'languageProject.step3', status: 'done' },
-  { id: '4', labelKey: 'languageProject.step5', status: 'done' },
-]
-
+/** Étapes toutes validées — Figma `863:1956` Mon Projet - Langues 4 (test final). */
 export const langueCertificationPct = 100
 
 /** Bandeau « Prochain cours » — Figma (countdown 22h / 18min / 35s). */

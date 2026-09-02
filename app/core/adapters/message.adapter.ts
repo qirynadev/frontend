@@ -1,4 +1,4 @@
-import type { MessageAuthor, MessageThread } from '../contracts/message'
+import type { MessageAuthor, MessageItem, MessageThread } from '../contracts/message'
 import { asArray, asRecord, bool, str } from './primitives'
 
 function toAuthor(raw: unknown): MessageAuthor | null {
@@ -33,8 +33,9 @@ function toIso(source: Record<string, unknown>): string {
  * Regroupe `sent`/`received` par interlocuteur.
  *
  * `GET /user/messages` ne connaît pas la conversation, seulement ces deux
- * tas : on retient, par interlocuteur, le message le plus récent (aperçu +
- * horodatage) et le nombre de messages reçus non lus.
+ * tas : on reconstitue, par interlocuteur, le fil complet (pour la modale de
+ * détail), le nombre de messages reçus non lus, et — dérivés du fil trié —
+ * l'aperçu/horodatage du plus récent pour la carte de liste.
  */
 export function toMessageThreads(raw: unknown): MessageThread[] {
   const source = asRecord(raw)
@@ -49,25 +50,28 @@ export function toMessageThreads(raw: unknown): MessageThread[] {
     unreadByCounterpart.set(author.id, (unreadByCounterpart.get(author.id) ?? 0) + 1)
   }
 
-  const latestByCounterpart = new Map<string, { counterpart: MessageAuthor, previewText: string, lastMessageAt: string }>()
-  function consider(counterpart: MessageAuthor | null, item: Record<string, unknown>) {
+  const byCounterpart = new Map<string, { counterpart: MessageAuthor, messages: MessageItem[] }>()
+  function collect(counterpart: MessageAuthor | null, item: Record<string, unknown>, mine: boolean) {
     if (!counterpart) return
-    const lastMessageAt = toIso(item)
-    const current = latestByCounterpart.get(counterpart.id)
-    if (!current || lastMessageAt > current.lastMessageAt) {
-      latestByCounterpart.set(counterpart.id, { counterpart, previewText: str(item, 'text'), lastMessageAt })
-    }
+    const entry = byCounterpart.get(counterpart.id) ?? { counterpart, messages: [] }
+    entry.messages.push({ id: str(item, 'id'), text: str(item, 'text'), createdAt: toIso(item), mine })
+    byCounterpart.set(counterpart.id, entry)
   }
-  for (const item of received) consider(toAuthor(item.sender), item)
-  for (const item of sent) consider(toAuthor(item.receiver), item)
+  for (const item of received) collect(toAuthor(item.sender), item, false)
+  for (const item of sent) collect(toAuthor(item.receiver), item, true)
 
-  return [...latestByCounterpart.values()]
-    .map(entry => ({
-      id: entry.counterpart.id,
-      counterpart: entry.counterpart,
-      previewText: entry.previewText,
-      lastMessageAt: entry.lastMessageAt,
-      unreadCount: unreadByCounterpart.get(entry.counterpart.id) ?? 0,
-    }))
+  return [...byCounterpart.values()]
+    .map((entry) => {
+      const messages = [...entry.messages].sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      const last = messages[messages.length - 1]
+      return {
+        id: entry.counterpart.id,
+        counterpart: entry.counterpart,
+        previewText: last?.text ?? '',
+        lastMessageAt: last?.createdAt ?? '',
+        unreadCount: unreadByCounterpart.get(entry.counterpart.id) ?? 0,
+        messages,
+      }
+    })
     .sort((a, b) => b.lastMessageAt.localeCompare(a.lastMessageAt))
 }

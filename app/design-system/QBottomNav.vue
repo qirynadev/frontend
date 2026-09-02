@@ -10,7 +10,9 @@
  * | espacements | `gap: 8px`, `padding: 10px 8px` |
  * | onglet | `gap: 1px`, libellé 10px/20px, `font-weight: 500` |
  * | cadre d'icône | 36×34, icône 24×24 (36×34 pour « Orientation ») |
- * | couleur | `--color-navy`, actif `--color-nav-active` |
+ * | couleur | `--color-navy`, actif `--color-nav-active` (libellé + icône `-active`) |
+ *
+ * Orientation : logo Qiryna inchangé à l'actif — seul le libellé se colore.
  *
  * Primitive muette : elle reçoit des entrées **déjà traduites** et
  * l'identifiant de l'onglet actif. Elle ne connaît ni les routes du produit,
@@ -46,19 +48,22 @@ withDefaults(
       :key="item.id"
       :to="item.to"
       :aria-current="item.id === active ? 'page' : undefined"
-      :class="[
-        'flex min-w-0 flex-1 flex-col items-center justify-start gap-1 text-center text-sm leading-20 font-medium no-underline',
-        item.id === active ? 'text-nav-active' : 'text-navy',
-      ]"
+      class="flex min-w-0 flex-1 flex-col items-center justify-start gap-1 text-center text-sm leading-20 font-medium no-underline"
     >
       <span class="flex h-34 w-36 shrink-0 items-center justify-center">
+        <!-- Icône active (violet) sauf Orientation : pas d'`iconActive`, logo conservé. -->
         <QIcon
           :name="item.id === active && item.iconActive ? item.iconActive : item.icon"
           :size="item.iconWidth"
           :height="item.iconHeight"
         />
       </span>
-      <span class="w-full truncate">{{ item.label }}</span>
+      <span
+        :class="[
+          'w-full truncate',
+          item.id === active ? 'text-nav-active' : 'text-navy',
+        ]"
+      >{{ item.label }}</span>
     </NuxtLink>
   </nav>
 </template>

@@ -106,7 +106,7 @@ usePageSeo(() => ({
         </span>
         <div class="rl-banner-copy min-w-0 flex-1">
           <p class="rl-banner-title m-0 text-base leading-20 font-bold text-text">{{ $t('settingsLanguage.bannerTitle') }}</p>
-          <p class="rl-banner-desc m-0 mt-4 text-xs leading-16 font-normal text-text">{{ $t('settingsLanguage.bannerDesc') }}</p>
+          <p class="rl-banner-desc m-0 mt-4 text-sm leading-16 font-normal text-text">{{ $t('settingsLanguage.bannerDesc') }}</p>
         </div>
       </aside>
 

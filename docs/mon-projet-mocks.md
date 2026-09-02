@@ -54,3 +54,6 @@ par bilan, voir `app/utils/orientation-progress.ts`).
 | Carte **Orientation** | `/mon-projet/orientation` |
 | Carte Admission | `/mon-projet/admission` |
 | Carte Logement | `/mon-projet/logement` |
+
+Doc destinations logement (badge villes) : `docs/logement-mocks.md`
+Doc messages : `docs/messages-mocks.md`

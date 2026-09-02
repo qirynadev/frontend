@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Étape 5 — Certification ← Figma `863:1956` « Mon Projet - Langues 4 ».
+ * Étape 3 — Test final ← Figma `863:1956` « Mon Projet - Langues 4 ».
  * Mise en page alignée sur l’écran orientation (mêmes blocs), textes langue.
  * Données hors API : `projet-langue-mock.ts` + `docs/mon-projet-langue-mocks.md`.
  */
@@ -60,7 +60,10 @@ usePageSeo(() => ({
       </div>
 
       <div class="relative flex w-full items-start justify-between pt-24">
-        <div class="pointer-events-none absolute top-41 left-47 right-47 h-0 border-t border-[#e5e7eb]" aria-hidden="true" />
+        <div
+          class="pointer-events-none absolute top-40 left-[16.67%] right-[16.67%] z-0 border-t border-[#e5e7eb]"
+          aria-hidden="true"
+        />
         <div
           v-for="step in langueCertificationSteps"
           :key="step.id"
@@ -106,30 +109,25 @@ usePageSeo(() => ({
     </section>
 
     <!-- Test de niveau -->
-    <section class="box-border flex w-full flex-col rounded-[10px] border border-[#f6f7fb] bg-[#fbfbfe] px-11 py-17 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-      <div class="flex items-start">
-        <div class="size-85 shrink-0 overflow-hidden">
+    <section class="mpo-test-card w-full rounded-xl border border-mpo-test-border bg-mpo-test-bg px-11 py-17 shadow-2xs box-border">
+      <div class="mpo-test-top flex items-start gap-12">
+        <div class="mpo-test-illus mpo-test-illus--clipboard size-85 shrink-0 overflow-hidden">
           <img src="/img/mpo-test-clipboard.png" alt="" width="85" height="85" class="block size-85 object-cover">
         </div>
-        <div class="flex min-w-0 flex-1 flex-col gap-15 px-8 pt-4">
-          <div>
-            <h2 class="m-0 text-[14px] leading-[18.75px] font-bold text-[#0a142f]">
-              {{ $t('languageProject.certTestTitle') }}
-            </h2>
-            <p class="m-0 pt-4 text-[11.5px] leading-[15.525px] font-normal text-[#4b5563]">
-              {{ $t('languageProject.certTestDesc') }}
-            </p>
-          </div>
+        <div class="mpo-test-copy flex min-w-0 flex-1 flex-col gap-15 pt-4">
+          <h2 class="m-0 text-xl leading-[18.75px] font-bold text-mpo-heading">
+            {{ $t('languageProject.certTestTitle') }}
+          </h2>
+          <p class="m-0 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">
+            {{ $t('languageProject.certTestDesc') }}
+          </p>
           <button
             type="button"
-            class="inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-[#4545f7] bg-white px-13 py-9 text-[11px] leading-[16.5px] font-medium text-[#4545f7]"
+            class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
           >
             <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
             <span>{{ $t('languageProject.certRetakeTest') }}</span>
           </button>
-        </div>
-        <div class="h-81 w-96 shrink-0 self-end overflow-hidden">
-          <img src="/img/mpo-test-laptop.png" alt="" width="96" height="81" class="block h-81 w-96 object-cover">
         </div>
       </div>
     </section>

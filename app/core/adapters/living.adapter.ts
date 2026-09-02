@@ -15,6 +15,18 @@ function toLivingCountry(source: Record<string, unknown>): Country {
   return flag ? { ...country, flag } : country
 }
 
+/** Compte de villes : champ numérique, ou longueur d'un tableau `cities`. */
+function toCityCount(source: Record<string, unknown>): number | null {
+  const direct
+    = optionalNum(source, 'cities_count')
+      ?? optionalNum(source, 'city_count')
+      ?? optionalNum(source, 'cities_total')
+  if (direct !== null) return direct
+  const cities = source.cities
+  if (Array.isArray(cities) && cities.length > 0) return cities.length
+  return null
+}
+
 export function toLivingDestination(raw: unknown): LivingDestination {
   const source = asRecord(raw)
   return {
@@ -22,6 +34,7 @@ export function toLivingDestination(raw: unknown): LivingDestination {
     country: toLivingCountry(source),
     tagline: str(source, 'title'),
     photo: toUrl(source.picture),
+    cityCount: toCityCount(source),
   }
 }
 
