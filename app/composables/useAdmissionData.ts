@@ -77,10 +77,12 @@ export async function useAdmissionData(locale: Ref<string>) {
         ? await admissionDocumentsRepo.show(order.id, locale.value)
         : { locked: false, finalizedAt: null, idDocumentUrl: null, transcriptsUrl: null, languageCertificateUrl: null, coverLetterUrl: null, diplomaUrl: null, recommendationUrl: null }
 
+      const documents = order ? toAdmissionDocuments(documentsState, order.status) : []
+
       return {
         order,
-        steps: order ? toAdmissionSteps(order.checklist) : [],
-        documents: order ? toAdmissionDocuments(documentsState, order.status) : [],
+        steps: order ? toAdmissionSteps(order.checklist, documents) : [],
+        documents,
         documentsLocked: documentsState.locked,
         documentsFinalizedAt: documentsState.finalizedAt ? toFrenchDate(documentsState.finalizedAt) : null,
       }
@@ -101,13 +103,33 @@ function toFrenchDate(isoDate: string): string {
   return `${day}/${month}/${year}`
 }
 
-function toAdmissionSteps(checklist: OrderChecklistItem[]): AdmissionStep[] {
-  return checklist.map((item) => ({
-    id: item.id,
-    stepNumber: item.position,
-    titleKey: `admission.step${item.position}Title`,
-    descKey: `admission.step${item.position}Desc`,
-    status: toChecklistStatus(item.status),
-    completedAt: item.completedAt ? toFrenchDate(item.completedAt) : undefined,
-  }))
+/**
+ * Étape « Dépôt des documents » (`stepKey: 'documents_submitted'`) — seul
+ * cas où le statut back-office ne suffit pas.
+ *
+ * Semée à `pending` dès la création de la commande (voir docblock plus
+ * haut), donc affichée « En cours » même quand le client n'a encore rien
+ * envoyé. On la corrige avec le seul signal réel disponible — le nombre de
+ * pièces effectivement envoyées (`status !== 'upload'`) — sans toucher au
+ * `done` : s'il est déjà posé, c'est qu'un employé l'a validé à la main
+ * (aucun autre chemin ne l'atteint aujourd'hui), une donnée réelle qu'on ne
+ * doit pas écraser.
+ */
+function toDocumentsStepStatus(mapped: AdmissionStepStatus, documents: AdmissionDocument[]): AdmissionStepStatus {
+  if (mapped !== 'current') return mapped
+  return documents.some((doc) => doc.status !== 'upload') ? 'current' : 'upcoming'
+}
+
+function toAdmissionSteps(checklist: OrderChecklistItem[], documents: AdmissionDocument[]): AdmissionStep[] {
+  return checklist.map((item) => {
+    const mapped = toChecklistStatus(item.status)
+    return {
+      id: item.id,
+      stepNumber: item.position,
+      titleKey: `admission.step${item.position}Title`,
+      descKey: `admission.step${item.position}Desc`,
+      status: item.stepKey === 'documents_submitted' ? toDocumentsStepStatus(mapped, documents) : mapped,
+      completedAt: item.completedAt ? toFrenchDate(item.completedAt) : undefined,
+    }
+  })
 }
