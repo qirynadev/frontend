@@ -262,25 +262,27 @@ useSchoolSchemaOrg(school)
       </div>
 
       <div class="mt-22 flex w-full flex-col">
-        <!-- `.ed-tabs` : padding 0 10px (8px ≤380px) · gap icône/titre 4px (8px ≤380px) -->
-        <div class="box-border flex w-full items-stretch border-b border-border-soft px-10 max-2xs:px-8" role="tablist" :aria-label="$t('school.detail.tabsLabel')">
+        <div
+          class="flex w-full rounded-[14px] border border-[#f8f8fc] bg-[#fdfdfd] p-1 box-border"
+          role="tablist"
+          :aria-label="$t('school.detail.tabsLabel')"
+        >
           <button
             v-for="tb in tabs"
             :key="tb.value"
             type="button"
             role="tab"
             :aria-selected="activeTab === tb.value"
-            class="relative inline-flex flex-1 cursor-pointer items-center justify-center gap-4 max-2xs:gap-8 border-0 bg-transparent px-0 pb-12 text-xl max-2xs:text-base leading-21 font-medium whitespace-nowrap text-text"
-            :class="activeTab === tb.value && 'text-le-chip-selected-border'"
+            :class="[
+              'flex flex-1 cursor-pointer flex-row items-center justify-center gap-8 rounded-xl border px-12 py-12 text-md leading-[19.5px] font-medium whitespace-nowrap box-border transition-colors duration-150',
+              activeTab === tb.value
+                ? 'bg-[#f8f7ff] border-[#e2dff5] text-[#2d00fc]'
+                : 'border-transparent bg-transparent text-black',
+            ]"
             @click="activeTab = tb.value"
           >
-            <QIcon :name="tb.icon" :size="16" class="shrink-0 max-2xs:size-14" />
+            <QIcon :name="tb.icon" :size="16" class="shrink-0" />
             <span>{{ tb.label }}</span>
-            <span
-              v-if="activeTab === tb.value"
-              class="absolute bottom-0 left-1/2 h-px w-[min(108px,90%)] -translate-x-1/2 rounded-full bg-le-chip-selected-border"
-              aria-hidden="true"
-            />
           </button>
         </div>
 
