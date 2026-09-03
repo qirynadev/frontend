@@ -256,7 +256,9 @@ usePageSeo(() => ({
   <div>
     <!-- Logo -->
     <div class="pb-20">
-      <AppLogo :width="150" :height="47" class="mx-auto" />
+      <NuxtLink :to="localePath('/')" class="mx-auto block w-fit no-underline" :aria-label="$t('nav.home')">
+        <AppLogo :width="150" :height="47" />
+      </NuxtLink>
     </div>
 
     <!-- Accroche. L'illustration est hors flux et déborde de 28px sur la

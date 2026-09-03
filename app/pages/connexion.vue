@@ -179,7 +179,9 @@ usePageSeo(() => ({
   <div>
     <!-- Logo — cadre 150×47, centré, 20px sous lui. -->
     <div class="pb-20">
-      <AppLogo :width="150" :height="47" class="mx-auto" />
+      <NuxtLink :to="localePath('/')" class="mx-auto block w-fit no-underline" :aria-label="$t('nav.home')">
+        <AppLogo :width="150" :height="47" />
+      </NuxtLink>
     </div>
 
     <!-- Accroche + illustration -->
