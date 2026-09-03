@@ -1,0 +1,63 @@
+name: 🌐 Deploy Frontend — qiryna-client
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Raison du déploiement manuel"
+        required: false
+        default: "Déploiement manuel"
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy to VPS IONOS
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: ✅ Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Installation Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Installation des dépendances
+        run: npm ci
+
+      - name: 🏗️ Build de la SPA Vue (production)
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_BASE_URL: /
+          VITE_DEFAULT_LOCALE: fr
+          VITE_SUPPORTED_LOCALES: fr,en
+          VITE_STRIPE_PK: ${{ secrets.VITE_STRIPE_PK }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_FACEBOOK_CLIENT_ID: ${{ secrets.VITE_FACEBOOK_CLIENT_ID }}
+          VITE_LINKEDIN_CLIENT_ID: ${{ secrets.VITE_LINKEDIN_CLIENT_ID }}
+        run: npm run build-only
+
+      - name: 🔑 Configuration clé SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🚀 Déploiement dist/ → VPS via rsync
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/qiryna.com/
+
+      - name: ❌ Notifier l'échec
+        if: failure()
+        run: |
+          echo "Le déploiement du frontend a échoué."
+          echo "Consultez les logs ci-dessus pour diagnostiquer le problème."
+          exit 1

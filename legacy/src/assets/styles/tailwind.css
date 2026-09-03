@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "./theme/tokens.css";
+@custom-variant dark (&:where(.dark, .dark *));
+@import "./modules/auth.css";
+@import "./pages/login.css";
+@import "./pages/register.css";
+@import "./pages/area-formula.css";
+@config "../../../tailwind.config.js";

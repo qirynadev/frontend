@@ -1,0 +1,68 @@
+body {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  font-family: "Jost", sans-serif !important;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  line-height: 1.42857143;
+  font-size: 14px;
+}
+
+/* Police globale : Jost forcé partout (surcharge Poppins/Roboto/Arvo/… des pages et composants). */
+*,
+*::before,
+*::after {
+  font-family: "Jost", sans-serif !important;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Layered (Tailwind v4 "base") pour rester surchargeable par les classes utilitaires
+   (ex. underline, text-[#hex]) — un `a` non-layered bat toujours les utilitaires
+   Tailwind (layered) même à spécificité égale ou inférieure. */
+@layer base {
+  a {
+    text-decoration: none;
+    color: black;
+  }
+}
+
+/* ===== Scrollbar ===== */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #8f8f8f #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #8f8f8f;
+  border-radius: 10px;
+  border: 3px none #ffffff;
+}
+
+/*
+ * Fix mobile viewport height (100vh includes the browser address bar on iOS/Android).
+ * Use 100dvh (dynamic viewport height) with 100vh as fallback.
+ */
+.min-h-screen {
+  min-height: 100dvh;
+}
+.h-screen {
+  height: 100dvh;
+}

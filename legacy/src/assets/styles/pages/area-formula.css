@@ -1,0 +1,24 @@
+/* ============================================================
+   School / Area-formula (Accompagnement) — page styles
+   Centralized & namespaced under .area-formula. Tailwind v4 graph.
+   Only the page's own live styles are kept here; the mentor-card
+   styling is owned by HMentorCard (its own scoped block), so the
+   former dead .mentor-* / .bg-gradient / .join_btn / .c-button rules
+   are intentionally dropped.
+   ============================================================ */
+
+.area-formula .headline {
+  @apply mb-[25px] border-b border-[#c0c0c091];
+}
+
+.area-formula .headline p {
+  @apply inline-block w-full text-[18px] font-bold;
+  border-bottom: none !important;
+  padding-bottom: 10px !important;
+}
+
+/* Only the offer list scrolls; the button stays detached below.
+   (Targets the <ul> rendered inside the OfferItem child component.) */
+.area-formula .offer-wrapper ul {
+  @apply max-h-[180px] overflow-y-auto;
+}

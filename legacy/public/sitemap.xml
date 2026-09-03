@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap statique des pages publiques indexables de qiryna.com.
+  Les pages dynamiques (cours, écoles, MBA, coût de la vie, profilage détail…)
+  dépendent des données et devraient être ajoutées via un sitemap généré
+  depuis l'API en complément.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Accueil -->
+  <url>
+    <loc>https://qiryna.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Coaching -->
+  <url>
+    <loc>https://qiryna.com/coaching</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Profilage (fr) / Profiling (en) -->
+  <url>
+    <loc>https://qiryna.com/profilage</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://qiryna.com/profilage" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qiryna.com/profiling" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiryna.com/profilage" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qiryna.com/profiling</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://qiryna.com/profilage" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qiryna.com/profiling" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiryna.com/profilage" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact -->
+  <url>
+    <loc>https://qiryna.com/contact</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- FAQ -->
+  <url>
+    <loc>https://qiryna.com/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- CGU -->
+  <url>
+    <loc>https://qiryna.com/cgu</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Mentions légales (fr) / Legals (en) -->
+  <url>
+    <loc>https://qiryna.com/mentions-legales</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://qiryna.com/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qiryna.com/legals" />
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://qiryna.com/legals</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://qiryna.com/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qiryna.com/legals" />
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Confidentialité (fr) / Privacy (en) -->
+  <url>
+    <loc>https://qiryna.com/confidentialite</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://qiryna.com/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qiryna.com/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://qiryna.com/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://qiryna.com/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://qiryna.com/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Cookies -->
+  <url>
+    <loc>https://qiryna.com/cookies</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

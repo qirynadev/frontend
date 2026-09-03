@@ -1,0 +1,10 @@
+.v3-input-emoji-picker .v3-input-picker-root .v3-emoji-picker-textarea {
+    min-height: 102px !important;
+    resize: vertical;
+}
+
+.v3-emoji-picker-textarea {
+    background-color: rgb(245, 245, 245) !important;
+    border: 0px !important;
+    border-radius: 5px;
+}

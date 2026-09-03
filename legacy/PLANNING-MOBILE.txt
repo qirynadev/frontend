@@ -1,0 +1,92 @@
+================================================================
+ PLANNING - APPLICATION QIRYNA CLIENT (ANDROID + iOS)
+================================================================
+
+APPROCHE RECOMMANDEE : CAPACITOR (Ionic)
+----------------------------------------------------------------
+Qiryna Client est deja une SPA Vue 3 + TypeScript + Vite, deja
+configuree en PWA (vite-plugin-pwa, pwa-assets-generator).
+Le chemin le plus rapide et le moins cher vers Android + iOS est
+d'emballer le code existant avec Capacitor, plutot que de tout
+reecrire. On reutilise ~100 % du code Vue. Un seul codebase, publie
+sur les deux stores.
+
+Comparaison des options :
+
+  Option                     | Reutilisation | Cout/Delai | Verdict
+  ---------------------------|---------------|------------|-------------
+  Capacitor                  | ~100 %        | Faible     | RECOMMANDE
+  React Native / Flutter     | 0 % (reecrit) | Eleve      | Non justifie
+
+
+PHASES & ESTIMATION (environ 7 a 9 semaines, 1 developpeur)
+================================================================
+
+PHASE 0 - PREPARATION (2-3 j)
+----------------------------------------------------------------
+  - Installer Capacitor, generer les projets android/ et ios/
+  - Charger le build Vite dans le WebView ; app qui demarre sur
+    emulateur Android + iOS
+  - Comptes developpeur :
+      * Apple Developer  : 99 $/an
+      * Google Play      : 25 $ (une seule fois)
+
+PHASE 1 - ADAPTATION MOBILE DU CODE (1 a 1,5 sem)
+----------------------------------------------------------------
+  - Router en mode hash ou WebView (pas d'historique serveur)
+  - safe-area (encoche iPhone), gestion du clavier, bouton retour
+    Android
+  - Stockage : completer localStorage par @capacitor/preferences
+    (persistance fiable)
+  - Splash screen + icones (reutiliser pwa-assets-generator)
+
+PHASE 2 - INTEGRATIONS NATIVES SENSIBLES (2 a 3 sem)  [COEUR DU RISQUE]
+----------------------------------------------------------------
+  - Logins sociaux (Google / Facebook / LinkedIn) -> plugins OAuth
+    natifs (les popups web ne fonctionnent pas en WebView)
+  - Appels video Zoom -> le Web Video SDK fonctionne mal en WebView :
+    prevoir le SDK Zoom natif ou un plugin Capacitor dedie
+    (A VALIDER EN PRIORITE - voir risques)
+  - Notifications push (@capacitor/push-notifications + Firebase),
+    a brancher sur le backend Laravel
+  - Deep links : retour de paiement Stripe + redirections OAuth
+
+PHASE 3 - PAIEMENT (1 sem)  [RISQUE POLITIQUE STORES]
+----------------------------------------------------------------
+  - Stripe fonctionne, MAIS Apple/Google imposent l'achat in-app
+    (environ 30 %) pour les "biens numeriques".
+  - L'accompagnement Qiryna etant un SERVICE REEL hors-app, Stripe
+    direct est normalement autorise -> A FAIRE VALIDER pour eviter
+    un rejet App Store.
+
+PHASE 4 - TESTS & POLISH (1 sem)
+----------------------------------------------------------------
+  - Tests sur vrais appareils (Android + iPhone)
+  - Perfs WebView, mode hors-ligne, gestion du token expire
+
+PHASE 5 - PUBLICATION (3-5 j + delais de review)
+----------------------------------------------------------------
+  - Fiches store, captures d'ecran, politique de confidentialite
+  - Build signe ->
+      * Google Play : review environ 1 a 3 j
+      * App Store   : review environ 1 a 3 j (souvent quelques
+                      allers-retours)
+
+
+3 RISQUES A VALIDER EN PRIORITE (SEMAINE 1)
+================================================================
+  1. Zoom en WebView - le plus gros inconnu technique.
+     A tester immediatement avec un POC.
+  2. Stripe vs achat in-app - risque de rejet Apple.
+     A clarifier avec les guidelines avant de coder la Phase 3.
+  3. OAuth natif - chaque provider (Google / Facebook / LinkedIn)
+     demande une config native + cles dediees.
+
+
+PROCHAINES ETAPES POSSIBLES
+================================================================
+  (a) Initialiser le scaffolding Capacitor dans qiryna-client/
+      (install + config + dossiers android/ ios/)
+  (b) Monter d'abord le POC Zoom en WebView pour lever le risque n.1
+
+================================================================

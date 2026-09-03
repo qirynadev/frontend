@@ -1,0 +1,15 @@
+/* ============================================================
+   Auth — shared module for the auth pages (Login + Register).
+   Holds the bits that are genuinely identical across both pages.
+   Page-specific design lives in pages/login.css & pages/register.css
+   (the two pages use different accents/sizes, so atoms are themed
+   per-page rather than forced into one shape).
+   In the Tailwind v4 graph (imported from tailwind.css).
+   ============================================================ */
+
+/* Loading spinner used by both submit buttons (.q-submit__loader, .spinner). */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
