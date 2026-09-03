@@ -2,7 +2,11 @@
 /**
  * Créneau Professeur ← Figma `858:3603`.
  *
- * API : `planningRepo.events` → créneaux libres découpés en **2 h**.
+ * API : `planningRepo.events` → créneaux libres découpés en **1 h** (durée
+ * de séance réelle, `languagePlanning.sessionDuration` = 60 min ; l'API ne
+ * porte aucune notion de durée de créneau, c'est ici qu'elle se fixe —
+ * régression à 2h introduite par erreur dans un commit `main` sans rapport
+ * (`534911c`), propagée par la fusion du 2026-09-02, corrigée le 2026-09-03).
  * Mock (demo / API vide) : dates + heures Figma (`langueCreneauHoursMock`).
  * « Confirmer le créneau » → `/mon-projet/langues?tab=planned`.
  * Voir `docs/mon-projet-professeur-mocks.md`.
@@ -83,7 +87,10 @@ const teacherCard = computed(() => {
 interface HourSlot { blockId: string; start: Date; end: Date; label: string }
 
 const MIN_LEAD_MS = 2 * 60 * 60 * 1000
-const SLOT_MS = 2 * 60 * 60 * 1000
+/** Durée d'une séance réelle : 1 h (`languagePlanning.sessionDuration`), pas une donnée API. */
+const SLOT_MS = 60 * 60 * 1000
+/** Mock uniquement — `langueCreneauHoursMock` espace ses départs de 2 h (09→21h sans trou). */
+const MOCK_SLOT_MS = 2 * 60 * 60 * 1000
 
 function sessionSlots(block: CalendarSlot): HourSlot[] {
   const slots: HourSlot[] = []
@@ -122,7 +129,7 @@ function buildMockSlots(): HourSlot[] {
       const [h, m] = hour.split(':').map(Number)
       const start = new Date(day)
       start.setHours(h!, m!, 0, 0)
-      const end = new Date(start.getTime() + SLOT_MS)
+      const end = new Date(start.getTime() + MOCK_SLOT_MS)
       const tf = new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' })
       slots.push({
         blockId: `mock-${dayKey(day)}-${hour}`,
