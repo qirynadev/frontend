@@ -26,6 +26,14 @@
  * (`?domaine=`) se résout en son identifiant réel avant d'interroger
  * `GET /schools/{countryId}/{areaId}` — seul endpoint qui filtre
  * effectivement par domaine (voir `server/api/bff/schools/index.get.ts`).
+ *
+ * **Ordre aléatoire** (2026-09-03, sur demande explicite) : l'API trie par
+ * `RAND(seed)`, mais retombe sur `seed=1` — un ordre fixe — si on ne lui en
+ * fournit pas. `?seed=` est généré une fois à l'arrivée sur cette page (si
+ * absent de l'URL) et conservé ensuite pour toute la visite (pagination,
+ * changement de domaine) via les `{...route.query}` déjà en place plus bas :
+ * sans ça, chaque page de pagination retirerait un tirage différent et
+ * mélangerait/dupliquerait les écoles déjà vues.
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
@@ -40,6 +48,20 @@ const slug = computed(() => String(route.params.slug ?? ''))
 const page = computed(() => Math.max(1, Number(route.query.page ?? 1) || 1))
 const domaineParam = computed(() => String(route.query.domaine ?? ''))
 
+/**
+ * Graine d'ordre aléatoire — générée une fois si l'URL n'en porte pas
+ * encore, puis écrite dedans pour que pagination/changement de domaine la
+ * réutilisent (voir docblock plus haut). `effectiveSeed` sert dès le
+ * chargement en cours : pas d'attente sur `router.replace`.
+ */
+const seedParam = computed(() => Number(route.query.seed))
+const effectiveSeed = Number.isFinite(seedParam.value) && seedParam.value > 0
+  ? seedParam.value
+  : 1 + Math.floor(Math.random() * 1_000_000)
+if (!Number.isFinite(seedParam.value) || seedParam.value <= 0) {
+  void router.replace({ query: { ...route.query, seed: String(effectiveSeed) } })
+}
+
 const chipsRef = ref<HTMLDivElement | null>(null)
 
 const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
@@ -53,7 +75,7 @@ const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
     const selected = areas.find((area) => area.slug === domaineParam.value) ?? areas[0] ?? null
 
     const result = selected
-      ? await schoolRepo.list({ destination: slug.value, area: selected.id, page: page.value }, locale.value)
+      ? await schoolRepo.list({ destination: slug.value, area: selected.id, page: page.value, seed: effectiveSeed }, locale.value)
       : { items: [], page: page.value, perPage: 5, total: 0, totalPages: 1 }
 
     return {
