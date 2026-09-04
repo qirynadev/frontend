@@ -47,5 +47,6 @@ export default defineEventHandler(async (event): Promise<AreaOfStudySummary[]> =
     ),
   )
 
+  setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
   return areas.map((area, index) => ({ ...area, schoolCount: counts[index]! }))
 })
