@@ -16,10 +16,15 @@
  *
  * Accessible sans connexion : préférence purement locale, aucun appel
  * authentifié ici.
+ *
+ * Retour systématique à l'accueil après enregistrement (demande du
+ * 2026-09-04, valable pour tous les réglages qui appliquent réellement un
+ * changement) — même geste que `reglages/langues.vue`.
  */
 import { useThemeStore } from '~/core/stores'
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 const theme = useThemeStore()
 
 type ThemeId = 'clair' | 'sombre' | 'systeme'
@@ -33,8 +38,9 @@ const options: { id: ThemeId, titleKey: string, descKey: string, preview: string
 /** Initialisé sur la préférence déjà enregistrée, pas toujours "clair". */
 const chosen = ref<ThemeId>(theme.preference)
 
-function save() {
+async function save() {
   theme.preference = chosen.value
+  await navigateTo(localePath('/'))
 }
 
 usePageSeo(() => ({

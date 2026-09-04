@@ -17,8 +17,14 @@
  *
  * Accessible sans connexion : c'est une préférence d'affichage (cookie), pas
  * une donnée de compte — aucun appel authentifié ici.
+ *
+ * Retour systématique à l'accueil après enregistrement (demande du
+ * 2026-09-04, valable pour tous les réglages qui appliquent réellement un
+ * changement) — `localePath` résolu **après** `setLocale` : la nouvelle
+ * langue est donc déjà active quand l'accueil se construit.
  */
 const { t, locale, setLocale } = useI18n()
+const localePath = useLocalePath()
 
 type LocaleCode = 'fr' | 'en'
 
@@ -32,6 +38,7 @@ const chosen = ref<LocaleCode>(locale.value as LocaleCode)
 
 async function save() {
   if (chosen.value !== locale.value) await setLocale(chosen.value)
+  await navigateTo(localePath('/'))
 }
 
 usePageSeo(() => ({
