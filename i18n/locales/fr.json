@@ -312,6 +312,14 @@
       "back": "Retour"
     }
   },
+  "errorPage": {
+    "backHome": "Retour à l'accueil",
+    "description404": "Cette page n'existe pas ou n'est plus disponible.",
+    "description500": "Une erreur est survenue de notre côté. Réessayez dans un instant.",
+    "exploreTitle": "Continuer votre projet",
+    "title404": "Page introuvable",
+    "title500": "Une erreur est survenue"
+  },
   "goal": {
     "admission": "Admission internationale",
     "admissionDesc": "Améliorez votre niveau en {language} pour intégrer une université à l'étranger.",

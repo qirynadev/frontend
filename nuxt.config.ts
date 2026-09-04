@@ -1,5 +1,17 @@
 import tailwindcss from '@tailwindcss/vite'
 
+const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.com/api'
+/**
+ * Origine du back-office, seule (pas le chemin `/api`) : sert à `preconnect`
+ * (`app.head.link` plus bas) pour les médias qu'il héberge (logos/photos
+ * d'école, bannière d'accueil) — relevé par l'audit perf du 4 septembre 2026
+ * comme non préconnecté, chaque image payant alors sa propre negociation
+ * TLS pendant que la connexion vers `stage.qiryna.com` reste inutilisée.
+ */
+const mediaOrigin = new URL(apiBaseUrl).origin
+/** Même variable que `i18n.baseUrl` plus bas — exposée aussi en `public` pour `robots.txt` (comparaison d'hôte). */
+const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -26,7 +38,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     /** Uniquement côté serveur : jamais exposé au navigateur. */
-    apiBaseUrl: process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.com/api',
+    apiBaseUrl,
     /** Durée de vie du cache Nitro du catalogue, en secondes. */
     catalogCacheTtl: Number(process.env.NUXT_CATALOG_CACHE_TTL ?? 300),
     /** Délai maximal d'un appel à l'API, en millisecondes. */
@@ -50,6 +62,8 @@ export default defineNuxtConfig({
         facebookAppId: process.env.NUXT_PUBLIC_OAUTH_FACEBOOK_APP_ID || '',
         linkedinClientId: process.env.NUXT_PUBLIC_OAUTH_LINKEDIN_CLIENT_ID || '',
       },
+      /** Sert à `server/routes/robots.txt.ts` (comparaison d'hôte, staging vs production). */
+      siteUrl,
     },
     // Le reste n'a rien à faire dans `public` : le navigateur n'a besoin de
     // connaître ni l'URL de l'API, ni la durée du cache. Il ne parle qu'au BFF,
@@ -122,7 +136,7 @@ export default defineNuxtConfig({
   i18n: {
     // Sert à générer les liens `hreflang`/canonical absolus (`useLocaleHead`) —
     // sans lui, `@nuxtjs/i18n` avertit et ces balises restent incomplètes.
-    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com',
+    baseUrl: siteUrl,
     langDir: 'locales',
     locales: [
       { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' },
@@ -161,6 +175,7 @@ export default defineNuxtConfig({
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'preconnect', href: mediaOrigin },
         {
           // `Plus Jakarta Sans` (700 seul) : uniquement le prix de l'offre
           // d'orientation (`.oo-price-value`), seul écran à en sortir.

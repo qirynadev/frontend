@@ -29,11 +29,19 @@
  *
  * **Ordre aléatoire** (2026-09-03, sur demande explicite) : l'API trie par
  * `RAND(seed)`, mais retombe sur `seed=1` — un ordre fixe — si on ne lui en
- * fournit pas. `?seed=` est généré une fois à l'arrivée sur cette page (si
- * absent de l'URL) et conservé ensuite pour toute la visite (pagination,
- * changement de domaine) via les `{...route.query}` déjà en place plus bas :
- * sans ça, chaque page de pagination retirerait un tirage différent et
- * mélangerait/dupliquerait les écoles déjà vues.
+ * fournit pas. La graine vit en mémoire du composant (pas dans l'URL) :
+ * tirée une fois par montage, donc stable tant qu'on pagine ou change de
+ * domaine (navigation interne, même instance de page), mais renouvelée à
+ * chaque arrivée fraîche (F5, lien externe) — c'est le comportement voulu.
+ *
+ * **Pas dans l'URL** (corrigé le 2026-09-04, audit perf/SEO) : la première
+ * implémentation l'écrivait via `router.replace({ query: { ...seed } })`.
+ * Deux conséquences alors observées : la page devenait impossible à mettre
+ * en cache SSR (chaque visite = une URL différente), et Google risquait
+ * d'indexer un nombre infini d'URL quasi identiques (contenu dupliqué). Une
+ * simple variable locale suffit : Vue réutilise la même instance de
+ * composant tant que seuls `page`/`domaine` changent (navigation interne),
+ * donc la graine survit sans avoir besoin de persister nulle part.
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
@@ -48,19 +56,8 @@ const slug = computed(() => String(route.params.slug ?? ''))
 const page = computed(() => Math.max(1, Number(route.query.page ?? 1) || 1))
 const domaineParam = computed(() => String(route.query.domaine ?? ''))
 
-/**
- * Graine d'ordre aléatoire — générée une fois si l'URL n'en porte pas
- * encore, puis écrite dedans pour que pagination/changement de domaine la
- * réutilisent (voir docblock plus haut). `effectiveSeed` sert dès le
- * chargement en cours : pas d'attente sur `router.replace`.
- */
-const seedParam = computed(() => Number(route.query.seed))
-const effectiveSeed = Number.isFinite(seedParam.value) && seedParam.value > 0
-  ? seedParam.value
-  : 1 + Math.floor(Math.random() * 1_000_000)
-if (!Number.isFinite(seedParam.value) || seedParam.value <= 0) {
-  void router.replace({ query: { ...route.query, seed: String(effectiveSeed) } })
-}
+/** Graine d'ordre aléatoire — voir docblock plus haut. */
+const effectiveSeed = 1 + Math.floor(Math.random() * 1_000_000)
 
 const chipsRef = ref<HTMLDivElement | null>(null)
 
@@ -223,6 +220,8 @@ usePageSeo(() => ({
               width="56"
               height="56"
               format="webp"
+              loading="lazy"
+              decoding="async"
               class="max-h-full max-w-full object-contain"
             />
             <QIcon v-else name="building" :size="28" class="text-muted" />
@@ -264,6 +263,8 @@ usePageSeo(() => ({
                 width="64"
                 height="64"
                 format="webp"
+                loading="lazy"
+                decoding="async"
                 class="size-full object-cover"
               />
               <div v-else class="flex size-full items-center justify-center bg-surface-2">
