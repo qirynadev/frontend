@@ -9,6 +9,7 @@
  */
 import MpaDocsCard from '~/components/admission/MpaDocsCard.vue'
 import MpaStepsCard from '~/components/admission/MpaStepsCard.vue'
+import DesktopMonProjetAdmission from '~/desktop-pages/mon-projet-admission.vue'
 
 definePageMeta({
   middleware: 'auth',
@@ -48,6 +49,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
+  <div class="shell:hidden">
   <div class="page-mpa flex flex-1 flex-col bg-white">
     <div class="mpa-main flex flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />
@@ -128,5 +130,19 @@ usePageSeo(() => ({
         </template>
       </PageState>
     </div>
+  </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopMonProjetAdmission
+      :order="admission?.order ?? null"
+      :steps="admission?.steps ?? []"
+      :documents="admission?.documents ?? []"
+      :active-tab="activeTab"
+      :loading="!!isInitialLoading"
+      :error="apiError"
+      :on-retry="() => refresh()"
+      @tab="setTab"
+    />
   </div>
 </template>

@@ -146,6 +146,11 @@
   --color-warning-bg: #fff3e0;
   --color-danger: #ee163e;
   --color-danger-bg: #ffedf0;
+  /* Desktop (Figma Web · Home page) — rouge marque & footer navy. */
+  --color-desktop-brand: #ff1b40;
+  --color-desktop-brand-strong: #f9172d;
+  --color-desktop-footer: #182b50;
+  --color-desktop-badge-bg: #fef2f1;
   --color-info: #003ef3;
   --color-info-bg: #eaf1fd;
   --color-neutral: #6b679d;
@@ -688,6 +693,15 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/* Desktop Web (Figma 1728) — gutters boxed partagés nav / contenu / footer */
+@layer components {
+  .desktop-boxed {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline: clamp(24px, 8.68vw, 150px);
   }
 }
 
