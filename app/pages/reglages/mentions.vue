@@ -12,19 +12,26 @@
  * | aide | `.rml-help-wrap` `padding-top: 20px` · `.rml-help` hauteur fixe 86px |
  *
  * Les six documents pointent `#` dans la maquette : aucune URL n'est encore
- * arrêtée. Les lignes restent donc des `div`, pas des liens morts.
+ * arrêtée pour cinq d'entre eux, qui restent des `div`, pas des liens morts.
+ * « Politique de cookies » fait exception (2026-09-04) : `/pages/cookies`
+ * existe déjà côté CMS avec du vrai contenu (voir `CookieConsentBanner.vue`,
+ * qui y renvoie aussi depuis son lien « En savoir plus ») — rien ne
+ * justifiait de laisser cette ligne-là inerte.
  *
  * Accessible sans connexion : contenu légal public, aucun appel authentifié.
  */
+import { NuxtLink } from '#components'
+
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const documents = [
-  { id: 'cgu', icon: 'ic-rml-cgu', titleKey: 'settingsLegal.cguTitle', descKey: 'settingsLegal.cguDesc' },
-  { id: 'privacy', icon: 'ic-rml-privacy', titleKey: 'settingsLegal.privacyTitle', descKey: 'settingsLegal.privacyDesc' },
-  { id: 'cookies', icon: 'ic-rml-cookies', titleKey: 'settingsLegal.cookiesTitle', descKey: 'settingsLegal.cookiesDesc' },
-  { id: 'rgpd', icon: 'ic-rml-rgpd', titleKey: 'settingsLegal.rgpdTitle', descKey: 'settingsLegal.rgpdDesc' },
-  { id: 'cgv', icon: 'ic-rml-cgv', titleKey: 'settingsLegal.cgvTitle', descKey: 'settingsLegal.cgvDesc' },
-  { id: 'legal', icon: 'ic-rml-legal', titleKey: 'settingsLegal.legalTitle', descKey: 'settingsLegal.legalDesc' },
+  { id: 'cgu', icon: 'ic-rml-cgu', titleKey: 'settingsLegal.cguTitle', descKey: 'settingsLegal.cguDesc', to: null },
+  { id: 'privacy', icon: 'ic-rml-privacy', titleKey: 'settingsLegal.privacyTitle', descKey: 'settingsLegal.privacyDesc', to: null },
+  { id: 'cookies', icon: 'ic-rml-cookies', titleKey: 'settingsLegal.cookiesTitle', descKey: 'settingsLegal.cookiesDesc', to: '/pages/cookies' },
+  { id: 'rgpd', icon: 'ic-rml-rgpd', titleKey: 'settingsLegal.rgpdTitle', descKey: 'settingsLegal.rgpdDesc', to: null },
+  { id: 'cgv', icon: 'ic-rml-cgv', titleKey: 'settingsLegal.cgvTitle', descKey: 'settingsLegal.cgvDesc', to: null },
+  { id: 'legal', icon: 'ic-rml-legal', titleKey: 'settingsLegal.legalTitle', descKey: 'settingsLegal.legalDesc', to: null },
 ]
 
 usePageSeo(() => ({
@@ -60,11 +67,13 @@ usePageSeo(() => ({
       </aside>
 
       <section class="rml-card mt-20 w-full overflow-hidden rounded-xl border border-rml-card-border bg-white box-border" :aria-label="$t('settingsLegal.cardLabel')">
-        <div
+        <component
+          :is="doc.to ? NuxtLink : 'div'"
           v-for="(doc, index) in documents"
           :key="doc.id"
+          :to="doc.to ? localePath(doc.to) : undefined"
           :class="[
-            'rml-row flex w-full items-center gap-14 p-16 text-inherit box-border',
+            'rml-row flex w-full items-center gap-14 p-16 text-inherit no-underline box-border',
             index === 0 ? 'border-t-0' : 'border-t border-t-border-soft',
           ]"
         >
@@ -76,7 +85,7 @@ usePageSeo(() => ({
             <span class="rml-row-desc mt-2 text-sm leading-15 font-normal text-black">{{ $t(doc.descKey) }}</span>
           </span>
           <img class="rml-row-chevron block size-20 shrink-0 opacity-55" src="/img/icons/ic-rg-chevron.svg" alt="" width="20" height="20">
-        </div>
+        </component>
       </section>
 
       <div class="rml-help-wrap pt-20">
