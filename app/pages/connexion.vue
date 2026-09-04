@@ -34,6 +34,13 @@ import { ApiError } from '~/core/http/errors'
 import { paymentRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 import type { PaymentIntent, SocialProvider } from '~/core/contracts'
+import DesktopConnexion from '~/desktop-pages/connexion.vue'
+
+definePageMeta({
+  bottomNav: false,
+  desktopNav: 'auth',
+  desktopFooter: false,
+})
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -53,6 +60,7 @@ const {
 
 const email = ref('')
 const password = ref('')
+const rememberMe = ref(true)
 const submitting = ref(false)
 /** Clé i18n ou message déjà traduit — jamais le message brut de l'API. */
 const formError = ref<string | null>(null)
@@ -170,7 +178,8 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
+  <!-- Mobile -->
+  <div class="shell:hidden">
     <!-- Logo — cadre 150×47, centré, 20px sous lui. -->
     <div class="pb-20">
       <AppLogo :width="150" :height="47" class="mx-auto" />
@@ -284,10 +293,6 @@ usePageSeo(() => ({
                 :to="localePath('/mot-de-passe')"
                 class="text-base leading-16 font-medium text-link-forgot underline decoration-skip-ink-none [text-underline-position:from-font]"
               >
-                <!-- L'espace insécable finale vient de la maquette : sur un lien
-                     ajusté à son contenu, elle allonge le soulignement de 3,6px.
-                     Elle vit ici plutôt que dans la traduction, où elle serait
-                     invisible et retirée à la première relecture. -->
                 {{ $t('auth.forgotPassword') }}&nbsp;
               </NuxtLink>
             </div>
@@ -318,10 +323,6 @@ usePageSeo(() => ({
       </div>
     </div>
 
-    <!-- Trois arguments. La maquette fixe la hauteur à 200px alors que son
-         contenu en occupe 217 : les rangées débordent de 17px sous le fond
-         teinté. Le comportement est reproduit tel quel — c'est le dernier bloc
-         de la page, et rien n'est masqué. -->
     <div class="mt-24 flex h-200 flex-col gap-15 rounded-xl border border-surface-border bg-surface px-17 py-21">
       <div class="flex items-center gap-5">
         <QIcon name="ic-shield" :size="40" />
@@ -348,9 +349,31 @@ usePageSeo(() => ({
       </div>
     </div>
 
-    <!-- Bouton de reprise, hors formulaire : il n'appartient pas à la connexion. -->
     <div v-if="session.pendingPayment && session.isAuthenticated" class="pt-24">
       <QButton block :loading="submitting" @click="onResume">{{ $t('auth.resume.cta') }}</QButton>
     </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="hidden h-full shell:block">
+    <DesktopConnexion
+      v-model:email="email"
+      v-model:password="password"
+      v-model:remember-me="rememberMe"
+      :submitting="submitting"
+      :visible-error="visibleError"
+      :field-errors="fieldErrors"
+      :social-configured="socialConfigured"
+      :social-pending="socialPending"
+      :link-request="linkRequest"
+      :pending-payment="session.pendingPayment"
+      :pending-label="pendingIntent?.label ?? ''"
+      :is-authenticated="session.isAuthenticated"
+      @submit="onSubmit"
+      @social="onSocial"
+      @confirm-link="onConfirmLink"
+      @cancel-link="cancelLink"
+      @resume="onResume"
+    />
   </div>
 </template>

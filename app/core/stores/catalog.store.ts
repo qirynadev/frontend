@@ -53,6 +53,7 @@ export const useCatalogStore = defineStore('catalog', () => {
   const destinations = computed(() => catalog.value?.destinations ?? [])
   const offers = computed(() => catalog.value?.offers ?? [])
   const pages = computed(() => catalog.value?.pages ?? [])
+  const partners = computed(() => catalog.value?.partners ?? [])
 
-  return { catalog, status, error, isReady, menu, settings, destinations, offers, pages, load }
+  return { catalog, status, error, isReady, menu, settings, destinations, offers, pages, partners, load }
 })

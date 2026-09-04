@@ -20,14 +20,18 @@
 import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { schoolRepo } from '~/core/repositories'
 import type { SchoolFormation } from '~/core/contracts'
+import { resolveDestinationApiSlug } from '~/config/desktop-destination-country'
+import DesktopFicheEcole from '~/desktop-pages/fiche-ecole.vue'
 
 const route = useRoute()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 const destinationSlug = computed(() => String(route.params.slug ?? ''))
+const apiSlug = computed(() => resolveDestinationApiSlug(destinationSlug.value))
 const schoolSlug = computed(() => String(route.params.school ?? ''))
 const domaine = computed(() => String(route.query.domaine ?? 'architecture'))
+const desktopDomaine = computed(() => String(route.query.domaine ?? ''))
 
 const { data: school, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
@@ -35,8 +39,20 @@ const { data: school, apiError, isInitialLoading, refresh } = await usePageData(
   { watch: [schoolSlug, locale] },
 )
 
+const { data: similarPage } = await usePageData(
+  `school-similar-${apiSlug.value}`,
+  () => schoolRepo.list({ destination: apiSlug.value, page: 1, perPage: 8 }, locale.value),
+  { watch: [apiSlug, locale] },
+)
+
+const similarSchools = computed(() =>
+  (similarPage.value?.items ?? [])
+    .filter(item => item.slug !== schoolSlug.value)
+    .slice(0, 5),
+)
+
 if (school.value === null && !apiError.value) {
-  throw createError({ statusCode: 404, statusMessage: t('school.detail.notFound'), fatal: true })
+  throw createError({ statusCode: 404, message: t('school.detail.notFound'), fatal: true })
 }
 
 const isFavourite = ref(false)
@@ -181,6 +197,7 @@ useSchoolSchemaOrg(school)
 </script>
 
 <template>
+  <div class="shell:hidden">
   <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" :notifications="3" :gap="0" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
@@ -366,13 +383,40 @@ useSchoolSchemaOrg(school)
       </NuxtLink>
     </template>
   </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
+      <template #loading>
+        <div class="desktop-boxed flex items-start gap-23 pt-32 pb-32">
+          <div class="min-w-0 flex-1">
+            <QSkeleton variant="rect" :height="407" />
+          </div>
+          <div class="w-334 shrink-0">
+            <QSkeleton variant="rect" :height="456" />
+          </div>
+        </div>
+      </template>
+      <DesktopFicheEcole
+        v-if="school"
+        :school="school"
+        :similar-schools="similarSchools"
+        :destination-slug="destinationSlug"
+        :domaine="desktopDomaine"
+        :is-favourite="isFavourite"
+        @favourite="toggleFavourite"
+        @share="shareSchool"
+        @select-formation="activeFormation = $event"
+      />
+    </PageState>
+  </div>
 
   <!-- Modale `.ed-form-modal` -->
   <DialogRoot v-model:open="formationModalOpen">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
       <DialogContent
-        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in"
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in shell:inset-auto shell:top-1/2 shell:left-1/2 shell:w-720 shell:max-w-[calc(100vw-48px)] shell:-translate-x-1/2 shell:-translate-y-1/2 shell:rounded-2xl shell:max-h-[min(80vh,720px)] shell:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
       >
         <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
           <DialogTitle class="m-0 pr-8 text-xl leading-21 font-bold text-navy">

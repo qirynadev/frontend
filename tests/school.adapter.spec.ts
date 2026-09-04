@@ -83,7 +83,7 @@ describe('version liste', () => {
     const summary = toSchoolSummary(rawSchoolWithFormations, 'france')
 
     expect(Object.keys(summary).sort()).toEqual(
-      ['city', 'country', 'destinationSlug', 'formationCount', 'id', 'image', 'logo', 'slug', 'title'].sort(),
+      ['city', 'country', 'destinationSlug', 'excerpt', 'formationCount', 'id', 'image', 'logo', 'slug', 'title'].sort(),
     )
     expect(summary.formationCount).toBe(1)
   })

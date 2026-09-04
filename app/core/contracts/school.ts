@@ -20,6 +20,8 @@ export interface SchoolSummary {
   destinationSlug: string
   /** Nombre de formations réellement renseignées (les entrées vides sont écartées). */
   formationCount: number
+  /** Extrait de présentation, sans HTML — vide si l'API n'en a pas. */
+  excerpt: string
   /** Slugs traduits par locale quand fournis par l'API. Ex: { fr: "hec-paris", en: "hec-paris" } */
   slugs?: Record<string, string>
 }

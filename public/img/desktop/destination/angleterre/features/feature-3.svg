@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Background">
+<rect width="40" height="40" rx="20" fill="#EFF6FF"/>
+<path id="Vector" d="M20 10C14.4808 10 10 14.4808 10 20C10 25.5192 14.4808 30 20 30M10 20H30M20 30C25.5192 30 30 25.5192 30 20M20 30C14.6667 24.4 14.6667 15.6 20 10M20 30C25.3333 24.4 25.3333 15.6 20 10M30 20C30 14.4808 25.5192 10 20 10" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

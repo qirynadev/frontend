@@ -31,6 +31,13 @@ import { ApiError } from '~/core/http/errors'
 import { authRepo, paymentRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 import type { PaymentIntent, SocialProvider } from '~/core/contracts'
+import DesktopInscription from '~/desktop-pages/inscription.vue'
+
+definePageMeta({
+  bottomNav: false,
+  desktopNav: 'auth-card',
+  desktopFooter: false,
+})
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -247,7 +254,8 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
+  <!-- Mobile -->
+  <div class="shell:hidden">
     <!-- Logo -->
     <div class="pb-20">
       <AppLogo :width="150" :height="47" class="mx-auto" />
@@ -507,5 +515,40 @@ usePageSeo(() => ({
         {{ $t('auth.register.helpCta') }}
       </SupportLink>
     </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="hidden h-full shell:block">
+    <DesktopInscription
+      :step="step"
+      v-model:first-name="firstName"
+      v-model:last-name="lastName"
+      v-model:email="email"
+      v-model:password="password"
+      v-model:password-confirm="passwordConfirm"
+      v-model:code="code"
+      v-model:accepted-terms="acceptedTerms"
+      :submitting="submitting"
+      :visible-error="visibleError"
+      :notice="notice"
+      :field-errors="fieldErrors"
+      :social-configured="socialConfigured"
+      :social-pending="socialPending"
+      :link-request="linkRequest"
+      :pending-payment="session.pendingPayment"
+      :pending-label="pendingIntent?.label ?? ''"
+      :score="score"
+      :strength-hint="strengthHint"
+      :strength-tone="strengthTone"
+      :match-hint="matchHint"
+      :password-state="passwordState"
+      :confirm-state="confirmState"
+      @submit="onSubmit"
+      @confirm="onConfirm"
+      @resend="onResend"
+      @social="onSocial"
+      @confirm-link="onConfirmLink"
+      @cancel-link="cancelLink"
+    />
   </div>
 </template>
