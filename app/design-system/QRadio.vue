@@ -25,7 +25,7 @@ const id = useId()
         :name="name"
         :disabled="disabled"
         :class="[
-          'peer size-18 cursor-pointer appearance-none rounded-full border border-muted bg-white',
+          'peer size-18 cursor-pointer appearance-none rounded-full border border-muted bg-surface-card',
           'checked:border-primary-link checked:bg-primary-link',
           disabled ? 'pointer-events-none opacity-50' : '',
         ]"
@@ -33,7 +33,7 @@ const id = useId()
       <!-- Point central : visible seulement quand l'input natif est coché. -->
       <span
         aria-hidden="true"
-        class="pointer-events-none absolute size-6 rounded-full bg-white opacity-0 peer-checked:opacity-100"
+        class="pointer-events-none absolute size-6 rounded-full bg-surface-card opacity-0 peer-checked:opacity-100"
       />
     </span>
 

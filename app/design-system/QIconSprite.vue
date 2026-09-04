@@ -24,19 +24,19 @@
 <template>
   <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden">
     <symbol id="icon-ic-menu" viewBox="0 0 30.5 30.5" fill="none">
-      <path d="M5.08333 6.35417H25.4167" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M5.08333 15.25H25.4167" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M5.08333 24.1458H25.4167" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M5.08333 6.35417H25.4167" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M5.08333 15.25H25.4167" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M5.08333 24.1458H25.4167" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
     </symbol>
 
     <symbol id="icon-ic-lang-back" viewBox="0 0 24 24" fill="none">
-      <path d="M12 19L5 12L12 5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M19 12H5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </symbol>
 
     <symbol id="icon-ic-bell" viewBox="0 0 25 25" fill="none">
-      <path d="M10.6958 21.875C10.8787 22.1917 11.1417 22.4547 11.4584 22.6375C11.7751 22.8203 12.1343 22.9166 12.5 22.9166C12.8657 22.9166 13.2249 22.8203 13.5416 22.6375C13.8583 22.4547 14.1213 22.1917 14.3042 21.875" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M1.86729 14.9441C1.73121 15.0933 1.64141 15.2788 1.60881 15.478C1.5762 15.6773 1.60221 15.8817 1.68365 16.0664C1.7651 16.2512 1.89847 16.4083 2.06756 16.5186C2.23664 16.6289 2.43414 16.6877 2.63604 16.6879H19.3027C19.5046 16.688 19.7021 16.6294 19.8713 16.5192C20.0405 16.4091 20.1741 16.2522 20.2557 16.0676C20.3374 15.883 20.3636 15.6786 20.3313 15.4793C20.2989 15.2801 20.2094 15.0945 20.0735 14.9452C18.6881 13.517 17.2194 11.9993 17.2194 7.31288C17.2194 5.65528 16.5609 4.06557 15.3888 2.89347C14.2167 1.72136 12.627 1.06288 10.9694 1.06288C9.31177 1.06288 7.72206 1.72136 6.54996 2.89347C5.37785 4.06557 4.71937 5.65528 4.71937 7.31288C4.71937 11.9993 3.24958 13.517 1.86729 14.9441Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M10.6958 21.875C10.8787 22.1917 11.1417 22.4547 11.4584 22.6375C11.7751 22.8203 12.1343 22.9166 12.5 22.9166C12.8657 22.9166 13.2249 22.8203 13.5416 22.6375C13.8583 22.4547 14.1213 22.1917 14.3042 21.875" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M1.86729 14.9441C1.73121 15.0933 1.64141 15.2788 1.60881 15.478C1.5762 15.6773 1.60221 15.8817 1.68365 16.0664C1.7651 16.2512 1.89847 16.4083 2.06756 16.5186C2.23664 16.6289 2.43414 16.6877 2.63604 16.6879H19.3027C19.5046 16.688 19.7021 16.6294 19.8713 16.5192C20.0405 16.4091 20.1741 16.2522 20.2557 16.0676C20.3374 15.883 20.3636 15.6786 20.3313 15.4793C20.2989 15.2801 20.2094 15.0945 20.0735 14.9452C18.6881 13.517 17.2194 11.9993 17.2194 7.31288C17.2194 5.65528 16.5609 4.06557 15.3888 2.89347C14.2167 1.72136 12.627 1.06288 10.9694 1.06288C9.31177 1.06288 7.72206 1.72136 6.54996 2.89347C5.37785 4.06557 4.71937 5.65528 4.71937 7.31288C4.71937 11.9993 3.24958 13.517 1.86729 14.9441Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </symbol>
 
     <symbol id="icon-nav-home" viewBox="0 0 24 24" fill="none">

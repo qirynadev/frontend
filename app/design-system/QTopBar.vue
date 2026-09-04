@@ -23,7 +23,7 @@ const emit = defineEmits<{ back: [] }>()
 <template>
   <header
     :class="[
-      'flex w-full items-center justify-between gap-8 bg-white py-12',
+      'flex w-full items-center justify-between gap-8 bg-surface-card py-12',
       sticky ? 'sticky top-0 z-40 pt-safe-top' : '',
     ]"
   >

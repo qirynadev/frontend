@@ -312,7 +312,7 @@ usePageSeo(() => ({
 
       <div class="flex w-full flex-col gap-20">
         <!-- Carte professeur -->
-        <section class="box-border w-full rounded-[10px] border border-[#f1f1f8] bg-white p-17">
+        <section class="box-border w-full rounded-[10px] border border-[#f1f1f8] bg-surface-card p-17">
           <div class="flex items-start gap-14 pb-20">
             <div class="size-106 shrink-0 overflow-hidden rounded-[10px] bg-[#f1f5f9]">
               <img
@@ -335,7 +335,7 @@ usePageSeo(() => ({
                   class="block size-12 shrink-0"
                 >
               </div>
-              <p v-if="teacherCard.countryLabel" class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-18 font-normal text-black">
+              <p v-if="teacherCard.countryLabel" class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-18 font-normal text-text">
                 <img
                   v-if="teacherCard.flagSrc"
                   :src="teacherCard.flagSrc"
@@ -346,16 +346,16 @@ usePageSeo(() => ({
                 >
                 <span>{{ teacherCard.countryLabel }}</span>
               </p>
-              <p v-if="teacherCard.qualification" class="m-0 flex items-center gap-6 pt-4 text-[11.5px] leading-[17.25px] font-normal text-black">
+              <p v-if="teacherCard.qualification" class="m-0 flex items-center gap-6 pt-4 text-[11.5px] leading-[17.25px] font-normal text-text">
                 <img src="/img/icons/mpl-prof/grad.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                 <span class="truncate">{{ teacherCard.qualification }}</span>
               </p>
               <p v-if="teacherCard.rating !== null" class="m-0 flex items-center gap-6 pt-4 text-[11.5px] leading-[17.25px]">
                 <img src="/img/icons/mpl-prof/star.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                <span class="font-semibold text-black">{{ formatRating(teacherCard.rating) }}</span>
+                <span class="font-semibold text-text">{{ formatRating(teacherCard.rating) }}</span>
                 <span class="text-[10px] font-medium text-[#94a3b8]">({{ $t('languagePlanning.reviewsCount', { count: teacherCard.reviewsCount }) }})</span>
               </p>
-              <p v-if="teacherCard.experienceYears !== null" class="m-0 flex items-center gap-6 pt-4 text-[10px] leading-[17.25px] font-normal text-black">
+              <p v-if="teacherCard.experienceYears !== null" class="m-0 flex items-center gap-6 pt-4 text-[10px] leading-[17.25px] font-normal text-text">
                 <img src="/img/icons/mpl-prof/chat.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                 <span>{{ $t('languagePlanning.experienceYears', teacherCard.experienceYears) }}</span>
               </p>
@@ -382,11 +382,11 @@ usePageSeo(() => ({
 
         <!-- 1. Dates -->
         <section class="w-full">
-          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-black">{{ $t('languagePlanning.chooseDate') }}</h2>
+          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-text">{{ $t('languagePlanning.chooseDate') }}</h2>
           <div class="flex items-center gap-8 pt-12">
             <button
               type="button"
-              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-white shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
+              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
               :disabled="dateWindowStart <= 0"
               :aria-label="$t('ds.pager.previous')"
               @click="shiftDates(-1)"
@@ -403,7 +403,7 @@ usePageSeo(() => ({
                   'flex cursor-pointer flex-col items-center justify-center rounded-[10px] border px-5 py-11',
                   selectedDayKey === day.key
                     ? 'border-[#3709fc] bg-[#faf8ff]'
-                    : 'border-[#e9e9f3] bg-white',
+                    : 'border-[#e9e9f3] bg-surface-card',
                 ]"
                 @click="selectDay(day.key)"
               >
@@ -426,7 +426,7 @@ usePageSeo(() => ({
 
             <button
               type="button"
-              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-white shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
+              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
               :disabled="dateWindowStart >= Math.max(0, days.length - DATE_WINDOW)"
               :aria-label="$t('ds.pager.next')"
               @click="shiftDates(1)"
@@ -439,7 +439,7 @@ usePageSeo(() => ({
         <!-- 2. Créneaux -->
         <section class="w-full">
           <div class="flex flex-wrap items-center justify-between gap-8">
-            <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-black">{{ $t('languagePlanning.chooseSlot') }}</h2>
+            <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-text">{{ $t('languagePlanning.chooseSlot') }}</h2>
             <p class="m-0 flex items-center gap-4 text-[11px] leading-16 font-normal text-[#64748b]">
               <img src="/img/icons/mpl-creneau/slot-clock.svg" alt="" width="12" height="12" class="block size-12 shrink-0">
               <span>{{ $t('languagePlanning.teacherLocalTime') }}</span>
@@ -451,7 +451,7 @@ usePageSeo(() => ({
               :key="`${slot.blockId}-${slot.start.getTime()}`"
               type="button"
               :class="[
-                'cursor-pointer rounded-[8px] border bg-white px-4 py-10 text-[11px] leading-16 font-medium whitespace-nowrap',
+                'cursor-pointer rounded-[8px] border bg-surface-card px-4 py-10 text-[11px] leading-16 font-medium whitespace-nowrap',
                 selectedSlotKey === `${slot.blockId}-${slot.start.getTime()}`
                   ? 'border-[#3709fc] text-[#4f18f6]'
                   : 'border-[#e9e9f3] text-[#0d153e]',
@@ -465,8 +465,8 @@ usePageSeo(() => ({
 
         <!-- 3. Confirmation -->
         <section class="w-full">
-          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-black">{{ $t('languagePlanning.confirmChoice') }}</h2>
-          <div class="mt-12 box-border flex w-full items-start gap-12 rounded-[10px] border border-[#e9e9f3] bg-white p-14">
+          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-text">{{ $t('languagePlanning.confirmChoice') }}</h2>
+          <div class="mt-12 box-border flex w-full items-start gap-12 rounded-[10px] border border-[#e9e9f3] bg-surface-card p-14">
             <img src="/img/icons/mpl-creneau/confirm-cal.svg" alt="" width="28" height="28" class="mt-2 block size-28 shrink-0">
             <div class="min-w-0 flex-1">
               <p class="m-0 text-[13px] leading-18 font-semibold text-[#0d153e]">{{ teacherCard.fullName }}</p>
@@ -494,7 +494,7 @@ usePageSeo(() => ({
           </button>
           <button
             type="button"
-            class="mt-10 flex h-48 w-full cursor-pointer items-center justify-center rounded-[10px] border border-[#4f46e5] bg-white text-[14px] leading-20 font-semibold text-[#0a142f]"
+            class="mt-10 flex h-48 w-full cursor-pointer items-center justify-center rounded-[10px] border border-[#4f46e5] bg-surface-card text-[14px] leading-20 font-semibold text-[#0a142f]"
             @click="cancel"
           >
             {{ $t('languagePlanning.cancelSlot') }}

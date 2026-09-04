@@ -40,7 +40,7 @@ const sideClass = {
       <DialogOverlay class="fixed inset-0 z-100 bg-navy/40" />
       <DialogContent
         :class="[
-          'fixed z-100 flex flex-col gap-16 overflow-y-auto bg-white p-gutter shadow-drawer',
+          'fixed z-100 flex flex-col gap-16 overflow-y-auto bg-surface-card p-gutter shadow-drawer',
           sideClass[side],
         ]"
         @escape-key-down="persistent ? $event.preventDefault() : undefined"

@@ -43,7 +43,7 @@ function visualFor(index: number, total: number) {
       card: 'border-ol-yukon-border',
       name: 'text-ol-yukon-name',
       price: 'text-ol-yukon-price',
-      button: 'border border-ol-yukon-button bg-white text-ol-yukon-button',
+      button: 'border border-ol-yukon-button bg-surface-card text-ol-yukon-button',
       icon: 'ic-ol-yukon',
       check: 'ic-of-check-red',
       isTop: true,
@@ -58,7 +58,7 @@ function visualFor(index: number, total: number) {
       card: 'border-tier-border',
       name: 'text-tier-1',
       price: 'text-tier-1-price',
-      button: 'border border-tier-1-line bg-white text-tier-1-line',
+      button: 'border border-tier-1-line bg-surface-card text-tier-1-line',
       icon: 'ic-ol-comoe',
       check: 'ic-of-check-green',
       isTop: false,
@@ -72,7 +72,7 @@ function visualFor(index: number, total: number) {
     card: 'border-ol-featured-border',
     name: 'text-tier-2',
     price: 'text-tier-2',
-    button: 'border border-tier-2 bg-white text-tier-2',
+    button: 'border border-tier-2 bg-surface-card text-tier-2',
     icon: 'ic-ol-volga',
     check: 'ic-of-check-purple',
     isTop: false,
@@ -138,7 +138,7 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
               v-for="entry in tiers"
               :key="entry.tier.id"
               :class="[
-                'relative box-border flex w-full min-w-0 flex-col gap-8 overflow-visible rounded-2xl border bg-white px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
+                'relative box-border flex w-full min-w-0 flex-col gap-8 overflow-visible rounded-2xl border bg-surface-card px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
                 entry.visual.card,
               ]"
             >

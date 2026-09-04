@@ -66,7 +66,7 @@ async function onFinalize(): Promise<void> {
 </script>
 
 <template>
-  <section class="mpa-docs-card mt-10 w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-white p-17 px-1 box-border" :aria-label="$t('admission.docsTitle')">
+  <section class="mpa-docs-card mt-10 w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-surface-card p-17 px-1 box-border" :aria-label="$t('admission.docsTitle')">
     <h2 class="mpa-docs-title m-0 px-15 text-sm leading-[25.5px] font-bold text-[#0b0b0b]">{{ $t('admission.docsTitle') }}</h2>
 
     <div class="mpa-docs-banner mx-15 mt-16 flex min-h-86 items-start gap-11 rounded-xl bg-[#f5f3ff] p-9 box-border">
@@ -83,7 +83,7 @@ async function onFinalize(): Promise<void> {
       <li
         v-for="doc in documents"
         :key="doc.id"
-        class="mpa-doc-row flex items-center justify-between gap-12 rounded-xl border border-[#f3f4fb] bg-white p-15 box-border [&+:not(:first-child)]:mt-10"
+        class="mpa-doc-row flex items-center justify-between gap-12 rounded-xl border border-[#f3f4fb] bg-surface-card p-15 box-border [&+:not(:first-child)]:mt-10"
       >
         <div class="mpa-doc-main min-w-0 flex-1 flex items-center gap-12">
           <span class="mpa-doc-icon size-40 shrink-0 overflow-hidden rounded-2xl">

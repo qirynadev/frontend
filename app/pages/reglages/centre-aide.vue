@@ -81,7 +81,7 @@ usePageSeo(() => ({
           <!-- Envoyer un message -->
           <NuxtLink
             :to="localePath('/reglages/contact')"
-            class="box-border flex w-full items-center rounded-[10px] border border-ca-row-border bg-white p-16 text-inherit no-underline"
+            class="box-border flex w-full items-center rounded-[10px] border border-ca-row-border bg-surface-card p-16 text-inherit no-underline"
           >
             <img :src="`${ICON}/ic-ca-message.svg`" alt="" width="48" height="48" class="mr-16 block size-48 shrink-0">
             <span class="min-w-0 flex-1 pr-8">
@@ -96,7 +96,7 @@ usePageSeo(() => ({
             :href="whatsappHref"
             target="_blank"
             rel="noopener noreferrer"
-            class="box-border flex w-full items-center rounded-[10px] border border-ca-row-border bg-white p-16 text-inherit no-underline"
+            class="box-border flex w-full items-center rounded-[10px] border border-ca-row-border bg-surface-card p-16 text-inherit no-underline"
           >
             <img :src="`${ICON}/ic-ca-whatsapp.svg`" alt="" width="48" height="48" class="mr-16 block size-48 shrink-0">
             <span class="min-w-0 flex-1 pr-8">
@@ -112,7 +112,7 @@ usePageSeo(() => ({
           <!-- Être rappelé (pas d’écran encore) -->
           <button
             type="button"
-            class="box-border flex w-full cursor-pointer items-center rounded-[10px] border border-ca-row-border bg-white p-16 text-left"
+            class="box-border flex w-full cursor-pointer items-center rounded-[10px] border border-ca-row-border bg-surface-card p-16 text-left"
           >
             <img :src="`${ICON}/ic-ca-phone.svg`" alt="" width="48" height="48" class="mr-16 block size-48 shrink-0">
             <span class="min-w-0 flex-1 pr-8">

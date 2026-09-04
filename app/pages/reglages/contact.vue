@@ -208,10 +208,10 @@ usePageSeo(() => ({
             <img :src="`${SUCCESS_ICON}/check-banner.svg`" alt="" width="16" height="16" class="block size-16">
           </span>
           <div class="min-w-0 flex-1 pt-2">
-            <p class="m-0 text-lg leading-[19.25px] font-semibold text-black">
+            <p class="m-0 text-lg leading-[19.25px] font-semibold text-text">
               {{ $t('settingsContact.successBannerTitle') }}
             </p>
-            <p class="m-0 mt-2 text-base leading-[17.875px] font-normal text-black">
+            <p class="m-0 mt-2 text-base leading-[17.875px] font-normal text-text">
               {{ $t('settingsContact.successBannerDesc') }}
             </p>
           </div>
@@ -277,7 +277,7 @@ usePageSeo(() => ({
                 v-model="subject"
                 :aria-invalid="!!errors.subject || undefined"
                 :class="[
-                  'box-border w-full appearance-none rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal outline-none',
+                  'box-border w-full appearance-none rounded-[12px] border bg-surface-card px-12 py-12 text-lg leading-20 font-normal outline-none',
                   subject ? 'text-text' : 'text-cf-placeholder',
                   errors.subject ? 'border-danger' : 'border-cf-input',
                 ]"
@@ -312,7 +312,7 @@ usePageSeo(() => ({
               :placeholder="$t('settingsContact.namePlaceholder')"
               :aria-invalid="!!errors.name || undefined"
               :class="[
-                'mt-4 box-border w-full rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
+                'mt-4 box-border w-full rounded-[12px] border bg-surface-card px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
                 errors.name ? 'border-danger' : 'border-cf-input',
               ]"
             >
@@ -333,7 +333,7 @@ usePageSeo(() => ({
               :placeholder="$t('settingsContact.emailPlaceholder')"
               :aria-invalid="!!errors.email || undefined"
               :class="[
-                'mt-4 box-border w-full rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
+                'mt-4 box-border w-full rounded-[12px] border bg-surface-card px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
                 errors.email ? 'border-danger' : 'border-cf-input',
               ]"
             >
@@ -346,7 +346,7 @@ usePageSeo(() => ({
             </label>
             <div
               :class="[
-                'relative mt-4 box-border w-full rounded-[12px] border bg-white',
+                'relative mt-4 box-border w-full rounded-[12px] border bg-surface-card',
                 errors.message ? 'border-danger' : 'border-cf-input',
               ]"
             >
@@ -373,7 +373,7 @@ usePageSeo(() => ({
               name="consent"
               :aria-invalid="!!errors.consent || undefined"
               :class="[
-                'mt-2 size-14 shrink-0 cursor-pointer appearance-none rounded-[4px] border-[1.2px] bg-white',
+                'mt-2 size-14 shrink-0 cursor-pointer appearance-none rounded-[4px] border-[1.2px] bg-surface-card',
                 'checked:border-cf-consent-check checked:bg-cf-consent-check',
                 errors.consent ? 'border-danger' : 'border-cf-consent-check',
               ]"

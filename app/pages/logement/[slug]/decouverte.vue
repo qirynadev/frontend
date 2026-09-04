@@ -79,17 +79,17 @@ usePageSeo(() => ({
 
     <!-- Ce que nous venons résoudre -->
     <section class="flex w-full flex-col gap-16" aria-labelledby="log-pain-title">
-      <h2 id="log-pain-title" class="m-0 text-xl leading-24 font-semibold text-black">
+      <h2 id="log-pain-title" class="m-0 text-xl leading-24 font-semibold text-text">
         {{ $t('housing.intro.painsTitle') }}
       </h2>
       <div class="grid w-full grid-cols-2 gap-12">
         <article
           v-for="pain in pains"
           :key="pain.id"
-          class="box-border flex items-center rounded-[10px] border border-ls-pain-border bg-white px-16 py-10 shadow-ls-pain"
+          class="box-border flex items-center rounded-[10px] border border-ls-pain-border bg-surface-card px-16 py-10 shadow-ls-pain"
         >
           <img :src="pain.icon" alt="" width="40" height="40" class="mr-12 block size-40 shrink-0">
-          <p class="m-0 min-w-0 flex-1 text-lg leading-[17.875px] font-medium whitespace-pre-line text-black">
+          <p class="m-0 min-w-0 flex-1 text-lg leading-[17.875px] font-medium whitespace-pre-line text-text">
             {{ $t(pain.labelKey) }}
           </p>
         </article>
@@ -98,7 +98,7 @@ usePageSeo(() => ({
 
     <!-- Notre méthode en 4 étapes -->
     <section class="flex w-full flex-col gap-16" aria-labelledby="log-method-title">
-      <h2 id="log-method-title" class="m-0 text-xl leading-24 font-semibold text-black">
+      <h2 id="log-method-title" class="m-0 text-xl leading-24 font-semibold text-text">
         {{ $t('housing.intro.methodTitle') }}
       </h2>
 

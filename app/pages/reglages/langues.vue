@@ -56,8 +56,8 @@ usePageSeo(() => ({
         </p>
       </section>
 
-      <section class="rl-card w-full rounded-xl bg-white p-16 shadow-card box-border">
-        <h2 class="rl-card-title mt-0 mb-12 px-4 text-2xl leading-[22.5px] font-bold text-black">
+      <section class="rl-card w-full rounded-xl bg-surface-card p-16 shadow-card box-border">
+        <h2 class="rl-card-title mt-0 mb-12 px-4 text-2xl leading-[22.5px] font-bold text-text">
           {{ $t('settingsLanguage.cardTitle') }}
         </h2>
 
@@ -70,7 +70,7 @@ usePageSeo(() => ({
             :aria-checked="chosen === option.code"
             :class="[
               'rl-option flex w-full items-center gap-12 rounded-xl border p-15 text-left cursor-pointer box-border',
-              chosen === option.code ? 'is-selected border-rl-option-selected-border bg-rl-option-selected-bg' : 'border-rl-option-border bg-white',
+              chosen === option.code ? 'is-selected border-rl-option-selected-border bg-rl-option-selected-bg' : 'border-rl-option-border bg-surface-card',
             ]"
             @click="chosen = option.code"
           >
@@ -89,7 +89,7 @@ usePageSeo(() => ({
             </span>
             <span
               :class="[
-                'rl-radio flex size-20 shrink-0 items-center justify-center rounded-full border bg-white box-border',
+                'rl-radio flex size-20 shrink-0 items-center justify-center rounded-full border bg-surface-card box-border',
                 chosen === option.code ? 'border-rl-radio-selected-border' : 'border-rl-radio-border',
               ]"
               aria-hidden="true"

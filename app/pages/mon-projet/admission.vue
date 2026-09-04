@@ -48,7 +48,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-mpa flex flex-1 flex-col bg-white">
+  <div class="page-mpa flex flex-1 flex-col bg-surface-card">
     <div class="mpa-main flex flex-col gap-22 box-border">
       <!-- Topbar : Retour + Logo + Cloche de notifications -->
       <AppTopBar :back="true" back-to="/mon-projet" :gap="0" />
@@ -76,7 +76,7 @@ usePageSeo(() => ({
                 'mpa-tab flex-1 flex flex-row items-center justify-center gap-8 border rounded-xl px-12 py-12 text-md font-medium leading-[19.5px] cursor-pointer box-border transition-colors duration-150',
                 activeTab === 'apercu'
                   ? 'is-active bg-[#f8f7ff] border-[#e2dff5] text-[#2d00fc]'
-                  : 'border-transparent bg-transparent text-black',
+                  : 'border-transparent bg-transparent text-text',
               ]"
               role="tab"
               :aria-selected="activeTab === 'apercu'"
@@ -92,7 +92,7 @@ usePageSeo(() => ({
                 'mpa-tab flex-1 flex flex-row items-center justify-center gap-8 border rounded-xl px-12 py-12 text-md font-medium leading-[19.5px] cursor-pointer box-border transition-colors duration-150',
                 activeTab === 'document'
                   ? 'is-active bg-[#f8f7ff] border-[#e2dff5] text-[#2d00fc]'
-                  : 'border-transparent bg-transparent text-black',
+                  : 'border-transparent bg-transparent text-text',
               ]"
               role="tab"
               :aria-selected="activeTab === 'document'"

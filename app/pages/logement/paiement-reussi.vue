@@ -230,7 +230,7 @@ usePageSeo(() => ({
            terminé" et "Payé le [date]", un vrai contresens. -->
       <template v-if="confirmed">
       <!-- Progression -->
-      <section class="mt-22 box-border w-full rounded-xl border border-lp-progress-border bg-white p-17">
+      <section class="mt-22 box-border w-full rounded-xl border border-lp-progress-border bg-surface-card p-17">
         <div class="flex items-start justify-between gap-12">
           <div class="min-w-0 flex-1">
             <h1 class="m-0 text-exact-16 leading-25 font-semibold text-text">{{ $t('logementConfirmation.progressTitle') }}</h1>
@@ -284,7 +284,7 @@ usePageSeo(() => ({
 
       <!-- Formule achetée -->
       <div v-else class="mt-22 flex w-full flex-col gap-22">
-        <article v-if="offer" class="box-border w-full rounded-xl border border-lp-offer-border bg-white p-17">
+        <article v-if="offer" class="box-border w-full rounded-xl border border-lp-offer-border bg-surface-card p-17">
           <div class="flex items-start justify-between gap-8">
             <div class="flex min-w-0 flex-1 gap-12">
               <div class="flex size-80 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-lp-feature-bg">
@@ -318,7 +318,7 @@ usePageSeo(() => ({
         </article>
 
         <div class="w-full">
-          <h2 class="m-0 text-xl leading-[27.5px] font-bold text-black">{{ $t('logementConfirmation.helpIntroTitle') }}</h2>
+          <h2 class="m-0 text-xl leading-[27.5px] font-bold text-text">{{ $t('logementConfirmation.helpIntroTitle') }}</h2>
           <p class="m-0 mt-2 text-base leading-[18.563px] font-normal text-rg-row-desc">{{ $t('logementConfirmation.helpIntroDesc') }}</p>
         </div>
 
@@ -337,7 +337,7 @@ usePageSeo(() => ({
 
         <form class="flex w-full flex-col gap-10" @submit.prevent="onSubmit">
           <div class="flex w-full gap-6 max-2xs:flex-col">
-            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
               <img src="/img/icons/ic-lp-field-date.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
               <span class="flex min-w-0 flex-1 flex-col gap-2">
                 <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldArrivalLabel') }}</span>
@@ -345,7 +345,7 @@ usePageSeo(() => ({
               </span>
               <img src="/img/icons/ic-lp-field-chevron.svg" alt="" width="12" height="12" class="block size-12 shrink-0 rotate-90 opacity-85">
             </label>
-            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
               <img src="/img/icons/ic-lp-field-budget.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
               <span class="flex min-w-0 flex-1 flex-col gap-2">
                 <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">
@@ -357,7 +357,7 @@ usePageSeo(() => ({
           </div>
 
           <div class="flex w-full gap-6 max-2xs:flex-col">
-            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
               <img src="/img/icons/ic-lp-field-school.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
               <span class="flex min-w-0 flex-1 flex-col gap-2">
                 <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldSchoolLabel') }}</span>
@@ -365,7 +365,7 @@ usePageSeo(() => ({
               </span>
               <img src="/img/icons/ic-lp-field-chevron.svg" alt="" width="12" height="12" class="block size-12 shrink-0 rotate-90 opacity-85">
             </label>
-            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
               <img src="/img/icons/ic-lp-field-city.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
               <span class="flex min-w-0 flex-1 flex-col gap-2">
                 <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldCityLabel') }}</span>
@@ -376,7 +376,7 @@ usePageSeo(() => ({
           </div>
 
           <div class="flex w-full gap-6 max-2xs:flex-col">
-            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+            <label class="box-border flex flex-1 min-w-0 cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
               <img src="/img/icons/ic-lp-field-duree.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
               <span class="flex min-w-0 flex-1 flex-col gap-2">
                 <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldDurationLabel') }}</span>
@@ -384,7 +384,7 @@ usePageSeo(() => ({
               </span>
               <img src="/img/icons/ic-lp-field-chevron.svg" alt="" width="12" height="12" class="block size-12 shrink-0 rotate-90 opacity-85">
             </label>
-            <label class="box-border flex flex-1 min-w-0 cursor-pointer items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+            <label class="box-border flex flex-1 min-w-0 cursor-pointer items-center gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
               <img src="/img/icons/ic-lp-field-type.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
               <span class="flex min-w-0 flex-1 flex-col gap-2">
                 <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldTypeLabel') }}</span>
@@ -403,7 +403,7 @@ usePageSeo(() => ({
             </label>
           </div>
 
-          <label class="box-border flex w-full cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+          <label class="box-border flex w-full cursor-text items-center gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
             <img src="/img/icons/ic-lp-field-people.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col gap-2">
               <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldOccupantsLabel') }}</span>
@@ -412,7 +412,7 @@ usePageSeo(() => ({
             <img src="/img/icons/ic-lp-field-chevron.svg" alt="" width="12" height="12" class="block size-12 shrink-0 rotate-90 opacity-85">
           </label>
 
-          <label class="box-border flex min-h-125 w-full cursor-text items-start gap-12 rounded-xl border border-lp-field-border bg-white py-14 px-12">
+          <label class="box-border flex min-h-125 w-full cursor-text items-start gap-12 rounded-xl border border-lp-field-border bg-surface-card py-14 px-12">
             <img src="/img/icons/ic-lp-field-pref.svg" alt="" width="28" height="28" class="block size-28 shrink-0">
             <span class="relative flex min-w-0 flex-1 flex-col gap-2">
               <span class="text-base leading-16 font-medium tracking-wide text-lp-field-label">{{ $t('logementConfirmation.fieldPreferencesLabel') }}</span>

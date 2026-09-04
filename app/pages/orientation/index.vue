@@ -92,7 +92,7 @@ usePageSeo(() => ({
     <div
       v-for="stat in stats"
       :key="stat.icon"
-      class="box-border flex items-start gap-10 rounded-xl border border-border bg-white p-11"
+      class="box-border flex items-start gap-10 rounded-xl border border-border bg-surface-card p-11"
     >
       <span
         :class="[
@@ -168,7 +168,7 @@ usePageSeo(() => ({
         role="radio"
         :aria-checked="path === p.id"
         :class="[
-          'box-border flex w-full items-center justify-between gap-12 rounded-xl border bg-white p-17 text-left',
+          'box-border flex w-full items-center justify-between gap-12 rounded-xl border bg-surface-card p-17 text-left',
           path === p.id ? 'border-osp-path-selected-border' : 'border-osp-path-border',
         ]"
         @click="path = p.id"

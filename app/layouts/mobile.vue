@@ -37,7 +37,7 @@ const showBottomNav = computed(() => route.meta.bottomNav !== false)
  * l'application au shell : un bloc teinté à l'intérieur laisserait apparaître
  * du blanc sous le contenu court.
  */
-const shellClass = computed(() => (route.meta.shellBackground === 'tint' ? 'bg-shell-tint' : 'bg-white'))
+const shellClass = computed(() => (route.meta.shellBackground === 'tint' ? 'bg-shell-tint' : 'bg-surface-card'))
 </script>
 
 <template>
