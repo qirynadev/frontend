@@ -9,6 +9,11 @@ import { toAreaOfStudySummaryList } from '~~/app/core/adapters'
  * by-country/{schoolFileId}` — le `slug` de la destination suffit à
  * retrouver son identifiant dans l'instantané déjà en cache.
  *
+ * `include_mba=1` : cette route exclut MBA par défaut côté back-office (pensé
+ * pour le parcours desktop, qui l'affiche ailleurs) — sur demande explicite
+ * (2026-09-04), notre parcours mobile l'affiche au même titre que les autres
+ * domaines, s'il est présent pour la destination.
+ *
  * `nbr_schools` de cette réponse est **faux** pour notre usage : back-office,
  * `AreaResource::toArray` le calcule avec `$this->schools->count()` — toutes
  * destinations et tous statuts confondus, malgré le nom de la route
@@ -30,7 +35,7 @@ export default defineEventHandler(async (event): Promise<AreaOfStudySummary[]> =
 
   let areas: AreaOfStudySummary[]
   try {
-    areas = toAreaOfStudySummaryList(await client.request(`/areas-of-studies/by-country/${encodeURIComponent(destination.id)}`))
+    areas = toAreaOfStudySummaryList(await client.request(`/areas-of-studies/by-country/${encodeURIComponent(destination.id)}`, { query: { include_mba: 1 } }))
   }
   catch (error) {
     rethrowApiError(error)
