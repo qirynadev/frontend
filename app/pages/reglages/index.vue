@@ -19,12 +19,20 @@
  * Informations personnelles → `/reglages/informations-personnelles`.
  */
 import { NuxtLink } from '#components'
+import { useSessionStore } from '~/core/stores'
 
 // Accessible sans connexion — cet index n'est qu'un sommaire de liens ; seules
 // les pages qui exigent vraiment un compte (informations personnelles, mot de
 // passe, centre d'aide) portent leur propre `middleware: 'auth'`.
 const { t } = useI18n()
 const localePath = useLocalePath()
+const session = useSessionStore()
+
+/** Même geste que `AppSideMenu.vue` : le cookie est effacé côté serveur, l'état local suit toujours. */
+async function onLogout() {
+  await session.logout()
+  await navigateTo(localePath('/'))
+}
 
 interface Row {
   id: string
@@ -60,7 +68,7 @@ const sections: { titleKey: string, rows: Row[] }[] = [
     rows: [
       { id: 'help', icon: 'ic-rg-help', titleKey: 'settings.helpTitle', descKey: 'settings.helpDesc', to: '/reglages/centre-aide', indigo: true },
       { id: 'legal', icon: 'ic-rg-legal', titleKey: 'settings.legalTitle', descKey: 'settings.legalDesc', to: '/reglages/mentions', indigo: true },
-      { id: 'logout', icon: 'ic-rg-logout', titleKey: 'settings.logoutTitle', descKey: 'settings.logoutDesc', to: '/connexion', danger: true, indigo: true },
+      { id: 'logout', icon: 'ic-rg-logout', titleKey: 'settings.logoutTitle', descKey: 'settings.logoutDesc', danger: true, indigo: true },
     ],
   },
 ]
@@ -94,16 +102,19 @@ usePageSeo(() => ({
 
         <div class="rg-card w-full overflow-hidden rounded-[16px] border border-rg-card-border bg-rg-card-bg shadow-rg box-border">
           <component
-            :is="row.to ? NuxtLink : 'div'"
+            :is="row.id === 'logout' ? 'button' : row.to ? NuxtLink : 'div'"
             v-for="(row, index) in section.rows"
             :key="row.id"
+            :type="row.id === 'logout' ? 'button' : undefined"
             :to="row.to ? localePath(row.to) : undefined"
             :class="[
               'rg-row flex w-full items-center p-16 text-inherit no-underline box-border',
               row.danger ? 'rg-row--danger' : '',
               row.theme ? 'rg-row--theme' : '',
+              row.id === 'logout' ? 'cursor-pointer border-0 bg-transparent text-left' : '',
               index === section.rows.length - 1 ? 'border-b-0' : 'border-b border-b-rg-row-border',
             ]"
+            @click="row.id === 'logout' ? onLogout() : undefined"
           >
             <span
               :class="[

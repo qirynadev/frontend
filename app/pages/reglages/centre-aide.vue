@@ -14,8 +14,8 @@
  */
 import { centreAideMock } from '~/config/centre-aide-mock'
 
-definePageMeta({ middleware: 'auth' })
-
+// Accessible sans connexion (sur demande explicite) : contenu statique
+// (FAQ/contact), rien qui dépende de la session.
 const { t } = useI18n()
 const localePath = useLocalePath()
 
