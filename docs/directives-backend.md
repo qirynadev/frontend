@@ -820,6 +820,68 @@ validation, pas un contrôle — n'importe quel client peut le contourner en
 ajoutant `?etape=2` à l'URL. Acceptable temporairement sur demande explicite
 du responsable, mais à ne pas présenter comme un vrai contrôle métier.
 
+## 25. 🔴 Logo (clair/sombre) et favicon administrables — actuellement des fichiers statiques du dépôt
+
+**Contexte (2026-09-04)** : le mode sombre est maintenant fonctionnel côté
+front (`app/assets/css/main.css`, `theme.store.ts`). Un point reste bloquant :
+le logo est une **image raster figée dans le dépôt**
+(`AppLogo.vue` → `public/img/logo.webp`, wordmark noir sur fond transparent),
+illisible sur fond sombre — aucune CSS ne peut « éclaircir » un texte déjà
+cuit dans les pixels d'un PNG/WebP. Le favicon (`public/favicon.ico`, ajouté
+le 2026-09-03) est dans la même situation : un fichier statique, jamais
+administrable.
+
+**Ce qu'il faut côté back-office** — trois champs image dans le bloc `site`
+déjà existant (`Setting::key = 'site'`, le même mécanisme que
+`name`/`email`/`phone` gérés par `SettingController`) :
+
+| Champ | Rôle |
+|---|---|
+| `logo_light` | Logo affiché en thème clair (remplace l'actuel `logo.webp`) |
+| `logo_dark` | Logo affiché en thème sombre — fond transparent, wordmark clair |
+| `favicon` | Icône d'onglet — idéalement fournie en `.png` (multi-tailles) plutôt qu'`.ico`, plus simple à uploader/valider côté admin |
+
+**Backend, par analogie avec `SettingController::homeUpdate()`** (seul
+endroit du contrôleur qui gère déjà un upload de fichier — `og_image`,
+`storeAs('photos/home_page/seo', …, 'public')`) : `SettingController::update()`
+ne gère aujourd'hui que des valeurs texte fusionnées telles quelles
+(`array_merge($existing, $value)`) — il faut lui ajouter le même traitement
+`UploadedFile` que `homeUpdate()`, pour ces trois clés spécifiquement, avant
+la fusion dans `site` (stocker le **chemin** retourné par `storeAs()`, pas le
+fichier lui-même — supprimer l'ancien fichier au remplacement, comme
+`homeUpdate()` le fait déjà pour `slides`/`steps`). Ajouter `logo_light`,
+`logo_dark`, `favicon` à `SettingController::PUBLIC_SITE_FIELDS` (page
+Paramètres générale, pas « Clés & Intégrations » — ce ne sont pas des
+secrets).
+
+**Admin (`resources/js/Pages/Setting/Index.vue`)** : `siteForm` n'a
+aujourd'hui que des champs texte (`InputField`) — ajouter trois champs de
+type fichier (image) pour `logo_light`/`logo_dark`/`favicon`, avec aperçu de
+l'image actuelle comme le fait déjà `Setting/Home.vue` pour `og_image`.
+
+**API publique** : exposer ces trois chemins dans la réponse de
+`/all-data` → `settings.site` (déjà lu par `toSiteSettings()` côté front,
+`app/core/adapters/common.adapter.ts:131`) — mêmes conventions que les
+autres images du site (`Storage::disk('public')->url(...)`, voir
+`SchoolResource`/`AreaResource`).
+
+**Côté front, une fois ces champs disponibles** (pas encore fait, à la
+charge du front une fois le backend prêt) :
+- `SiteSettings` (contrat + `toSiteSettings()`) : ajouter `logoLight`,
+  `logoDark`, `favicon` (repli sur `null` → `AppLogo.vue` garde
+  `/img/logo.webp` en dur tant que rien n'est renseigné, comme aujourd'hui).
+- `AppLogo.vue` : choisir `logoLight`/`logoDark` selon `useThemeStore().htmlAttr`
+  résolu (pas juste `preference`, qui vaut aussi « système » — il faut la
+  valeur **effective**, y compris quand elle vient de la media query, donc
+  probablement `prefers-color-scheme` lu côté client en plus du store).
+- Favicon : posé via `app.head.link` (`rel: 'icon'`), remplace l'actuel lien
+  statique de `nuxt.config.ts`/`public/favicon.ico`.
+
+**Pas bloquant pour la production** : le logo reste lisible en thème clair
+(le mode par défaut), qui restera probablement le choix de la plupart des
+visiteurs pour un moment — mais à faire avant de mettre le sélecteur de
+thème en avant dans le produit.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
