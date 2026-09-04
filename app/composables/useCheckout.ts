@@ -44,11 +44,22 @@ export function useCheckout() {
    * `objectif` vient de l'URL (`/offres/anglais?objectif=exams`) : le tunnel
    * langue le transporte depuis l'écran des objectifs, et il doit arriver
    * jusqu'à la commande.
+   *
+   * `path` (`/orientation/formules?path=moi|enfant`) : le choix de parcours
+   * fait sur `/orientation` (pour soi / pour son enfant) — capturé jusqu'ici,
+   * jamais transmis, donc invisible en commande côté back-office (audit
+   * 2026-09-04). Même mécanisme que `objectif` : relayé tel quel dans
+   * `options`, le back-office affiche déjà ce sac générique (voir
+   * `docs/directives-backend.md`).
    */
   function toIntent(offer: OfferPage, tier: OfferTier) {
     const options: Record<string, string> = {}
     if (offer.kind === 'language') options.language = offer.title
     else if (offer.kind === 'living' && offer.living) options.country = offer.living.country.name
+    else if (offer.kind === 'orientation') {
+      const path = route.query.path
+      if (path === 'moi' || path === 'enfant') options.orientationFor = path
+    }
     const goal = route.query.objectif
     if (typeof goal === 'string' && goal !== '') options.goal = goal
 
