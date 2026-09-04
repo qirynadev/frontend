@@ -16,6 +16,7 @@ useHead(() => ({
 </script>
 
 <template>
+  <QIconSprite />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>

@@ -56,6 +56,49 @@ export default defineNuxtConfig({
     // dont le préfixe est une constante (`BFF_BASE` dans `app/core/http/client.ts`).
   },
 
+  /**
+   * Relevé par l'audit de charge/perf du 4 septembre 2026
+   * (`stage.qiryna.com`, test réel + rafales de charge) :
+   *
+   * - **En-têtes de sécurité absents** sur le HTML servi. `X-Powered-By`
+   *   (Passenger) reste à retirer côté nginx/Plesk — hors de portée du code.
+   * - **`Cache-Control` bien trop court** sur les traductions (`_i18n`,
+   *   10s) et les images redimensionnées (`_ipx`, 60s) : les deux sont
+   *   pourtant immuables une fois générées (URL hashée pour les premières,
+   *   jamais régénérées à identique pour les secondes).
+   * - **Débit SSR plafonné** (~28 pages/s, un seul processus Passenger) :
+   *   `swr` réduit la charge sur les pages publiques qui ne dépendent PAS
+   *   de la session. Volontairement limité aux pages vérifiées comme telles
+   *   (aucune lecture de `useSessionStore`/l'authentification pour son
+   *   contenu) : PAS l'accueil (`/`, avancement personnel de l'utilisateur
+   *   connecté), PAS les sous-arborescences `/logement/**`/`/langues/**`
+   *   dans leur ensemble (elles contiennent chacune un écran
+   *   `paiement-reussi` propre à une commande — un cache y afficherait la
+   *   confirmation d'un visiteur à un autre).
+   */
+  routeRules: {
+    '/**': {
+      headers: {
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'SAMEORIGIN',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
+
+    // Toute la sous-arborescence est du contenu public (écoles, fiches) —
+    // vérifié, aucune route de paiement/session dessous, contrairement à
+    // `/logement` et `/langues`.
+    '/destinations/**': { swr: 60 },
+    '/orientation': { swr: 60 },
+    '/orientation/formules': { swr: 60 },
+    '/logement': { swr: 60 },
+    '/langues': { swr: 60 },
+
+    '/_i18n/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+  },
+
   css: ['~/assets/css/main.css'],
 
   // Auto-import sans préfixe de dossier : `design-system/QButton.vue` → `QButton`,

@@ -31,8 +31,31 @@ const props = withDefaults(
   { size: 20, height: undefined, strokeWidth: 1.5, label: undefined },
 )
 
+/**
+ * Icônes de chrome (barre du haut + navigation basse) : présentes sur
+ * quasiment tout écran, donc extraites en sprite (`QIconSprite`, monté une
+ * fois dans `app.vue`) plutôt qu'en `<img>` répété à chaque navigation — voir
+ * son commentaire. Toutes les autres icônes de la maquette restent en
+ * `<img>` : les mettre aussi en sprite gonflerait le HTML de chaque page pour
+ * des icônes qui n'y apparaissent qu'une fois.
+ */
+const SPRITE_ICONS = new Set([
+  'ic-menu',
+  'ic-lang-back',
+  'ic-bell',
+  'nav-home',
+  'nav-home-active',
+  'nav-messages',
+  'nav-messages-active',
+  'nav-projet',
+  'nav-projet-active',
+  'nav-compte',
+  'nav-compte-active',
+])
+const isSprite = computed(() => SPRITE_ICONS.has(props.name))
+
 /** Les fichiers de la maquette se reconnaissent à leur préfixe. */
-const isAsset = computed(() => /^(ic-|nav-|flag-|status-)/.test(props.name))
+const isAsset = computed(() => !isSprite.value && /^(ic-|nav-|flag-|status-)/.test(props.name))
 
 const assetSrc = computed(() => {
   // ⚠️ Servi sous `/img/icons/`, **jamais `/icons/`**. Sur un serveur Apache
@@ -53,8 +76,19 @@ const isFilled = computed(() => icon.value?.style === 'fill')
 </script>
 
 <template>
+  <svg
+    v-if="isSprite"
+    :width="size"
+    :height="height ?? size"
+    :aria-hidden="label ? undefined : 'true'"
+    :aria-label="label"
+    :role="label ? 'img' : undefined"
+    focusable="false"
+    class="block shrink-0"
+  ><use :href="`#icon-${name}`" /></svg>
+
   <img
-    v-if="isAsset"
+    v-else-if="isAsset"
     :src="assetSrc"
     :alt="label ?? ''"
     :width="size"
