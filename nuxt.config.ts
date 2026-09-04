@@ -173,6 +173,14 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#582cfd' },
       ],
       link: [
+        // Repris de la maquette (`ic-orientation-logo`, la marque Qiryna seule —
+        // le logo complet a trop de marge/texte pour rester lisible en 16px).
+        // Balises explicites plutôt que la convention implicite `/favicon.ico` :
+        // fiable même si un cache CDN/navigateur a mémorisé une 404 passée.
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'preconnect', href: mediaOrigin },
