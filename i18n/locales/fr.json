@@ -237,6 +237,13 @@
     "welcomeDescription": "Vous allez recevoir un email de confirmation avec tous les détails de votre parcours linguistique",
     "welcomeTitle": "Bienvenue dans votre parcours linguistique !"
   },
+  "cookieBanner": {
+    "accept": "Tout accepter",
+    "decline": "Refuser",
+    "learnMore": "En savoir plus",
+    "message": "Nous utilisons des cookies pour améliorer votre expérience, mesurer notre audience et personnaliser le contenu.",
+    "title": "Nous utilisons des cookies 🍪"
+  },
   "course": {
     "badge": {
       "growing": "En forte croissance",

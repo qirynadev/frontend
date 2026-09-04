@@ -237,6 +237,13 @@
     "welcomeDescription": "You’ll receive a confirmation email with all the details of your language journey",
     "welcomeTitle": "Welcome to your language journey!"
   },
+  "cookieBanner": {
+    "accept": "Accept all",
+    "decline": "Decline",
+    "learnMore": "Learn more",
+    "message": "We use cookies to improve your experience, measure our audience and personalise content.",
+    "title": "We use cookies 🍪"
+  },
   "course": {
     "badge": {
       "growing": "Fast growing",
