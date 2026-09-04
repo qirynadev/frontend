@@ -366,8 +366,10 @@ useSchoolSchemaOrg(school)
             ]"
             :aria-hidden="activeTab !== 'points'"
           >
+            <!-- Vide plutôt qu'un message d'attente : pas toutes les écoles n'ont
+                 de contenu "Points forts" côté API, ce n'est pas une absence à
+                 signaler comme les autres onglets (présentation, formations). -->
             <RichText v-if="strengthsHtml" :content="strengthsHtml" />
-            <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
           </div>
         </div>
       </div>
