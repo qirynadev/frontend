@@ -22,14 +22,18 @@
 import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { schoolRepo } from '~/core/repositories'
 import type { SchoolFormation } from '~/core/contracts'
+import { resolveDestinationApiSlug } from '~/config/desktop-destination-country'
+import DesktopFicheEcole from '~/desktop-pages/fiche-ecole.vue'
 
 const route = useRoute()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 const destinationSlug = computed(() => String(route.params.slug ?? ''))
+const apiSlug = computed(() => resolveDestinationApiSlug(destinationSlug.value))
 const schoolSlug = computed(() => String(route.params.school ?? ''))
 const domaine = computed(() => String(route.query.domaine ?? 'architecture'))
+const desktopDomaine = computed(() => String(route.query.domaine ?? ''))
 
 /**
  * `Plus Jakarta Sans` (700) : seule cette fiche l'utilise (`.font-jakarta`,
@@ -60,8 +64,20 @@ const { data, apiError, isInitialLoading, refresh } = await usePageData(
 const school = computed(() => data.value?.school ?? null)
 const formations = computed(() => data.value?.formations ?? [])
 
+const { data: similarPage } = await usePageData(
+  `school-similar-${apiSlug.value}`,
+  () => schoolRepo.list({ destination: apiSlug.value, page: 1, perPage: 8 }, locale.value),
+  { watch: [apiSlug, locale] },
+)
+
+const similarSchools = computed(() =>
+  (similarPage.value?.items ?? [])
+    .filter(item => item.slug !== schoolSlug.value)
+    .slice(0, 5),
+)
+
 if (school.value === null && !apiError.value) {
-  throw createError({ statusCode: 404, statusMessage: t('school.detail.notFound'), fatal: true })
+  throw createError({ statusCode: 404, message: t('school.detail.notFound'), fatal: true })
 }
 
 const isFavourite = ref(false)
@@ -222,6 +238,7 @@ useSchoolSchemaOrg(school)
 </script>
 
 <template>
+  <div class="shell:hidden">
   <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" :gap="0" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
@@ -303,25 +320,27 @@ useSchoolSchemaOrg(school)
       </div>
 
       <div class="mt-22 flex w-full flex-col">
-        <!-- `.ed-tabs` : padding 0 10px (8px ≤380px) · gap icône/titre 4px (8px ≤380px) -->
-        <div class="box-border flex w-full items-stretch border-b border-border-soft px-10 max-2xs:px-8" role="tablist" :aria-label="$t('school.detail.tabsLabel')">
+        <div
+          class="flex w-full rounded-[14px] border border-[#f8f8fc] bg-[#fdfdfd] p-1 box-border"
+          role="tablist"
+          :aria-label="$t('school.detail.tabsLabel')"
+        >
           <button
             v-for="tb in tabs"
             :key="tb.value"
             type="button"
             role="tab"
             :aria-selected="activeTab === tb.value"
-            class="relative inline-flex flex-1 cursor-pointer items-center justify-center gap-4 max-2xs:gap-8 border-0 bg-transparent px-0 pb-12 text-xl max-2xs:text-base leading-21 font-medium whitespace-nowrap text-text"
-            :class="activeTab === tb.value && 'text-le-chip-selected-border'"
+            :class="[
+              'flex flex-1 cursor-pointer flex-row items-center justify-center gap-8 rounded-xl border px-12 py-12 text-md leading-[19.5px] font-medium whitespace-nowrap box-border transition-colors duration-150',
+              activeTab === tb.value
+                ? 'bg-[#f8f7ff] border-[#e2dff5] text-[#2d00fc]'
+                : 'border-transparent bg-transparent text-black',
+            ]"
             @click="activeTab = tb.value"
           >
-            <QIcon :name="tb.icon" :size="16" class="shrink-0 max-2xs:size-14" />
+            <QIcon :name="tb.icon" :size="16" class="shrink-0" />
             <span>{{ tb.label }}</span>
-            <span
-              v-if="activeTab === tb.value"
-              class="absolute bottom-0 left-1/2 h-px w-[min(108px,90%)] -translate-x-1/2 rounded-full bg-le-chip-selected-border"
-              aria-hidden="true"
-            />
           </button>
         </div>
 
@@ -411,13 +430,41 @@ useSchoolSchemaOrg(school)
       </NuxtLink>
     </template>
   </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
+      <template #loading>
+        <div class="desktop-boxed flex items-start gap-23 pt-32 pb-32">
+          <div class="min-w-0 flex-1">
+            <QSkeleton variant="rect" :height="407" />
+          </div>
+          <div class="w-334 shrink-0">
+            <QSkeleton variant="rect" :height="456" />
+          </div>
+        </div>
+      </template>
+      <DesktopFicheEcole
+        v-if="school"
+        :school="school"
+        :formations="formations"
+        :similar-schools="similarSchools"
+        :destination-slug="destinationSlug"
+        :domaine="desktopDomaine"
+        :is-favourite="isFavourite"
+        @favourite="toggleFavourite"
+        @share="shareSchool"
+        @select-formation="activeFormation = $event"
+      />
+    </PageState>
+  </div>
 
   <!-- Modale `.ed-form-modal` -->
   <DialogRoot v-model:open="formationModalOpen">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
       <DialogContent
-        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in"
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in shell:inset-auto shell:top-1/2 shell:left-1/2 shell:w-720 shell:max-w-[calc(100vw-48px)] shell:-translate-x-1/2 shell:-translate-y-1/2 shell:rounded-2xl shell:max-h-[min(80vh,720px)] shell:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
       >
         <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
           <DialogTitle class="m-0 pr-8 text-xl leading-21 font-bold text-navy">

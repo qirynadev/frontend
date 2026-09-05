@@ -26,6 +26,7 @@ import { articleRepo, catalogRepo, orientationEvaluationRepo, paymentRepo } from
 import { useSessionStore } from '~/core/stores'
 import { homeCategories } from '~/config/home-categories'
 import { fallbackArticles } from '~/config/home-articles'
+import DesktopHome from '~/desktop-pages/index.vue'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -121,7 +122,8 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
+  <!-- Mobile -->
+  <div class="shell:hidden">
     <AppTopBar menu :gap="0" @open-menu="menuOpen = true" />
     <AppSideMenu v-model:open="menuOpen" />
 
@@ -219,5 +221,10 @@ usePageSeo(() => ({
         </div>
       </section>
     </PageState>
+  </div>
+
+  <!-- Desktop ← `desktop-pages/index.vue` -->
+  <div class="hidden shell:block">
+    <DesktopHome />
   </div>
 </template>

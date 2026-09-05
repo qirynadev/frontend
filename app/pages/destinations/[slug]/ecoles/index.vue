@@ -17,7 +17,12 @@
  * Pas de recherche : `.le-list-block` ne contient que la liste et la
  * pagination, aucun champ de filtre dans la maquette.
  *
- * Cinq écoles par page.
+ * Pagination : celle de `GET /schools/{countryId}/{areaId}` (5 par page
+ * aujourd'hui, `per_page` ignoré côté API).
+ *
+ * Sans `?domaine=` (CTA « Découvrir les écoles »), aucun domaine n'est
+ * sélectionné et la liste n'est pas filtrée. Un clic sur un domaine de la
+ * fiche pays transmet `?domaine=` : l'onglet reste allumé.
  *
  * Domaines réels de la destination (`destinationRepo.areas`), plus leur
  * icône du back-office — pas les six domaines fixes devinés jusqu'ici, qui
@@ -45,7 +50,8 @@
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
-import type { SchoolSummary } from '~/core/contracts'
+import { resolveDestinationApiSlug } from '~/config/desktop-destination-country'
+import DesktopDomainesEtudes from '~/desktop-pages/domaines-etudes.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -53,6 +59,7 @@ const { t, n, locale } = useI18n()
 const localePath = useLocalePath()
 
 const slug = computed(() => String(route.params.slug ?? ''))
+const apiSlug = computed(() => resolveDestinationApiSlug(slug.value))
 const page = computed(() => Math.max(1, Number(route.query.page ?? 1) || 1))
 const domaineParam = computed(() => String(route.query.domaine ?? ''))
 
@@ -65,24 +72,30 @@ const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
   'school-list',
   async () => {
     const [areas, catalog] = await Promise.all([
-      destinationRepo.areas(slug.value, locale.value),
+      destinationRepo.areas(apiSlug.value, locale.value),
       catalogRepo.load(locale.value),
     ])
-    // Le domaine demandé par l'URL s'il existe pour cette destination, sinon le premier.
-    const selected = areas.find((area) => area.slug === domaineParam.value) ?? areas[0] ?? null
+    // Sans `?domaine=`, aucun onglet n'est préselectionné (CTA pays).
+    const selected = domaineParam.value
+      ? areas.find(area => area.slug === domaineParam.value) ?? null
+      : null
 
-    const result = selected
-      ? await schoolRepo.list({ destination: slug.value, area: selected.id, page: page.value, seed: effectiveSeed }, locale.value)
-      : { items: [], page: page.value, perPage: 5, total: 0, totalPages: 1 }
+    const result = await schoolRepo.list({
+      destination: apiSlug.value,
+      area: selected?.id,
+      page: page.value,
+      perPage: 5,
+      seed: effectiveSeed,
+    }, locale.value)
 
     return {
       result,
       areas,
       selectedSlug: selected?.slug ?? '',
-      destination: catalog.destinations.find((item) => item.slug === slug.value) ?? null,
+      destination: catalog.destinations.find(item => item.slug === apiSlug.value) ?? null,
     }
   },
-  { watch: [slug, page, domaineParam, locale] },
+  { watch: [apiSlug, page, domaineParam, locale] },
 )
 
 const result = computed(() => data.value?.result ?? null)
@@ -122,7 +135,8 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <AppTopBar back :back-to="`/destinations/${slug}`" :gap="22" />
+  <div class="shell:hidden">
+  <AppTopBar back :back-to="`/destinations/${apiSlug}`" :gap="22" />
 
   <!-- Carrousel de domaines (.le-domains) -->
   <div class="box-border flex w-full flex-col items-stretch gap-22">
@@ -208,7 +222,9 @@ usePageSeo(() => ({
         <NuxtLink
           v-for="school in schools"
           :key="school.id"
-          :to="localePath(`/destinations/${slug}/ecoles/${school.slug}?domaine=${selectedDomain}`)"
+          :to="localePath(selectedDomain
+            ? `/destinations/${apiSlug}/ecoles/${school.slug}?domaine=${selectedDomain}`
+            : `/destinations/${apiSlug}/ecoles/${school.slug}`)"
           class="box-border flex w-full items-center rounded-xl bg-white p-10 text-inherit no-underline shadow-card"
         >
           <!-- Logo 64×64 -->
@@ -280,4 +296,23 @@ usePageSeo(() => ({
       <QPager v-if="result.totalPages > 1" v-model:page="currentPage" :total="result.totalPages" class="mt-22" />
     </template>
   </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopDomainesEtudes
+      :areas="areas"
+      :schools="schools"
+      :selected-domain="selectedDomain"
+      :destination-slug="apiSlug"
+      :loading="!!isInitialLoading"
+      :error="apiError"
+      :empty="schools.length === 0"
+      :page="currentPage"
+      :total-pages="result?.totalPages ?? 1"
+      :pending="status === 'pending'"
+      :on-retry="() => refresh()"
+      @select-domain="setDomain"
+      @update:page="(value: number) => { currentPage = value }"
+    />
+  </div>
 </template>

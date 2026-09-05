@@ -21,6 +21,19 @@ declare module '#app' {
      * `<div>` pleine hauteur qui se battrait avec le fond du layout.
      */
     shellBackground?: 'white' | 'tint'
+    /**
+     * Variante de la topbar desktop.
+     * - `default` : liens + Profilage + compte
+     * - `auth` : navbar shell connexion (oubli + S'inscrire)
+     * - `auth-reset` : navbar shell mot de passe oublié (Déjà un compte + Se connecter)
+     * - `auth-card` : navbar intégrée à la carte (inscription-V2)
+     */
+    desktopNav?: 'default' | 'auth' | 'auth-reset' | 'auth-card'
+    /**
+     * Affiche le footer desktop. `true` par défaut.
+     * À passer à `false` sur les écrans auth plein cadre.
+     */
+    desktopFooter?: boolean
   }
 }
 

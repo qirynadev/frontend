@@ -1,5 +1,5 @@
 import type { SchoolSummary } from '~~/app/core/contracts'
-import { toSchoolSummary } from '~~/app/core/adapters'
+import { plainText, toSchoolSummary } from '~~/app/core/adapters'
 
 /**
  * Écoles en version résumé, filtrables et paginées côté serveur.
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
         `/schools/${encodeURIComponent(target.country.id)}/${encodeURIComponent(area)}`,
         { query: { page, seed: Number.isFinite(seed) ? seed : undefined } },
       )
-      const items = (Array.isArray(raw.data) ? raw.data : []).map((school) => toSchoolSummary(school, destination, flagBase))
+      const items = (Array.isArray(raw.data) ? raw.data : []).map(school => toSchoolSummary(school, destination, flagBase))
 
       setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
       return {
@@ -76,6 +76,7 @@ export default defineEventHandler(async (event) => {
     country: school.country,
     destinationSlug: school.destinationSlug,
     formationCount: school.formationCount,
+    excerpt: plainText(school.presentation, 180),
   }))
 
   setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')

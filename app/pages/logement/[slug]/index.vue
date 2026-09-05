@@ -186,17 +186,9 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
               </ul>
 
               <footer class="mt-8 flex w-full flex-col items-center gap-8 pt-8">
-                <div class="flex flex-col items-center gap-2">
-                  <p :class="['m-0 text-6xl leading-[1.1] font-semibold whitespace-nowrap max-2xs:text-5xl', entry.visual.price]">
-                    {{ n(entry.tier.price.amount, 'currency') }}
-                  </p>
-                  <p
-                    v-if="entry.tier.periodLabel !== 'month'"
-                    class="m-0 text-center text-base leading-[1.2] font-medium text-tier-period"
-                  >
-                    {{ $t('offer.oneOff') }}
-                  </p>
-                </div>
+                <p :class="['m-0 text-6xl leading-[1.1] font-semibold whitespace-nowrap max-2xs:text-5xl', entry.visual.price]">
+                  {{ n(entry.tier.price.amount, 'currency') }}
+                </p>
 
                 <button
                   type="button"

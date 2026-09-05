@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Container">
+<path d="M0 20C0 8.95431 8.95431 0 20 0V0C31.0457 0 40 8.95431 40 20V20C40 31.0457 31.0457 40 20 40V40C8.95431 40 0 31.0457 0 20V20Z" fill="#FDECED"/>
+<path id="Vector" d="M27.5 16.25L20.7567 20.5453C20.5279 20.6782 20.268 20.7482 20.0034 20.7482C19.7387 20.7482 19.4788 20.6782 19.25 20.5453L12.5 16.25M14 14H26C26.8284 14 27.5 14.6716 27.5 15.5V24.5C27.5 25.3284 26.8284 26 26 26H14C13.1716 26 12.5 25.3284 12.5 24.5V15.5C12.5 14.6716 13.1716 14 14 14Z" stroke="#FE1629" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

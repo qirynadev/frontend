@@ -40,6 +40,13 @@
 import { ApiError } from '~/core/http/errors'
 import { authRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
+import DesktopMotDePasse from '~/desktop-pages/mot-de-passe.vue'
+
+definePageMeta({
+  bottomNav: false,
+  desktopNav: 'auth-reset',
+  desktopFooter: false,
+})
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -182,7 +189,8 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
+  <!-- Mobile -->
+  <div class="shell:hidden">
     <!-- Logo -->
     <div class="pb-20">
       <NuxtLink :to="localePath('/')" class="mx-auto block w-fit no-underline" :aria-label="$t('nav.home')">
@@ -426,5 +434,24 @@ usePageSeo(() => ({
         </SupportLink>
       </div>
     </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="hidden h-full shell:block">
+    <DesktopMotDePasse
+      :step="step"
+      v-model:email="email"
+      v-model:code="code"
+      v-model:password="password"
+      :submitting="submitting"
+      :form-error="formError"
+      :notice="notice"
+      :field-errors="fieldErrors"
+      :score="score"
+      :strength-hint="strengthHint"
+      :strength-tone="strengthTone"
+      @request="onRequest"
+      @reset="onReset"
+    />
   </div>
 </template>

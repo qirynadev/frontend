@@ -35,23 +35,32 @@
  */
 import { domainAreaVisual, domainCardIconWrapClass } from '~/config/domain-area-visual'
 import { destinationRepo } from '~/core/repositories'
+import DesktopDestinationFrance from '~/desktop-pages/destination-france.vue'
+import DesktopDestinationChine from '~/desktop-pages/destination-chine.vue'
+import DesktopDestinationCountry from '~/desktop-pages/destination-country.vue'
+import {
+  desktopCountryFromRoute,
+  resolveDestinationApiSlug,
+  type DesktopCountrySlug,
+} from '~/config/desktop-destination-country'
 
 const route = useRoute()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 const slug = computed(() => String(route.params.slug ?? ''))
+const apiSlug = computed(() => resolveDestinationApiSlug(slug.value))
 
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
-  `destination-${slug.value}`,
+  `destination-${apiSlug.value}`,
   async () => {
     const [destination, areas] = await Promise.all([
-      destinationRepo.bySlug(slug.value, locale.value),
-      destinationRepo.areas(slug.value, locale.value),
+      destinationRepo.bySlug(apiSlug.value, locale.value),
+      destinationRepo.areas(apiSlug.value, locale.value),
     ])
     return { destination, areas }
   },
-  { watch: [slug, locale] },
+  { watch: [apiSlug, locale] },
 )
 
 const destination = computed(() => data.value?.destination ?? null)
@@ -80,14 +89,24 @@ const stats = computed(() => {
   }))
 })
 
+const isFranceDesktop = computed(() => apiSlug.value === 'france')
+const isChineDesktop = computed(() => apiSlug.value === 'chine')
+const desktopCountry = computed<DesktopCountrySlug | null>(() =>
+  desktopCountryFromRoute(slug.value),
+)
+const isDesktopDestination = computed(() =>
+  isFranceDesktop.value || isChineDesktop.value || desktopCountry.value !== null,
+)
+
 if (data.value && !data.value.destination) {
-  throw createError({ statusCode: 404, statusMessage: t('destination.detail.notFound'), fatal: true })
+  throw createError({ statusCode: 404, message: t('destination.detail.notFound'), fatal: true })
 }
 
 useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle'), destination.value?.slugs)
 </script>
 
 <template>
+  <div :class="isDesktopDestination ? 'shell:hidden' : ''">
   <AppTopBar back back-to="/destinations" :gap="22" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
@@ -182,4 +201,39 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
       <TrustStrip />
     </template>
   </PageState>
+  </div>
+
+  <!-- Desktop France ← Figma `Etudier France` (694:2) -->
+  <div v-if="isFranceDesktop" class="hidden shell:block">
+    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
+      <DesktopDestinationFrance
+        v-if="destination"
+        :destination="destination"
+        :areas="areas"
+      />
+    </PageState>
+  </div>
+
+  <!-- Desktop Chine ← Figma `Etudier Chine` (631:2) -->
+  <div v-if="isChineDesktop" class="hidden shell:block">
+    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
+      <DesktopDestinationChine
+        v-if="destination"
+        :destination="destination"
+        :areas="areas"
+      />
+    </PageState>
+  </div>
+
+  <!-- Desktop Canada / Angleterre / USA ← Figma 282:20 · 290:396 · 292:1289 -->
+  <div v-if="desktopCountry" class="hidden shell:block">
+    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
+      <DesktopDestinationCountry
+        v-if="destination"
+        :country="desktopCountry"
+        :destination="destination"
+        :areas="areas"
+      />
+    </PageState>
+  </div>
 </template>

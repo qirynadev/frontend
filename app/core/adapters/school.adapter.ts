@@ -1,7 +1,7 @@
 import type { School, SchoolDetail, SchoolFormation, SchoolSummary } from '../contracts'
 import { parseFormationDescription } from '~/utils/formation-content'
 import { toCountry, toSeo } from './common.adapter'
-import { asArray, asRecord, html, list, optionalNum, optionalStr, str, toUrl } from './primitives'
+import { asArray, asRecord, html, list, optionalNum, optionalStr, plainText, str, toUrl } from './primitives'
 
 /**
  * Formations d'une école — consommée par `GET /schools/{id}/formations`
@@ -65,6 +65,7 @@ export function toSchoolSummary(raw: unknown, destinationSlug = '', flagBase?: s
     country: toCountry(source.country, flagBase),
     destinationSlug,
     formationCount: list(source, 'formations').filter((entry) => str(asRecord(entry), 'title') !== '').length,
+    excerpt: plainText(source.presentation, 180),
     foundedYear: optionalNum(source, 'founded_year'),
     studentCount: optionalNum(source, 'student_count'),
   }

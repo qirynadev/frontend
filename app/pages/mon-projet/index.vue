@@ -13,6 +13,7 @@
  */
 import type { ProjetBadgeTone } from '~/core/contracts/projet'
 import { NuxtLink } from '#components'
+import DesktopMonProjet from '~/desktop-pages/mon-projet.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -55,6 +56,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
+  <div class="shell:hidden">
   <PageState
     :loading="isInitialLoading"
     :error="apiError"
@@ -177,4 +179,15 @@ usePageSeo(() => ({
       </div>
     </div>
   </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopMonProjet
+      :accompagnements="accompagnements"
+      :using-mock-only="usingMockOnly"
+      :loading="!!isInitialLoading"
+      :error="apiError"
+      :on-retry="() => refresh()"
+    />
+  </div>
 </template>
