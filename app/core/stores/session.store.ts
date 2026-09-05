@@ -26,6 +26,20 @@ export const useSessionStore = defineStore('session', () => {
   const pendingPayment = ref(false)
   /** `false` tant que l'amorçage n'a pas eu lieu — distingue « déconnecté » de « pas encore su ». */
   const isResolved = ref(false)
+  /**
+   * `true` si le dernier `hydrate()` a échoué **techniquement** (réseau,
+   * back-office indisponible) plutôt que de résoudre proprement.
+   *
+   * La distinction compte : `GET /session` (`session.get.ts`, back-office)
+   * répond `null` — jamais une erreur — quand personne n'est simplement
+   * connecté. Donc toute exception ici n'est **jamais** une déconnexion
+   * confirmée, seulement un aléa. Avant ce correctif, `hydrate()` traitait les
+   * deux cas pareil (`apply(null)`) : un simple timeout réseau au retour de
+   * Stripe pouvait afficher un utilisateur pourtant bien connecté comme
+   * déconnecté, et `middleware/auth.ts` le renvoyait vers `/connexion` pour
+   * rien — repéré le 2026-09-05 sur des retours de paiement mobile.
+   */
+  const hydrateFailed = ref(false)
 
   const isAuthenticated = computed(() => user.value !== null)
   /** Un compte non confirmé existe, mais ne peut pas payer. */
@@ -35,6 +49,7 @@ export const useSessionStore = defineStore('session', () => {
     user.value = outcome?.user ?? null
     pendingPayment.value = outcome?.pendingPayment ?? false
     isResolved.value = true
+    hydrateFailed.value = false
   }
 
   /** Amorçage. Sans effet si la session est déjà résolue, sauf `force`. */
@@ -44,9 +59,13 @@ export const useSessionStore = defineStore('session', () => {
       apply(await authRepo.current(locale))
     }
     catch {
-      // Une panne du BFF ne doit pas bloquer le rendu d'une page publique :
-      // on considère l'utilisateur déconnecté et on laisse la page s'afficher.
-      apply(null)
+      // Échec technique, pas une déconnexion confirmée (voir `hydrateFailed`
+      // ci-dessus) : on ne touche pas à `user`, pour ne pas écraser une
+      // session par ailleurs valide (cas `force`, ré-amorçage après un aléa).
+      // Au tout premier amorçage, `user` reste à `null` — son état initial —
+      // donc une page publique s'affiche quand même, comme avant.
+      isResolved.value = true
+      hydrateFailed.value = true
     }
   }
 
@@ -64,5 +83,5 @@ export const useSessionStore = defineStore('session', () => {
     apply(null)
   }
 
-  return { user, pendingPayment, isResolved, isAuthenticated, isActivated, apply, hydrate, login, logout }
+  return { user, pendingPayment, isResolved, hydrateFailed, isAuthenticated, isActivated, apply, hydrate, login, logout }
 })
