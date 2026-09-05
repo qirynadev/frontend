@@ -395,13 +395,7 @@ useSchoolSchemaOrg(school)
             </button>
           </div>
 
-          <div
-            :class="[
-              'col-start-1 row-start-1 w-full',
-              activeTab === 'points' ? 'visible' : 'invisible pointer-events-none',
-            ]"
-            :aria-hidden="activeTab !== 'points'"
-          >
+          <div v-show="activeTab === 'points'" class="w-full">
             <!-- Vide plutôt qu'un message d'attente : pas toutes les écoles n'ont
                  de contenu "Points forts" côté API, ce n'est pas une absence à
                  signaler comme les autres onglets (présentation, formations). -->
