@@ -118,6 +118,27 @@ export const icons = {
   'ed-tab-points': {
     body: '<path d="M12 2.25 14.4 8.7l6.9.6-5.25 4.5 1.5 6.75L12 17.7l-5.55 2.85 1.5-6.75-5.25-4.5 6.9-.6L12 2.25Z"/>',
   },
+
+  // ─── Visioconférence (barre de contrôle `VisioCallRoom.vue`) ────
+  mic: {
+    body: '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4M8 23h8"/>',
+  },
+  'mic-off': {
+    body: '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4M8 23h8"/><path d="M3 3l18 18"/>',
+  },
+  'camera-off': {
+    body: '<rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3v9l-6-3z"/><path d="M3 3l18 18"/>',
+  },
+  pencil: {
+    body: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  },
+  expand: {
+    body: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
+  },
+  /** Combiné pivoté à 135° (transform posé par QIcon) : lecture « fin d'appel ». */
+  'phone-hangup': {
+    body: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" transform="rotate(135 12 12)"/>',
+  },
 } as const satisfies Record<string, IconDefinition>
 
 export type IconName = keyof typeof icons

@@ -588,29 +588,64 @@ onBeforeUnmount(() => {
 
     <div v-if="inSession" class="fixed bottom-8 z-50 flex w-full items-center justify-center px-8">
       <div class="mx-auto flex flex-wrap items-center justify-center gap-8 rounded-xl bg-black/50 p-12">
-        <button type="button" class="rounded-full bg-white px-14 py-10 text-xs font-semibold text-black shadow" @click="toggleVideo">
-          {{ videoMuted ? t('videoCall.cameraOff') : t('videoCall.cameraOn') }}
+        <button
+          type="button"
+          class="flex size-44 items-center justify-center rounded-full bg-white text-black shadow"
+          :aria-label="videoMuted ? t('videoCall.cameraOff') : t('videoCall.cameraOn')"
+          @click="toggleVideo"
+        >
+          <QIcon :name="videoMuted ? 'camera-off' : 'video'" :size="20" />
         </button>
-        <button type="button" class="rounded-full bg-white px-14 py-10 text-xs font-semibold text-black shadow" @click="toggleAudio">
-          {{ audioMuted ? t('videoCall.micOff') : t('videoCall.micOn') }}
+        <button
+          type="button"
+          class="flex size-44 items-center justify-center rounded-full bg-white text-black shadow"
+          :aria-label="audioMuted ? t('videoCall.micOff') : t('videoCall.micOn')"
+          @click="toggleAudio"
+        >
+          <QIcon :name="audioMuted ? 'mic-off' : 'mic'" :size="20" />
         </button>
-        <button type="button" class="rounded-full bg-white px-14 py-10 text-xs font-semibold text-black shadow" @click="showReactionPicker = !showReactionPicker">
-          {{ t('videoCall.reactions') }}
+        <button
+          type="button"
+          class="flex size-44 items-center justify-center rounded-full bg-white text-black shadow"
+          :aria-label="t('videoCall.reactions')"
+          @click="showReactionPicker = !showReactionPicker"
+        >
+          <QIcon name="smile" :size="20" />
         </button>
-        <button type="button" class="rounded-full bg-white px-14 py-10 text-xs font-semibold text-black shadow" @click="openWhiteboard">
-          {{ t('videoCall.whiteboard') }}
+        <button
+          type="button"
+          class="flex size-44 items-center justify-center rounded-full bg-white text-black shadow"
+          :aria-label="t('videoCall.whiteboard')"
+          @click="openWhiteboard"
+        >
+          <QIcon name="pencil" :size="20" />
         </button>
-        <button type="button" class="relative rounded-full bg-white px-14 py-10 text-xs font-semibold text-black shadow" @click="toggleChat">
-          {{ t('videoCall.chat') }}
+        <button
+          type="button"
+          class="relative flex size-44 items-center justify-center rounded-full bg-white text-black shadow"
+          :aria-label="t('videoCall.chat')"
+          @click="toggleChat"
+        >
+          <QIcon name="message" :size="20" />
           <span v-if="unreadCount > 0 && !showChat" class="absolute -top-4 -right-4 flex size-16 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
             {{ unreadCount > 9 ? '9+' : unreadCount }}
           </span>
         </button>
-        <button type="button" class="rounded-full bg-white px-14 py-10 text-xs font-semibold text-black shadow" @click="toggleFullscreen">
-          {{ t('videoCall.fullscreen') }}
+        <button
+          type="button"
+          class="flex size-44 items-center justify-center rounded-full bg-white text-black shadow"
+          :aria-label="t('videoCall.fullscreen')"
+          @click="toggleFullscreen"
+        >
+          <QIcon name="expand" :size="20" />
         </button>
-        <button type="button" class="rounded-full bg-red-500 px-14 py-10 text-xs font-semibold text-white shadow" @click="leave">
-          {{ t('videoCall.leave') }}
+        <button
+          type="button"
+          class="flex size-44 items-center justify-center rounded-full bg-red-500 text-white shadow"
+          :aria-label="t('videoCall.leave')"
+          @click="leave"
+        >
+          <QIcon name="phone-hangup" :size="20" />
         </button>
       </div>
     </div>
