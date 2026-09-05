@@ -243,7 +243,6 @@ usePageSeo(() => ({
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.phone') }}</span>
               <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
-                <img :src="`${ICON}/ic-rp-flag.svg`" alt="" width="20" height="14" class="mr-8 block h-14 w-20 shrink-0">
                 <input
                   id="rp-phone"
                   v-model="phone"
