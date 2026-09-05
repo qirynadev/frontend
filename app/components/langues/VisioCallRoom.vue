@@ -367,6 +367,19 @@ async function start() {
     // eslint-disable-next-line no-console
     console.error('[VisioCallRoom] échec de connexion Zoom', error)
     callError.value = t('videoCall.connectError')
+
+    // `client.join()` a pu réussir avant l'échec d'une étape suivante
+    // (startAudio/startVideo/rendu) : sans ce nettoyage, l'apprenant reste
+    // « connecté » côté Zoom (visible par le professeur) alors que son propre
+    // écran affiche déjà l'erreur, sans moyen de sortir proprement de la session.
+    if (client) {
+      try {
+        await client.leave()
+      }
+      catch {
+        // Rien à faire de plus si la session est déjà close côté serveur.
+      }
+    }
   }
   finally {
     connecting.value = false
@@ -452,7 +465,7 @@ onBeforeUnmount(() => {
 
     <div v-if="callError" class="absolute inset-0 z-50 flex flex-col items-center justify-center gap-16 bg-black px-24 text-center">
       <p class="text-white">{{ callError }}</p>
-      <button type="button" class="rounded-xl bg-white px-20 py-10 text-sm font-semibold text-black" @click="emit('left')">
+      <button type="button" class="rounded-xl bg-white px-20 py-10 text-sm font-semibold text-black" @click="leave">
         {{ t('videoCall.backToSchedule') }}
       </button>
     </div>
