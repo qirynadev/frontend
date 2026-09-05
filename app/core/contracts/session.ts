@@ -10,6 +10,7 @@
  * routes Nitro déposent le jeton dans le cookie `httpOnly` et ne renvoient au
  * navigateur qu'un `AuthOutcome`, qui n'en contient pas.
  */
+import type { Country } from './common'
 
 export interface UserProfile {
   firstName: string
@@ -17,6 +18,9 @@ export interface UserProfile {
   photo: string | null
   phone: string | null
   city: string | null
+  /** ISO (`aaaa-mm-jj`), jamais `d/m/Y` — l'API renvoie/attend ce dernier, la conversion se fait à l'adaptation/l'appel. */
+  birthday: string | null
+  country: Country | null
 }
 
 export interface User {

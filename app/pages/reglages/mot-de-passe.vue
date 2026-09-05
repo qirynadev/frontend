@@ -12,18 +12,52 @@
  * | conseil | `.rm-tip` `min-height: 61px`, `padding: 8px 9px` |
  *
  * Les quatre règles et la jauge sont évaluées à la saisie, comme dans la
- * maquette. Le formulaire n'appelle aucun endpoint : le changement de mot de
- * passe n'est pas exposé par l'API (LOT-5.md). Le bouton reste donc inerte,
- * à brancher quand la route existera.
+ * maquette. `POST /user/update-password` (`authRepo.updatePassword`) : exige
+ * l'ancien mot de passe (vérifié côté back-office), 6 caractères minimum —
+ * la jauge/les 4 règles restent un encouragement à un mot de passe plus
+ * robuste, pas une contrainte bloquante côté API.
  */
+import { ApiError } from '~/core/http/errors'
+import { authRepo } from '~/core/repositories'
+
 definePageMeta({ middleware: 'auth' })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const localePath = useLocalePath()
 
 const current = ref('')
 const next = ref('')
 const confirm = ref('')
 const shown = ref<Record<string, boolean>>({ current: false, next: false, confirm: false })
+
+const saving = ref(false)
+const errorMessage = ref<string | null>(null)
+
+async function save() {
+  if (saving.value) return
+  errorMessage.value = null
+
+  if (current.value === '' || next.value === '') {
+    errorMessage.value = t('settingsPassword.errorIncomplete')
+    return
+  }
+  if (next.value !== confirm.value) {
+    errorMessage.value = t('settingsPassword.matchError')
+    return
+  }
+
+  saving.value = true
+  try {
+    await authRepo.updatePassword({ oldPassword: current.value, newPassword: next.value }, locale.value)
+    await navigateTo(localePath('/'))
+  }
+  catch (error) {
+    errorMessage.value = error instanceof ApiError ? error.message : t('settingsPassword.errorGeneric')
+  }
+  finally {
+    saving.value = false
+  }
+}
 
 /** Les quatre règles affichées sous la jauge. */
 const rules = computed(() => [
@@ -94,7 +128,7 @@ const fields = [
         </div>
       </aside>
 
-      <form class="rm-card mt-20 flex w-full flex-col rounded-xl bg-surface-card p-16 shadow-card box-border" @submit.prevent>
+      <form class="rm-card mt-20 flex w-full flex-col rounded-xl bg-surface-card p-16 shadow-card box-border" @submit.prevent="save">
         <label
           v-for="(field, index) in fields"
           :key="field.id"
@@ -192,11 +226,14 @@ const fields = [
           <p class="m-0 min-w-0 flex-1 text-sm leading-16 font-normal text-text">{{ $t('settingsPassword.tipText') }}</p>
         </aside>
 
+        <QAlert v-if="errorMessage" class="mt-20" tone="danger" :message="errorMessage" />
+
         <button
           type="submit"
-          class="rm-cta mt-20 flex w-full cursor-pointer items-center justify-center rounded-xl border-0 bg-rl-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white box-border"
+          :disabled="saving"
+          class="rm-cta mt-20 flex w-full cursor-pointer items-center justify-center rounded-xl border-0 bg-rl-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white box-border disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {{ $t('settingsPassword.save') }}
+          {{ saving ? $t('settingsPassword.saving') : $t('settingsPassword.save') }}
         </button>
       </form>
     </div>

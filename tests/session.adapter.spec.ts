@@ -74,6 +74,8 @@ describe('champ manquant', () => {
       photo: null,
       phone: null,
       city: null,
+      birthday: null,
+      country: null,
     })
   })
 

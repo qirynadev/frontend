@@ -10,31 +10,38 @@
  * | champs | tuile 46×46 + label 11px `rp-label` + input h-46 rayon 12 |
  * | danger | pastille 48 `rp-delete-bg` · chevron rouge |
  *
- * Pas d’API de mise à jour profil : préremplissage session + repli mock.
- * Doc : `docs/reglages-profil-mocks.md`.
+ * `POST /user/update-profile` (`authRepo.updateProfile`) : enregistre
+ * réellement en base. L'e-mail reste en lecture seule (champ non pris en
+ * charge par cet endpoint, jamais transmis) ; le pays est un identifiant
+ * réel (`lc_country_id`, `countryRepo`), plus un texte libre.
  */
-import { reglagesProfilMock } from '~/config/reglages-profil-mock'
+import { ApiError } from '~/core/http/errors'
+import { authRepo, countryRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 
 definePageMeta({ middleware: 'auth' })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const localePath = useLocalePath()
 const session = useSessionStore()
 
 const ICON = '/img/icons/reglages-profil'
 
-const firstName = ref('')
-const lastName = ref('')
-const email = ref('')
-const phone = ref('')
-const birthDate = ref('')
-const country = ref('')
-const city = ref('')
+const profile = session.user?.profile
+const firstName = ref(profile?.firstName ?? '')
+const lastName = ref(profile?.lastName ?? '')
+const phone = ref(profile?.phone ?? '')
+const birthDate = ref(profile?.birthday ?? '')
+const countryId = ref(profile?.country?.id ?? '')
+const city = ref(profile?.city ?? '')
+
+const { data: countries } = await useAsyncData('countries', () => countryRepo.list(locale.value), { watch: [locale] })
 
 const photoUrl = computed(() => session.user?.profile.photo ?? session.user?.avatar ?? null)
 
-/** Aperçu local après sélection (pas d’API upload). */
+/** Aperçu local après sélection ; le fichier réel part avec l'enregistrement. */
 const localPhoto = ref<string | null>(null)
+const selectedPhoto = ref<File | null>(null)
 const displayPhoto = computed(() => localPhoto.value ?? photoUrl.value)
 
 const fileInput = useTemplateRef<HTMLInputElement>('fileInput')
@@ -49,6 +56,7 @@ function onPhotoSelected(event: Event) {
   if (!file || !file.type.startsWith('image/')) return
   if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
   localPhoto.value = URL.createObjectURL(file)
+  selectedPhoto.value = file
   input.value = ''
 }
 
@@ -56,40 +64,33 @@ onBeforeUnmount(() => {
   if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
 })
 
-onMounted(() => {
-  const user = session.user
-  const profile = user?.profile
-  firstName.value = profile?.firstName || reglagesProfilMock.firstName
-  lastName.value = profile?.lastName || reglagesProfilMock.lastName
-  email.value = user?.email || reglagesProfilMock.email
-  phone.value = profile?.phone || reglagesProfilMock.phone
-  birthDate.value = reglagesProfilMock.birthDate
-  country.value = reglagesProfilMock.country
-  city.value = profile?.city || reglagesProfilMock.city
-})
+const saving = ref(false)
+const errorMessage = ref<string | null>(null)
 
-type FieldIcon = 'person' | 'email' | 'phone' | 'calendar' | 'pin' | 'city'
-
-interface Field {
-  id: string
-  labelKey: string
-  model: Ref<string>
-  icon: FieldIcon
-  /** Affiche le drapeau FR dans l’input (téléphone). */
-  flag?: boolean
-  autocomplete?: string
-  inputType?: string
+async function save() {
+  if (saving.value) return
+  errorMessage.value = null
+  saving.value = true
+  try {
+    const updated = await authRepo.updateProfile({
+      firstName: firstName.value,
+      lastName: lastName.value,
+      phone: phone.value,
+      countryId: countryId.value,
+      city: city.value || undefined,
+      birthday: birthDate.value || null,
+      photo: selectedPhoto.value,
+    }, locale.value)
+    session.apply({ user: updated, pendingPayment: session.pendingPayment })
+    await navigateTo(localePath('/'))
+  }
+  catch (error) {
+    errorMessage.value = error instanceof ApiError ? error.message : t('settingsPersonal.saveError')
+  }
+  finally {
+    saving.value = false
+  }
 }
-
-const fields = computed<Field[]>(() => [
-  { id: 'firstName', labelKey: 'settingsPersonal.firstName', model: firstName, icon: 'person', autocomplete: 'given-name' },
-  { id: 'lastName', labelKey: 'settingsPersonal.lastName', model: lastName, icon: 'person', autocomplete: 'family-name' },
-  { id: 'email', labelKey: 'settingsPersonal.email', model: email, icon: 'email', autocomplete: 'email', inputType: 'email' },
-  { id: 'phone', labelKey: 'settingsPersonal.phone', model: phone, icon: 'phone', flag: true, autocomplete: 'tel', inputType: 'tel' },
-  { id: 'birthDate', labelKey: 'settingsPersonal.birthDate', model: birthDate, icon: 'calendar' },
-  { id: 'country', labelKey: 'settingsPersonal.country', model: country, icon: 'pin', autocomplete: 'country-name' },
-  { id: 'city', labelKey: 'settingsPersonal.city', model: city, icon: 'city', autocomplete: 'address-level2' },
-])
 
 usePageSeo(() => ({
   title: t('settingsPersonal.seoTitle'),
@@ -181,47 +182,125 @@ usePageSeo(() => ({
         </h2>
 
         <div class="flex w-full flex-col gap-16">
-          <label
-            v-for="field in fields"
-            :key="field.id"
-            class="flex w-full items-end gap-11"
-            :for="`rp-${field.id}`"
-          >
-            <!-- Prénom / nom : tuile CSS + glyphe ; autres : tuile SVG Figma -->
-            <span
-              v-if="field.icon === 'person'"
-              class="flex size-46 shrink-0 items-center justify-center rounded-[12px] bg-rp-tile-bg"
-              aria-hidden="true"
-            >
+          <!-- Prénom -->
+          <label class="flex w-full items-end gap-11" for="rp-firstName">
+            <span class="flex size-46 shrink-0 items-center justify-center rounded-[12px] bg-rp-tile-bg" aria-hidden="true">
               <img :src="`${ICON}/ic-rp-person.svg`" alt="" width="20" height="19" class="block">
             </span>
-            <img
-              v-else
-              :src="`${ICON}/ic-rp-${field.icon}-tile.svg`"
-              alt=""
-              width="46"
-              height="46"
-              class="block size-46 shrink-0"
-            >
-
             <span class="flex min-w-0 flex-1 flex-col items-start">
-              <span class="text-md leading-[16.5px] font-medium text-rp-label">
-                {{ $t(field.labelKey) }}
-              </span>
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.firstName') }}</span>
               <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
-                <img
-                  v-if="field.flag"
-                  :src="`${ICON}/ic-rp-flag.svg`"
-                  alt=""
-                  width="20"
-                  height="14"
-                  class="mr-8 block h-14 w-20 shrink-0"
-                >
                 <input
-                  :id="`rp-${field.id}`"
-                  v-model="field.model.value"
-                  :type="field.inputType || 'text'"
-                  :autocomplete="field.autocomplete"
+                  id="rp-firstName"
+                  v-model="firstName"
+                  type="text"
+                  autocomplete="given-name"
+                  class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+                >
+              </span>
+            </span>
+          </label>
+
+          <!-- Nom -->
+          <label class="flex w-full items-end gap-11" for="rp-lastName">
+            <span class="flex size-46 shrink-0 items-center justify-center rounded-[12px] bg-rp-tile-bg" aria-hidden="true">
+              <img :src="`${ICON}/ic-rp-person.svg`" alt="" width="20" height="19" class="block">
+            </span>
+            <span class="flex min-w-0 flex-1 flex-col items-start">
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.lastName') }}</span>
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+                <input
+                  id="rp-lastName"
+                  v-model="lastName"
+                  type="text"
+                  autocomplete="family-name"
+                  class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+                >
+              </span>
+            </span>
+          </label>
+
+          <!-- E-mail : lecture seule, l'API ne prend pas en charge son changement ici -->
+          <label class="flex w-full items-end gap-11" for="rp-email">
+            <img :src="`${ICON}/ic-rp-email-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex min-w-0 flex-1 flex-col items-start">
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.email') }}</span>
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-2 py-12 pr-40 pl-12">
+                <input
+                  id="rp-email"
+                  :value="session.user?.email"
+                  type="email"
+                  disabled
+                  class="min-w-0 flex-1 cursor-not-allowed border-0 bg-transparent p-0 text-lg leading-20 font-medium text-muted-2 outline-0"
+                >
+              </span>
+            </span>
+          </label>
+
+          <!-- Téléphone -->
+          <label class="flex w-full items-end gap-11" for="rp-phone">
+            <img :src="`${ICON}/ic-rp-phone-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex min-w-0 flex-1 flex-col items-start">
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.phone') }}</span>
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+                <img :src="`${ICON}/ic-rp-flag.svg`" alt="" width="20" height="14" class="mr-8 block h-14 w-20 shrink-0">
+                <input
+                  id="rp-phone"
+                  v-model="phone"
+                  type="tel"
+                  autocomplete="tel"
+                  class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+                >
+              </span>
+            </span>
+          </label>
+
+          <!-- Date de naissance -->
+          <label class="flex w-full items-end gap-11" for="rp-birthDate">
+            <img :src="`${ICON}/ic-rp-calendar-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex min-w-0 flex-1 flex-col items-start">
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.birthDate') }}</span>
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+                <input
+                  id="rp-birthDate"
+                  v-model="birthDate"
+                  type="date"
+                  class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+                >
+              </span>
+            </span>
+          </label>
+
+          <!-- Pays : identifiant réel (lc_country_id), pas un texte libre -->
+          <label class="flex w-full items-end gap-11" for="rp-country">
+            <img :src="`${ICON}/ic-rp-pin-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex min-w-0 flex-1 flex-col items-start">
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.country') }}</span>
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+                <select
+                  id="rp-country"
+                  v-model="countryId"
+                  autocomplete="country-name"
+                  class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+                >
+                  <option value="" disabled>{{ $t('settingsPersonal.countryPlaceholder') }}</option>
+                  <option v-for="c in countries" :key="c.id ?? ''" :value="c.id">{{ c.name }}</option>
+                </select>
+              </span>
+            </span>
+          </label>
+
+          <!-- Ville -->
+          <label class="flex w-full items-end gap-11" for="rp-city">
+            <img :src="`${ICON}/ic-rp-city-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex min-w-0 flex-1 flex-col items-start">
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.city') }}</span>
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+                <input
+                  id="rp-city"
+                  v-model="city"
+                  type="text"
+                  autocomplete="address-level2"
                   class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
                 >
               </span>
@@ -229,6 +308,17 @@ usePageSeo(() => ({
           </label>
         </div>
       </section>
+
+      <QAlert v-if="errorMessage" tone="danger" :message="errorMessage" />
+
+      <button
+        type="button"
+        :disabled="saving"
+        class="flex w-full cursor-pointer items-center justify-center rounded-xl border-0 bg-rl-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+        @click="save"
+      >
+        {{ saving ? $t('settingsPersonal.saving') : $t('settingsPersonal.save') }}
+      </button>
 
       <!-- Supprimer mon compte -->
       <button

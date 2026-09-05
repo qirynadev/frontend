@@ -1,5 +1,6 @@
 import type { Session, SocialLinkRequest, SocialProvider, User, UserProfile } from '../contracts'
 import { asArray, asRecord, bool, optionalStr, str } from './primitives'
+import { toCountry } from './common.adapter'
 
 /**
  * Ce que l'adaptation d'une authentification tierce produit **côté serveur**.
@@ -42,12 +43,18 @@ function toDisplayName(source: Record<string, unknown>, profile: UserProfile, em
 
 export function toUserProfile(raw: unknown): UserProfile {
   const source = asRecord(raw)
+  const birthday = str(source, 'birthday')
   return {
     firstName: str(source, 'first_name'),
     lastName: str(source, 'last_name'),
     photo: optionalStr(source, 'photo'),
     phone: optionalStr(source, 'phone'),
     city: optionalStr(source, 'city'),
+    // L'API renvoie parfois un horodatage complet (`aaaa-mm-jj HH:MM:SS`) —
+    // seule la date intéresse l'input HTML `date`, qui n'accepte que les 10
+    // premiers caractères.
+    birthday: birthday === '' ? null : birthday.slice(0, 10),
+    country: source.country ? toCountry(source.country) : null,
   }
 }
 

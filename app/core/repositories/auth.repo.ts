@@ -1,5 +1,18 @@
-import type { AuthOutcome, SocialAuthOutcome, SocialProvider } from '../contracts'
+import type { AuthOutcome, SocialAuthOutcome, SocialProvider, User } from '../contracts'
 import { bffFetch } from '../http/client'
+
+/** `reglages/informations-personnelles.vue` — champs de `POST /user/update-profile`. */
+export interface ProfileUpdateInput {
+  firstName: string
+  lastName: string
+  phone: string
+  /** Identifiant back-office (`Country.id`), pas le nom — voir `countryRepo`. */
+  countryId: string
+  city?: string
+  /** ISO (`aaaa-mm-jj`) — converti en `d/m/Y` (format attendu par l'API) avant l'envoi. */
+  birthday?: string | null
+  photo?: File | null
+}
 
 /**
  * Authentification.
@@ -85,5 +98,35 @@ export const authRepo = {
     locale?: string,
   ): Promise<AuthOutcome | null> {
     return bffFetch<AuthOutcome | null>('/account/reset-password', { method: 'POST', body: input, locale })
+  },
+
+  /**
+   * Met à jour les informations personnelles du compte connecté.
+   *
+   * `multipart/form-data` inconditionnel (pas seulement quand une photo est
+   * choisie) : `update-profile.post.ts` sait ignorer un champ `photo` vide,
+   * plus simple que deux chemins d'appel selon la présence d'un fichier.
+   */
+  updateProfile(input: ProfileUpdateInput, locale?: string): Promise<User> {
+    const form = new FormData()
+    form.append('first_name', input.firstName)
+    form.append('last_name', input.lastName)
+    form.append('phone', input.phone)
+    form.append('lc_country_id', input.countryId)
+    if (input.city) form.append('city', input.city)
+    // `d/m/Y` : format exigé par la validation Laravel (`date_format:d/m/Y`),
+    // pas l'ISO natif de l'input HTML `date`.
+    if (input.birthday) {
+      const [year, month, day] = input.birthday.split('-')
+      if (year && month && day) form.append('birthday', `${day}/${month}/${year}`)
+    }
+    if (input.photo) form.append('photo', input.photo)
+
+    return bffFetch<User>('/user/update-profile', { method: 'POST', body: form, locale })
+  },
+
+  /** Erreur `ApiError` (kind `unknown`, statut 400) si l'ancien mot de passe est faux. */
+  updatePassword(input: { oldPassword: string; newPassword: string }, locale?: string): Promise<{ ok: true }> {
+    return bffFetch<{ ok: true }>('/user/update-password', { method: 'POST', body: input, locale })
   },
 }
