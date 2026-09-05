@@ -85,7 +85,7 @@ usePageSeo(() => ({
           role="option"
           :aria-selected="selected === goal.id"
           :class="[
-            'flex w-full cursor-pointer items-center gap-12 rounded-xl border bg-surface-card p-17 text-left',
+            'flex w-full cursor-pointer items-center gap-12 rounded-xl border bg-white p-17 text-left',
             'max-xs:items-start max-xs:gap-10 max-xs:px-12 max-xs:py-14',
             selected === goal.id ? 'border-goal-selected' : 'border-goal-border',
           ]"
@@ -106,7 +106,7 @@ usePageSeo(() => ({
                 >{{ $t(goal.badgeKey) }}</span>
               </span>
               <!-- 12,5px : valeur de la maquette, sans équivalent dans l'échelle. -->
-              <span class="pt-2 pr-8 text-[12.5px] leading-[17.188px] text-text max-xs:pr-0 max-xs:text-base max-xs:leading-16">
+              <span class="pt-2 pr-8 text-[12.5px] leading-[17.188px] text-black max-xs:pr-0 max-xs:text-base max-xs:leading-16">
                 {{ $t(goal.descriptionKey, { language: course?.name ?? '' }) }}
               </span>
             </span>
@@ -119,7 +119,7 @@ usePageSeo(() => ({
               'max-xs:mt-2',
               selected === goal.id
                 ? 'border-2 border-goal-check bg-goal-check p-2'
-                : 'border border-goal-radio bg-surface-card',
+                : 'border border-goal-radio bg-white',
             ]"
           >
             <QIcon v-if="selected === goal.id" name="ic-lang-check" :size="11" />

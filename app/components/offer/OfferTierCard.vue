@@ -50,7 +50,7 @@ const accent = computed(() => {
       card: 'border-tier-border',
       name: 'text-tier-2',
       price: 'text-tier-2',
-      button: 'border border-tier-2 bg-surface-card text-tier-2',
+      button: 'border border-tier-2 bg-white text-tier-2',
       icon: 'ic-oo-feature-1',
       check: 'ic-of-check-purple',
       ribbonBg: 'bg-tier-2',
@@ -61,7 +61,7 @@ const accent = computed(() => {
       card: 'border-tier-3-border',
       name: 'text-tier-3',
       price: 'text-tier-3',
-      button: 'border border-tier-3 bg-surface-card text-tier-3',
+      button: 'border border-tier-3 bg-white text-tier-3',
       icon: 'ic-formule-everest',
       check: 'ic-of-check-red',
       ribbonBg: 'bg-tier-3',
@@ -72,7 +72,7 @@ const accent = computed(() => {
       card: 'border-tier-border',
       name: 'text-tier-1',
       price: 'text-tier-1-price',
-      button: 'border border-tier-1-line bg-surface-card text-tier-1-line',
+      button: 'border border-tier-1-line bg-white text-tier-1-line',
       icon: 'ic-formule-kili',
       check: 'ic-of-check-green',
       ribbonBg: 'bg-tier-1',
@@ -82,7 +82,7 @@ const accent = computed(() => {
     card: 'border-tier-border',
     name: 'text-tier-2',
     price: 'text-tier-2',
-    button: 'border border-tier-2 bg-surface-card text-tier-2',
+    button: 'border border-tier-2 bg-white text-tier-2',
     icon: 'ic-formule-acon',
     check: 'ic-of-check-purple',
     ribbonBg: 'bg-tier-2',
@@ -118,7 +118,7 @@ const ribbonLabel = computed(() => {
 <template>
   <article
     :class="[
-      'relative box-border flex w-full min-w-0 flex-col gap-8 rounded-2xl border bg-surface-card px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
+      'relative box-border flex w-full min-w-0 flex-col gap-8 rounded-2xl border bg-white px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
       asStack ? 'overflow-visible pt-26' : 'shrink-0 basis-full pt-22 max-2xs:pt-18',
       accent.card,
     ]"

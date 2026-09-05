@@ -171,7 +171,7 @@ usePageSeo(() => ({
         <article
           v-for="teacher in pagedTeachers"
           :key="teacher.id"
-          class="box-border flex w-full gap-14 rounded-[10px] border border-[#f3f4f6] bg-surface-card p-15 shadow-[0_2px_6px_rgba(0,0,0,0.03)]"
+          class="box-border flex w-full gap-14 rounded-[10px] border border-[#f3f4f6] bg-white p-15 shadow-[0_2px_6px_rgba(0,0,0,0.03)]"
         >
           <div class="h-113 w-75 shrink-0 overflow-hidden rounded-[10px] bg-[#f3f4f6]">
             <img

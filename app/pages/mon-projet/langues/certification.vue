@@ -72,7 +72,7 @@ usePageSeo(() => ({
           <span class="flex size-32 items-center justify-center rounded-full bg-[#fb027d]">
             <img src="/img/icons/mpl-langue/check.svg" alt="" width="16" height="16" class="block size-16">
           </span>
-          <p class="m-0 whitespace-pre-line text-center text-[10px] leading-[12.5px] font-normal text-text">
+          <p class="m-0 whitespace-pre-line text-center text-[10px] leading-[12.5px] font-normal text-black">
             {{ $t(step.labelKey) }}
           </p>
         </div>
@@ -95,7 +95,7 @@ usePageSeo(() => ({
         </div>
       </div>
       <div class="flex gap-12">
-        <span class="inline-flex min-w-0 flex-1 items-center gap-6 rounded-lg border border-[#ffe5ee] bg-surface-card px-11 py-7 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+        <span class="inline-flex min-w-0 flex-1 items-center gap-6 rounded-lg border border-[#ffe5ee] bg-white px-11 py-7 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <img src="/img/icons/ic-mpo-report.svg" alt="" width="16" height="16" class="block size-16 shrink-0">
           <span class="text-[10px] leading-15 font-semibold text-[#0a142f]">{{ $t('languageProject.certReportBadge') }}</span>
         </span>
@@ -123,7 +123,7 @@ usePageSeo(() => ({
           </p>
           <button
             type="button"
-            class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-surface-card px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
+            class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
           >
             <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
             <span>{{ $t('languageProject.certRetakeTest') }}</span>

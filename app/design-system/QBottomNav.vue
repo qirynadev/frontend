@@ -37,7 +37,7 @@ withDefaults(
   <nav
     :aria-label="ariaLabel ?? $t('ds.nav.main')"
     :class="[
-      'flex items-center justify-center gap-8 rounded-xl bg-surface-card px-8 py-10 shadow-card',
+      'flex items-center justify-center gap-8 rounded-xl bg-white px-8 py-10 shadow-card',
       inline
         ? 'w-full'
         : 'fixed bottom-nav-bottom left-1/2 z-50 w-[calc(100%-var(--spacing-nav-inset)*2)] max-w-[calc(var(--container-shell)-var(--spacing-nav-inset)*2)] -translate-x-1/2',

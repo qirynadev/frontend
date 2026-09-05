@@ -107,7 +107,7 @@ usePageSeo(() => ({
       <button
         v-if="gate !== 'loading'"
         type="button"
-        class="mt-8 rounded-xl bg-surface-card px-20 py-10 text-sm font-semibold text-text"
+        class="mt-8 rounded-xl bg-white px-20 py-10 text-sm font-semibold text-black"
         @click="backToSchedule"
       >
         {{ t('videoCall.backToSchedule') }}

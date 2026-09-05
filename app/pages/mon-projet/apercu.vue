@@ -128,7 +128,7 @@ usePageSeo(() => ({
         </section>
 
         <!-- Aperçu général -->
-        <section class="projet-apercu flex w-full flex-col gap-16 rounded-xl border border-surface-border bg-surface-card p-15 shadow-card" aria-labelledby="apercu-title">
+        <section class="projet-apercu flex w-full flex-col gap-16 rounded-xl border border-surface-border bg-white p-15 shadow-card" aria-labelledby="apercu-title">
           <div class="projet-apercu-head flex w-full items-center justify-between">
             <h2 id="apercu-title" class="m-0 text-xl leading-16 font-semibold text-text">
               {{ $t('projectOverview.overviewTitle') }}
@@ -251,7 +251,7 @@ usePageSeo(() => ({
 
           <div class="projet-service-list flex w-full flex-col gap-10">
             <!-- 1. Orientation Pack Essentiel (Terminé) -->
-            <article class="projet-service-card projet-service-card--h105 flex h-105 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
+            <article class="projet-service-card projet-service-card--h105 flex h-105 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
                   <img src="/img/icons/ic-service-orientation-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
@@ -278,7 +278,7 @@ usePageSeo(() => ({
             </article>
 
             <!-- 2. Orientation Premium En cours (70% complété) -->
-            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
+            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon projet-service-icon--premium relative flex size-44 shrink-0 items-center justify-center rounded-full bg-[#e9f0fe]">
                   <img src="/img/icons/ic-service-orientation-premium.svg" alt="" width="24" height="24" class="block size-24">
@@ -317,7 +317,7 @@ usePageSeo(() => ({
             </article>
 
             <!-- 3. Apprendre une langue (À venir) -->
-            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
+            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
                   <img src="/img/icons/ic-service-langue-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
@@ -351,7 +351,7 @@ usePageSeo(() => ({
             </article>
 
             <!-- 4. Trouver un logement (Commencer) -->
-            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
+            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
                   <img src="/img/icons/ic-service-logement-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">

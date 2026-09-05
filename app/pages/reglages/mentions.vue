@@ -66,7 +66,7 @@ usePageSeo(() => ({
         </div>
       </aside>
 
-      <section class="rml-card mt-20 w-full overflow-hidden rounded-xl border border-rml-card-border bg-surface-card box-border" :aria-label="$t('settingsLegal.cardLabel')">
+      <section class="rml-card mt-20 w-full overflow-hidden rounded-xl border border-rml-card-border bg-white box-border" :aria-label="$t('settingsLegal.cardLabel')">
         <component
           :is="doc.to ? NuxtLink : 'div'"
           v-for="(doc, index) in documents"
@@ -81,8 +81,8 @@ usePageSeo(() => ({
             <QIcon :name="doc.icon" :size="40" />
           </span>
           <span class="rml-row-copy flex min-w-0 flex-1 flex-col">
-            <span class="rml-row-title text-lg leading-[18.125px] font-medium text-text">{{ $t(doc.titleKey) }}</span>
-            <span class="rml-row-desc mt-2 text-sm leading-15 font-normal text-text">{{ $t(doc.descKey) }}</span>
+            <span class="rml-row-title text-lg leading-[18.125px] font-medium text-black">{{ $t(doc.titleKey) }}</span>
+            <span class="rml-row-desc mt-2 text-sm leading-15 font-normal text-black">{{ $t(doc.descKey) }}</span>
           </span>
           <img class="rml-row-chevron block size-20 shrink-0 opacity-55" src="/img/icons/ic-rg-chevron.svg" alt="" width="20" height="20">
         </component>
@@ -99,7 +99,7 @@ usePageSeo(() => ({
               <p class="rml-help-desc m-0 mt-4 text-xs leading-16 font-normal text-text">{{ $t('settingsLegal.helpDesc') }}</p>
             </div>
           </div>
-          <a href="#" class="rml-help-cta shrink-0 rounded-xl border border-primary-link bg-surface-card px-11 py-9 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline">
+          <a href="#" class="rml-help-cta shrink-0 rounded-xl border border-primary-link bg-white px-11 py-9 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline">
             {{ $t('settingsLegal.contactSupport') }}
           </a>
         </aside>

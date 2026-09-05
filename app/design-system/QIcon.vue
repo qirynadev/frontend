@@ -84,7 +84,7 @@ const isFilled = computed(() => icon.value?.style === 'fill')
     :aria-label="label"
     :role="label ? 'img' : undefined"
     focusable="false"
-    class="block shrink-0 text-text"
+    class="block shrink-0"
   ><use :href="`#icon-${name}`" /></svg>
 
   <img

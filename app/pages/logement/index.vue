@@ -83,7 +83,7 @@ usePageSeo(() => ({
           v-for="destination in destinations"
           :key="destination.slug"
           :to="localePath(`/logement/${destination.slug}/decouverte`)"
-          class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-surface-card px-7 pt-7 pb-10 text-left text-text no-underline shadow-card box-border"
+          class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-white px-7 pt-7 pb-10 text-left text-text no-underline shadow-card box-border"
         >
           <div class="relative h-112 w-full shrink-0">
             <NuxtImg

@@ -348,22 +348,22 @@ usePageSeo(() => ({
               </span>
               <span
                 v-else-if="step.status === 'current'"
-                class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-surface-card"
+                class="flex size-32 items-center justify-center rounded-full border border-[#fb027d] bg-white"
               >
                 <span class="text-[14px] leading-24 font-medium text-[#fb027d]">{{ step.id }}</span>
               </span>
               <span
                 v-else
-                class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-surface-card"
+                class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-white"
               >
                 <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
               </span>
               <p
                 :class="[
                   'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
-                  step.status === 'current' ? 'font-semibold text-text' : '',
+                  step.status === 'current' ? 'font-semibold text-black' : '',
                   step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
-                  step.status === 'done' ? 'font-normal text-text' : '',
+                  step.status === 'done' ? 'font-normal text-black' : '',
                 ]"
               >{{ $t(step.labelKey) }}</p>
             </component>
@@ -384,7 +384,7 @@ usePageSeo(() => ({
               <p class="m-0 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">{{ $t('languageProject.levelTestDesc') }}</p>
               <button
                 type="button"
-                class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-surface-card px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
+                class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
                 @click="completeLevelTest"
               >
                 <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
@@ -422,20 +422,20 @@ usePageSeo(() => ({
 
             <!-- Séparateur + bloc compteur décalés vers la gauche -->
             <div class="-ml-8 flex shrink-0 items-stretch gap-8">
-              <div class="w-px shrink-0 self-stretch bg-surface-card/20" aria-hidden="true" />
+              <div class="w-px shrink-0 self-stretch bg-white/20" aria-hidden="true" />
 
               <div class="flex flex-col items-center justify-center">
                 <p class="m-0 pb-6 text-[12px] leading-16 font-normal text-white">{{ $t('languageProject.startsIn') }}</p>
                 <div class="flex items-center gap-6">
-                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-surface-card">
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white">
                     <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.h }}</span>
                     <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitH') }}</span>
                   </div>
-                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-surface-card max-2xs:hidden">
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white max-2xs:hidden">
                     <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.m }}</span>
                     <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitMin') }}</span>
                   </div>
-                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-surface-card max-xs:hidden">
+                  <div class="flex size-40 flex-col items-center justify-center rounded-lg bg-white max-xs:hidden">
                     <span class="text-[16px] leading-20 font-bold text-[#fc037f]">{{ countdownParts.s }}</span>
                     <span class="text-[8px] leading-10 font-medium text-[#fc037f]">{{ $t('languageProject.unitS') }}</span>
                   </div>
@@ -443,7 +443,7 @@ usePageSeo(() => ({
                     type="button"
                     :disabled="!canJoinNext"
                     :class="[
-                      'inline-flex size-40 shrink-0 items-center justify-center rounded-full border-0 bg-surface-card p-0',
+                      'inline-flex size-40 shrink-0 items-center justify-center rounded-full border-0 bg-white p-0',
                       canJoinNext ? 'cursor-pointer' : 'cursor-not-allowed opacity-50',
                     ]"
                     :aria-label="$t('languageProject.connect')"
@@ -472,7 +472,7 @@ usePageSeo(() => ({
                 'flex h-full min-w-0 flex-1 cursor-pointer items-center justify-center gap-8 rounded-[5px] border-0',
                 activeTab === 'planned'
                   ? 'border-b border-[#fa007b] bg-[#fefefe] text-[#fa007a]'
-                  : 'bg-transparent text-text',
+                  : 'bg-transparent text-black',
               ]"
               @click="setTab('planned')"
             >
@@ -487,7 +487,7 @@ usePageSeo(() => ({
                 'flex h-full min-w-0 flex-1 cursor-pointer items-center justify-center gap-8 rounded-[5px] border-0',
                 activeTab === 'unplanned'
                   ? 'border-b border-[#4b32f9] bg-[#f5f4fd] text-[#4329f7]'
-                  : 'bg-transparent text-text',
+                  : 'bg-transparent text-black',
               ]"
               @click="setTab('unplanned')"
             >
@@ -514,7 +514,7 @@ usePageSeo(() => ({
               <article
                 v-for="card in pagedPlannedCards"
                 :key="card.id"
-                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-surface-card px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
+                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
               >
                 <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
                 <span class="relative size-44 shrink-0 overflow-hidden">
@@ -571,7 +571,7 @@ usePageSeo(() => ({
               <article
                 v-for="card in pagedUnplannedCards"
                 :key="card.id"
-                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-surface-card px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
+                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-white px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
               >
                 <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
                 <span class="relative size-44 shrink-0 overflow-hidden">

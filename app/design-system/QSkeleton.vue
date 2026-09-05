@@ -53,7 +53,7 @@ withDefaults(
       <span class="size-16 shrink-0 rounded-sm bg-border-soft" />
     </div>
 
-    <div v-else class="flex w-full flex-col gap-12 rounded-xl bg-surface-card p-17 shadow-card">
+    <div v-else class="flex w-full flex-col gap-12 rounded-xl bg-white p-17 shadow-card">
       <span class="w-full rounded-sm bg-border-soft" :style="{ height: `${height}px` }" />
       <span class="h-12 w-2/3 rounded-full bg-border-soft" />
       <span class="h-10 w-2/5 rounded-full bg-border-soft" />

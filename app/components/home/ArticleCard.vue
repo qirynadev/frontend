@@ -12,7 +12,7 @@ defineProps<{ article: Article }>()
 </script>
 
 <template>
-  <article class="flex w-322 shrink-0 items-center gap-16 rounded-xl bg-surface-card p-6 shadow-card">
+  <article class="flex w-322 shrink-0 items-center gap-16 rounded-xl bg-white p-6 shadow-card">
     <NuxtImg
       :src="article.image ?? '/img/home-article-thumb.webp'"
       alt=""

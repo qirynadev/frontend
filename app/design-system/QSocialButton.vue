@@ -52,7 +52,7 @@ const marks: Record<Provider, string> = {
     :disabled="disabled || loading"
     :aria-label="label ?? providerName[provider]"
     :class="[
-      'inline-flex w-full min-w-0 cursor-pointer items-center justify-center rounded-xl border border-border-slate bg-surface-card transition-colors duration-150 hover:bg-surface',
+      'inline-flex w-full min-w-0 cursor-pointer items-center justify-center rounded-xl border border-border-slate bg-white transition-colors duration-150 hover:bg-surface',
       // `icon-label` reprend `.social-btn--name` des écrans d'authentification,
       // resserrement compris (`@media (max-width: 360px)` de `app.css`), les
       // deux seuls écrans qui l'emploient s'accordant sur ces valeurs.

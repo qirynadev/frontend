@@ -11,21 +11,14 @@
  * | encart | `.rt-info` `min-height: 61px`, `padding: 8px 9px`, icône 44×44 |
  * | bouton | `.rt-cta` `margin-top: 28px`, `padding: 16px 24px`, fond `#4309fc` |
  *
- * Le choix est appliqué dès qu'il est enregistré (`useThemeStore`, cookie
- * `qiryna_theme`) : palette sombre générée dans `main.css`.
+ * Le choix n'est pas encore appliqué : l'application n'a pas de thème sombre.
+ * L'écran enregistre donc une préférence sans effet visible — c'est aussi ce
+ * que fait la maquette, dont le bouton ne pilote rien.
  *
  * Accessible sans connexion : préférence purement locale, aucun appel
  * authentifié ici.
- *
- * Retour systématique à l'accueil après enregistrement (demande du
- * 2026-09-04, valable pour tous les réglages qui appliquent réellement un
- * changement) — même geste que `reglages/langues.vue`.
  */
-import { useThemeStore } from '~/core/stores'
-
 const { t } = useI18n()
-const localePath = useLocalePath()
-const theme = useThemeStore()
 
 type ThemeId = 'clair' | 'sombre' | 'systeme'
 
@@ -35,13 +28,7 @@ const options: { id: ThemeId, titleKey: string, descKey: string, preview: string
   { id: 'systeme', titleKey: 'settingsTheme.systemTitle', descKey: 'settingsTheme.systemDesc', preview: '/img/rt-preview-systeme.webp', icon: 'ic-rt-system' },
 ]
 
-/** Initialisé sur la préférence déjà enregistrée, pas toujours "clair". */
-const chosen = ref<ThemeId>(theme.preference)
-
-async function save() {
-  theme.preference = chosen.value
-  await navigateTo(localePath('/'))
-}
+const chosen = ref<ThemeId>('clair')
 
 usePageSeo(() => ({
   title: t('settingsTheme.seoTitle'),
@@ -78,7 +65,7 @@ usePageSeo(() => ({
           :aria-checked="chosen === option.id"
           :class="[
             'rt-option flex w-full items-center gap-12 rounded-xl border p-17 text-left cursor-pointer box-border',
-            chosen === option.id ? 'is-selected border-rt-option-selected-border bg-rt-option-selected-bg' : 'border-rt-option-border bg-surface-card',
+            chosen === option.id ? 'is-selected border-rt-option-selected-border bg-rt-option-selected-bg' : 'border-rt-option-border bg-white',
           ]"
           @click="chosen = option.id"
         >
@@ -91,14 +78,14 @@ usePageSeo(() => ({
                 <QIcon :name="option.icon" :size="36" />
               </span>
               <span class="rt-option-copy flex min-w-0 flex-1 flex-col gap-10">
-                <span class="rt-option-title text-xl leading-[18.75px] font-semibold text-text">{{ $t(option.titleKey) }}</span>
+                <span class="rt-option-title text-xl leading-[18.75px] font-semibold text-black">{{ $t(option.titleKey) }}</span>
                 <span class="rt-option-desc text-base leading-[16.5px] font-normal text-rt-option-desc">{{ $t(option.descKey) }}</span>
               </span>
             </span>
           </span>
           <span
             :class="[
-              'rt-radio flex size-20 shrink-0 items-center justify-center rounded-full border bg-surface-card box-border',
+              'rt-radio flex size-20 shrink-0 items-center justify-center rounded-full border bg-white box-border',
               chosen === option.id ? 'border-rt-radio-selected-border' : 'border-rt-radio-border',
             ]"
             aria-hidden="true"
@@ -118,7 +105,6 @@ usePageSeo(() => ({
       <button
         type="button"
         class="rt-cta flex w-full cursor-pointer items-center justify-center rounded-xl border-0 bg-rl-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white box-border"
-        @click="save"
       >
         {{ $t('settingsTheme.save') }}
       </button>

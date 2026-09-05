@@ -67,7 +67,7 @@ usePageSeo(() => ({
       </div>
     </template>
 
-    <div class="page-mp flex flex-1 flex-col bg-surface-card">
+    <div class="page-mp flex flex-1 flex-col bg-white">
       <div class="mp-main flex w-full max-w-full flex-col gap-22 box-border">
         <AppTopBar :back="true" back-to="/" :gap="0" />
 
@@ -110,7 +110,7 @@ usePageSeo(() => ({
             :key="item.id"
             :to="item.hasOrder ? localePath(item.to) : undefined"
             :class="[
-              'mp-card flex w-full flex-col rounded-xl border border-mp-card-border bg-surface-card p-17 text-inherit no-underline box-border',
+              'mp-card flex w-full flex-col rounded-xl border border-mp-card-border bg-white p-17 text-inherit no-underline box-border',
               item.hasOrder ? '' : 'cursor-default',
             ]"
           >

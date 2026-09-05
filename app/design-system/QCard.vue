@@ -38,9 +38,9 @@ const paddingClass: Record<Padding, string> = {
 }
 
 const variantClass: Record<Variant, string> = {
-  elevated: 'bg-surface-card shadow-card',
-  outlined: 'bg-surface-card border border-border-soft',
-  flat: 'bg-surface-card',
+  elevated: 'bg-white shadow-card',
+  outlined: 'bg-white border border-border-soft',
+  flat: 'bg-white',
   tinted: '',
 }
 

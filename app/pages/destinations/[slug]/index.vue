@@ -140,7 +140,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
             v-for="area in areas"
             :key="area.id"
             :to="localePath(`/destinations/${destination.slug}/ecoles?domaine=${area.slug}`)"
-            class="box-border flex w-full items-center justify-between gap-4 rounded-xl border border-tier-border bg-surface-card py-17 px-11 text-text no-underline"
+            class="box-border flex w-full items-center justify-between gap-4 rounded-xl border border-tier-border bg-white py-17 px-11 text-text no-underline"
           >
             <div class="flex min-w-0 flex-1 items-center gap-10">
               <div

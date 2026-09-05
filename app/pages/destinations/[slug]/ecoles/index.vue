@@ -134,7 +134,7 @@ usePageSeo(() => ({
           type="button"
           :data-domaine="area.slug"
           class="box-border flex shrink-0 items-center justify-center gap-5 rounded-xl border py-12 px-8 max-2xs:px-6 text-text"
-          :class="selectedDomain === area.slug ? 'bg-le-chip-selected-bg border-le-chip-selected-border' : 'bg-surface-card border-le-chip-border shadow-le-chip'"
+          :class="selectedDomain === area.slug ? 'bg-le-chip-selected-bg border-le-chip-selected-border' : 'bg-white border-le-chip-border shadow-le-chip'"
           :style="{ flex: '0 0 calc((100% - 14px) / 3)', width: 'calc((100% - 14px) / 3)' }"
           @click="setDomain(area.slug)"
         >
@@ -161,7 +161,7 @@ usePageSeo(() => ({
 
       <button
         type="button"
-        class="flex size-24 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card p-0 shadow-xs"
+        class="flex size-24 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0 shadow-xs"
         :aria-label="$t('school.list.nextDomains')"
         @click="nextDomain"
       >
@@ -209,10 +209,10 @@ usePageSeo(() => ({
           v-for="school in schools"
           :key="school.id"
           :to="localePath(`/destinations/${slug}/ecoles/${school.slug}?domaine=${selectedDomain}`)"
-          class="box-border flex w-full items-center rounded-xl bg-surface-card p-10 text-inherit no-underline shadow-card"
+          class="box-border flex w-full items-center rounded-xl bg-white p-10 text-inherit no-underline shadow-card"
         >
           <!-- Logo 64×64 -->
-          <div class="box-border flex size-64 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-card p-4 shadow-xs">
+          <div class="box-border flex size-64 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-4 shadow-xs">
             <NuxtImg
               v-if="school.logo"
               :src="school.logo"

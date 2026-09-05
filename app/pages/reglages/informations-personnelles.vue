@@ -114,7 +114,7 @@ usePageSeo(() => ({
       </section>
 
       <!-- Photo de profil -->
-      <section class="rp-card box-border flex w-full flex-col rounded-[16px] border border-rp-card-border bg-surface-card px-20 py-16 shadow-rp-card">
+      <section class="rp-card box-border flex w-full flex-col rounded-[16px] border border-rp-card-border bg-white px-20 py-16 shadow-rp-card">
         <h2 class="m-0 text-exact-16 leading-24 font-semibold text-rp-input">
           {{ $t('settingsPersonal.photoTitle') }}
         </h2>
@@ -176,7 +176,7 @@ usePageSeo(() => ({
       </section>
 
       <!-- Informations -->
-      <section class="rp-card box-border flex w-full flex-col gap-20 rounded-[16px] border border-rp-card-border bg-surface-card p-20 shadow-rp-card">
+      <section class="rp-card box-border flex w-full flex-col gap-20 rounded-[16px] border border-rp-card-border bg-white p-20 shadow-rp-card">
         <h2 class="m-0 text-exact-16 leading-24 font-semibold text-text">
           {{ $t('settingsPersonal.infoTitle') }}
         </h2>
@@ -189,7 +189,7 @@ usePageSeo(() => ({
             </span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.firstName') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
                 <input
                   id="rp-firstName"
                   v-model="firstName"
@@ -208,7 +208,7 @@ usePageSeo(() => ({
             </span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.lastName') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
                 <input
                   id="rp-lastName"
                   v-model="lastName"
@@ -242,7 +242,7 @@ usePageSeo(() => ({
             <img :src="`${ICON}/ic-rp-phone-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.phone') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
                 <img :src="`${ICON}/ic-rp-flag.svg`" alt="" width="20" height="14" class="mr-8 block h-14 w-20 shrink-0">
                 <input
                   id="rp-phone"
@@ -260,7 +260,7 @@ usePageSeo(() => ({
             <img :src="`${ICON}/ic-rp-calendar-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.birthDate') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
                 <input
                   id="rp-birthDate"
                   v-model="birthDate"
@@ -276,7 +276,7 @@ usePageSeo(() => ({
             <img :src="`${ICON}/ic-rp-pin-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.country') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
                 <select
                   id="rp-country"
                   v-model="countryId"
@@ -295,7 +295,7 @@ usePageSeo(() => ({
             <img :src="`${ICON}/ic-rp-city-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.city') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
                 <input
                   id="rp-city"
                   v-model="city"
@@ -323,7 +323,7 @@ usePageSeo(() => ({
       <!-- Supprimer mon compte -->
       <button
         type="button"
-        class="rp-card box-border flex w-full cursor-pointer items-center rounded-[16px] border border-rp-card-border bg-surface-card p-20 text-left shadow-rp-card"
+        class="rp-card box-border flex w-full cursor-pointer items-center rounded-[16px] border border-rp-card-border bg-white p-20 text-left shadow-rp-card"
       >
         <span class="mr-16 flex size-48 shrink-0 items-center justify-center rounded-[12px] bg-rp-delete-bg" aria-hidden="true">
           <img :src="`${ICON}/ic-rp-trash.svg`" alt="" width="24" height="24" class="block size-24">
@@ -332,7 +332,7 @@ usePageSeo(() => ({
           <span class="block text-lg leading-20 font-semibold text-rp-input">
             {{ $t('settingsPersonal.deleteTitle') }}
           </span>
-          <span class="mt-2 block text-md leading-[13.75px] font-normal text-text">
+          <span class="mt-2 block text-md leading-[13.75px] font-normal text-black">
             {{ $t('settingsPersonal.deleteDesc') }}
           </span>
         </span>
