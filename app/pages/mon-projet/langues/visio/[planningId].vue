@@ -11,14 +11,22 @@
  * fin de la séance (même principe que `legacy`, fenêtre resserrée à la
  * demande du responsable le 2026-08-30) — la vraie session Zoom Video SDK est
  * montée par `VisioCallRoom` seulement dans cette fenêtre.
+ *
+ * `layout: false` : `default.vue` (shell mobile/desktop, 2026-09) monte les
+ * deux shells en parallèle et bascule leur affichage en CSS — donc son
+ * `<slot>`, et tout ce qu'il contient, est instancié deux fois. Pour la
+ * plupart des pages ça ne coûte qu'un appel API en double, mais ici ça
+ * montait `VisioCallRoom` deux fois : deux `client.join()` concurrents sur
+ * la même session Zoom, le second rejeté en `INVALID_OPERATION` /
+ * « duplicated operation » (5012) — l'apprenant tombait sur cette erreur
+ * pendant que le professeur le voyait bien connecté (le premier join avait
+ * réussi). Cet écran est déjà plein cadre et ne dépend d'aucun chrome de
+ * shell (topbar/nav) : un seul rendu, quel que soit le viewport.
  */
 import { planningRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 
-// `bottomNav: false` : la barre basse (position fixed) recouvrait la barre de
-// contrôle de l'appel (caméra/micro/quitter), elle-même fixée en bas de
-// l'écran — signalé en direct (2026-08-30) après un test réel sur stage.
-definePageMeta({ middleware: 'auth', bottomNav: false })
+definePageMeta({ middleware: 'auth', layout: false })
 
 const route = useRoute()
 const { t, locale } = useI18n()
