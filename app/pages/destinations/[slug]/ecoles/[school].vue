@@ -254,6 +254,8 @@ useSchoolSchemaOrg(school)
       <!-- Héros + badge (.ed-hero-block) -->
       <div class="relative mt-22 h-175 w-full shrink-0">
         <div class="relative h-140 w-full overflow-hidden rounded-xl bg-border-soft shadow-xs">
+          <!-- `preload`/`fetchPriority: high` : élément LCP de cette page, même
+               traitement que la bannière d'accueil (audit perf 2026-09-05). -->
           <NuxtImg
             v-if="school.image"
             :src="school.image"
@@ -262,6 +264,7 @@ useSchoolSchemaOrg(school)
             height="220"
             format="webp"
             sizes="100vw shell:720px"
+            :preload="{ fetchPriority: 'high' }"
             class="pointer-events-none absolute top-0 left-0 h-[105%] w-full max-w-none object-cover object-center"
           />
           <div v-else class="flex h-full w-full items-center justify-center">

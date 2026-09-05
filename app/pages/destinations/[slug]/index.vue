@@ -175,6 +175,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
                   width="32"
                   height="32"
                   format="webp"
+                  loading="lazy"
                   :class="[
                     'object-contain',
                     domainAreaVisual(area.slug).cardVariant === 'full' ? 'size-32' : 'size-44 max-w-none',
