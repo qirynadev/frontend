@@ -284,6 +284,8 @@ useSchoolSchemaOrg(school)
               width="78"
               height="78"
               format="webp"
+              fit="contain"
+              background="white"
               class="block size-78 object-contain object-center"
             />
             <div v-else class="box-border flex h-full w-full flex-col items-start justify-center gap-0 p-12 px-9 font-jakarta text-xs leading-[12.5px] font-medium tracking-[0.5px] text-white">

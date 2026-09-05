@@ -30,6 +30,8 @@ const localePath = useLocalePath()
             width="64"
             height="64"
             format="webp"
+            fit="contain"
+            background="white"
             loading="lazy"
             class="size-full object-contain p-6"
           />

@@ -215,6 +215,8 @@ const stats = [
                 width="128"
                 height="128"
                 format="webp"
+                fit="contain"
+                background="white"
                 class="max-h-full max-w-full object-contain"
               />
               <QIcon v-else name="building" :size="40" class="text-muted" />

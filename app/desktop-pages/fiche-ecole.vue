@@ -111,6 +111,8 @@ function similarLocation(item: SchoolSummary) {
               width="150"
               height="52"
               format="webp"
+              fit="contain"
+              background="white"
               class="max-h-52 max-w-150 object-contain"
             />
             <QIcon v-else name="building" :size="40" class="text-muted" />
@@ -236,6 +238,8 @@ function similarLocation(item: SchoolSummary) {
                 width="40"
                 height="40"
                 format="webp"
+                fit="contain"
+                background="white"
                 class="max-h-40 max-w-40 object-contain"
               />
               <QIcon v-else name="building" :size="20" class="text-muted" />
