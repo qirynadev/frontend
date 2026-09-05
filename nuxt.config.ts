@@ -9,6 +9,8 @@ const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.
  * TLS pendant que la connexion vers `stage.qiryna.com` reste inutilisée.
  */
 const mediaOrigin = new URL(apiBaseUrl).origin
+/** Même hôte, sans le protocole : requis par `image.domains` ci-dessous. */
+const mediaHost = new URL(apiBaseUrl).host
 /** Même variable que `i18n.baseUrl` plus bas — exposée aussi en `public` pour `robots.txt` (comparaison d'hôte). */
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com'
 
@@ -153,6 +155,20 @@ export default defineNuxtConfig({
 
   image: {
     format: ['webp'],
+    /**
+     * Sans cet hôte ici, `$img()` (`image.js` de `@nuxt/image`) laisse passer
+     * telles quelles toutes les URL d'un domaine non listé — silencieusement,
+     * sans erreur. C'était le cas de **toutes** les photos hébergées par le
+     * back-office (bannière d'accueil, logos, photos d'école) : `format`,
+     * `sizes`, `quality` déclarés partout dans le code n'avaient jamais
+     * d'effet dessus, elles partaient dans leur poids/format d'origine.
+     * Repéré le 5 septembre 2026 (audit perf PageSpeed Insights, LCP/Speed
+     * Index mobile en zone orange) en constatant que l'`<img>` du bandeau
+     * d'accueil pointait directement `admin.stage.qiryna.com`, jamais
+     * `/_ipx/...`. Seules les images de `public/` (locales) étaient donc
+     * jamais concernées par ce bug — elles n'ont pas besoin d'être listées ici.
+     */
+    domains: [mediaHost],
     // Points de rupture alignés sur le shell mobile puis le desktop (Lot 3).
     screens: {
       xs: 360,
@@ -184,11 +200,28 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'preconnect', href: mediaOrigin },
+        /**
+         * Chargé en asynchrone (`preload` + bascule `onload`) plutôt qu'en
+         * feuille de style classique : sans ça, cette requête Google Fonts
+         * bloque le premier rendu de **chaque** page le temps de l'aller-retour
+         * réseau, alors que `font-display: swap` (déjà présent dans l'URL)
+         * fait de toute façon apparaître le texte avec la police de repli
+         * avant bascule — cette technique retire juste le blocage du rendu,
+         * sans changer le résultat visuel. Relevé par l'audit perf du
+         * 5 septembre 2026 (FCP/LCP mobile en zone orange, PageSpeed Insights).
+         * `Plus Jakarta Sans` (700) retiré d'ici : seule la fiche école en a
+         * besoin (`.font-jakarta`, `[school].vue`), chargé là uniquement.
+         */
         {
-          // `Plus Jakarta Sans` (700 seul) : uniquement le prix de l'offre
-          // d'orientation (`.oo-price-value`), seul écran à en sortir.
+          rel: 'preload',
+          as: 'style',
+          href: 'https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap',
+        },
+        {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@700&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap',
+          media: 'print',
+          onload: "this.media='all'",
         },
       ],
     },

@@ -85,6 +85,10 @@ const articles = computed(() => {
  * l'en-tête `lang` — vérifié en direct : image différente entre `lang: fr` et
  * `lang: en`). Repli sur le visuel maquette (`pwa/assets/images/
  * home-banner.png`) tant qu'aucune diapositive n'existe.
+ *
+ * `preload` (`fetchPriority: 'high'`) sur son `NuxtImg` : c'est l'élément LCP
+ * de la page d'accueil — audit perf du 5 septembre 2026 (PageSpeed Insights
+ * mobile, LCP 3,6 s).
  */
 const bannerSrc = computed(() => home.value?.slides[0]?.image ?? '/img/home-banner.webp')
 
@@ -139,6 +143,7 @@ usePageSeo(() => ({
           height="342"
           format="webp"
           sizes="100vw shell:720px"
+          :preload="{ fetchPriority: 'high' }"
           class="block aspect-[1819/865] w-full rounded-xl object-cover"
         />
       </div>

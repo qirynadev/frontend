@@ -31,6 +31,20 @@ const destinationSlug = computed(() => String(route.params.slug ?? ''))
 const schoolSlug = computed(() => String(route.params.school ?? ''))
 const domaine = computed(() => String(route.query.domaine ?? 'architecture'))
 
+/**
+ * `Plus Jakarta Sans` (700) : seule cette fiche l'utilise (`.font-jakarta`,
+ * badge du héros) — chargée ici plutôt que globalement (`nuxt.config.ts`)
+ * pour ne pas alourdir le chargement de toutes les autres pages.
+ */
+useHead({
+  link: [
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700&display=swap',
+    },
+  ],
+})
+
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
   async () => {
