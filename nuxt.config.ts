@@ -201,27 +201,23 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'preconnect', href: mediaOrigin },
         /**
-         * Chargé en asynchrone (`preload` + bascule `onload`) plutôt qu'en
-         * feuille de style classique : sans ça, cette requête Google Fonts
-         * bloque le premier rendu de **chaque** page le temps de l'aller-retour
-         * réseau, alors que `font-display: swap` (déjà présent dans l'URL)
-         * fait de toute façon apparaître le texte avec la police de repli
-         * avant bascule — cette technique retire juste le blocage du rendu,
-         * sans changer le résultat visuel. Relevé par l'audit perf du
-         * 5 septembre 2026 (FCP/LCP mobile en zone orange, PageSpeed Insights).
-         * `Plus Jakarta Sans` (700) retiré d'ici : seule la fiche école en a
-         * besoin (`.font-jakarta`, `[school].vue`), chargé là uniquement.
+         * Feuille de style classique, bloquante — pas la technique
+         * `preload` + bascule `onload`/`media=print` tentée le 5 septembre
+         * (audit perf FCP/LCP) : Google Fonts renvoie pour la requête de
+         * préchargement une réponse dont les métriques de `Jost` diffèrent
+         * mesurablement de celles obtenues par une feuille de style classique
+         * (+6,5px sur « Votre avenir commence par », assez pour faire déborder
+         * le texte sur une ligne de plus dans la colonne étroite de
+         * `connexion.vue`/`inscription.vue`/`mot-de-passe.vue` — repéré en
+         * comparant précisément danube.qiryna.com à lab.qiryna.com le
+         * 6 septembre). Le gain de blocage de rendu ne vaut pas la régression
+         * visuelle. `Plus Jakarta Sans` (700) retiré d'ici : seule la fiche
+         * école en a besoin (`.font-jakarta`, `[school].vue`), chargé là
+         * uniquement.
          */
-        {
-          rel: 'preload',
-          as: 'style',
-          href: 'https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap',
-        },
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap',
-          media: 'print',
-          onload: "this.media='all'",
         },
       ],
     },
