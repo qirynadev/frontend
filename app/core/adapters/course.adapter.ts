@@ -33,8 +33,9 @@ export function toCourseSummary(raw: unknown): CourseSummary {
     title: title || name,
     image: toUrl(source.picture) ?? toUrl(source.image),
     flag: toUrl(source.country_flag),
-    // `badge` est `null` pour les quatre langues du catalogue : la maquette
-    // montre des étiquettes (« La plus demandée ») qui ne sont pas administrées.
+    // Code brut (`most_demanded`, `very_popular`, `popular`, `growing`,
+    // `trending`, ou absent) — jamais affiché tel quel, voir
+    // `config/language-badges.ts` pour la traduction par tonalité.
     badge: optionalStr(source, 'badge'),
     levelCount: toLevels(source.levels).length,
   }

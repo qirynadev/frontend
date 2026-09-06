@@ -1,53 +1,63 @@
 /**
  * Présentation éditoriale des langues — `langue-apprentissage.html`.
  *
- * ### Pourquoi ce fichier existe
+ * ### Drapeau
  *
- * La maquette montre, pour chaque langue, **un drapeau rond dessiné à la main**
- * et **une étiquette commerciale colorée** (« La plus demandée », « Tendance »…).
- * L'API ne fournit ni l'un ni l'autre :
+ * La maquette dessine, pour chaque langue, **un drapeau rond**
+ * (`assets/icons/flags/flag-uk.svg`) ; l'API sert des drapeaux `blade-flags`
+ * **rectangulaires** (`country_flag` → `country-gb.svg`). C'est le même pays,
+ * dessiné autrement — un choix de présentation, qui revient au front. On
+ * reprend donc le dessin de la maquette pour les langues qu'elle couvre, sans
+ * rien inventer côté contenu.
  *
- * | Ce que montre la maquette | Ce que renvoie l'API |
- * |---|---|
- * | drapeau rond 32×32 (`assets/icons/flags/flag-uk.svg`) | `country_flag` → `blade-flags/country-gb.svg`, **rectangulaire** |
- * | « La plus demandée », en violet | `badge: null` sur les quatre langues |
+ * ### Étiquette (`badge`)
  *
- * Le drapeau est un **choix de présentation** : la même langue, dessinée
- * autrement. On reprend donc le dessin de la maquette, sans rien inventer.
- *
- * L'étiquette, elle, est une **affirmation commerciale**. La reprendre revient
- * à écrire dans le code que l'anglais est « la plus demandée ». C'est assumé,
- * pour la même raison que `config/language-goals.ts` : la maquette la spécifie,
- * l'API ne la porte pas, et un emplacement vide serait un écart plus visible
- * qu'une étiquette exacte.
- *
- * ⚠️ **Ces libellés sont à faire valider par le client, puis à administrer.**
- * Ils restent la source d’affichage pour les langues listées ici (titres
- * commerciaux de la maquette). `badge` API ne s’applique qu’aux langues hors
- * liste — voir `LanguageCard.vue`.
+ * Longtemps `null` pour tout le catalogue (la maquette montrait des
+ * affirmations commerciales — « La plus demandée » — jamais administrées),
+ * l'API renseigne désormais un code fixe par langue :
+ * `most_demanded | very_popular | popular | growing | trending`
+ * (`StoreCourseRequest::rules()` côté back-office, seules valeurs acceptées),
+ * identique quelle que soit la locale de la requête — c'est au front de le
+ * traduire. `coursePresentationFor()` fait cette traduction ; une langue sans
+ * `badge` ou avec un code inconnu n'affiche **rien** (voir `LanguageCard.vue`,
+ * demande explicite du 2026-09-06 : ne jamais inventer d'étiquette).
  */
 
 /** Tonalités relevées dans `app.css` (`.langue-tag--*`). */
 export type LanguageBadgeTone
   = | 'demandee'
     | 'populaire'
-    | 'populaire-soft'
     | 'croissance'
-    | 'croissance-soft'
     | 'tres'
     | 'tendance'
 
-export interface LanguagePresentation {
+/** Les cinq seules valeurs que `StoreCourseRequest` accepte pour `badge`. */
+const BADGE_PRESENTATION: Record<string, { labelKey: string, tone: LanguageBadgeTone }> = {
+  most_demanded: { labelKey: 'course.badge.mostRequested', tone: 'demandee' },
+  very_popular: { labelKey: 'course.badge.veryPopular', tone: 'tres' },
+  popular: { labelKey: 'course.badge.popular', tone: 'populaire' },
+  growing: { labelKey: 'course.badge.growing', tone: 'croissance' },
+  trending: { labelKey: 'course.badge.trending', tone: 'tendance' },
+}
+
+/**
+ * Traduit le code brut de `CourseSummary.badge` en clé i18n + tonalité.
+ * `null` (absent côté admin, ou code non reconnu) : rien à afficher.
+ */
+export function coursePresentationFor(badge: string | null): { labelKey: string, tone: LanguageBadgeTone } | null {
+  if (!badge) return null
+  return BADGE_PRESENTATION[badge] ?? null
+}
+
+export interface LanguageFlag {
   /** Slug de la langue côté API. */
   slug: string
   /** Code pays du drapeau de la maquette (`public/img/icons/flags/flag-<code>.svg`). */
   flag: string
-  labelKey: string
-  tone: LanguageBadgeTone
 }
 
 /**
- * Les huit langues de la maquette, **dans son ordre exact**.
+ * Les huit langues dessinées par la maquette, **dans son ordre exact**.
  *
  * L'ordre compte : la maquette remplit deux colonnes de haut en bas
  * (Anglais / Allemand / Français / Arabe, puis Espagnol / Mandarin / Japonais /
@@ -55,18 +65,18 @@ export interface LanguagePresentation {
  * suivre l'API garde la grille identique — et les langues absentes de cette
  * liste sont simplement ajoutées à la fin.
  */
-export const languagePresentations: LanguagePresentation[] = [
-  { slug: 'anglais', flag: 'uk', labelKey: 'course.badge.mostRequested', tone: 'demandee' },
-  { slug: 'allemand', flag: 'de', labelKey: 'course.badge.popular', tone: 'populaire' },
-  { slug: 'francais', flag: 'fr', labelKey: 'course.badge.popular', tone: 'populaire-soft' },
-  { slug: 'arabe', flag: 'ae', labelKey: 'course.badge.growing', tone: 'croissance' },
-  { slug: 'espagnol', flag: 'es', labelKey: 'course.badge.veryPopular', tone: 'tres' },
-  { slug: 'mandarin', flag: 'cn', labelKey: 'course.badge.growing', tone: 'croissance-soft' },
-  { slug: 'japonais', flag: 'jp', labelKey: 'course.badge.trending', tone: 'tendance' },
-  { slug: 'coreen', flag: 'kr', labelKey: 'course.badge.trending', tone: 'tendance' },
+export const languageFlags: LanguageFlag[] = [
+  { slug: 'anglais', flag: 'uk' },
+  { slug: 'allemand', flag: 'de' },
+  { slug: 'francais', flag: 'fr' },
+  { slug: 'arabe', flag: 'ae' },
+  { slug: 'espagnol', flag: 'es' },
+  { slug: 'mandarin', flag: 'cn' },
+  { slug: 'japonais', flag: 'jp' },
+  { slug: 'coreen', flag: 'kr' },
 ]
 
-const BY_SLUG = new Map(languagePresentations.map((entry) => [entry.slug, entry]))
+const FLAG_BY_SLUG = new Map(languageFlags.map((entry) => [entry.slug, entry.flag]))
 
 /**
  * Repli par code pays, quand le slug de l'API ne figure pas dans la liste.
@@ -80,10 +90,6 @@ const FLAG_BY_COUNTRY: Record<string, string> = {
   ae: 'ae', cn: 'cn', jp: 'jp', kr: 'kr',
 }
 
-export function presentationFor(slug: string): LanguagePresentation | undefined {
-  return BY_SLUG.get(slug)
-}
-
 /**
  * Nom du drapeau de la maquette pour une langue, ou `null`.
  *
@@ -91,8 +97,8 @@ export function presentationFor(slug: string): LanguagePresentation | undefined 
  * retombe alors sur celui de l'API, rectangulaire mais exact.
  */
 export function flagNameFor(slug: string, apiFlagUrl: string | null): string | null {
-  const known = BY_SLUG.get(slug)
-  if (known) return `flag-${known.flag}`
+  const known = FLAG_BY_SLUG.get(slug)
+  if (known) return `flag-${known}`
 
   const code = /country-([a-z]{2})\.svg/i.exec(apiFlagUrl ?? '')?.[1]?.toLowerCase()
   const mapped = code ? FLAG_BY_COUNTRY[code] : undefined
@@ -101,6 +107,6 @@ export function flagNameFor(slug: string, apiFlagUrl: string | null): string | n
 
 /** Trie les langues dans l'ordre de la maquette ; les inconnues finissent à la fin. */
 export function orderByMaquette<T extends { slug: string }>(items: T[]): T[] {
-  const rank = new Map(languagePresentations.map((entry, index) => [entry.slug, index]))
+  const rank = new Map(languageFlags.map((entry, index) => [entry.slug, index]))
   return [...items].sort((a, b) => (rank.get(a.slug) ?? 999) - (rank.get(b.slug) ?? 999))
 }

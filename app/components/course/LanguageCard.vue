@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CourseSummary } from '~/core/contracts'
-import { flagNameFor, presentationFor, type LanguageBadgeTone } from '~/config/language-badges'
+import { coursePresentationFor, flagNameFor, type LanguageBadgeTone } from '~/config/language-badges'
 
 /**
  * Carte de la grille de langues — portage littéral de `.langue-card`.
@@ -14,52 +14,38 @@ import { flagNameFor, presentationFor, type LanguageBadgeTone } from '~/config/l
  * | étiquette | `padding: 3px 11px`, rayon 4, 10px / 15px — sept tonalités |
  * | coche | 16×16 ronde `#4b0ffb`, `top: -5px`, `right: 0`, icône 14×14 |
  *
- * ### Deux corrections de fidélité
- *
  * **Le drapeau vient de la maquette, pas de l'API.** Le back-office sert des
  * drapeaux `blade-flags` **rectangulaires** ; la maquette en dessine des
  * **ronds**. C'est le même pays, dessiné autrement — donc un choix de
  * présentation, qui revient au front. L'URL de l'API reste le repli pour toute
  * langue que la maquette ne dessine pas.
  *
- * **L'étiquette est colorée par tonalité.** La maquette en compte sept ; le
- * champ `badge` de l'API vaut `null` sur les quatre langues du catalogue. Le
- * libellé vient donc de `config/language-badges.ts` (prioritaire pour coller
- * aux titres commerciaux de la maquette). `badge` API ne sert qu’aux langues
- * hors liste.
+ * **L'étiquette vient de `CourseSummary.badge`, jamais inventée.** Code brut
+ * admin (`most_demanded`, `very_popular`…), traduit par
+ * `coursePresentationFor()` (`config/language-badges.ts`) selon la locale
+ * active. Rien à afficher si l'admin n'a pas renseigné de `badge` pour cette
+ * langue.
  */
 const props = defineProps<{ course: CourseSummary; selected: boolean }>()
 defineEmits<{ select: [slug: string] }>()
 
-const presentation = computed(() => presentationFor(props.course.slug))
-
 /** Drapeau de la maquette quand elle le dessine ; celui de l'API sinon. */
 const flagName = computed(() => flagNameFor(props.course.slug, props.course.flag))
 
-/**
- * Libellé d’étiquette : maquette d’abord (titres commerciaux validés),
- * puis `badge` API pour une langue hors liste, sinon rien.
- */
 const { t } = useI18n()
-const badgeLabel = computed(() => {
-  if (presentation.value) return t(presentation.value.labelKey)
-  return props.course.badge
-})
+const presentation = computed(() => coursePresentationFor(props.course.badge))
+const badgeLabel = computed(() => presentation.value ? t(presentation.value.labelKey) : null)
 
 const toneClass: Record<LanguageBadgeTone, string> = {
   'demandee': 'bg-lang-demandee-bg text-lang-demandee',
   'populaire': 'bg-lang-populaire-bg text-lang-populaire',
-  'populaire-soft': 'bg-lang-populaire-soft-bg text-lang-populaire',
   'croissance': 'bg-lang-croissance-bg text-info',
-  'croissance-soft': 'bg-lang-croissance-soft-bg text-info',
   'tres': 'bg-lang-tendance-bg text-lang-tendance',
   'tendance': 'bg-lang-tendance-bg text-lang-tendance',
 }
 
-/** Une langue hors maquette et sans `badge` administré garde la teinte neutre. */
-const badgeClass = computed(() =>
-  presentation.value ? toneClass[presentation.value.tone] : 'bg-primary-bg text-primary-link',
-)
+/** Non lu quand `badgeLabel` est vide : le `v-if` du template masque tout le bloc. */
+const badgeClass = computed(() => (presentation.value ? toneClass[presentation.value.tone] : ''))
 </script>
 
 <template>
