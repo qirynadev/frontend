@@ -48,6 +48,11 @@ const greeting = computed(() =>
     : '',
 )
 
+/** Vraie photo de profil quand elle existe ; l'icône générique sinon (invité compris). */
+const photoUrl = computed(() =>
+  session.user?.profile.photo || session.user?.avatar || null,
+)
+
 async function onLogout() {
   await session.logout()
   close()
@@ -85,8 +90,16 @@ async function onLogout() {
         <div class="flex w-full flex-1 min-h-0 flex-col items-center overflow-y-auto overscroll-contain pb-[calc(24px+env(safe-area-inset-bottom,0px))] [webkit-overflow-scrolling:touch]">
           <!-- Bienvenue -->
           <div class="flex w-full shrink-0 items-center px-24 pt-9 pb-20">
-            <span class="flex size-59 shrink-0 items-center justify-center rounded-full bg-menu-avatar-bg">
-              <QIcon name="ic-menu-user" :size="28" />
+            <span class="flex size-59 shrink-0 items-center justify-center overflow-hidden rounded-full bg-menu-avatar-bg">
+              <img
+                v-if="photoUrl"
+                :src="photoUrl"
+                alt=""
+                width="59"
+                height="59"
+                class="block size-full object-cover"
+              >
+              <QIcon v-else name="ic-menu-user" :size="28" />
             </span>
             <div class="flex min-w-0 flex-col gap-2 pl-16">
               <p class="m-0 text-3xl leading-[22.5px] font-semibold text-menu-title">
