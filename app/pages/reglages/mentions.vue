@@ -99,9 +99,9 @@ usePageSeo(() => ({
               <p class="rml-help-desc m-0 mt-4 text-xs leading-16 font-normal text-text">{{ $t('settingsLegal.helpDesc') }}</p>
             </div>
           </div>
-          <a href="#" class="rml-help-cta shrink-0 rounded-xl border border-primary-link bg-white px-11 py-9 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline">
+          <NuxtLink :to="localePath('/reglages/contact')" class="rml-help-cta shrink-0 rounded-xl border border-primary-link bg-white px-11 py-9 text-sm leading-16 font-medium whitespace-nowrap text-primary-link no-underline">
             {{ $t('settingsLegal.contactSupport') }}
-          </a>
+          </NuxtLink>
         </aside>
       </div>
     </div>
