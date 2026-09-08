@@ -14,9 +14,11 @@ import { plainText, toSchoolSummary } from '~~/app/core/adapters'
  * seul cet endpoint dédié filtre réellement par domaine.
  *
  * L'ordre est aléatoire, tiré entièrement côté back-office (`SchoolAction::
- * getByCountryArea`) — plus de graine à relayer depuis le front (retiré le
- * 2026-09-08 : un `Math.random()` côté page causait un mismatch d'hydratation
- * Vue SSR/client, voir `ecoles/index.vue`).
+ * getByCountryArea`, dérivé de l'heure courante par fenêtres de 30 minutes)
+ * — aucune graine à relayer depuis le front : ni `useState` ni un cookie
+ * n'ont tenu, Nuxt émettant plusieurs requêtes serveur par visite (rendu
+ * HTML, prefetch de pagination…) qui ne s'accordaient jamais sur la même
+ * valeur — voir `ecoles/index.vue`.
  */
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)

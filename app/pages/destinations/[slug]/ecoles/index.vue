@@ -36,23 +36,28 @@
  * écoles par un ordre pseudo-aléatoire tiré côté back-office (`SchoolAction::
  * getByCountryArea`, un hachage par ligne dépendant d'une graine).
  *
- * **Le front ne tire plus lui-même cette graine** (corrigé le 2026-09-08,
+ * **Le front ne tire jamais cette graine lui-même** (corrigé le 2026-09-08,
  * bug constaté en direct) : un `Math.random()` dans ce `<script setup>`
  * s'exécute une fois côté serveur (SSR) et une seconde fois côté client
  * (hydratation) — deux exécutions JS indépendantes — donnant deux graines,
  * donc deux ordres différents pour la même page, donc un mismatch
- * d'hydratation Vue (repéré via « Hydration completed but contains
- * mismatches » en console) : certaines cartes affichaient le titre d'une
- * école avec le lien (`slug`) d'une autre, envoyant l'utilisateur sur la
- * mauvaise fiche. Même en passant la graine par `useState` (SSR → payload →
- * client, censé éliminer toute divergence), le mismatch persistait —
- * signe qu'autre chose dans la chaîne (cache HTTP de `bff/schools`,
- * ré-exécution du handler…) pouvait encore désynchroniser les deux rendus.
- * Le tirage vit désormais entièrement côté back-office, une fois par
- * requête HTTP : plus aucune graine ne transite par le front, donc plus
- * aucune divergence SSR/client possible. Contrepartie acceptée : la liste
- * peut se remélanger d'une page à l'autre au sein d'une même visite (plus
- * de graine stable partagée entre les appels de pagination).
+ * d'hydratation Vue (une carte affichait le titre d'une école avec le lien
+ * d'une autre). `useState` (essayé ensuite) et un cookie (essayé après)
+ * réglaient bien la divergence SSR/client, mais Nuxt émet plusieurs
+ * requêtes serveur pour une même visite (rendu HTML, prefetch du payload
+ * de la page suivante lors d'un clic pagination…) : `useState` repart d'un
+ * magasin vierge à chacune (une par requête Nitro), et même un cookie tiré
+ * « si absent » peut être fixé deux fois en parallèle par deux de ces
+ * requêtes avant que l'une ou l'autre n'ait vu le `Set-Cookie` de la
+ * première — dans les deux cas, des requêtes de la même visite retombent
+ * sur des graines différentes, et une même école réapparaît d'une page de
+ * pagination à l'autre (constaté en direct, 2026-09-09).
+ *
+ * Le tirage vit donc entièrement côté back-office (`SchoolAction::
+ * getByCountryArea`), dérivé de l'heure courante plutôt que d'un état à
+ * synchroniser : identique pour toute requête tombant dans la même fenêtre
+ * de 30 minutes, qu'elle vienne du rendu HTML, d'un prefetch ou d'un clic
+ * pagination — sans le moindre aller-retour front/back à orchestrer.
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
