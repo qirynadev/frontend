@@ -79,13 +79,15 @@ const trustItems = [
 <template>
   <div class="flex w-full flex-col items-center bg-white pb-30 text-[#1a1d2b]">
     <section class="relative mb-[-36px] h-503 w-full overflow-hidden bg-white">
-      <img
+      <NuxtImg
         :src="`${assetBase}/hero-chine.jpg`"
         alt=""
         width="1728"
         height="503"
+        format="webp"
+        fit="cover"
         class="absolute inset-0 block size-full object-cover object-center"
-      >
+      />
       <div
         class="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-white/50 via-white/40 to-transparent"
         aria-hidden="true"
@@ -247,13 +249,17 @@ const trustItems = [
               class="relative shrink-0 overflow-hidden"
               :style="{ width: `${school.w}px`, height: `${school.h}px` }"
             >
-              <img
+              <NuxtImg
                 :src="school.src"
                 alt=""
                 :width="school.w"
                 :height="school.h"
+                format="webp"
+                fit="contain"
+                loading="lazy"
+                decoding="async"
                 class="block size-full object-contain"
-              >
+              />
             </span>
             <p class="m-0 text-center text-[8px] leading-10 font-semibold whitespace-pre-line text-[#1f2937]">
               {{ $t(school.line1Key) }}<template v-if="$t(school.line2Key).trim()"><br>{{ $t(school.line2Key) }}</template>

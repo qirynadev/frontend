@@ -71,11 +71,15 @@ const trustItems = [
         aria-hidden="true"
         class="pointer-events-none absolute inset-y-0 right-0 hidden overflow-hidden opacity-85 lg:left-738 lg:block lg:rounded-br-[50px] lg:rounded-tr-[50px]"
       >
-        <img
+        <NuxtImg
           src="/img/desktop/auth/inscription-hero.jpg"
           alt=""
+          width="1100"
+          height="1429"
+          format="webp"
+          fit="cover"
           class="absolute inset-0 size-full object-cover object-center"
-        >
+        />
       </div>
 
       <!-- Fond blanc colonne gauche (nav + formulaire) -->

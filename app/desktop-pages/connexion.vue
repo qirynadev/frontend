@@ -212,11 +212,15 @@ const trustItems = [
       >
         <!-- 567:6036 — image contenue dans le cadre inset-0 -->
         <div class="absolute inset-0 overflow-hidden opacity-85">
-          <img
+          <NuxtImg
             src="/img/desktop/auth/connexion-hero.jpg"
             alt=""
+            width="1100"
+            height="1152"
+            format="webp"
+            fit="cover"
             class="absolute inset-0 size-full object-cover object-center"
-          >
+          />
         </div>
 
         <!-- Trust bar — largeur contenu, centrée (Figma 567:6271) -->

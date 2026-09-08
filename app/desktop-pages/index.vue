@@ -4,6 +4,14 @@
  *
  * Sections : hero slider · école · orientation · langues · hébergement.
  * Nav / footer fournis par `layouts/desktop.vue`.
+ *
+ * Images `<NuxtImg>`, pas `<img>` nu (corrigé le 2026-09-09, navigation
+ * signalée comme trop lente) : les cinq PNG/JPG de `public/img/desktop/
+ * home/` pesaient 285 Ko à 1,6 Mo CHACUN — jusqu'à 3× la largeur réellement
+ * affichée (ex. `section-langues.png` : 1419×1108 px de fichier pour ~410×
+ * 320 px affichés), et aucun n'était converti en WebP. À eux cinq, ~3,3 Mo
+ * de cette seule page. `<NuxtImg>` les fait passer par `/_ipx/…` comme le
+ * reste du site : redimensionnés à la taille réellement affichée, WebP.
  */
 const localePath = useLocalePath()
 
@@ -60,13 +68,14 @@ const destinations = [
     <!-- Hero slider -->
     <section class="desktop-boxed pt-24">
       <div class="relative w-full overflow-hidden rounded-2xl">
-        <img
+        <NuxtImg
           src="/img/desktop/home/hero-slider.jpg"
           alt=""
           width="1400"
           height="516"
+          format="webp"
           class="block aspect-[1400/516] w-full object-cover"
-        >
+        />
         <div class="absolute bottom-22 left-1/2 flex -translate-x-1/2 gap-8" aria-hidden="true">
           <span class="size-8 rounded-full bg-[#ed1c24]" />
           <span class="size-8 rounded-full bg-white/50" />
@@ -115,11 +124,17 @@ const destinations = [
         </div>
 
         <div class="relative min-h-400 overflow-hidden rounded-2xl xl:col-span-1">
-          <img
+          <NuxtImg
             src="/img/desktop/home/section-school.png"
             alt=""
+            width="600"
+            height="800"
+            format="webp"
+            fit="cover"
+            loading="lazy"
+            decoding="async"
             class="block h-full min-h-400 w-full object-cover"
-          >
+          />
         </div>
 
         <div class="flex flex-col gap-16">
@@ -185,7 +200,17 @@ const destinations = [
         </div>
 
         <div class="relative overflow-hidden rounded-2xl">
-          <img src="/img/desktop/home/section-orientation.png" alt="" class="block w-full object-cover">
+          <NuxtImg
+            src="/img/desktop/home/section-orientation.png"
+            alt=""
+            width="820"
+            height="820"
+            format="webp"
+            fit="cover"
+            loading="lazy"
+            decoding="async"
+            class="block w-full object-cover"
+          />
         </div>
 
         <div class="rounded-2xl border border-[#f3f4f6] bg-white p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
@@ -242,7 +267,17 @@ const destinations = [
         </div>
 
         <div class="overflow-hidden rounded-2xl">
-          <img src="/img/desktop/home/section-langues.png" alt="" class="block w-full object-cover">
+          <NuxtImg
+            src="/img/desktop/home/section-langues.png"
+            alt=""
+            width="820"
+            height="640"
+            format="webp"
+            fit="cover"
+            loading="lazy"
+            decoding="async"
+            class="block w-full object-cover"
+          />
         </div>
 
         <div class="flex flex-col gap-24">
@@ -300,7 +335,17 @@ const destinations = [
         </div>
 
         <div class="overflow-hidden rounded-2xl">
-          <img src="/img/desktop/home/section-logement.png" alt="" class="block w-full object-cover">
+          <NuxtImg
+            src="/img/desktop/home/section-logement.png"
+            alt=""
+            width="820"
+            height="726"
+            format="webp"
+            fit="cover"
+            loading="lazy"
+            decoding="async"
+            class="block w-full object-cover"
+          />
         </div>
 
         <div class="flex flex-col gap-24">

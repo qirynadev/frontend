@@ -226,11 +226,15 @@ const trustItems = [
         class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]"
       >
         <div class="absolute inset-0 overflow-hidden opacity-85">
-          <img
+          <NuxtImg
             src="/img/desktop/auth/mot-de-passe-hero.jpg"
             alt=""
+            width="1100"
+            height="1194"
+            format="webp"
+            fit="cover"
             class="absolute inset-0 size-full object-cover object-center"
-          >
+          />
         </div>
 
         <!-- 576:150 — trust bar 3 étapes (hauteur fluide) -->

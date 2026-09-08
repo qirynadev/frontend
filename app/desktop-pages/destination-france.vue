@@ -188,13 +188,15 @@ const trustItems = [
   <div class="flex w-full flex-col items-center bg-white pb-30 text-[#1a1d2b]">
     <!-- Hero 503 · chevauche le bloc suivant de 36 px -->
     <section class="relative mb-[-36px] h-503 w-full overflow-hidden bg-white">
-      <img
+      <NuxtImg
         :src="`${assetBase}/hero-france.jpg`"
         alt=""
         width="1728"
         height="503"
+        format="webp"
+        fit="cover"
         class="absolute inset-0 block size-full object-cover object-center"
-      >
+      />
       <div
         class="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-white/50 via-white/40 to-transparent"
         aria-hidden="true"
@@ -408,15 +410,19 @@ const trustItems = [
               class="relative shrink-0 overflow-hidden"
               :style="{ width: `${school.w}px`, height: `${school.h}px` }"
             >
-              <img
+              <NuxtImg
                 :src="school.src"
                 alt=""
                 :width="school.w"
                 :height="school.h"
+                format="webp"
+                fit="contain"
+                loading="lazy"
+                decoding="async"
                 :class="school.crop
                   ? 'absolute top-[-11.49%] left-[-15.44%] h-[124.94%] w-[132.35%] max-w-none'
                   : 'block size-full object-contain'"
-              >
+              />
             </span>
           </div>
         </div>
