@@ -13,10 +13,10 @@ import { plainText, toSchoolSummary } from '~~/app/core/adapters'
  * domaine, malgré la relation `School::areaOfStudy` chargée côté modèle —
  * seul cet endpoint dédié filtre réellement par domaine.
  *
- * Cet endpoint trie par `RAND(seed)` côté API — `seed` relayé tel quel
- * (généré une fois par visite côté page, réutilisé d'une page à l'autre
- * pour ne pas remélanger les écoles déjà vues). Sans lui, l'API retombe sur
- * `seed=1`, un ordre fixe.
+ * L'ordre est aléatoire, tiré entièrement côté back-office (`SchoolAction::
+ * getByCountryArea`) — plus de graine à relayer depuis le front (retiré le
+ * 2026-09-08 : un `Math.random()` côté page causait un mismatch d'hydratation
+ * Vue SSR/client, voir `ecoles/index.vue`).
  */
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
@@ -25,7 +25,6 @@ export default defineEventHandler(async (event) => {
   const search = typeof query.search === 'string' ? query.search.trim().toLowerCase() : ''
   const page = Math.max(1, Number(query.page ?? 1) || 1)
   const perPage = Math.min(60, Math.max(1, Number(query.perPage ?? 20) || 20))
-  const seed = Number(query.seed)
 
   const { schools, destinations } = await getSnapshot(event)
 
@@ -41,7 +40,7 @@ export default defineEventHandler(async (event) => {
     try {
       const raw = await client.request<Record<string, unknown>>(
         `/schools/${encodeURIComponent(target.country.id)}/${encodeURIComponent(area)}`,
-        { query: { page, seed: Number.isFinite(seed) ? seed : undefined } },
+        { query: { page } },
       )
       const items = (Array.isArray(raw.data) ? raw.data : []).map(school => toSchoolSummary(school, destination, flagBase))
 

@@ -16,14 +16,6 @@ export interface SchoolQuery {
   search?: string
   page?: number
   perPage?: number
-  /**
-   * Graine d'ordre aléatoire (`GET /schools/{countryId}/{areaId}?seed=`,
-   * `ORDER BY RAND(seed)` côté API). Sans elle, l'API retombe sur `seed=1` —
-   * un ordre fixe, pas aléatoire. La même graine doit être réutilisée d'une
-   * page à l'autre d'une même visite pour ne pas mélanger les écoles déjà
-   * vues (voir `ecoles/index.vue`).
-   */
-  seed?: number
 }
 
 export interface SchoolPage {
@@ -51,7 +43,6 @@ export const schoolRepo = {
         search: query.search,
         page: query.page,
         perPage: query.perPage,
-        seed: query.seed,
       },
     })
   },

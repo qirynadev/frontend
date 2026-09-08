@@ -32,21 +32,27 @@
  * `GET /schools/{countryId}/{areaId}` — seul endpoint qui filtre
  * effectivement par domaine (voir `server/api/bff/schools/index.get.ts`).
  *
- * **Ordre aléatoire** (2026-09-03, sur demande explicite) : l'API trie par
- * `RAND(seed)`, mais retombe sur `seed=1` — un ordre fixe — si on ne lui en
- * fournit pas. La graine vit en mémoire du composant (pas dans l'URL) :
- * tirée une fois par montage, donc stable tant qu'on pagine ou change de
- * domaine (navigation interne, même instance de page), mais renouvelée à
- * chaque arrivée fraîche (F5, lien externe) — c'est le comportement voulu.
+ * **Ordre aléatoire** (2026-09-03, sur demande explicite) : l'API trie les
+ * écoles par un ordre pseudo-aléatoire tiré côté back-office (`SchoolAction::
+ * getByCountryArea`, un hachage par ligne dépendant d'une graine).
  *
- * **Pas dans l'URL** (corrigé le 2026-09-04, audit perf/SEO) : la première
- * implémentation l'écrivait via `router.replace({ query: { ...seed } })`.
- * Deux conséquences alors observées : la page devenait impossible à mettre
- * en cache SSR (chaque visite = une URL différente), et Google risquait
- * d'indexer un nombre infini d'URL quasi identiques (contenu dupliqué). Une
- * simple variable locale suffit : Vue réutilise la même instance de
- * composant tant que seuls `page`/`domaine` changent (navigation interne),
- * donc la graine survit sans avoir besoin de persister nulle part.
+ * **Le front ne tire plus lui-même cette graine** (corrigé le 2026-09-08,
+ * bug constaté en direct) : un `Math.random()` dans ce `<script setup>`
+ * s'exécute une fois côté serveur (SSR) et une seconde fois côté client
+ * (hydratation) — deux exécutions JS indépendantes — donnant deux graines,
+ * donc deux ordres différents pour la même page, donc un mismatch
+ * d'hydratation Vue (repéré via « Hydration completed but contains
+ * mismatches » en console) : certaines cartes affichaient le titre d'une
+ * école avec le lien (`slug`) d'une autre, envoyant l'utilisateur sur la
+ * mauvaise fiche. Même en passant la graine par `useState` (SSR → payload →
+ * client, censé éliminer toute divergence), le mismatch persistait —
+ * signe qu'autre chose dans la chaîne (cache HTTP de `bff/schools`,
+ * ré-exécution du handler…) pouvait encore désynchroniser les deux rendus.
+ * Le tirage vit désormais entièrement côté back-office, une fois par
+ * requête HTTP : plus aucune graine ne transite par le front, donc plus
+ * aucune divergence SSR/client possible. Contrepartie acceptée : la liste
+ * peut se remélanger d'une page à l'autre au sein d'une même visite (plus
+ * de graine stable partagée entre les appels de pagination).
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
@@ -62,9 +68,6 @@ const slug = computed(() => String(route.params.slug ?? ''))
 const apiSlug = computed(() => resolveDestinationApiSlug(slug.value))
 const page = computed(() => Math.max(1, Number(route.query.page ?? 1) || 1))
 const domaineParam = computed(() => String(route.query.domaine ?? ''))
-
-/** Graine d'ordre aléatoire — voir docblock plus haut. */
-const effectiveSeed = 1 + Math.floor(Math.random() * 1_000_000)
 
 const chipsRef = ref<HTMLDivElement | null>(null)
 
@@ -85,7 +88,6 @@ const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
       area: selected?.id,
       page: page.value,
       perPage: 5,
-      seed: effectiveSeed,
     }, locale.value)
 
     return {
