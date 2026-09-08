@@ -428,6 +428,7 @@ usePageSeo(() => ({
           <p class="my-10 pt-4 text-sm leading-16 font-normal text-text">{{ $t('auth.reset.helpDescription') }}</p>
         </div>
         <SupportLink
+          prefer-contact-page
           class="inline-flex shrink-0 rounded-xl border border-primary-link px-15 py-9 text-sm leading-normal font-medium whitespace-nowrap text-primary-link no-underline"
         >
           {{ $t('auth.reset.helpCta') }}
