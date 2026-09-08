@@ -81,6 +81,7 @@ export function toSchool(raw: unknown, destinationSlug = '', flagBase?: string):
     ...summary,
     presentation,
     details: toDetails(source.details),
+    pointsForts: html(source, 'points_forts'),
     seo: toSeo(source, summary.title, presentation),
   }
 }

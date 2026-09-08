@@ -68,5 +68,13 @@ export interface School extends SchoolSummary {
    * `schoolRepo.formations()`.
    */
   details: SchoolDetail[]
+  /**
+   * Champ dédié (back-office, directives-backend §19, livré le 2026-09-05) —
+   * chaîne vide si l'admin ne l'a pas renseigné pour cette école. À préférer
+   * à la convention `details[]`/« Points Forts » : voir `strengthsHtml` dans
+   * `[school].vue`, qui bascule sur l'ancienne convention seulement si ce
+   * champ est vide (la quasi-totalité du catalogue n'est pas encore migrée).
+   */
+  pointsForts: string
   seo: SeoMeta
 }

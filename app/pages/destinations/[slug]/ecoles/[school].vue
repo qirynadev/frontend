@@ -126,17 +126,23 @@ const tabs = computed(() => {
 const activeTab = ref('presentation')
 
 /**
- * Onglet « Points forts » : pas un champ dédié côté back-office, un champ
- * additionnel dynamique parmi d'autres (`School.details[]`, libellé +
- * description libres) que l'admin nomme conventionnellement « Points Forts »
- * pour cet usage — voir `docs/directives-backend.md` pour la suggestion d'un
- * vrai champ dédié. On ne montrait jusqu'ici que le libellé (`d.title`,
- * littéralement « Points Forts ») dans une puce, jamais le contenu réel
- * (`d.description`, du HTML) : repéré en direct sur IMT Atlantique
- * (2026-08-31). Comparaison insensible à la casse/aux espaces, ce champ étant
- * saisi à la main par l'admin.
+ * Onglet « Points forts ».
+ *
+ * `School.pointsForts` (champ dédié, directives-backend §19, livré le
+ * 2026-09-05) prioritaire — mais seule 1 école sur 571 l'a renseigné pour
+ * l'instant (vérifié en direct sur `/all-data`, 2026-09-08), le reste du
+ * catalogue n'ayant pas encore été migré côté admin. Repli sur l'ancienne
+ * convention (`School.details[]`, une entrée dont le titre == « points
+ * forts », insensible à la casse) tant que ce champ est vide — 142 écoles en
+ * dépendent encore.
+ *
+ * C'est cette convention, câblée sur le seul libellé français, qui faisait
+ * disparaître l'onglet en anglais (« Key strengths », jamais « points
+ * forts ») — signalé le 2026-09-08. Le champ dédié n'a pas ce problème : il
+ * est traduit par langue comme le reste du contenu éditorial.
  */
 const strengthsHtml = computed(() => {
+  if (school.value?.pointsForts) return school.value.pointsForts
   const match = school.value?.details.find((d) => d.title.trim().toLowerCase() === 'points forts')
   return match?.description ?? ''
 })
