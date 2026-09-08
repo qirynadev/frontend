@@ -1,0 +1,43 @@
+.fc {
+    .fc-button-primary {
+        background-color: white;
+        border-color: rgb(208, 208, 208);
+        color: rgb(40, 40, 40);
+
+        &:disabled {
+            background-color: #838588;
+            border-color: transparent;
+        }
+
+        &:focus {
+            box-shadow: none;
+        }
+
+        &:not(:disabled) {
+            &.fc-button-active,
+            &:active,
+            &:hover,
+            &:focus {
+                background-color: #273c66;
+                border-color: transparent;
+                color: var(--fc-button-text-color);
+            }
+        }
+    }
+
+    .fc-button-primary:not(:disabled).fc-button-active:focus,
+    .fc-button-primary:not(:disabled):active:focus {
+        box-shadow: none;
+    }
+}
+
+html.dark .fc .fc-button-primary {
+    background-color: var(--color-surface-alt);
+    border-color: var(--color-border);
+    color: var(--color-ink);
+
+    &:disabled {
+        background-color: #4a4d55;
+        border-color: transparent;
+    }
+}

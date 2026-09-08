@@ -44,11 +44,22 @@ export function useCheckout() {
    * `objectif` vient de l'URL (`/offres/anglais?objectif=exams`) : le tunnel
    * langue le transporte depuis l'écran des objectifs, et il doit arriver
    * jusqu'à la commande.
+   *
+   * `path` (`/orientation/formules?path=moi|enfant`) : le choix de parcours
+   * fait sur `/orientation` (pour soi / pour son enfant) — capturé jusqu'ici,
+   * jamais transmis, donc invisible en commande côté back-office (audit
+   * 2026-09-04). Même mécanisme que `objectif` : relayé tel quel dans
+   * `options`, le back-office affiche déjà ce sac générique (voir
+   * `docs/directives-backend.md`).
    */
   function toIntent(offer: OfferPage, tier: OfferTier) {
     const options: Record<string, string> = {}
     if (offer.kind === 'language') options.language = offer.title
     else if (offer.kind === 'living' && offer.living) options.country = offer.living.country.name
+    else if (offer.kind === 'orientation') {
+      const path = route.query.path
+      if (path === 'moi' || path === 'enfant') options.orientationFor = path
+    }
     const goal = route.query.objectif
     if (typeof goal === 'string' && goal !== '') options.goal = goal
 
@@ -66,18 +77,29 @@ export function useCheckout() {
        * `paiement-reussi.html` sont deux maquettes distinctes : la première
        * détaille cinq étapes propres à un parcours linguistique (test de
        * niveau, choix du professeur, planning, visio), la seconde en montre
-       * quatre, génériques. Logement a le sien (`logement-post-paiement.html`,
-       * qui ouvre directement sur le formulaire de préférences plutôt que sur
-       * une frise) ; orientation retombe encore sur l'écran générique.
+       * quatre, génériques. Logement et orientation ont chacun le leur
+       * (`logement-post-paiement.html`, qui ouvre directement sur le
+       * formulaire de préférences plutôt que sur une frise ;
+       * `orientation-post-paiement.html`, quatre étapes propres au bilan).
        *
        * D'où le nommage `<tunnel>/paiement-reussi` plutôt qu'un écran unique
        * paramétré : les écrans divergent par leur contenu, pas par une option.
+       *
+       * **Non transmis à l'API aujourd'hui** — `POST /payment/init` calcule sa
+       * propre URL de retour (`PaymentController::buildSuccessPath`, back-
+       * office) sans lire ce champ. Calculé quand même ici : `/paiement-
+       * reussi.vue` s'en sert comme filet de sécurité (redirige vers le bon
+       * tunnel si jamais Stripe atterrit sur l'écran générique — voir
+       * `docs/directives-backend.md` §14), et le jour où le back-office
+       * lira ce champ, rien à changer ici.
        */
       returnPath: offer.kind === 'language'
         ? localePath(`/langues/${offer.slug}/paiement-reussi`)
         : offer.kind === 'living'
           ? localePath('/logement/paiement-reussi')
-          : localePath('/paiement-reussi'),
+          : offer.kind === 'orientation'
+            ? localePath('/orientation/paiement-reussi')
+            : localePath('/paiement-reussi'),
     }
   }
 

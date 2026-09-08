@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Zones privées / transactionnelles : ne pas indexer
+Disallow: /dashboard
+Disallow: /conference
+Disallow: /meeting
+Disallow: /connexion
+Disallow: /signin
+Disallow: /inscription
+Disallow: /signup
+Disallow: /mot-de-passe-oublie
+Disallow: /password-forgot
+Disallow: /reinitialiser-mot-de-passe
+Disallow: /reset-password
+Disallow: /commande-succes
+Disallow: /order-success
+Disallow: /commande-annulee
+Disallow: /order-canceled
+Disallow: /confirmation-email-paiement
+Disallow: /email-confirmation
+Disallow: /collecte-informations
+Disallow: /information-collection
+
+Sitemap: https://qiryna.com/sitemap.xml

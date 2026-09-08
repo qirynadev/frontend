@@ -85,7 +85,7 @@ usePageSeo(() => ({
           role="option"
           :aria-selected="selected === goal.id"
           :class="[
-            'flex w-full cursor-pointer items-center gap-12 rounded-xl border bg-white p-17 text-left',
+            'flex w-full cursor-pointer items-center gap-12 rounded-xl border bg-surface-card p-17 text-left',
             'max-xs:items-start max-xs:gap-10 max-xs:px-12 max-xs:py-14',
             selected === goal.id ? 'border-goal-selected' : 'border-goal-border',
           ]"
@@ -99,15 +99,15 @@ usePageSeo(() => ({
 
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="flex flex-wrap items-center gap-5">
-                <span class="text-xl leading-[20.625px] font-semibold text-navy-2 max-xs:text-lg max-xs:leading-18">{{ $t(goal.labelKey) }}</span>
+                <span class="text-xl leading-[20.625px] font-semibold text-navy-2 max-xs:text-lg max-xs:leading-18">{{ $t(goal.labelKey, { language: course?.name ?? '' }) }}</span>
                 <span
                   v-if="goal.badgeKey"
                   class="inline-flex rounded-md bg-primary-bg px-8 py-2 text-md leading-[16.5px] font-bold whitespace-nowrap text-goal-check"
                 >{{ $t(goal.badgeKey) }}</span>
               </span>
               <!-- 12,5px : valeur de la maquette, sans équivalent dans l'échelle. -->
-              <span class="pt-2 pr-8 text-[12.5px] leading-[17.188px] text-black max-xs:pr-0 max-xs:text-base max-xs:leading-16">
-                {{ $t(goal.descriptionKey) }}
+              <span class="pt-2 pr-8 text-[12.5px] leading-[17.188px] text-text max-xs:pr-0 max-xs:text-base max-xs:leading-16">
+                {{ $t(goal.descriptionKey, { language: course?.name ?? '' }) }}
               </span>
             </span>
           </span>
@@ -119,7 +119,7 @@ usePageSeo(() => ({
               'max-xs:mt-2',
               selected === goal.id
                 ? 'border-2 border-goal-check bg-goal-check p-2'
-                : 'border border-goal-radio bg-white',
+                : 'border border-goal-radio bg-surface-card',
             ]"
           >
             <QIcon v-if="selected === goal.id" name="ic-lang-check" :size="11" />

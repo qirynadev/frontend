@@ -10,6 +10,14 @@ import { asRecord, str } from '~~/app/core/adapters'
  * Les erreurs 422 de Laravel remontent avec leurs `errors` indexées par champ :
  * l'écran d'inscription surligne le champ fautif au lieu d'afficher un message
  * générique en bas de formulaire.
+ *
+ * `lc_country_id: null` **obligatoire** — bug confirmé côté API (2026-08-27) :
+ * `AuthController::register` déclare ce champ `nullable` mais y accède ensuite
+ * par `$data['lc_country_id']` sans repli, donc une requête qui ne l'envoie
+ * pas du tout (notre formulaire ne demande pas le pays) plante en 500
+ * (« Undefined array key "lc_country_id" »). Contournement confirmé en
+ * direct : l'envoyer explicitement à `null` suffit. Voir
+ * `docs/directives-backend.md` pour la correction attendue côté API.
  */
 export default defineEventHandler(async (event) => {
   const body = asRecord(await readBody(event))
@@ -38,6 +46,7 @@ export default defineEventHandler(async (event) => {
         first_name: firstName,
         last_name: lastName,
         phone: str(body, 'phone') || undefined,
+        lc_country_id: null,
       },
     })
   }

@@ -126,8 +126,14 @@ async function onSubmit(): Promise<void> {
   catch (error) {
     if (error instanceof ApiError) {
       fieldErrors.value = mapFieldErrors(error)
+      // `error.message` distingue « identifiants refusés » de « compte pas
+      // encore confirmé »/« compte désactivé » (back-office : trois échecs
+      // distincts, tous en 400 sur `POST /auth/login`) — l'écraser par un
+      // générique masquait ces deux derniers cas derrière « mot de passe
+      // incorrect », un message trompeur pour qui a le bon mot de passe mais
+      // n'a jamais entré son code de confirmation.
       formError.value = error.kind === 'validation'
-        ? t('auth.error.credentials')
+        ? (error.message || t('auth.error.credentials'))
         : error.kind === 'network' || error.kind === 'timeout'
           ? t('auth.error.network')
           : t('auth.error.generic')
@@ -182,7 +188,9 @@ usePageSeo(() => ({
   <div class="shell:hidden">
     <!-- Logo — cadre 150×47, centré, 20px sous lui. -->
     <div class="pb-20">
-      <AppLogo :width="150" :height="47" class="mx-auto" />
+      <NuxtLink :to="localePath('/')" class="mx-auto block w-fit no-underline" :aria-label="$t('nav.home')">
+        <AppLogo :width="150" :height="47" />
+      </NuxtLink>
     </div>
 
     <!-- Accroche + illustration -->
@@ -219,7 +227,7 @@ usePageSeo(() => ({
 
     <!-- Formulaire -->
     <div class="pt-15">
-      <div class="rounded-xl bg-white px-20 py-25 shadow-card">
+      <div class="rounded-xl bg-surface-card px-20 py-25 shadow-card">
         <!-- Reprise d'un paiement interrompu : proposée, jamais déclenchée seule. -->
         <QAlert
           v-if="session.pendingPayment"

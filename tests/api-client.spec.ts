@@ -100,6 +100,23 @@ describe('tentatives', () => {
   })
 })
 
+describe('unwrap: false', () => {
+  it('renvoie la réponse telle quelle, sans déballer `data`', async () => {
+    const payload = { success: false, requires_confirmation: true, message: 'x', data: { email: 'a@b.c' } }
+    const fetcher = vi.fn().mockResolvedValue(payload)
+    const client = createApiClient({ baseUrl: 'https://api.test', fetcher: fetcher as never })
+
+    await expect(client.request('/auth/social/register', { method: 'POST', unwrap: false })).resolves.toEqual(payload)
+  })
+
+  it('déballe par défaut (comportement inchangé)', async () => {
+    const fetcher = vi.fn().mockResolvedValue({ data: { id: '1' }, success: true })
+    const client = createApiClient({ baseUrl: 'https://api.test', fetcher: fetcher as never })
+
+    await expect(client.request('/x')).resolves.toEqual({ id: '1' })
+  })
+})
+
 describe('normalisation des erreurs', () => {
   it('classe les statuts HTTP', () => {
     expect(toApiError(httpError(401), '/x').kind).toBe('unauthorized')

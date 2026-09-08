@@ -2,7 +2,11 @@
 /**
  * Créneau Professeur ← Figma `858:3603`.
  *
- * API : `planningRepo.events` → créneaux libres découpés en **2 h**.
+ * API : `planningRepo.events` → créneaux libres découpés en **1 h** (durée
+ * de séance réelle, `languagePlanning.sessionDuration` = 60 min ; l'API ne
+ * porte aucune notion de durée de créneau, c'est ici qu'elle se fixe —
+ * régression à 2h introduite par erreur dans un commit `main` sans rapport
+ * (`534911c`), propagée par la fusion du 2026-09-02, corrigée le 2026-09-03).
  * Mock (demo / API vide) : dates + heures Figma (`langueCreneauHoursMock`).
  * « Confirmer le créneau » → `/mon-projet/langues?tab=planned`.
  * Voir `docs/mon-projet-professeur-mocks.md`.
@@ -14,6 +18,7 @@ import {
   langueTeachersMock,
 } from '~/config/projet-langue-mock'
 import { planningRepo } from '~/core/repositories'
+import { resolveTeacherAvailability } from '~/utils/teacher-availability'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -59,19 +64,20 @@ const teacherCard = computed(() => {
   if (mock) return mock
   const api = (teachers.value ?? []).find(item => item.id === teacherId.value)
   if (api) {
+    const availability = resolveTeacherAvailability(api.nextAvailableAt, locale.value, t)
     return {
       id: api.id,
       fullName: api.fullName,
       photo: api.photo ?? '/img/mpl-prof/sarah.jpg',
-      verified: false,
-      countryLabel: null as string | null,
-      flagSrc: null as string | null,
+      verified: api.verified,
+      countryLabel: api.countryLabel,
+      flagSrc: api.countryFlag,
       rating: api.rating,
       reviewsCount: api.reviewsCount,
-      qualification: null as string | null,
+      qualification: api.qualification,
       experienceYears: api.experienceYears,
-      availabilityLabel: null as string | null,
-      availabilityTone: null as 'today' | 'tomorrow' | 'soon' | 'later' | null,
+      availabilityLabel: availability?.label ?? null,
+      availabilityTone: availability?.tone ?? null,
       priceFrom: '-',
     }
   }
@@ -81,7 +87,10 @@ const teacherCard = computed(() => {
 interface HourSlot { blockId: string; start: Date; end: Date; label: string }
 
 const MIN_LEAD_MS = 2 * 60 * 60 * 1000
-const SLOT_MS = 2 * 60 * 60 * 1000
+/** Durée d'une séance réelle : 1 h (`languagePlanning.sessionDuration`), pas une donnée API. */
+const SLOT_MS = 60 * 60 * 1000
+/** Mock uniquement — `langueCreneauHoursMock` espace ses départs de 2 h (09→21h sans trou). */
+const MOCK_SLOT_MS = 2 * 60 * 60 * 1000
 
 function sessionSlots(block: CalendarSlot): HourSlot[] {
   const slots: HourSlot[] = []
@@ -120,7 +129,7 @@ function buildMockSlots(): HourSlot[] {
       const [h, m] = hour.split(':').map(Number)
       const start = new Date(day)
       start.setHours(h!, m!, 0, 0)
-      const end = new Date(start.getTime() + SLOT_MS)
+      const end = new Date(start.getTime() + MOCK_SLOT_MS)
       const tf = new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' })
       slots.push({
         blockId: `mock-${dayKey(day)}-${hour}`,
@@ -272,7 +281,7 @@ usePageSeo(() => ({
 
 <template>
   <div class="flex w-full flex-col gap-20 pb-22">
-    <AppTopBar back :back-to="backToProfesseur" :notifications="3" :gap="0" />
+    <AppTopBar back :back-to="backToProfesseur" :gap="0" />
 
     <div>
       <h1 class="m-0 text-[20px] leading-normal font-semibold tracking-[-0.65px] text-[#191919]">
@@ -303,7 +312,7 @@ usePageSeo(() => ({
 
       <div class="flex w-full flex-col gap-20">
         <!-- Carte professeur -->
-        <section class="box-border w-full rounded-[10px] border border-[#f1f1f8] bg-white p-17">
+        <section class="box-border w-full rounded-[10px] border border-[#f1f1f8] bg-surface-card p-17">
           <div class="flex items-start gap-14 pb-20">
             <div class="size-106 shrink-0 overflow-hidden rounded-[10px] bg-[#f1f5f9]">
               <img
@@ -326,7 +335,7 @@ usePageSeo(() => ({
                   class="block size-12 shrink-0"
                 >
               </div>
-              <p v-if="teacherCard.countryLabel" class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-18 font-normal text-black">
+              <p v-if="teacherCard.countryLabel" class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-18 font-normal text-text">
                 <img
                   v-if="teacherCard.flagSrc"
                   :src="teacherCard.flagSrc"
@@ -337,16 +346,16 @@ usePageSeo(() => ({
                 >
                 <span>{{ teacherCard.countryLabel }}</span>
               </p>
-              <p v-if="teacherCard.qualification" class="m-0 flex items-center gap-6 pt-4 text-[11.5px] leading-[17.25px] font-normal text-black">
+              <p v-if="teacherCard.qualification" class="m-0 flex items-center gap-6 pt-4 text-[11.5px] leading-[17.25px] font-normal text-text">
                 <img src="/img/icons/mpl-prof/grad.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                 <span class="truncate">{{ teacherCard.qualification }}</span>
               </p>
               <p v-if="teacherCard.rating !== null" class="m-0 flex items-center gap-6 pt-4 text-[11.5px] leading-[17.25px]">
                 <img src="/img/icons/mpl-prof/star.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                <span class="font-semibold text-black">{{ formatRating(teacherCard.rating) }}</span>
+                <span class="font-semibold text-text">{{ formatRating(teacherCard.rating) }}</span>
                 <span class="text-[10px] font-medium text-[#94a3b8]">({{ $t('languagePlanning.reviewsCount', { count: teacherCard.reviewsCount }) }})</span>
               </p>
-              <p v-if="teacherCard.experienceYears !== null" class="m-0 flex items-center gap-6 pt-4 text-[10px] leading-[17.25px] font-normal text-black">
+              <p v-if="teacherCard.experienceYears !== null" class="m-0 flex items-center gap-6 pt-4 text-[10px] leading-[17.25px] font-normal text-text">
                 <img src="/img/icons/mpl-prof/chat.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                 <span>{{ $t('languagePlanning.experienceYears', teacherCard.experienceYears) }}</span>
               </p>
@@ -373,11 +382,11 @@ usePageSeo(() => ({
 
         <!-- 1. Dates -->
         <section class="w-full">
-          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-black">{{ $t('languagePlanning.chooseDate') }}</h2>
+          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-text">{{ $t('languagePlanning.chooseDate') }}</h2>
           <div class="flex items-center gap-8 pt-12">
             <button
               type="button"
-              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-white shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
+              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
               :disabled="dateWindowStart <= 0"
               :aria-label="$t('ds.pager.previous')"
               @click="shiftDates(-1)"
@@ -394,7 +403,7 @@ usePageSeo(() => ({
                   'flex cursor-pointer flex-col items-center justify-center rounded-[10px] border px-5 py-11',
                   selectedDayKey === day.key
                     ? 'border-[#3709fc] bg-[#faf8ff]'
-                    : 'border-[#e9e9f3] bg-white',
+                    : 'border-[#e9e9f3] bg-surface-card',
                 ]"
                 @click="selectDay(day.key)"
               >
@@ -417,7 +426,7 @@ usePageSeo(() => ({
 
             <button
               type="button"
-              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-white shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
+              class="flex size-36 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card shadow-[0_0_3.5px_rgba(0,0,0,0.1)] disabled:opacity-40"
               :disabled="dateWindowStart >= Math.max(0, days.length - DATE_WINDOW)"
               :aria-label="$t('ds.pager.next')"
               @click="shiftDates(1)"
@@ -430,7 +439,7 @@ usePageSeo(() => ({
         <!-- 2. Créneaux -->
         <section class="w-full">
           <div class="flex flex-wrap items-center justify-between gap-8">
-            <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-black">{{ $t('languagePlanning.chooseSlot') }}</h2>
+            <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-text">{{ $t('languagePlanning.chooseSlot') }}</h2>
             <p class="m-0 flex items-center gap-4 text-[11px] leading-16 font-normal text-[#64748b]">
               <img src="/img/icons/mpl-creneau/slot-clock.svg" alt="" width="12" height="12" class="block size-12 shrink-0">
               <span>{{ $t('languagePlanning.teacherLocalTime') }}</span>
@@ -442,7 +451,7 @@ usePageSeo(() => ({
               :key="`${slot.blockId}-${slot.start.getTime()}`"
               type="button"
               :class="[
-                'cursor-pointer rounded-[8px] border bg-white px-4 py-10 text-[11px] leading-16 font-medium whitespace-nowrap',
+                'cursor-pointer rounded-[8px] border bg-surface-card px-4 py-10 text-[11px] leading-16 font-medium whitespace-nowrap',
                 selectedSlotKey === `${slot.blockId}-${slot.start.getTime()}`
                   ? 'border-[#3709fc] text-[#4f18f6]'
                   : 'border-[#e9e9f3] text-[#0d153e]',
@@ -456,8 +465,8 @@ usePageSeo(() => ({
 
         <!-- 3. Confirmation -->
         <section class="w-full">
-          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-black">{{ $t('languagePlanning.confirmChoice') }}</h2>
-          <div class="mt-12 box-border flex w-full items-start gap-12 rounded-[10px] border border-[#e9e9f3] bg-white p-14">
+          <h2 class="m-0 text-[13px] leading-[22.5px] font-semibold text-text">{{ $t('languagePlanning.confirmChoice') }}</h2>
+          <div class="mt-12 box-border flex w-full items-start gap-12 rounded-[10px] border border-[#e9e9f3] bg-surface-card p-14">
             <img src="/img/icons/mpl-creneau/confirm-cal.svg" alt="" width="28" height="28" class="mt-2 block size-28 shrink-0">
             <div class="min-w-0 flex-1">
               <p class="m-0 text-[13px] leading-18 font-semibold text-[#0d153e]">{{ teacherCard.fullName }}</p>
@@ -485,7 +494,7 @@ usePageSeo(() => ({
           </button>
           <button
             type="button"
-            class="mt-10 flex h-48 w-full cursor-pointer items-center justify-center rounded-[10px] border border-[#4f46e5] bg-white text-[14px] leading-20 font-semibold text-[#0a142f]"
+            class="mt-10 flex h-48 w-full cursor-pointer items-center justify-center rounded-[10px] border border-[#4f46e5] bg-surface-card text-[14px] leading-20 font-semibold text-[#0a142f]"
             @click="cancel"
           >
             {{ $t('languagePlanning.cancelSlot') }}

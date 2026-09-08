@@ -73,7 +73,7 @@ const formError = ref<string | null>(null)
 const notice = ref<string | null>(null)
 const fieldErrors = ref<Record<string, string[]>>({})
 
-const { score, valid: passwordValid, missing } = usePasswordStrength(password)
+const { score, valid: passwordValid, missing, hasDisallowedChars } = usePasswordStrength(password)
 
 const pendingIntent = ref<PaymentIntent | null>(null)
 
@@ -87,14 +87,20 @@ onMounted(async () => {
   if (result?.outcome) await finish(() => resume(result.outcome))
 })
 
-/** Message sous les barres — repris mot pour mot du script de la maquette. */
+/**
+ * Message sous les barres. `hasDisallowedChars` prime sur tout le reste : un
+ * caractère hors de l'alphabet accepté par le back-office (ex. `.`, espace)
+ * bloque l'inscription même si les 5 autres critères sont au vert.
+ */
 const strengthHint = computed(() => {
   if (password.value === '') return t('auth.register.strengthHint')
+  if (hasDisallowedChars.value) return t('auth.register.disallowedChars')
   if (missing.value.length === 0) return t('auth.register.strengthOk')
-  if (missing.value.length === 4) return t('auth.register.strengthHint')
+  if (missing.value.length === 5) return t('auth.register.strengthHint')
 
   const labels: Record<string, string> = {
     length: t('auth.register.missingLength'),
+    lower: t('auth.register.missingLower'),
     upper: t('auth.register.missingUpper'),
     digit: t('auth.register.missingDigit'),
     symbol: t('auth.register.missingSymbol'),
@@ -258,7 +264,9 @@ usePageSeo(() => ({
   <div class="shell:hidden">
     <!-- Logo -->
     <div class="pb-20">
-      <AppLogo :width="150" :height="47" class="mx-auto" />
+      <NuxtLink :to="localePath('/')" class="mx-auto block w-fit no-underline" :aria-label="$t('nav.home')">
+        <AppLogo :width="150" :height="47" />
+      </NuxtLink>
     </div>
 
     <!-- Accroche. L'illustration est hors flux et déborde de 28px sur la
@@ -291,7 +299,7 @@ usePageSeo(() => ({
 
     <!-- Formulaire : carte, puis séparateur et réseaux hors de la carte. -->
     <div class="pt-15 pb-20">
-      <div class="rounded-xl bg-white px-20 py-25 shadow-card">
+      <div class="rounded-xl bg-surface-card px-20 py-25 shadow-card">
         <QAlert
           v-if="session.pendingPayment"
           tone="info"

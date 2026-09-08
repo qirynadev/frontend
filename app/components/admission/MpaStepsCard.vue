@@ -66,7 +66,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="mpa-steps-card w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-white p-17 px-1 box-border">
+  <section class="mpa-steps-card w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-surface-card p-17 px-1 box-border">
     <div class="mpa-steps-head flex items-center justify-between gap-12 px-19 pb-16">
       <h2 class="m-0 text-xl leading-[25.5px] font-bold text-[#0b0b0b]">{{ $t('admission.stepsTitle') }}</h2>
     </div>
@@ -91,7 +91,7 @@ onUnmounted(() => {
             'mpa-step-marker mt-2 flex size-24 shrink-0 items-center justify-center rounded-full box-border',
             step.status === 'done' ? 'mpa-step-marker--done bg-[#4f18f6]' : '',
             step.status === 'current' ? 'mpa-step-marker--current bg-[#4f18f6] text-sm leading-[16.5px] font-medium text-white' : '',
-            step.status === 'upcoming' ? 'mpa-step-marker--upcoming border border-[#e2e8f0] bg-white text-sm leading-[16.5px] font-medium text-black' : '',
+            step.status === 'upcoming' ? 'mpa-step-marker--upcoming border border-[#e2e8f0] bg-surface-card text-sm leading-[16.5px] font-medium text-text' : '',
           ]"
         >
           <img v-if="step.status === 'done'" src="/img/icons/ic-mpa-step-check.svg" alt="" width="10" height="10" class="block size-10">

@@ -19,11 +19,28 @@
  * Informations personnelles → `/reglages/informations-personnelles`.
  */
 import { NuxtLink } from '#components'
+import { useSessionStore, useThemeStore } from '~/core/stores'
 
-definePageMeta({ middleware: 'auth' })
-
+// Accessible sans connexion — cet index n'est qu'un sommaire de liens ; seules
+// les pages qui exigent vraiment un compte (informations personnelles, mot de
+// passe, centre d'aide) portent leur propre `middleware: 'auth'`.
 const { t } = useI18n()
 const localePath = useLocalePath()
+const session = useSessionStore()
+const theme = useThemeStore()
+
+/** Reflète le vrai choix (`useThemeStore`) plutôt qu'un « Clair » figé. */
+const themeValueLabel = computed(() => {
+  if (theme.preference === 'sombre') return t('settingsTheme.darkTitle')
+  if (theme.preference === 'systeme') return t('settingsTheme.systemTitle')
+  return t('settingsTheme.lightTitle')
+})
+
+/** Même geste que `AppSideMenu.vue` : le cookie est effacé côté serveur, l'état local suit toujours. */
+async function onLogout() {
+  await session.logout()
+  await navigateTo(localePath('/'))
+}
 
 interface Row {
   id: string
@@ -59,7 +76,7 @@ const sections: { titleKey: string, rows: Row[] }[] = [
     rows: [
       { id: 'help', icon: 'ic-rg-help', titleKey: 'settings.helpTitle', descKey: 'settings.helpDesc', to: '/reglages/centre-aide', indigo: true },
       { id: 'legal', icon: 'ic-rg-legal', titleKey: 'settings.legalTitle', descKey: 'settings.legalDesc', to: '/reglages/mentions', indigo: true },
-      { id: 'logout', icon: 'ic-rg-logout', titleKey: 'settings.logoutTitle', descKey: 'settings.logoutDesc', to: '/connexion', danger: true, indigo: true },
+      { id: 'logout', icon: 'ic-rg-logout', titleKey: 'settings.logoutTitle', descKey: 'settings.logoutDesc', danger: true, indigo: true },
     ],
   },
 ]
@@ -75,7 +92,7 @@ usePageSeo(() => ({
   <div class="page-rg flex flex-1 flex-col">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="rg-main flex w-full max-w-full flex-col gap-15 box-border">
-      <AppTopBar :back="true" back-to="/" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/" :gap="0" />
 
       <section class="rg-intro w-full">
         <h1 class="m-0 text-4xl leading-normal font-semibold tracking-[-0.65px] text-text">
@@ -87,22 +104,25 @@ usePageSeo(() => ({
       </section>
 
       <section v-for="section in sections" :key="section.titleKey" class="rg-section flex flex-col gap-15 w-full">
-        <h2 class="rg-section-title m-0 px-4 text-xl leading-20 font-semibold tracking-[0.7px] text-black">
+        <h2 class="rg-section-title m-0 px-4 text-xl leading-20 font-semibold tracking-[0.7px] text-text">
           {{ $t(section.titleKey) }}
         </h2>
 
         <div class="rg-card w-full overflow-hidden rounded-[16px] border border-rg-card-border bg-rg-card-bg shadow-rg box-border">
           <component
-            :is="row.to ? NuxtLink : 'div'"
+            :is="row.id === 'logout' ? 'button' : row.to ? NuxtLink : 'div'"
             v-for="(row, index) in section.rows"
             :key="row.id"
+            :type="row.id === 'logout' ? 'button' : undefined"
             :to="row.to ? localePath(row.to) : undefined"
             :class="[
               'rg-row flex w-full items-center p-16 text-inherit no-underline box-border',
               row.danger ? 'rg-row--danger' : '',
               row.theme ? 'rg-row--theme' : '',
+              row.id === 'logout' ? 'cursor-pointer border-0 bg-transparent text-left' : '',
               index === section.rows.length - 1 ? 'border-b-0' : 'border-b border-b-rg-row-border',
             ]"
+            @click="row.id === 'logout' ? onLogout() : undefined"
           >
             <span
               :class="[
@@ -117,7 +137,7 @@ usePageSeo(() => ({
               <span
                 :class="[
                   'rg-row-title text-exact-16 leading-24 font-semibold',
-                  row.indigo ? 'text-rg-row-indigo' : row.danger ? 'text-rg-danger' : 'text-black',
+                  row.indigo ? 'text-rg-row-indigo' : row.danger ? 'text-rg-danger' : 'text-text',
                 ]"
               >{{ $t(row.titleKey) }}</span>
               <span
@@ -127,7 +147,7 @@ usePageSeo(() => ({
             </span>
 
             <span v-if="row.valueKey" class="rg-row-value mr-8 shrink-0 text-xl leading-20 font-normal text-rg-row-value">
-              {{ $t(row.valueKey) }}
+              {{ row.theme ? themeValueLabel : $t(row.valueKey) }}
             </span>
 
             <img

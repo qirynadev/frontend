@@ -29,7 +29,7 @@ const selectedRing: Record<Tone, string> = {
     :aria-pressed="selected"
     :class="[
       'inline-flex shrink-0 cursor-pointer flex-col items-center gap-6 rounded-xl border px-12 py-12 text-base font-medium whitespace-nowrap transition-colors duration-150',
-      selected ? selectedRing[tone] : 'border-border-soft bg-white text-navy hover:bg-surface',
+      selected ? selectedRing[tone] : 'border-border-soft bg-surface-card text-navy hover:bg-surface',
       disabled ? 'pointer-events-none opacity-50' : '',
     ]"
   >

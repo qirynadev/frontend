@@ -50,7 +50,7 @@ const accent = computed(() => {
       card: 'border-tier-border',
       name: 'text-tier-2',
       price: 'text-tier-2',
-      button: 'border border-tier-2 bg-white text-tier-2',
+      button: 'border border-tier-2 bg-surface-card text-tier-2',
       icon: 'ic-oo-feature-1',
       check: 'ic-of-check-purple',
       ribbonBg: 'bg-tier-2',
@@ -61,7 +61,7 @@ const accent = computed(() => {
       card: 'border-tier-3-border',
       name: 'text-tier-3',
       price: 'text-tier-3',
-      button: 'border border-tier-3 bg-white text-tier-3',
+      button: 'border border-tier-3 bg-surface-card text-tier-3',
       icon: 'ic-formule-everest',
       check: 'ic-of-check-red',
       ribbonBg: 'bg-tier-3',
@@ -72,7 +72,7 @@ const accent = computed(() => {
       card: 'border-tier-border',
       name: 'text-tier-1',
       price: 'text-tier-1-price',
-      button: 'border border-tier-1-line bg-white text-tier-1-line',
+      button: 'border border-tier-1-line bg-surface-card text-tier-1-line',
       icon: 'ic-formule-kili',
       check: 'ic-of-check-green',
       ribbonBg: 'bg-tier-1',
@@ -82,14 +82,20 @@ const accent = computed(() => {
     card: 'border-tier-border',
     name: 'text-tier-2',
     price: 'text-tier-2',
-    button: 'border border-tier-2 bg-white text-tier-2',
+    button: 'border border-tier-2 bg-surface-card text-tier-2',
     icon: 'ic-formule-acon',
     check: 'ic-of-check-purple',
     ribbonBg: 'bg-tier-2',
   }
 })
 
-/** Prestations parcours école : titres seuls (sans descriptions par domaine). */
+/**
+ * Repli Figma : titres génériques, utilisés seulement quand l'offre du
+ * domaine n'a encore aucune prestation renseignée côté back-office
+ * (`tier.features` vide) — dès qu'un contenu admin existe, même sommaire, on
+ * l'affiche (voir `docs/directives-backend.md` pour la qualité éditoriale
+ * encore à compléter sur certains domaines).
+ */
 const domainFeatures = computed(() => {
   if (!props.domain) return []
   return DOMAIN_OFFER_FEATURE_IDS.map((id) => ({
@@ -112,7 +118,7 @@ const ribbonLabel = computed(() => {
 <template>
   <article
     :class="[
-      'relative box-border flex w-full min-w-0 flex-col gap-8 rounded-2xl border bg-white px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
+      'relative box-border flex w-full min-w-0 flex-col gap-8 rounded-2xl border bg-surface-card px-20 pb-16 max-2xs:px-14 max-2xs:pb-14',
       asStack ? 'overflow-visible pt-26' : 'shrink-0 basis-full pt-22 max-2xs:pt-18',
       accent.card,
     ]"
@@ -174,14 +180,7 @@ const ribbonLabel = computed(() => {
       <hr class="mt-14 w-full border-0 border-t border-border-soft">
     </header>
 
-    <ul v-if="domain && domainFeatures.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
-      <li v-for="feature in domainFeatures" :key="feature.id" class="flex items-start gap-10 text-lg leading-18 text-text">
-        <QIcon :name="accent.check" :size="12" class="mt-3 shrink-0" />
-        <span class="min-w-0">{{ $t(feature.labelKey) }}</span>
-      </li>
-    </ul>
-
-    <ul v-else-if="tier.features.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
+    <ul v-if="tier.features.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
       <li
         v-for="feature in tier.features"
         :key="feature"
@@ -189,6 +188,13 @@ const ribbonLabel = computed(() => {
       >
         <QIcon :name="accent.check" :size="12" class="mt-3 shrink-0" />
         <span class="min-w-0">{{ feature }}</span>
+      </li>
+    </ul>
+
+    <ul v-else-if="domain && domainFeatures.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
+      <li v-for="feature in domainFeatures" :key="feature.id" class="flex items-start gap-10 text-lg leading-18 text-text">
+        <QIcon :name="accent.check" :size="12" class="mt-3 shrink-0" />
+        <span class="min-w-0">{{ $t(feature.labelKey) }}</span>
       </li>
     </ul>
 

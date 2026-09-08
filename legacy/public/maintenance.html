@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Qiryna — Accès restreint</title>
+    <link rel="icon" href="/favicon.ico" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: radial-gradient(circle at 50% 0%, #14264f 0%, #0a1330 60%);
+        font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
+      }
+      .card {
+        width: 100%;
+        max-width: 560px;
+        text-align: center;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 48px 32px;
+        box-shadow: 0 20px 50px rgba(10, 19, 48, 0.35);
+      }
+      .logo {
+        height: 56px;
+        width: auto;
+        margin: 0 auto 28px;
+        object-fit: contain;
+        display: block;
+      }
+      .badge {
+        display: inline-block;
+        background: #fef5f6;
+        color: #fc1e3d;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 8px 16px;
+        border-radius: 999px;
+        margin-bottom: 24px;
+      }
+      h1 {
+        color: #0a1330;
+        font-size: 28px;
+        line-height: 1.25;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .subtitle {
+        color: #5a6387;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+      .subtitle--en {
+        color: #8085a9;
+        font-size: 14px;
+        margin-bottom: 28px;
+      }
+      .contact {
+        color: #8085a9;
+        font-size: 14px;
+      }
+      .contact a {
+        color: #fc1e3d;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .contact a:hover {
+        text-decoration: underline;
+      }
+      @media (min-width: 640px) {
+        h1 {
+          font-size: 34px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <img src="/qiryna-logo.png" alt="Qiryna" class="logo" />
+      <span class="badge">🔒 Accès restreint</span>
+      <h1>Vous n'avez pas accès à cette page</h1>
+      <p class="subtitle">Cette page est privée. Votre accès n'est pas autorisé.</p>
+      <p class="subtitle--en">This page is private. You don't have access to this page.</p>
+      <p class="contact">
+        Une question ? / A question? —
+        <a href="mailto:contact@qiryna.com">contact@qiryna.com</a>
+      </p>
+    </main>
+  </body>
+</html>

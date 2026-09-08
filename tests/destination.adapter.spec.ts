@@ -56,6 +56,23 @@ describe('réponse nominale', () => {
     // qu’une école est dépubliée.
     expect(toDestination(rawDestination).schoolCount).toBe(2)
   })
+
+  it('expose les statistiques éditoriales telles quelles', () => {
+    const { stats } = toDestination(rawDestination)
+
+    expect(stats).toHaveLength(4)
+    expect(stats[0]).toEqual({ value: '295', label: 'Universités et grandes écoles' })
+    expect(stats[1]).toEqual({ value: '550 000', label: 'Étudiants internationaux' })
+  })
+
+  it('vide une valeur ou un libellé absent plutôt que d’inventer un repli', () => {
+    const { stats } = toDestination(rawDestination)
+
+    // Ligne 3 : value manquante ; ligne 4 : label manquant — voir la page,
+    // qui affiche « - » pour toute chaîne vide.
+    expect(stats[2]).toEqual({ value: '', label: 'destination d’études dans le monde' })
+    expect(stats[3]).toEqual({ value: '138', label: '' })
+  })
 })
 
 describe('champs manquants', () => {
@@ -68,6 +85,9 @@ describe('champs manquants', () => {
     expect(empty.schools).toEqual([])
     expect(empty.image).toBeNull()
     expect(empty.country).toEqual({ id: null, name: '', code: null, flag: null })
+    // Pas de repli inventé (`Canada` n’a par ex. aucune statistique sur stage) :
+    // un tableau vide, à charge de la page d’afficher « - » pour chaque pastille.
+    expect(empty.stats).toEqual([])
   })
 
   it('ne lève pas sur null, undefined ou un scalaire', () => {

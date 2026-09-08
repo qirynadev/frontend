@@ -1,0 +1,90 @@
+name: 🌐 Deploy Frontend — qiryna-client (on tag / on main)
+
+# Déclenché sur push d'un tag vX.Y.Z OU sur push direct sur main (déploiement continu).
+# Build de la SPA Vue dans le runner, puis envoi de dist/ par rsync vers le docroot
+# Plesk du client (httpdocs), en se connectant comme l'utilisateur système.
+#
+# Cible serveur : /var/www/vhosts/qiryna.com/httpdocs
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Raison du déploiement manuel"
+        required: false
+        default: "Déploiement manuel"
+
+env:
+  DEPLOY_PATH: /var/www/vhosts/qiryna.com/httpdocs
+  # Back-office (même serveur) : utilisé en post-déploiement pour réappliquer la
+  # restriction d'IP, car le rsync --delete ci-dessous remet le .htaccess du
+  # client à son état par défaut (restriction désactivée).
+  BACKOFFICE_PATH: /var/www/vhosts/qiryna.com/admin.qiryna.com
+  PLESK_PHP: /opt/plesk/php/8.3/bin/php
+
+jobs:
+  deploy:
+    name: Build & deploy Vue SPA
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: ✅ Checkout (sur le tag poussé)
+        uses: actions/checkout@v5
+
+      - name: 🟢 Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: 📦 Install
+        run: npm install
+
+      - name: 🏗️ Build (production)
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_BASE_URL: /
+          VITE_DEFAULT_LOCALE: fr
+          VITE_FALLBACK_LOCALE: fr
+          VITE_SUPPORTED_LOCALES: fr,en
+          VITE_STRIPE_PK: ${{ secrets.VITE_STRIPE_PK }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_FACEBOOK_CLIENT_ID: ${{ secrets.VITE_FACEBOOK_CLIENT_ID }}
+          VITE_LINKEDIN_CLIENT_ID: ${{ secrets.VITE_LINKEDIN_CLIENT_ID }}
+          VITE_COUNTRY_ID: ${{ secrets.VITE_COUNTRY_ID }}
+          VITE_GA_ID: ${{ secrets.VITE_GA_ID }}
+        run: npm run build-only
+
+      - name: 🔑 Configuration clé SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🚀 Envoi de dist/ vers le serveur (rsync)
+        run: |
+          rsync -avz --delete \
+            --exclude='.php-version' \
+            --exclude='.php-ini' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }}" \
+            dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_PATH }}/
+
+      - name: 🔒 Réappliquer la restriction d'IP (gate Coming soon)
+        # Le rsync --delete vient de réécrire httpdocs/.htaccess à l'état par
+        # défaut (restriction désactivée). On régénère le bloc IP depuis les
+        # réglages back-office. Ne fait jamais échouer le déploiement.
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "cd ${{ env.BACKOFFICE_PATH }} && ${{ env.PLESK_PHP }} artisan qiryna:sync-ip-gate" \
+            || echo '⚠️ Sync gate IP non effectué (réglez via le back-office ou php artisan qiryna:sync-ip-gate).'
+
+      - name: ❌ Notifier l'échec
+        if: failure()
+        run: echo "Le déploiement du frontend a échoué. Voir les logs ci-dessus."

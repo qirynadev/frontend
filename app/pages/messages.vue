@@ -2,42 +2,107 @@
 /**
  * Messages ← `maquette/pwa/pages/messages.html`.
  *
- * Liste des conversations ; détail en **modale** (même pattern que
- * `.ed-form-modal` fiche école). Recherche / filtre retirés.
- * Voir `docs/messages-mocks.md`.
+ * | Bloc | Règles reprises de `app.css` |
+ * |---|---|
+ * | accroche | `.msg-hero` `min-height: 118px`, `padding-bottom: 60px` · copie plafonnée à 170px · illustration 190×150 ancrée en haut à droite |
+ * | onglets | `.msg-tabs` `padding: 7px`, filet `#e6e5f2` · actif sur `#3b2cf2`, pastille décalée à `right: -21px` |
+ * | carte | `.msg-card` `padding: 17px 18px` · avatar 48×48 · corps `padding: 0 10px 0 16px` |
+ * | carte | nom 14px/20px tronqué · étiquette 9px/13,5px · aperçu 11px/19,5px sur 2 lignes |
+ * | vide | `.msg-empty` `padding: 28px 16px`, centré |
+ * | sécurité | `.msg-secure` `min-height: 86px`, illustration 116×78 |
+ * | modale conversation | même pattern que `.ed-form-modal` fiche école — slide bas→haut, ≥ ¾ écran, corps scrollable |
+ *
+ * **Données réelles** (2026-08-30) : les deux onglets appelaient jusqu'ici du
+ * contenu figé (`config/messages-conversations.ts`, six conversations
+ * fictives) et l'onglet « Notification » était vide dans la maquette, sans
+ * aucune logique. Câblés sur `messageRepo`/`notificationRepo` :
+ *
+ * - **Messages** — `GET /user/messages` ne connaît pas la conversation,
+ *   seulement deux tas `sent`/`received` ; `toMessageThreads`
+ *   (`core/adapters/message.adapter.ts`) reconstitue un fil complet par
+ *   interlocuteur (pour la modale), plus l'aperçu/horodatage du plus récent
+ *   (pour la carte de liste). En pratique un seul fil apparaît : toute la
+ *   messagerie route vers un unique compte admin (même constat côté Legacy,
+ *   `messageCounterpart.ts`). Trois avatars coexistaient dans la maquette
+ *   (photo/icône/illustration) pour distinguer des conseillers fictifs par
+ *   métier ; l'API ne renvoie qu'un avatar généré par interlocuteur réel — un
+ *   seul rendu suffit, y compris dans la modale. La recherche/filtre et la
+ *   pagination de cet onglet (2026-08-22, Figma) sont retirées : décoratives
+ *   dans la maquette (« l'API n'expose pas de messagerie »), et `GET
+ *   /user/messages` ne pagine ni ne filtre non plus côté réel.
+ * - **Notification** — `GET /user/notifications`, paginée côté API
+ *   (`meta.current_page`/`last_page`) : `QPager` y a un sens réel. Achats,
+ *   statuts de commande, rappels… seul un nouveau message écrit aujourd'hui
+ *   dans ce flux côté back-office (`MessageController::sendMessage`) — voir
+ *   `docs/directives-backend.md` pour les événements qui n'y écrivent pas
+ *   encore (paiement, inscription, rappel : e-mail seulement).
+ *
+ * **Modale de conversation** (Figma, 2026-09) : au clic sur une carte de
+ * messages, affiche le fil complet en bulles. Contrairement à la maquette
+ * (bulles toutes identiques, aucune conversation à deux voix dans les six
+ * exemples figés), le fil réel contient de vrais messages envoyés *et*
+ * reçus : les bulles distinguent les deux (`message.mine`), sans quoi une
+ * conversation à deux voix serait illisible.
  */
 import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
-import { messageConversations, type MessageConversation } from '~/config/messages-conversations'
+import type { MessageAuthor, MessageThread } from '~/core/contracts/message'
+import type { NotificationItem } from '~/core/contracts/notification'
+import { messageRepo, notificationRepo } from '~/core/repositories'
+import { useNotificationsStore } from '~/core/stores'
 
 definePageMeta({ middleware: 'auth' })
 
-const { t } = useI18n()
+const route = useRoute()
+const { t, d, locale } = useI18n()
+const localePath = useLocalePath()
+const notificationsStore = useNotificationsStore()
 
 type TabId = 'messages' | 'notification'
-const activeTab = ref<TabId>('messages')
-const selected = ref<MessageConversation | null>(null)
+const activeTab = ref<TabId>(route.query.tab === 'notification' ? 'notification' : 'messages')
+const notifPage = ref(1)
+const selected = ref<MessageThread | null>(null)
 
 const threadOpen = computed({
   get: () => selected.value !== null,
   set: (value: boolean) => { if (!value) selected.value = null },
 })
 
-const threadMessages = computed(() => {
-  const conv = selected.value
-  if (!conv) return [] as string[]
-  return conv.threadKeys?.length ? conv.threadKeys : [conv.previewKey]
-})
+function openConversation(entry: MessageThread) {
+  selected.value = entry
+}
 
-/**
- * Pagination décorative, comme dans la maquette (`data-pages="4"`) : la liste
- * tient sur un écran et l'API n'expose pas de messagerie. À brancher sur une
- * vraie pagination le jour où l'endpoint existera.
- */
-const page = ref(1)
-const totalPages = 4
+const {
+  data: threads,
+  apiError: threadsError,
+  isInitialLoading: threadsLoading,
+  refresh: refreshThreads,
+} = await usePageData('messages-threads', () => messageRepo.list(locale.value), { watch: [locale] })
 
-/** `.msg-tag--*` (`app.css`). */
-const tagClass = {
+const {
+  data: notifications,
+  apiError: notifError,
+  isInitialLoading: notifLoading,
+  refresh: refreshNotifications,
+} = await usePageData(
+  'messages-notifications',
+  () => notificationRepo.list(notifPage.value, locale.value),
+  { watch: [notifPage, locale] },
+)
+
+const isInitialLoading = computed(() => threadsLoading.value || notifLoading.value)
+const apiError = computed(() => threadsError.value ?? notifError.value)
+
+function refresh() {
+  return Promise.all([refreshThreads(), refreshNotifications(), notificationsStore.refresh(locale.value)])
+}
+
+/** `.msg-tag--*` (`app.css`). Rôle réel → étiquette/teinte ; repli sur « Équipe Qiryna ». */
+const ROLE_TAGS: Record<string, { key: string, tone: 'purple' | 'green' | 'orange' | 'pink' | 'violet' | 'blue' }> = {
+  conseiller: { key: 'messages.tagAdvisor', tone: 'purple' },
+  coach: { key: 'messages.tagAdvisor', tone: 'purple' },
+  mentor: { key: 'messages.tagAdvisor', tone: 'purple' },
+}
+const tagClass: Record<string, string> = {
   purple: 'msg-tag--purple bg-msg-tag-purple-bg text-msg-tag-purple',
   green: 'msg-tag--green bg-msg-tag-green-bg text-msg-tag-green',
   orange: 'msg-tag--orange bg-msg-tag-orange-bg text-msg-tag-orange',
@@ -45,12 +110,73 @@ const tagClass = {
   violet: 'msg-tag--violet bg-msg-tag-violet-bg text-msg-tag-violet',
   blue: 'msg-tag--blue bg-msg-tag-blue-bg text-msg-tag-blue',
 }
+function roleTag(role: string): { key: string, tone: 'purple' | 'green' | 'orange' | 'pink' | 'violet' | 'blue' } {
+  return ROLE_TAGS[role] ?? { key: 'messages.tagTeam', tone: 'violet' }
+}
 
-const unreadTotal = computed(() =>
-  messageConversations.reduce((n, c) => n + (c.unread > 0 ? 1 : 0), 0))
+const unreadTotal = computed(() => (threads.value ?? []).reduce((n, entry) => n + (entry.unreadCount > 0 ? 1 : 0), 0))
+/** Même compte que la cloche (`AppTopBar`) — un seul store, jamais deux sources qui pourraient diverger. */
+const notificationsBadge = computed(() => notificationsStore.unreadCount)
 
-function openConversation(conv: MessageConversation) {
-  selected.value = conv
+/**
+ * Heure, « Hier », ou date — même convention que la maquette
+ * (`messages.html` affichait ces trois formes en dur par conversation).
+ */
+function formatRelativeTime(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const now = new Date()
+  if (date.toDateString() === now.toDateString()) {
+    return date.toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+  if (date.toDateString() === yesterday.toDateString()) return t('messages.yesterday')
+
+  return d(date, 'short')
+}
+
+/**
+ * `url` pointe tantôt vers une route interne (`/messages`, cas du nouveau
+ * message), tantôt vers l'ancien tableau de bord — constaté en direct :
+ * `https://stage.qiryna.com/dashboard/mes-evaluations` sur une notification
+ * de commande. Cette seconde forme cible une **autre application** ; on ne
+ * navigue que sur un chemin interne, jamais vers une origine externe.
+ */
+function isInternalPath(url: string): boolean {
+  return url.startsWith('/') && !url.startsWith('//')
+}
+
+/**
+ * `usePageData` (donc `useAsyncData`) renvoie un `shallowRef` — muter
+ * `item.read` en place ne déclenche aucun rendu, `notifications.value` est
+ * réassigné en entier. Le compte non lu, lui, vit dans `notificationsStore`
+ * (partagé avec la cloche) : `markRead` renvoie déjà le compte à jour, pas
+ * besoin de le recalculer ni de le refaire chercher.
+ */
+async function openNotification(item: NotificationItem) {
+  if (!item.read) {
+    try {
+      const result = await notificationRepo.markRead(item.id, locale.value)
+      if (notifications.value) {
+        notifications.value = {
+          ...notifications.value,
+          items: notifications.value.items.map(entry => (entry.id === item.id ? { ...entry, read: true } : entry)),
+        }
+      }
+      notificationsStore.setCount(result.count)
+    }
+    catch {
+      // La navigation ne doit pas dépendre du succès du marquage.
+    }
+  }
+  if (item.url && isInternalPath(item.url)) await navigateTo(localePath(item.url))
+}
+
+function avatarInitial(author: MessageAuthor): string {
+  return author.name.trim().charAt(0).toUpperCase() || '?'
 }
 
 usePageSeo(() => ({
@@ -62,9 +188,11 @@ usePageSeo(() => ({
 
 <template>
   <div class="page-msg flex flex-1 flex-col">
+    <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="msg-main flex w-full max-w-full flex-col overflow-x-hidden box-border">
-      <AppTopBar :back="true" back-to="/" :notifications="3" />
+      <AppTopBar :back="true" back-to="/" />
 
+      <!-- Accroche -->
       <section class="msg-hero relative flex min-h-118 items-start gap-10 pb-60 box-border" aria-labelledby="messages-title">
         <div class="msg-hero-copy relative z-1 min-w-0 max-w-170 flex-1">
           <h1 id="messages-title" class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] text-text">
@@ -79,6 +207,7 @@ usePageSeo(() => ({
         </div>
       </section>
 
+      <!-- Onglets -->
       <div class="msg-tabs flex w-full items-center rounded-xl border border-border p-7 box-border" role="tablist" :aria-label="$t('messages.tabsLabel')">
         <button
           type="button"
@@ -112,99 +241,153 @@ usePageSeo(() => ({
           <span class="msg-tab-inner relative inline-flex items-center justify-center gap-5">
             <img src="/img/icons/ic-msg-tab-bell.svg" alt="" width="16" height="16" class="block size-16 shrink-0 object-contain">
             <span>{{ $t('messages.tabNotifications') }}</span>
+            <span
+              v-if="notificationsBadge"
+              class="msg-tab-badge absolute top-1 -right-21 h-18 min-w-17 rounded-full bg-danger px-5 text-sm leading-18 font-medium text-center text-white box-border"
+            >{{ notificationsBadge }}</span>
           </span>
         </button>
       </div>
 
-      <div class="mt-15 grid w-full min-w-0 max-w-full">
-        <div
-          :class="[
-            'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
-            activeTab === 'messages' ? 'visible' : 'invisible pointer-events-none',
-          ]"
-          :aria-hidden="activeTab !== 'messages'"
-        >
-          <template v-if="messageConversations.length">
-            <div class="msg-list flex w-full flex-col gap-16">
-              <button
-                v-for="conv in messageConversations"
-                :key="conv.id"
-                type="button"
-                class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-white px-18 py-17 text-left box-border"
-                @click="openConversation(conv)"
-              >
-                <div
-                  :class="[
-                    'msg-avatar relative size-48 shrink-0 rounded-full',
-                    conv.avatar.kind === 'icon' ? `msg-avatar--icon flex items-center justify-center overflow-hidden ${conv.avatar.tint}` : '',
-                    conv.avatar.kind === 'illus' ? 'msg-avatar--support overflow-visible bg-transparent' : '',
-                  ]"
+      <PageState :loading="isInitialLoading" :error="apiError" :on-retry="refresh">
+        <template #loading>
+          <div class="mt-15 flex flex-col gap-16">
+            <QSkeleton variant="rect" :height="88" />
+            <QSkeleton variant="rect" :height="88" />
+            <QSkeleton variant="rect" :height="88" />
+          </div>
+        </template>
+
+        <!-- Panneaux empilés : hauteur stable au changement d’onglet -->
+        <div class="mt-15 grid w-full min-w-0 max-w-full">
+          <!-- Conversations -->
+          <div
+            :class="[
+              'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
+              activeTab === 'messages' ? 'visible' : 'invisible pointer-events-none',
+            ]"
+            :aria-hidden="activeTab !== 'messages'"
+          >
+            <template v-if="(threads ?? []).length">
+              <div class="msg-list flex w-full flex-col gap-16">
+                <button
+                  v-for="entry in threads"
+                  :key="entry.id"
+                  type="button"
+                  class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-surface-card px-18 py-17 text-left box-border"
+                  @click="openConversation(entry)"
                 >
-                  <img
-                    v-if="conv.avatar.kind === 'photo'"
-                    :src="conv.avatar.src"
-                    alt=""
-                    width="48"
-                    height="48"
-                    class="block size-full rounded-full object-cover"
-                  >
-                  <QIcon v-else :name="conv.avatar.icon" :size="conv.avatar.kind === 'icon' ? 24 : 48" />
+                  <div class="msg-avatar relative size-48 shrink-0 overflow-hidden rounded-full">
+                    <img
+                      v-if="entry.counterpart.avatar"
+                      :src="entry.counterpart.avatar"
+                      alt=""
+                      width="48"
+                      height="48"
+                      class="block size-full rounded-full object-cover"
+                    >
+                    <span
+                      v-else
+                      class="flex size-full items-center justify-center rounded-full bg-msg-avatar-target text-xl font-semibold text-white"
+                      aria-hidden="true"
+                    >{{ avatarInitial(entry.counterpart) }}</span>
 
-                  <span
-                    v-if="conv.online"
-                    class="msg-online absolute right-0 bottom-0 flex size-14 items-center justify-center rounded-full border-2 border-white bg-msg-online box-border"
-                    aria-hidden="true"
-                  >
-                    <img src="/img/icons/ic-msg-online.svg" alt="" width="6" height="6" class="block size-6">
-                  </span>
-                </div>
-
-                <div class="msg-body min-w-0 flex-1 pr-10 pl-16">
-                  <div class="msg-identity flex w-full min-w-0 items-center">
-                    <h2 class="msg-name m-0 truncate text-xl leading-20 font-semibold text-text">{{ $t(conv.nameKey) }}</h2>
-                    <span :class="['msg-tag ml-6 shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[conv.tagTone]]">
-                      {{ $t(conv.tagKey) }}
+                    <span
+                      v-if="entry.counterpart.online"
+                      class="msg-online absolute right-0 bottom-0 flex size-14 items-center justify-center rounded-full border-2 border-white bg-msg-online box-border"
+                      aria-hidden="true"
+                    >
+                      <img src="/img/icons/ic-msg-online.svg" alt="" width="6" height="6" class="block size-6">
                     </span>
                   </div>
-                  <p class="msg-preview m-0 mt-6 line-clamp-2 text-md leading-[19.5px] font-normal text-msg-preview">
-                    {{ $t(conv.previewKey) }}
-                  </p>
-                </div>
 
-                <div class="msg-aside ml-auto flex shrink-0 min-w-52 flex-col items-end justify-start gap-10 pt-2">
-                  <time class="msg-time shrink-0 text-sm leading-15 font-medium text-right whitespace-nowrap text-msg-time">{{ conv.time }}</time>
-                  <span
-                    v-if="conv.unread > 0"
-                    class="msg-unread msg-unread--count flex size-20 shrink-0 items-center justify-center rounded-full bg-msg-unread text-sm leading-15 font-bold text-white"
-                    :aria-label="$t('messages.unreadCount', { count: conv.unread })"
-                  >{{ conv.unread }}</span>
-                  <span v-else class="msg-unread size-10 shrink-0 rounded-full bg-msg-unread" :aria-label="$t('messages.unread')" />
-                </div>
-              </button>
+                  <div class="msg-body min-w-0 flex-1 pr-10 pl-16">
+                    <div class="msg-identity flex w-full min-w-0 items-center">
+                      <h2 class="msg-name m-0 truncate text-xl leading-20 font-semibold text-text">{{ entry.counterpart.name }}</h2>
+                      <span :class="['msg-tag ml-6 shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[roleTag(entry.counterpart.role).tone]]">
+                        {{ $t(roleTag(entry.counterpart.role).key) }}
+                      </span>
+                    </div>
+                    <p class="msg-preview m-0 mt-6 line-clamp-2 text-md leading-[19.5px] font-normal text-msg-preview">
+                      {{ entry.previewText }}
+                    </p>
+                  </div>
+
+                  <div class="msg-aside ml-auto flex shrink-0 min-w-52 flex-col items-end justify-start gap-10 pt-2">
+                    <time class="msg-time shrink-0 text-sm leading-15 font-medium text-right whitespace-nowrap text-msg-time">{{ formatRelativeTime(entry.lastMessageAt) }}</time>
+                    <span
+                      v-if="entry.unreadCount > 0"
+                      class="msg-unread msg-unread--count flex size-20 shrink-0 items-center justify-center rounded-full bg-msg-unread text-sm leading-15 font-bold text-white"
+                      :aria-label="$t('messages.unreadCount', { count: entry.unreadCount })"
+                    >{{ entry.unreadCount }}</span>
+                  </div>
+                </button>
+              </div>
+            </template>
+
+            <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-surface-card px-16 py-28 text-center box-border">
+              <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noMessagesTitle') }}</p>
+              <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noMessagesDesc') }}</p>
             </div>
-            <QPager v-model:page="page" :total="totalPages" :aria-label="$t('messages.pagerLabel')" class="mt-8 mb-4" />
-          </template>
+          </div>
 
-          <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
-            <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noResultTitle') }}</p>
-            <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noResultDesc') }}</p>
+          <!-- Notifications -->
+          <div
+            :class="[
+              'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
+              activeTab === 'notification' ? 'visible' : 'invisible pointer-events-none',
+            ]"
+            :aria-hidden="activeTab !== 'notification'"
+          >
+            <template v-if="notifications && notifications.items.length">
+              <div class="msg-list flex w-full flex-col gap-16">
+                <button
+                  v-for="item in notifications.items"
+                  :key="item.id"
+                  type="button"
+                  class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-surface-card px-18 py-17 text-left box-border"
+                  @click="openNotification(item)"
+                >
+                  <span class="flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-full bg-msg-avatar-target">
+                    <QIcon name="ic-bell" :size="22" />
+                  </span>
+
+                  <div class="msg-body min-w-0 flex-1 pr-10 pl-16">
+                    <h2 class="msg-name m-0 truncate text-xl leading-20 font-semibold text-text">{{ item.title }}</h2>
+                    <p class="msg-preview m-0 mt-6 line-clamp-2 text-md leading-[19.5px] font-normal text-msg-preview">
+                      {{ item.body }}
+                    </p>
+                  </div>
+
+                  <div class="msg-aside ml-auto flex shrink-0 min-w-52 flex-col items-end justify-start gap-10 pt-2">
+                    <time class="msg-time shrink-0 text-sm leading-15 font-medium text-right whitespace-nowrap text-msg-time">{{ formatRelativeTime(item.createdAt) }}</time>
+                    <span
+                      v-if="!item.read"
+                      class="msg-unread size-10 shrink-0 rounded-full bg-msg-unread"
+                      :aria-label="$t('messages.unread')"
+                    />
+                  </div>
+                </button>
+              </div>
+
+              <QPager
+                v-if="notifications.totalPages > 1"
+                v-model:page="notifPage"
+                :total="notifications.totalPages"
+                :aria-label="$t('messages.pagerLabel')"
+                class="mt-8 mb-4"
+              />
+            </template>
+
+            <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-surface-card px-16 py-28 text-center box-border">
+              <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.emptyTitle') }}</p>
+              <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.emptyDesc') }}</p>
+            </div>
           </div>
         </div>
+      </PageState>
 
-        <div
-          :class="[
-            'msg-panel col-start-1 row-start-1 w-full min-w-0 max-w-full',
-            activeTab === 'notification' ? 'visible' : 'invisible pointer-events-none',
-          ]"
-          :aria-hidden="activeTab !== 'notification'"
-        >
-          <div class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
-            <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.emptyTitle') }}</p>
-            <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.emptyDesc') }}</p>
-          </div>
-        </div>
-      </div>
-
+      <!-- Échanges sécurisés -->
       <aside class="msg-secure mt-16 flex min-h-86 w-full max-w-full items-center justify-between gap-8 overflow-hidden rounded-xl bg-surface-2 px-9 py-8 box-border">
         <div class="msg-secure-left flex min-w-0 flex-1 items-start gap-11">
           <span class="msg-secure-icon size-44 shrink-0 overflow-hidden">
@@ -225,37 +408,34 @@ usePageSeo(() => ({
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
       <DialogContent
-        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex h-[75dvh] min-h-[75vh] w-full max-w-shell flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in"
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex h-[75dvh] min-h-[75vh] w-full max-w-shell flex-col overflow-hidden rounded-t-2xl bg-surface-card animate-ed-form-modal-in"
       >
         <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
           <div class="flex min-w-0 flex-1 items-center gap-12 pr-8">
-            <div
-              v-if="selected"
-              :class="[
-                'msg-avatar relative size-40 shrink-0 rounded-full',
-                selected.avatar.kind === 'icon' ? `msg-avatar--icon flex items-center justify-center overflow-hidden ${selected.avatar.tint}` : '',
-                selected.avatar.kind === 'illus' ? 'msg-avatar--support overflow-visible bg-transparent' : '',
-              ]"
-            >
+            <div v-if="selected" class="msg-avatar relative size-40 shrink-0 overflow-hidden rounded-full">
               <img
-                v-if="selected.avatar.kind === 'photo'"
-                :src="selected.avatar.src"
+                v-if="selected.counterpart.avatar"
+                :src="selected.counterpart.avatar"
                 alt=""
                 width="40"
                 height="40"
                 class="block size-full rounded-full object-cover"
               >
-              <QIcon v-else :name="selected.avatar.icon" :size="selected.avatar.kind === 'icon' ? 20 : 40" />
+              <span
+                v-else
+                class="flex size-full items-center justify-center rounded-full bg-msg-avatar-target text-lg font-semibold text-white"
+                aria-hidden="true"
+              >{{ avatarInitial(selected.counterpart) }}</span>
             </div>
             <div class="min-w-0 flex-1">
               <DialogTitle class="m-0 truncate text-xl leading-21 font-bold text-navy">
-                {{ selected ? $t(selected.nameKey) : '' }}
+                {{ selected ? selected.counterpart.name : '' }}
               </DialogTitle>
               <div v-if="selected" class="mt-4 flex min-w-0 items-center gap-8">
-                <span :class="['msg-tag shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[selected.tagTone]]">
-                  {{ $t(selected.tagKey) }}
+                <span :class="['msg-tag shrink-0 rounded-md px-6 py-2 text-xs leading-[13.5px] font-bold whitespace-nowrap', tagClass[roleTag(selected.counterpart.role).tone]]">
+                  {{ $t(roleTag(selected.counterpart.role).key) }}
                 </span>
-                <time class="text-sm leading-15 font-medium text-msg-time">{{ selected.time }}</time>
+                <time class="text-sm leading-15 font-medium text-msg-time">{{ formatRelativeTime(selected.lastMessageAt) }}</time>
               </div>
             </div>
           </div>
@@ -270,12 +450,15 @@ usePageSeo(() => ({
         <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-20 pt-16 pb-[calc(24px+env(safe-area-inset-bottom,0px))]">
           <div class="flex flex-col gap-12">
             <article
-              v-for="(key, index) in threadMessages"
-              :key="`${key}-${index}`"
-              class="msg-bubble max-w-[85%] self-start rounded-2xl rounded-tl-md bg-surface-2 px-16 py-14 box-border"
+              v-for="message in selected?.messages ?? []"
+              :key="message.id"
+              :class="[
+                'msg-bubble max-w-[85%] rounded-2xl px-16 py-14 box-border',
+                message.mine ? 'self-end rounded-tr-md bg-primary-soft' : 'self-start rounded-tl-md bg-surface-2',
+              ]"
             >
               <p class="m-0 text-lg leading-[22px] font-normal whitespace-pre-line text-text">
-                {{ $t(key) }}
+                {{ message.text }}
               </p>
             </article>
           </div>

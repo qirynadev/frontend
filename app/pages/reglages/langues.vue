@@ -14,9 +14,10 @@
  *
  * Le choix agit réellement sur la langue de l'application : `setLocale` pose le
  * cookie `qiryna_locale` et réécrit l'URL selon `prefix_except_default`.
+ *
+ * Accessible sans connexion : c'est une préférence d'affichage (cookie), pas
+ * une donnée de compte — aucun appel authentifié ici.
  */
-definePageMeta({ middleware: 'auth' })
-
 const { t, locale, setLocale } = useI18n()
 
 type LocaleCode = 'fr' | 'en'
@@ -44,7 +45,7 @@ usePageSeo(() => ({
   <div class="page-rl flex flex-1 flex-col">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="rl-main flex w-full max-w-full flex-col box-border">
-      <AppTopBar :back="true" back-to="/reglages" :notifications="3" />
+      <AppTopBar :back="true" back-to="/reglages" />
 
       <section class="rl-intro mb-16 w-full">
         <h1 class="m-0 text-4xl leading-normal font-semibold tracking-[-0.65px] text-text">
@@ -55,8 +56,8 @@ usePageSeo(() => ({
         </p>
       </section>
 
-      <section class="rl-card w-full rounded-xl bg-white p-16 shadow-card box-border">
-        <h2 class="rl-card-title mt-0 mb-12 px-4 text-2xl leading-[22.5px] font-bold text-black">
+      <section class="rl-card w-full rounded-xl bg-surface-card p-16 shadow-card box-border">
+        <h2 class="rl-card-title mt-0 mb-12 px-4 text-2xl leading-[22.5px] font-bold text-text">
           {{ $t('settingsLanguage.cardTitle') }}
         </h2>
 
@@ -69,7 +70,7 @@ usePageSeo(() => ({
             :aria-checked="chosen === option.code"
             :class="[
               'rl-option flex w-full items-center gap-12 rounded-xl border p-15 text-left cursor-pointer box-border',
-              chosen === option.code ? 'is-selected border-rl-option-selected-border bg-rl-option-selected-bg' : 'border-rl-option-border bg-white',
+              chosen === option.code ? 'is-selected border-rl-option-selected-border bg-rl-option-selected-bg' : 'border-rl-option-border bg-surface-card',
             ]"
             @click="chosen = option.code"
           >
@@ -88,7 +89,7 @@ usePageSeo(() => ({
             </span>
             <span
               :class="[
-                'rl-radio flex size-20 shrink-0 items-center justify-center rounded-full border bg-white box-border',
+                'rl-radio flex size-20 shrink-0 items-center justify-center rounded-full border bg-surface-card box-border',
                 chosen === option.code ? 'border-rl-radio-selected-border' : 'border-rl-radio-border',
               ]"
               aria-hidden="true"

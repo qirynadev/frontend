@@ -51,23 +51,43 @@ export function toUserProfile(raw: unknown): UserProfile {
   }
 }
 
+/**
+ * Deux formes inversées pour « le compte connecté », découvert en direct
+ * (2026-08-30, en préremplissant le formulaire de contact) :
+ *
+ * - `POST /auth/login|register|confirm|social/*` (`UserResource`) : email,
+ *   nom, rôle, `is_activated` en **racine** ; `profile` imbriqué
+ *   (prénom/nom/photo/téléphone).
+ * - `GET /user/me` (`ProfileResource`, utilisé par `session.get.ts` pour
+ *   ré-amorcer la session à chaque rendu serveur) : prénom/nom/photo en
+ *   **racine** ; `user` imbriqué porte email/nom/rôle/`is_activated`.
+ *
+ * Sans cette distinction, `toUser()` ne lisait correctement que la première
+ * forme — après un F5 ou tout rendu serveur qui repasse par `/user/me`,
+ * `email`/`name`/`profile.firstName`/`profile.lastName` retombaient tous à
+ * vide, silencieusement (aucune erreur, juste des champs vides).
+ */
 export function toUser(raw: unknown): User {
   const source = asRecord(raw)
-  const profile = toUserProfile(source.profile)
-  const email = str(source, 'email')
+  const nestedUser = asRecord(source.user)
+  const isProfileShape = Object.keys(nestedUser).length > 0
+
+  const account = isProfileShape ? nestedUser : source
+  const profile = toUserProfile(isProfileShape ? source : source.profile)
+  const email = str(account, 'email')
 
   return {
-    id: str(source, 'id'),
+    id: str(account, 'id'),
     email,
-    name: toDisplayName(source, profile, email),
-    role: str(source, 'role', 'client'),
-    isActivated: bool(source, 'is_activated', false),
-    avatar: optionalStr(source, 'avatar'),
+    name: toDisplayName(account, profile, email),
+    role: str(account, 'role', 'client'),
+    isActivated: bool(account, 'is_activated', false),
+    avatar: optionalStr(account, 'avatar') ?? profile.photo,
     profile,
     // Volontairement `null` plutôt que `'fr'` : l'appelant sait quelle langue
     // est affichée, l'adapter non. Forcer un repli ici basculerait un
     // anglophone en français à chaque connexion.
-    locale: optionalStr(source, 'settings.language'),
+    locale: optionalStr(account, 'settings.language'),
   }
 }
 

@@ -1,0 +1,17 @@
+:root {
+  --color-surface: #ffffff;
+  --color-surface-alt: #f9fafb;
+  --color-surface-tint: #f5f3ff;
+  --color-ink: #191919;
+  --color-ink-muted: #6b7280;
+  --color-border: #e5e7eb;
+}
+
+:root.dark {
+  --color-surface: #0f1115;
+  --color-surface-alt: #171a21;
+  --color-surface-tint: #221c3a;
+  --color-ink: #f4f4f6;
+  --color-ink-muted: #9ca3af;
+  --color-border: #2a2e37;
+}

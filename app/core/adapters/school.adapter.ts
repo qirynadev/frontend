@@ -1,41 +1,40 @@
 import type { School, SchoolDetail, SchoolFormation, SchoolSummary } from '../contracts'
-import { resolveFormationMeta } from '~/config/formation-meta-mock'
 import { parseFormationDescription } from '~/utils/formation-content'
 import { toCountry, toSeo } from './common.adapter'
 import { asArray, asRecord, html, list, optionalNum, optionalStr, plainText, str, toUrl } from './primitives'
 
 /**
- * Formations de la fiche école.
+ * Formations d'une école — consommée par `GET /schools/{id}/formations`
+ * (directives-backend §12), un appel dédié, **pas** `toSchool()`/`/all-data`
+ * : la fiche complète n'a plus besoin de porter les formations pour que
+ * l'onglet « Formations » les affiche (voir `schoolRepo.formations()`).
  *
  * Les tableaux `formations` / `details` de l'API contiennent presque toujours
  * une entrée fantôme `{ title: null, description: null }` — 428 des 570 écoles
  * du catalogue de recette n'ont que ça. On les écarte ici, une fois.
  *
- * **Grade / durée** : l’API ne les expose pas (clés absentes, vérifié
- * 2026-08-22 sur NEOMA et le catalogue). Mock documenté dans
- * `config/formation-meta-mock.ts` + `ARCHITECTURE-API.md`, en attendant
- * `grade` / `duration` côté back-office.
+ * **Grade / durée** : réels depuis le 2026-08-31 (`SchoolController::
+ * getFormations`, `grade`/`duration` par formation côté back-office) — un
+ * mock précédent (`config/formation-meta-mock.ts`) devinait ces valeurs
+ * depuis le titre ou repliait sur « Grade Master »/« 3 ans », retiré le même
+ * jour. `-` seulement si le back-office ne les a pas renseignés pour cette
+ * formation précise.
  */
-function toFormations(raw: unknown): SchoolFormation[] {
+export function toFormations(raw: unknown): SchoolFormation[] {
   return asArray(raw)
     .map((entry) => {
       const source = asRecord(entry)
       const title = str(source, 'title')
       const description = html(source, 'description')
       const parsed = parseFormationDescription(description)
-      const meta = resolveFormationMeta(
-        title,
-        optionalStr(source, 'grade'),
-        optionalStr(source, 'duration') ?? optionalStr(source, 'duration_label'),
-      )
       return {
         title,
         description,
         summary: parsed.summary,
         sections: parsed.sections,
         bodyHtml: parsed.bodyHtml,
-        grade: meta.grade,
-        duration: meta.duration,
+        grade: optionalStr(source, 'grade') ?? '-',
+        duration: optionalStr(source, 'duration') ?? optionalStr(source, 'duration_label') ?? '-',
       }
     })
     .filter((block) => block.title !== '')
@@ -67,6 +66,8 @@ export function toSchoolSummary(raw: unknown, destinationSlug = '', flagBase?: s
     destinationSlug,
     formationCount: list(source, 'formations').filter((entry) => str(asRecord(entry), 'title') !== '').length,
     excerpt: plainText(source.presentation, 180),
+    foundedYear: optionalNum(source, 'founded_year'),
+    studentCount: optionalNum(source, 'student_count'),
   }
 }
 
@@ -79,12 +80,7 @@ export function toSchool(raw: unknown, destinationSlug = '', flagBase?: string):
   return {
     ...summary,
     presentation,
-    formations: toFormations(source.formations),
     details: toDetails(source.details),
-    // Alimentés nulle part dans le catalogue actuel : le contrat les expose
-    // quand même pour que la fiche n'ait pas à changer le jour où ils le seront.
-    foundedYear: optionalNum(source, 'founded_year'),
-    studentCount: optionalNum(source, 'student_count'),
     seo: toSeo(source, summary.title, presentation),
   }
 }

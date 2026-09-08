@@ -1,4 +1,4 @@
-import type { School, SchoolSummary } from '../contracts'
+import type { School, SchoolFormation, SchoolSummary } from '../contracts'
 import { ApiError } from '../http/errors'
 import { bffFetch } from '../http/client'
 
@@ -16,6 +16,14 @@ export interface SchoolQuery {
   search?: string
   page?: number
   perPage?: number
+  /**
+   * Graine d'ordre aléatoire (`GET /schools/{countryId}/{areaId}?seed=`,
+   * `ORDER BY RAND(seed)` côté API). Sans elle, l'API retombe sur `seed=1` —
+   * un ordre fixe, pas aléatoire. La même graine doit être réutilisée d'une
+   * page à l'autre d'une même visite pour ne pas mélanger les écoles déjà
+   * vues (voir `ecoles/index.vue`).
+   */
+  seed?: number
 }
 
 export interface SchoolPage {
@@ -43,6 +51,7 @@ export const schoolRepo = {
         search: query.search,
         page: query.page,
         perPage: query.perPage,
+        seed: query.seed,
       },
     })
   },
@@ -61,6 +70,21 @@ export const schoolRepo = {
     }
     catch (error) {
       if (error instanceof ApiError && error.kind === 'notFound') return null
+      throw error
+    }
+  },
+
+  /**
+   * Formations d'une école, à l'unité (`GET /schools/{id}/formations`,
+   * directives-backend §12) — pas `/all-data` : `id` est l'UUID de l'école
+   * (`School.id`), pas son slug.
+   */
+  async formations(schoolId: string, locale?: string): Promise<SchoolFormation[]> {
+    try {
+      return await bffFetch<SchoolFormation[]>(`/schools/${encodeURIComponent(schoolId)}/formations`, { locale })
+    }
+    catch (error) {
+      if (error instanceof ApiError && error.kind === 'notFound') return []
       throw error
     }
   },

@@ -1,0 +1,109 @@
+.animated-secondary-button {
+    background-color: #fff;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    position: relative;
+    transition: color 0.4s ease-in;
+
+    &::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #ff3942;
+        transform: scaleX(0);
+        -webkit-transform-origin: 0 50%;
+        transform-origin: 0 50%;
+        -webkit-transform: transform 0.4s ease-out;
+        transition: transform 0.4s ease-out;
+    }
+
+    &:hover,
+    &:active {
+        color: #fff;
+        background-color: transparent;
+    }
+
+    &:hover:before,
+    &:active:before {
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1);
+        -webkit-transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+        transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+    }
+}
+
+.animated-primary-button {
+    background-color: var(--bs-primary);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    position: relative;
+    transition: color 0.4s ease-in;
+
+    &::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #273c66;
+        -webkit-transform: scaleX(0);
+        transform: scaleX(0);
+        -webkit-transform-origin: 0 50%;
+        transform-origin: 0 50%;
+        -webkit-transform: transform 0.4s ease-out;
+        transition: transform 0.4s ease-out;
+    }
+
+    &:hover,
+    &:active {
+        color: #fff;
+        background-color: transparent;
+    }
+
+    &:hover:before,
+    &:active:before {
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1);
+        -webkit-transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+        transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+    }
+}
+
+
+.log_btn {
+    width: 100%;
+    background: #ff3333;
+    color: #fff;
+    border-radius: 25px !important;
+    border: none;
+    margin: 15px 0;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.btn--primary {
+    background-color: #ff3333 !important;
+    color: white;
+
+    &:hover {
+        color: rgb(13, 13, 13);
+        background-color: #ff3333 !important;
+    }
+}
+
+.btn--secondary {
+    background-color: #273c66 !important;
+    color: white;
+
+    &:hover {
+        color: rgb(13, 13, 13);
+        background-color: #273c66 !important;
+    }
+}

@@ -3,18 +3,43 @@
  * Réglages — Envoyer un message ← Figma `1572:3457`.
  * Confirmation de demande ← Figma `1572:3044`.
  *
- * Entrée hub : `/reglages/centre-aide`. Pas d’endpoint contact :
- * validation locale → confirmation (session + repli mock).
- * Espacement **22px** entre blocs majeurs. Doc : `docs/reglages-contact-mocks.md`.
+ * Entrée hub : `/reglages/centre-aide`.
+ *
+ * Accessible sans connexion (2026-08-30, sur demande explicite) : cet écran
+ * sert aussi de simple page de contact public. Deux chemins selon la
+ * session :
+ *
+ * - **connecté** — `POST /user/messages` (authentifié, vérifié en direct
+ *   2026-08-27) : même mécanisme que la rubrique « Messagerie » du
+ *   back-office (`Messaging::create`, visible immédiatement dans son écran
+ *   admin `Messages/Index`), en plus de l'e-mail de notification. Un seul
+ *   champ (`text`) et ignore tout nom/e-mail transmis — le message part **au
+ *   nom du compte connecté**, avec son profil réel. C'est pourquoi les champs
+ *   Nom/E-mail sont **préremplis et désactivés** dans ce cas : les modifier
+ *   n'aurait aucun effet côté back-office, le laisser croire le contraire
+ *   serait trompeur.
+ * - **non connecté** — `POST /send-email` (public, `messages/public.post.ts`)
+ *   : aucun compte pour fournir nom/e-mail à sa place, ces champs restent
+ *   donc éditables. N'enregistre rien en base (`TODO #56` dans le code
+ *   source réel de cette route) — e-mail de notification seulement, voir
+ *   `docs/directives-backend.md`.
+ *
+ * Sujet/nom/e-mail saisis dans le formulaire n'ont pas de champ dédié côté
+ * `/user/messages` : regroupés dans `text` plutôt que perdus (chemin
+ * connecté uniquement). Écran succès inchangé (données du formulaire + repli
+ * `contact-success-mock.ts`). Doc : `docs/reglages-contact-mocks.md`.
+ *
+ * Espacement **22px** entre blocs majeurs.
  */
 import { contactSuccessMock } from '~/config/contact-success-mock'
+import { ApiError } from '~/core/http/errors'
+import { contactRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 
-definePageMeta({ middleware: 'auth' })
-
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
+const isAuthenticated = computed(() => session.isAuthenticated)
 
 const MESSAGE_MAX = 1000
 const FORM_ICON = '/img/icons/contact-form'
@@ -36,6 +61,7 @@ const message = ref('')
 const consent = ref(false)
 const submitted = ref(false)
 const submitting = ref(false)
+const submitError = ref(false)
 
 const errors = reactive({
   subject: '',
@@ -62,12 +88,59 @@ function validate(): boolean {
   return !errors.subject && !errors.name && !errors.email && !errors.message && !errors.consent
 }
 
+/**
+ * `POST /user/messages` n'a qu'un champ `text` — sujet/nom/e-mail saisis
+ * dans le formulaire sont regroupés ici plutôt que perdus (le message part
+ * de toute façon au nom du compte connecté, dont l'identité réelle prime).
+ */
+function buildMessageText(): string {
+  return [
+    t('settingsContact.messageLineSubject', { value: subjectLabel.value }),
+    t('settingsContact.messageLineName', { value: name.value.trim() }),
+    t('settingsContact.messageLineEmail', { value: email.value.trim() }),
+    '',
+    message.value.trim(),
+  ].join('\n')
+}
+
+/**
+ * `POST /send-email` exige `first_name`/`last_name` séparés — le formulaire
+ * n'a qu'un champ Nom unique. Coupé sur le premier espace ; un nom sans
+ * espace sert pour les deux plutôt que d'envoyer un `last_name` vide (rejeté
+ * par la validation du back-office).
+ */
+function splitName(): { firstName: string, lastName: string } {
+  const parts = name.value.trim().split(/\s+/)
+  return { firstName: parts[0] ?? '', lastName: parts.slice(1).join(' ') || parts[0] || '' }
+}
+
 async function onSubmit(): Promise<void> {
   if (!validate()) return
+
   submitting.value = true
-  await new Promise((resolve) => setTimeout(resolve, 400))
-  submitting.value = false
-  submitted.value = true
+  submitError.value = false
+  try {
+    if (isAuthenticated.value) {
+      await contactRepo.send({ text: buildMessageText() }, locale.value)
+    }
+    else {
+      const { firstName, lastName } = splitName()
+      await contactRepo.sendPublic(
+        { firstName, lastName, email: email.value.trim(), subject: subjectLabel.value, message: message.value.trim() },
+        locale.value,
+      )
+    }
+    submitted.value = true
+  }
+  catch (error) {
+    if (error instanceof ApiError && error.kind === 'validation') {
+      errors.message = t('settingsContact.errorMessage')
+    }
+    submitError.value = true
+  }
+  finally {
+    submitting.value = false
+  }
 }
 
 const subjectLabel = computed(() => {
@@ -110,7 +183,7 @@ usePageSeo(() => ({
 <template>
   <div class="page-contact flex flex-1 flex-col">
     <div class="flex w-full max-w-full flex-col gap-22 box-border">
-      <AppTopBar :back="true" back-to="/reglages/centre-aide" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/reglages/centre-aide" :gap="0" />
 
       <!-- ── Confirmation de demande (Figma 1572:3044) ── -->
       <template v-if="submitted">
@@ -135,10 +208,10 @@ usePageSeo(() => ({
             <img :src="`${SUCCESS_ICON}/check-banner.svg`" alt="" width="16" height="16" class="block size-16">
           </span>
           <div class="min-w-0 flex-1 pt-2">
-            <p class="m-0 text-lg leading-[19.25px] font-semibold text-black">
+            <p class="m-0 text-lg leading-[19.25px] font-semibold text-text">
               {{ $t('settingsContact.successBannerTitle') }}
             </p>
-            <p class="m-0 mt-2 text-base leading-[17.875px] font-normal text-black">
+            <p class="m-0 mt-2 text-base leading-[17.875px] font-normal text-text">
               {{ $t('settingsContact.successBannerDesc') }}
             </p>
           </div>
@@ -186,6 +259,13 @@ usePageSeo(() => ({
           </p>
         </section>
 
+        <QAlert
+          v-if="submitError"
+          tone="danger"
+          :title="$t('settingsContact.submitErrorTitle')"
+          :message="$t('settingsContact.submitErrorDesc')"
+        />
+
         <form class="flex w-full flex-col gap-12" @submit.prevent="onSubmit">
           <div class="flex w-full flex-col">
             <label for="contact-subject" class="text-xl leading-21 font-medium text-cf-label">
@@ -197,7 +277,7 @@ usePageSeo(() => ({
                 v-model="subject"
                 :aria-invalid="!!errors.subject || undefined"
                 :class="[
-                  'box-border w-full appearance-none rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal outline-none',
+                  'box-border w-full appearance-none rounded-[12px] border bg-surface-card px-12 py-12 text-lg leading-20 font-normal outline-none',
                   subject ? 'text-text' : 'text-cf-placeholder',
                   errors.subject ? 'border-danger' : 'border-cf-input',
                 ]"
@@ -228,10 +308,11 @@ usePageSeo(() => ({
               v-model="name"
               type="text"
               autocomplete="name"
+              :disabled="isAuthenticated"
               :placeholder="$t('settingsContact.namePlaceholder')"
               :aria-invalid="!!errors.name || undefined"
               :class="[
-                'mt-4 box-border w-full rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder',
+                'mt-4 box-border w-full rounded-[12px] border bg-surface-card px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
                 errors.name ? 'border-danger' : 'border-cf-input',
               ]"
             >
@@ -248,10 +329,11 @@ usePageSeo(() => ({
               type="email"
               autocomplete="email"
               inputmode="email"
+              :disabled="isAuthenticated"
               :placeholder="$t('settingsContact.emailPlaceholder')"
               :aria-invalid="!!errors.email || undefined"
               :class="[
-                'mt-4 box-border w-full rounded-[12px] border bg-white px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder',
+                'mt-4 box-border w-full rounded-[12px] border bg-surface-card px-12 py-12 text-lg leading-20 font-normal text-text outline-none placeholder:text-cf-placeholder disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-muted-2',
                 errors.email ? 'border-danger' : 'border-cf-input',
               ]"
             >
@@ -264,7 +346,7 @@ usePageSeo(() => ({
             </label>
             <div
               :class="[
-                'relative mt-4 box-border w-full rounded-[12px] border bg-white',
+                'relative mt-4 box-border w-full rounded-[12px] border bg-surface-card',
                 errors.message ? 'border-danger' : 'border-cf-input',
               ]"
             >
@@ -291,7 +373,7 @@ usePageSeo(() => ({
               name="consent"
               :aria-invalid="!!errors.consent || undefined"
               :class="[
-                'mt-2 size-14 shrink-0 cursor-pointer appearance-none rounded-[4px] border-[1.2px] bg-white',
+                'mt-2 size-14 shrink-0 cursor-pointer appearance-none rounded-[4px] border-[1.2px] bg-surface-card',
                 'checked:border-cf-consent-check checked:bg-cf-consent-check',
                 errors.consent ? 'border-danger' : 'border-cf-consent-check',
               ]"

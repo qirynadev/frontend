@@ -17,23 +17,11 @@ export interface OrientationEvaluation {
   state: EvaluationState
   /** Lien externe (PT-TESTS) pour passer ou reprendre le test — `null` une fois terminé/annulé. */
   testUrl: string | null
-  /** Rapport de synthèse téléchargeable — `has_pdf`, sans porter l'URL elle-même (endpoint dédié). */
+  /** Rapport de synthèse téléchargeable — `has_pdf` seul ; le PDF lui-même est servi par `/api/bff/etesting/{id}/pdf` (octets bruts, pas une URL). */
   hasReport: boolean
   restitutionState: RestitutionState
   /** ISO `AAAA-MM-JJ`, quand l'entretien est planifié ou passé. */
   restitutionDate: string | null
   advisorName: string | null
   createdAt: string | null
-}
-
-/**
- * Réponse de `GET /etesting/evaluations/{id}/pdf` — un second appel, distinct
- * de la liste : celle-ci ne porte que `has_pdf` (booléen), pas les URL.
- */
-export interface OrientationEvaluationPdf {
-  synthese: string | null
-  detail: string | null
-  candidat: string | null
-  programme: string | null
-  programmeDetail: string | null
 }

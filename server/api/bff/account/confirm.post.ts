@@ -32,7 +32,12 @@ export default defineEventHandler(async (event): Promise<AuthOutcome> => {
 
   const session = toSession(raw)
   if (session === null) {
-    throw createError({ statusCode: 422, statusMessage: 'Session non ouverte', data: { message: 'Session non ouverte', errors: {} } })
+    // `AuthController::confirmAccount` répond toujours en 200, même en échec
+    // (« Le code a échoué », « Ce compte n'existe pas ») — seule l'absence
+    // d'`access_token` distingue l'échec. Son `message` est réel et utile ;
+    // le perdre pour un générique masquerait pourquoi le code est refusé.
+    const message = str(asRecord(raw), 'message') || 'Code invalide'
+    throw createError({ statusCode: 422, statusMessage: message, data: { message, errors: { code: [message] } } })
   }
 
   setSessionCookie(event, session.token)

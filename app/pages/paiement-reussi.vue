@@ -48,6 +48,29 @@ const { data: validation, apiError, isInitialLoading, refresh } = await usePageD
   { watch: [orderId, locale] },
 )
 
+/**
+ * Filet de sécurité : cet écran générique est censé rester réservé au tunnel
+ * domaines d'étude — Stripe doit renvoyer chaque autre tunnel vers son propre
+ * écran de succès (`success_url` calculée côté back-office selon le type de
+ * commande, voir `docs/directives-backend.md`). Repéré en direct le
+ * 2026-08-29 : une commande langue atterrit ici malgré tout — la commande a
+ * bien son `serviceSlug` réel, la cause n'est pas côté front. Redirige vers
+ * le bon écran plutôt que d'exposer le mauvais.
+ */
+const order = computed(() => validation.value?.order ?? null)
+const redirectPath = computed(() => {
+  const current = order.value
+  if (!current) return null
+  if (current.serviceType === 'course' && current.serviceSlug !== '') return localePath(`/langues/${current.serviceSlug}/paiement-reussi`)
+  if (current.serviceType === 'costofliving') return localePath('/logement/paiement-reussi')
+  if (current.serviceType === 'profilage') return localePath('/orientation/paiement-reussi')
+  return null
+})
+
+if (redirectPath.value) {
+  await navigateTo({ path: redirectPath.value, query: { order_id: orderId.value } }, { replace: true })
+}
+
 const confirmed = computed(() => validation.value?.confirmed === true)
 const failed = computed(() => validation.value?.failed === true)
 

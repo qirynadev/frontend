@@ -7,16 +7,12 @@
  * | rythme | `.mp-main` `gap: 22px` (topbar → hero → titre → liste → CTA) |
  * | topbar | `pb-0` — l’espace sous la navbar = gap parent 22px |
  * | hero | `min-h-130`, copie max 166px, illus 220×155 |
- * | cartes | progress + conseiller + date toujours visibles (mock si API vide) |
+ * | cartes | progress + conseiller + date toujours visibles (0 %/vide si aucune commande réelle) |
  *
- * Données : API via `useProjetData` ; repli / enrichissement
- * `config/projet-accompagnements-mock.ts` — voir `docs/mon-projet-mocks.md`.
+ * Données : API via `useProjetData` — voir `docs/mon-projet-mocks.md`.
  */
 import type { ProjetBadgeTone } from '~/core/contracts/projet'
-import {
-  mergeAccompagnementsWithMaquette,
-  projetAccompagnementsMock,
-} from '~/config/projet-accompagnements-mock'
+import { NuxtLink } from '#components'
 import DesktopMonProjet from '~/desktop-pages/mon-projet.vue'
 
 definePageMeta({ middleware: 'auth' })
@@ -27,19 +23,16 @@ const localePath = useLocalePath()
 const { data, apiError, isInitialLoading, refresh } = await useProjetData(locale)
 
 /**
- * Toujours les 4 types maquette (Admission, Logement, Cours de langues,
- * Orientation). Lien Langues → `/mon-projet/langues` (Figma Mon Projet - Langue).
+ * Toujours exactement 4 cartes (Admission, Logement, Cours de langues,
+ * Orientation) — une par rubrique, jamais une par commande/langue/bilan
+ * (consigne du responsable, 2026-08-23). Une rubrique sans commande réelle
+ * affiche une carte à 0 %, pas un contenu inventé. Lien Langues →
+ * `/mon-projet/langues` (Figma Mon Projet - Langue).
  */
-const accompagnements = computed(() => {
-  const orders = data.value?.orders ?? []
-  const before = toAccompagnements(orders.filter((order) => order.serviceType === 'areaofstudy' || order.serviceType === 'costofliving'))
-  const languages = toLanguageAccompagnements(data.value?.languages ?? [], data.value?.sessions ?? [])
-  const after = toAccompagnements(orders.filter((order) => order.serviceType === 'profilage'))
-  const fromApi = [...before, ...languages, ...after]
-
-  if (fromApi.length === 0) return projetAccompagnementsMock
-  return mergeAccompagnementsWithMaquette(fromApi)
-})
+const accompagnements = computed(() => toAccompagnements(
+  data.value?.orders ?? [],
+  data.value?.evaluations ?? [],
+))
 
 const usingMockOnly = computed(() => {
   const orders = data.value?.orders ?? []
@@ -76,9 +69,9 @@ usePageSeo(() => ({
       </div>
     </template>
 
-    <div class="page-mp flex flex-1 flex-col bg-white">
+    <div class="page-mp flex flex-1 flex-col bg-surface-card">
       <div class="mp-main flex w-full max-w-full flex-col gap-22 box-border">
-        <AppTopBar :back="true" back-to="/" :notifications="3" :gap="0" />
+        <AppTopBar :back="true" back-to="/" :gap="0" />
 
         <section class="mp-hero relative flex w-full min-h-130 items-start gap-10" aria-labelledby="projet-title">
           <div class="mp-hero-copy relative z-1 min-w-0 max-w-166 flex-1">
@@ -113,11 +106,15 @@ usePageSeo(() => ({
           <p v-if="usingMockOnly" class="sr-only">
             {{ $t('myProject.mockNotice') }}
           </p>
-          <NuxtLink
+          <component
+            :is="item.hasOrder ? NuxtLink : 'div'"
             v-for="item in accompagnements"
             :key="item.id"
-            :to="localePath(item.to)"
-            class="mp-card flex w-full flex-col rounded-xl border border-mp-card-border bg-white p-17 text-inherit no-underline box-border"
+            :to="item.hasOrder ? localePath(item.to) : undefined"
+            :class="[
+              'mp-card flex w-full flex-col rounded-xl border border-mp-card-border bg-surface-card p-17 text-inherit no-underline box-border',
+              item.hasOrder ? '' : 'cursor-default',
+            ]"
           >
             <div class="mp-card-top flex w-full items-start justify-between gap-8">
               <div class="mp-card-main flex min-w-0 flex-1 items-center gap-12">
@@ -134,7 +131,7 @@ usePageSeo(() => ({
                   <span class="mp-card-sub mt-2 text-exact-12-5 font-normal text-mp-sub">{{ item.sub }}</span>
                 </span>
               </div>
-              <img class="mp-card-chevron h-16 w-18 shrink-0 mt-8 object-contain opacity-70" src="/img/icons/ic-rg-chevron.svg" alt="" width="8" height="16">
+              <img v-if="item.hasOrder" class="mp-card-chevron h-16 w-18 shrink-0 mt-8 object-contain opacity-70" src="/img/icons/ic-rg-chevron.svg" alt="" width="8" height="16">
             </div>
 
             <!-- Maquette : barre toujours présente -->
@@ -150,7 +147,10 @@ usePageSeo(() => ({
               </span>
             </div>
 
-            <div class="mp-card-meta mt-12 flex w-full items-center justify-between gap-8 border-t border-mp-divider pt-5 box-border">
+            <!-- Conseiller/date : n'ont de sens que pour une commande réelle
+                 (`advisorName`/`updatedAt` valent toujours `null` sinon) —
+                 sans quoi une carte à 0 % affichait « Conseiller : » vide. -->
+            <div v-if="item.hasOrder" class="mp-card-meta mt-12 flex w-full items-center justify-between gap-8 border-t border-mp-divider pt-5 box-border">
               <span class="mp-meta-person inline-flex min-w-0 items-center gap-6 text-exact-11-5 font-medium text-slate">
                 <img src="/img/icons/ic-user.svg" alt="" width="11" height="11" class="size-11 shrink-0 opacity-70">
                 <span>{{ $t('myProject.advisorLabel') }}<strong class="font-medium text-navy-2">{{ item.advisorName }}</strong></span>
@@ -159,7 +159,7 @@ usePageSeo(() => ({
                 {{ $t('myProject.updatedDaysAgo', daysSince(item.updatedAt)) }}
               </span>
             </div>
-          </NuxtLink>
+          </component>
         </div>
 
         <aside class="mp-cta flex h-86 min-h-86 w-full items-center justify-between gap-8 rounded-xl bg-surface-2 px-9 box-border">

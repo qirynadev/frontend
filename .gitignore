@@ -29,9 +29,9 @@ public/_maquette/
 *.zip
 *.tar.gz
 
-# Ancien front Vue/Vite : reference seule (a porter, jamais edite). 67 Mo.
-# Reste sur disque pour consultation, hors du versionnement.
-legacy/
+# Ancienne app de référence à la racine uniquement — jamais un sous-dossier
+# homonyme (ex. public/img/desktop/legacy/).
+/legacy/
 
 # Cache du script de synchro de la maquette (clone du depot UzaLab/qiryna)
 .cache/

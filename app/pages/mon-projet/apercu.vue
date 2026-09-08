@@ -30,28 +30,42 @@
  * Les quatre cartes de service restent le contenu illustratif de la
  * maquette (Orientation/Langue/Logement fixes, pas les commandes réelles de
  * l'utilisateur) : cet écran est un aperçu au sens maquette du terme, distinct
- * de la liste réelle par commande de `mon-projet/index.vue`. La progression et
- * les compteurs, eux, déjà dérivés des vraies commandes dans l'implémentation
- * récupérée, sont conservés tels quels.
+ * de la liste réelle par commande de `mon-projet/index.vue`.
+ *
+ * La progression et les compteurs, eux, sont réels — recalculés le
+ * 2026-08-31 sur `toAccompagnements` (même agrégation que
+ * `mon-projet/index.vue` et l'anneau de la home) plutôt que sur un ratio
+ * `commandes confirmées / total` propre à cet écran : deux endroits qui
+ * affichent « votre avancement global » sans jamais donner le même chiffre
+ * aurait été plus trompeur qu'utile.
  */
-import { paymentRepo } from '~/core/repositories'
+import { orientationEvaluationRepo, paymentRepo } from '~/core/repositories'
 
 definePageMeta({ middleware: 'auth' })
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const { data: orders, apiError, isInitialLoading, refresh } = await usePageData(
+const { data, apiError, isInitialLoading, refresh } = await usePageData(
   'mon-projet-apercu',
-  () => paymentRepo.orders(locale.value),
+  async () => {
+    const [orders, evaluations] = await Promise.all([
+      paymentRepo.orders(locale.value),
+      orientationEvaluationRepo.list(locale.value),
+    ])
+    return { orders, evaluations }
+  },
   { watch: [locale] },
 )
 
-/** Progression globale dérivée des commandes ou 65% par défaut (maquette). */
+/** Toujours 4 entrées (une par rubrique), 0 %/« en attente » si le client n'a encore rien acheté. */
+const accompagnements = computed(() => toAccompagnements(data.value?.orders ?? [], data.value?.evaluations ?? []))
+
+/** Moyenne des 4 rubriques — même calcul que `mon-projet/index.vue` et l'anneau de la home. */
 const progressPct = computed(() => {
-  if (!orders.value || orders.value.length === 0) return 65
-  const confirmed = orders.value.filter(o => o.status === 'confirmed').length
-  return Math.min(100, Math.round((confirmed / orders.value.length) * 100))
+  const list = accompagnements.value
+  if (list.length === 0) return 0
+  return Math.round(list.reduce((sum, item) => sum + (item.progressPercent ?? 0), 0) / list.length)
 })
 
 /** Calcul du stroke-dasharray SVG pour le graphique (rayon r=34.5 -> circonférence ≈ 216.77). */
@@ -61,10 +75,15 @@ const dashArray = computed(() => {
   return `${filled.toFixed(1)} ${circumference.toFixed(2)}`
 })
 
-/** Compteurs de statuts. */
-const statsDoneCount = computed(() => orders.value?.filter(o => o.status === 'confirmed').length ?? 2)
-const statsProgressCount = computed(() => orders.value?.filter(o => o.status === 'pending').length ?? 1)
-const statsUpcomingCount = computed(() => 1)
+/**
+ * Compteurs de statuts — répartition des 4 rubriques par `statusKey`
+ * (`toOverallStatus`) : Terminé, En cours, ou « À venir » (regroupe en
+ * attente et échec, aucune des deux ne progressant réellement). Somme
+ * toujours égale à 4, `ensureAllTypes` garantissant une entrée par rubrique.
+ */
+const statsDoneCount = computed(() => accompagnements.value.filter(item => item.statusKey === 'myProject.statusDone').length)
+const statsProgressCount = computed(() => accompagnements.value.filter(item => item.statusKey === 'myProject.statusInProgress').length)
+const statsUpcomingCount = computed(() => accompagnements.value.length - statsDoneCount.value - statsProgressCount.value)
 
 usePageSeo(() => ({
   title: t('projectOverview.seoTitle'),
@@ -79,7 +98,7 @@ usePageSeo(() => ({
     <div class="page-mon-projet">
       <div class="projet-main">
         <!-- Topbar : Logo + Cloche de notifications -->
-        <AppTopBar :notifications="3" />
+        <AppTopBar />
 
         <!-- Hero : Titre + Illustration -->
         <section class="projet-hero relative flex w-full items-start gap-10 pt-30 pb-70" aria-labelledby="projet-title">
@@ -109,7 +128,7 @@ usePageSeo(() => ({
         </section>
 
         <!-- Aperçu général -->
-        <section class="projet-apercu flex w-full flex-col gap-16 rounded-xl border border-surface-border bg-white p-15 shadow-card" aria-labelledby="apercu-title">
+        <section class="projet-apercu flex w-full flex-col gap-16 rounded-xl border border-surface-border bg-surface-card p-15 shadow-card" aria-labelledby="apercu-title">
           <div class="projet-apercu-head flex w-full items-center justify-between">
             <h2 id="apercu-title" class="m-0 text-xl leading-16 font-semibold text-text">
               {{ $t('projectOverview.overviewTitle') }}
@@ -232,7 +251,7 @@ usePageSeo(() => ({
 
           <div class="projet-service-list flex w-full flex-col gap-10">
             <!-- 1. Orientation Pack Essentiel (Terminé) -->
-            <article class="projet-service-card projet-service-card--h105 flex h-105 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
+            <article class="projet-service-card projet-service-card--h105 flex h-105 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
                   <img src="/img/icons/ic-service-orientation-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
@@ -259,7 +278,7 @@ usePageSeo(() => ({
             </article>
 
             <!-- 2. Orientation Premium En cours (70% complété) -->
-            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
+            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon projet-service-icon--premium relative flex size-44 shrink-0 items-center justify-center rounded-full bg-[#e9f0fe]">
                   <img src="/img/icons/ic-service-orientation-premium.svg" alt="" width="24" height="24" class="block size-24">
@@ -298,7 +317,7 @@ usePageSeo(() => ({
             </article>
 
             <!-- 3. Apprendre une langue (À venir) -->
-            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
+            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
                   <img src="/img/icons/ic-service-langue-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
@@ -332,7 +351,7 @@ usePageSeo(() => ({
             </article>
 
             <!-- 4. Trouver un logement (Commencer) -->
-            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-white px-12 py-13">
+            <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
                 <span class="projet-service-icon relative block size-44 shrink-0">
                   <img src="/img/icons/ic-service-logement-bg.svg" alt="" width="44" height="44" class="block size-44 max-w-none">

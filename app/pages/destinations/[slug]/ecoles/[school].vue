@@ -9,9 +9,11 @@
  * `display: none` littéral : même résultat visuel, accessible aux lecteurs
  * d'écran.
  *
- * Formations : une seule icône `.ed-form-icon` (`ic-ed-form-1`), méta
- * grade + durée (`.ed-form-meta`, mockés tant que l’API ne les expose pas),
+ * Formations : une seule icône `.ed-form-icon` (`ic-ed-form-1`), méta grade +
+ * durée (`.ed-form-meta`, réels depuis le 2026-08-31, `-` si non renseignés),
  * accroche courte limitée à 3 lignes (`line-clamp-3`), détail en modale.
+ * Récupérées via `GET /schools/{id}/formations` (directives-backend §12),
+ * pas la fiche complète — `School` ne les porte plus (`school.adapter.ts`).
  *
  * CTA `.ed-float-cta` : flottant comme la maquette (hide au scroll down).
  * Contenu court (pas de scroll) → CTA **épinglé** en bas d’écran.
@@ -33,11 +35,20 @@ const schoolSlug = computed(() => String(route.params.school ?? ''))
 const domaine = computed(() => String(route.query.domaine ?? 'architecture'))
 const desktopDomaine = computed(() => String(route.query.domaine ?? ''))
 
-const { data: school, apiError, isInitialLoading, refresh } = await usePageData(
+const { data, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
-  () => schoolRepo.bySlug(schoolSlug.value, locale.value),
+  async () => {
+    const school = await schoolRepo.bySlug(schoolSlug.value, locale.value)
+    // Formations : appel dédié (§12), pas la fiche complète — a besoin de
+    // l'UUID de l'école, donc après sa résolution par slug.
+    const formations = school ? await schoolRepo.formations(school.id, locale.value) : []
+    return { school, formations }
+  },
   { watch: [schoolSlug, locale] },
 )
+
+const school = computed(() => data.value?.school ?? null)
+const formations = computed(() => data.value?.formations ?? [])
 
 const { data: similarPage } = await usePageData(
   `school-similar-${apiSlug.value}`,
@@ -99,6 +110,22 @@ const tabs = computed(() => {
 })
 
 const activeTab = ref('presentation')
+
+/**
+ * Onglet « Points forts » : pas un champ dédié côté back-office, un champ
+ * additionnel dynamique parmi d'autres (`School.details[]`, libellé +
+ * description libres) que l'admin nomme conventionnellement « Points Forts »
+ * pour cet usage — voir `docs/directives-backend.md` pour la suggestion d'un
+ * vrai champ dédié. On ne montrait jusqu'ici que le libellé (`d.title`,
+ * littéralement « Points Forts ») dans une puce, jamais le contenu réel
+ * (`d.description`, du HTML) : repéré en direct sur IMT Atlantique
+ * (2026-08-31). Comparaison insensible à la casse/aux espaces, ce champ étant
+ * saisi à la main par l'admin.
+ */
+const strengthsHtml = computed(() => {
+  const match = school.value?.details.find((d) => d.title.trim().toLowerCase() === 'points forts')
+  return match?.description ?? ''
+})
 
 const activeFormation = ref<SchoolFormation | null>(null)
 const formationModalOpen = computed({
@@ -198,7 +225,7 @@ useSchoolSchemaOrg(school)
 
 <template>
   <div class="shell:hidden">
-  <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" :notifications="3" :gap="0" />
+  <AppTopBar back :back-to="`/destinations/${destinationSlug}/ecoles`" :gap="0" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
     <template #loading>
@@ -230,7 +257,7 @@ useSchoolSchemaOrg(school)
 
         <div class="pointer-events-none absolute inset-x-0 top-0 h-140 overflow-visible">
           <div
-            class="pointer-events-auto absolute -bottom-23 left-15 box-border flex size-102 flex-col items-center justify-center overflow-hidden rounded-3xl border border-ed-badge-border bg-white p-12 shadow-ed-badge"
+            class="pointer-events-auto absolute -bottom-23 left-15 box-border flex size-102 flex-col items-center justify-center overflow-hidden rounded-3xl border border-ed-badge-border bg-surface-card p-12 shadow-ed-badge"
             :class="!school.logo && 'bg-ed-badge-text-bg p-0 border-0'"
           >
             <NuxtImg
@@ -255,7 +282,7 @@ useSchoolSchemaOrg(school)
           <div class="pointer-events-auto absolute right-14 bottom-0 flex translate-y-1/2 items-center gap-8">
             <button
               type="button"
-              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0 shadow-ed-icon-btn"
+              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card p-0 shadow-ed-icon-btn"
               :aria-label="$t('school.detail.favourite')"
               @click="toggleFavourite"
             >
@@ -263,7 +290,7 @@ useSchoolSchemaOrg(school)
             </button>
             <button
               type="button"
-              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0 shadow-ed-icon-btn"
+              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card p-0 shadow-ed-icon-btn"
               :aria-label="$t('school.detail.share')"
               @click="shareSchool"
             >
@@ -312,10 +339,10 @@ useSchoolSchemaOrg(school)
 
           <div v-show="activeTab === 'formations'" class="flex w-full flex-col gap-16">
             <button
-              v-for="formation in school.formations"
+              v-for="formation in formations"
               :key="formation.title"
               type="button"
-              class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-white p-20 text-left text-text shadow-card"
+              class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-surface-card p-20 text-left text-text shadow-card"
               @click="activeFormation = formation"
             >
               <!-- `.ed-form-icon` — une seule icône pour toutes les formations -->
@@ -351,11 +378,17 @@ useSchoolSchemaOrg(school)
             </button>
           </div>
 
-          <div v-show="activeTab === 'points'" class="w-full">
-            <ul v-if="school.details.length > 0" class="m-0 flex list-disc flex-col gap-12 pl-18">
-              <li v-for="d in school.details" :key="d.title" class="text-lg leading-21 text-text">{{ d.title }}</li>
-            </ul>
-            <p v-else class="m-0 text-lg leading-21 text-text">{{ $t('school.detail.emptyDescription') }}</p>
+          <div
+            :class="[
+              'col-start-1 row-start-1 w-full',
+              activeTab === 'points' ? 'visible' : 'invisible pointer-events-none',
+            ]"
+            :aria-hidden="activeTab !== 'points'"
+          >
+            <!-- Vide plutôt qu'un message d'attente : pas toutes les écoles n'ont
+                 de contenu "Points forts" côté API, ce n'est pas une absence à
+                 signaler comme les autres onglets (présentation, formations). -->
+            <RichText v-if="strengthsHtml" :content="strengthsHtml" />
           </div>
         </div>
       </div>
@@ -400,6 +433,7 @@ useSchoolSchemaOrg(school)
       <DesktopFicheEcole
         v-if="school"
         :school="school"
+        :formations="formations"
         :similar-schools="similarSchools"
         :destination-slug="destinationSlug"
         :domaine="desktopDomaine"
@@ -416,7 +450,7 @@ useSchoolSchemaOrg(school)
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
       <DialogContent
-        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in shell:inset-auto shell:top-1/2 shell:left-1/2 shell:w-720 shell:max-w-[calc(100vw-48px)] shell:-translate-x-1/2 shell:-translate-y-1/2 shell:rounded-2xl shell:max-h-[min(80vh,720px)] shell:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-surface-card animate-ed-form-modal-in shell:inset-auto shell:top-1/2 shell:left-1/2 shell:w-720 shell:max-w-[calc(100vw-48px)] shell:-translate-x-1/2 shell:-translate-y-1/2 shell:rounded-2xl shell:max-h-[min(80vh,720px)] shell:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
       >
         <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
           <DialogTitle class="m-0 pr-8 text-xl leading-21 font-bold text-navy">

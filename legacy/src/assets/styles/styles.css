@@ -1,0 +1,35 @@
+/* ============================================================
+   Global stylesheet — entry point
+   Fonts, then SMACSS partials (Base -> Layout -> Module -> Theme).
+   Tailwind v4 is loaded separately via tailwind.css (imported in main.ts).
+   ============================================================ */
+
+/* Import font */
+@import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Hind:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap");
+
+/* ===== Base ===== */
+@import "./base/base.css";
+@import "./base/helpers.css";
+
+/* ===== Layout ===== */
+@import "./layout/containers.css";
+
+/* ===== Modules ===== */
+@import "./modules/buttons.css";
+@import "./modules/forms.css";
+@import "./modules/content.css";
+@import "./modules/navbar.css";
+@import "./modules/menu.css";
+@import "./modules/studies.css";
+@import "./modules/school-logo.css";
+
+/* ===== Pages ===== */
+/* Login styles are plain CSS loaded via tailwind.css (Tailwind v4 graph, for @apply support). */
+
+/* ===== Theme (third-party overrides) ===== */
+@import "./theme/element-plus.css";
+@import "./theme/carousel.css";
+@import "./theme/fullcalendar.css";
+@import "./theme/emoji-picker.css";

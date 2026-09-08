@@ -6,12 +6,13 @@
  * trois par écran), pas une largeur au contenu : la maquette avance d'un
  * écran de puces via `.le-chips-next`, pas par simple débordement libre.
  *
- * `.le-school-meta` (année de création, effectif) n'existe que sur `School`
- * (fiche détaillée), pas sur `SchoolSummary` (cette liste) — et l'API ne les
- * alimente pour aucune école, sur aucun des deux contrats. La maquette varie
- * ces chiffres par école (`js/schools.js`) ; faute de donnée réelle, un
- * texte fixe est affiché pour toutes. Signalé, pas tranché : à reconsidérer
- * si l'API expose un jour ces champs sur la liste.
+ * `.le-school-meta` (année de création, effectif) : l'API ne les alimente pour
+ * quasiment aucune école du catalogue actuel — `SchoolSummary.foundedYear`/
+ * `studentCount` sont donc le plus souvent `null`. Consigne du responsable
+ * (2026-08-24) : masquer l'info absente plutôt qu'afficher un chiffre fixe
+ * pour toutes (la maquette variait ces chiffres par école, mais aucune
+ * donnée réelle ne le permettait) — chaque puce (année / effectif) ne
+ * s'affiche que si l'API la fournit pour cette école précise.
  *
  * Pas de recherche : `.le-list-block` ne contient que la liste et la
  * pagination, aucun champ de filtre dans la maquette.
@@ -30,6 +31,22 @@
  * (`?domaine=`) se résout en son identifiant réel avant d'interroger
  * `GET /schools/{countryId}/{areaId}` — seul endpoint qui filtre
  * effectivement par domaine (voir `server/api/bff/schools/index.get.ts`).
+ *
+ * **Ordre aléatoire** (2026-09-03, sur demande explicite) : l'API trie par
+ * `RAND(seed)`, mais retombe sur `seed=1` — un ordre fixe — si on ne lui en
+ * fournit pas. La graine vit en mémoire du composant (pas dans l'URL) :
+ * tirée une fois par montage, donc stable tant qu'on pagine ou change de
+ * domaine (navigation interne, même instance de page), mais renouvelée à
+ * chaque arrivée fraîche (F5, lien externe) — c'est le comportement voulu.
+ *
+ * **Pas dans l'URL** (corrigé le 2026-09-04, audit perf/SEO) : la première
+ * implémentation l'écrivait via `router.replace({ query: { ...seed } })`.
+ * Deux conséquences alors observées : la page devenait impossible à mettre
+ * en cache SSR (chaque visite = une URL différente), et Google risquait
+ * d'indexer un nombre infini d'URL quasi identiques (contenu dupliqué). Une
+ * simple variable locale suffit : Vue réutilise la même instance de
+ * composant tant que seuls `page`/`domaine` changent (navigation interne),
+ * donc la graine survit sans avoir besoin de persister nulle part.
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
@@ -45,6 +62,9 @@ const slug = computed(() => String(route.params.slug ?? ''))
 const apiSlug = computed(() => resolveDestinationApiSlug(slug.value))
 const page = computed(() => Math.max(1, Number(route.query.page ?? 1) || 1))
 const domaineParam = computed(() => String(route.query.domaine ?? ''))
+
+/** Graine d'ordre aléatoire — voir docblock plus haut. */
+const effectiveSeed = 1 + Math.floor(Math.random() * 1_000_000)
 
 const chipsRef = ref<HTMLDivElement | null>(null)
 
@@ -65,6 +85,7 @@ const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
       area: selected?.id,
       page: page.value,
       perPage: 5,
+      seed: effectiveSeed,
     }, locale.value)
 
     return {
@@ -115,7 +136,7 @@ usePageSeo(() => ({
 
 <template>
   <div class="shell:hidden">
-  <AppTopBar back :back-to="`/destinations/${apiSlug}`" :notifications="3" :gap="22" />
+  <AppTopBar back :back-to="`/destinations/${slug}`" :gap="22" />
 
   <!-- Carrousel de domaines (.le-domains) -->
   <div class="box-border flex w-full flex-col items-stretch gap-22">
@@ -127,7 +148,7 @@ usePageSeo(() => ({
           type="button"
           :data-domaine="area.slug"
           class="box-border flex shrink-0 items-center justify-center gap-5 rounded-xl border py-12 px-8 max-2xs:px-6 text-text"
-          :class="selectedDomain === area.slug ? 'bg-le-chip-selected-bg border-le-chip-selected-border' : 'bg-white border-le-chip-border shadow-le-chip'"
+          :class="selectedDomain === area.slug ? 'bg-le-chip-selected-bg border-le-chip-selected-border' : 'bg-surface-card border-le-chip-border shadow-le-chip'"
           :style="{ flex: '0 0 calc((100% - 14px) / 3)', width: 'calc((100% - 14px) / 3)' }"
           @click="setDomain(area.slug)"
         >
@@ -154,7 +175,7 @@ usePageSeo(() => ({
 
       <button
         type="button"
-        class="flex size-24 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0 shadow-xs"
+        class="flex size-24 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card p-0 shadow-xs"
         :aria-label="$t('school.list.nextDomains')"
         @click="nextDomain"
       >
@@ -202,12 +223,12 @@ usePageSeo(() => ({
           v-for="school in schools"
           :key="school.id"
           :to="localePath(selectedDomain
-            ? `/destinations/${apiSlug}/ecoles/${school.slug}?domaine=${selectedDomain}`
-            : `/destinations/${apiSlug}/ecoles/${school.slug}`)"
-          class="box-border flex w-full items-center rounded-xl bg-white p-10 text-inherit no-underline shadow-card"
+            ? `/destinations/${slug}/ecoles/${school.slug}?domaine=${selectedDomain}`
+            : `/destinations/${slug}/ecoles/${school.slug}`)"
+          class="box-border flex w-full items-center rounded-xl bg-surface-card p-10 text-inherit no-underline shadow-card"
         >
           <!-- Logo 64×64 -->
-          <div class="box-border flex size-64 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-4 shadow-xs">
+          <div class="box-border flex size-64 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-card p-4 shadow-xs">
             <NuxtImg
               v-if="school.logo"
               :src="school.logo"
@@ -215,6 +236,8 @@ usePageSeo(() => ({
               width="56"
               height="56"
               format="webp"
+              loading="lazy"
+              decoding="async"
               class="max-h-full max-w-full object-contain"
             />
             <QIcon v-else name="building" :size="28" class="text-muted" />
@@ -231,14 +254,17 @@ usePageSeo(() => ({
               <span>{{ [school.city, school.country.name].filter(Boolean).join(', ') }}</span>
             </div>
 
-            <div class="flex w-full flex-wrap items-start gap-x-4 gap-y-0 pt-6 max-2xs:flex-col max-2xs:gap-2">
-              <span class="flex items-center gap-3 text-2xs leading-15 font-normal whitespace-nowrap text-text">
+            <div
+              v-if="school.foundedYear !== null || school.studentCount !== null"
+              class="flex w-full flex-wrap items-start gap-x-4 gap-y-0 pt-6 max-2xs:flex-col max-2xs:gap-2"
+            >
+              <span v-if="school.foundedYear !== null" class="flex items-center gap-3 text-2xs leading-15 font-normal whitespace-nowrap text-text">
                 <QIcon name="ic-le-calendar" :size="10" :height="14" class="shrink-0" />
-                <span>{{ $t('school.list.foundedYear', { year: 1978 }) }}</span>
+                <span>{{ $t('school.list.foundedYear', { year: school.foundedYear }) }}</span>
               </span>
-              <span class="flex items-center gap-3 text-2xs leading-15 font-normal whitespace-nowrap text-text">
+              <span v-if="school.studentCount !== null" class="flex items-center gap-3 text-2xs leading-15 font-normal whitespace-nowrap text-text">
                 <QIcon name="ic-le-users" :size="8" :height="7" class="shrink-0" />
-                <span>{{ $t('school.list.students', { count: n(12000, 'decimal') }) }}</span>
+                <span>{{ $t('school.list.students', { count: n(school.studentCount, 'decimal') }) }}</span>
               </span>
             </div>
           </div>
@@ -253,6 +279,8 @@ usePageSeo(() => ({
                 width="64"
                 height="64"
                 format="webp"
+                loading="lazy"
+                decoding="async"
                 class="size-full object-cover"
               />
               <div v-else class="flex size-full items-center justify-center bg-surface-2">

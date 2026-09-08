@@ -33,7 +33,7 @@ export interface OfferTier {
 export interface OfferPage {
   slug: string
   /** D'où viennent les paliers — utile pour le fil d'Ariane et le SEO. */
-  kind: 'domain' | 'language' | 'living'
+  kind: 'domain' | 'language' | 'living' | 'orientation'
   title: string
   /** HTML. */
   description: string
@@ -50,8 +50,8 @@ export interface OfferPage {
    * s'applique).
    */
   serviceId: string
-  /** Vocabulaire du back-office : `course` pour une langue, `area` pour un domaine, `living` pour un logement. */
-  serviceType: 'course' | 'area' | 'living'
+  /** Vocabulaire du back-office : `course` pour une langue, `area` pour un domaine, `living` pour un logement, `profilage` pour l'orientation. */
+  serviceType: 'course' | 'area' | 'living' | 'profilage'
   seo: SeoMeta
   /** Pays, photo et bandeau statistique — renseigné uniquement pour `kind: 'living'`. */
   living: (LivingDestination & LivingStats) | null

@@ -25,33 +25,23 @@
  * d'orientation — voir `useOrientationData` pour les trois jalons réels qui
  * les remplacent.
  */
-import { orientationEvaluationRepo } from '~/core/repositories'
-
 definePageMeta({ middleware: 'auth' })
 
 const { t, locale } = useI18n()
 
 const { data: orientation, apiError, isInitialLoading, refresh } = await useOrientationData(locale)
 
-const reportPending = ref(false)
-
-/** Les URL de PDF ne sont pas portées par la liste (`has_pdf` seul) — second appel à la demande. */
-async function openReport() {
+/**
+ * `/api/bff/etesting/{id}/pdf` sert désormais le PDF en octets bruts
+ * (`Content-Type: application/pdf`), pas un JSON d'URL — PT-TESTS renvoie le
+ * PDF en base64 brut, jamais une URL à ouvrir. Plus besoin d'un aller-retour
+ * avant d'ouvrir : le navigateur charge/affiche directement cette adresse,
+ * comme un lien de téléchargement normal.
+ */
+function openReport() {
   const evaluation = orientation.value?.evaluation
-  if (!evaluation || reportPending.value) return
-
-  reportPending.value = true
-  try {
-    const pdf = await orientationEvaluationRepo.pdf(evaluation.id, locale.value)
-    const url = pdf.synthese ?? pdf.programme ?? pdf.detail ?? pdf.programmeDetail ?? pdf.candidat
-    if (url) window.open(url, '_blank', 'noopener')
-  }
-  catch {
-    // Action secondaire : un échec ne bloque pas la page, l'utilisateur peut réessayer.
-  }
-  finally {
-    reportPending.value = false
-  }
+  if (!evaluation) return
+  window.open(`/api/bff/etesting/${evaluation.id}/pdf`, '_blank', 'noopener')
 }
 
 const infoKeys = [
@@ -107,12 +97,12 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-mpo flex flex-1 flex-col bg-white">
+  <div class="page-mpo flex flex-1 flex-col bg-surface-card">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="mpo-main flex flex-col box-border">
       <!-- `gap: 0` : cet écran ne reprend pas le retrait de 30px sous la barre,
            le premier bloc vient à 8px (`.mpo-progress { margin-top: 8px }`). -->
-      <AppTopBar :back="true" back-to="/mon-projet" :notifications="3" :gap="0" />
+      <AppTopBar :back="true" back-to="/mon-projet" :gap="0" />
 
       <PageState
         :loading="isInitialLoading"
@@ -154,13 +144,13 @@ usePageSeo(() => ({
                   :class="[
                     'mpo-milestone-dot flex size-32 shrink-0 items-center justify-center overflow-hidden rounded-full box-border border',
                     m.status === 'done' ? 'border-mpo-dot bg-mpo-dot' : '',
-                    m.status === 'current' ? 'border-mpo-dot bg-white' : '',
-                    m.status === 'upcoming' ? 'border-mpo-card-border bg-white' : '',
+                    m.status === 'current' ? 'border-mpo-dot bg-surface-card' : '',
+                    m.status === 'upcoming' ? 'border-mpo-card-border bg-surface-card' : '',
                   ]"
                 >
                   <img v-if="m.status === 'done'" src="/img/icons/ic-mpo-check.svg" alt="" width="16" height="16" class="block size-16">
                 </span>
-                <span class="mpo-milestone-label text-sm leading-[12.5px] font-normal text-center text-black">
+                <span class="mpo-milestone-label text-sm leading-[12.5px] font-normal text-center text-text">
                   {{ $t(m.titleKey) }}
                 </span>
               </div>
@@ -179,14 +169,13 @@ usePageSeo(() => ({
               </div>
             </div>
             <div class="mpo-profile-actions mt-12 flex gap-12">
-              <span class="mpo-profile-badge flex min-w-0 flex-1 items-center gap-6 rounded-lg border border-mpo-profile-border bg-white px-11 py-7 shadow-2xs">
+              <span class="mpo-profile-badge flex min-w-0 flex-1 items-center gap-6 rounded-lg border border-mpo-profile-border bg-surface-card px-11 py-7 shadow-2xs">
                 <img src="/img/icons/ic-mpo-report.svg" alt="" width="16" height="16" class="block size-16 shrink-0">
                 <span class="text-sm leading-15 font-semibold text-mpo-heading">{{ $t('projectOrientation.reportAvailable') }}</span>
               </span>
               <button
                 type="button"
-                :disabled="reportPending"
-                class="mpo-profile-btn flex flex-1 cursor-pointer items-center justify-center rounded-xl border-0 bg-mpo-btn px-16 py-10 text-md leading-[16.5px] font-semibold text-center whitespace-nowrap text-white disabled:opacity-50"
+                class="mpo-profile-btn flex flex-1 cursor-pointer items-center justify-center rounded-xl border-0 bg-mpo-btn px-16 py-10 text-md leading-[16.5px] font-semibold text-center whitespace-nowrap text-white"
                 @click="openReport"
               >
                 {{ $t('projectOrientation.seeReport') }}
@@ -207,7 +196,7 @@ usePageSeo(() => ({
                   :href="orientation.evaluation.testUrl"
                   target="_blank"
                   rel="noopener"
-                  class="mpo-test-btn inline-flex w-fit max-w-full items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn no-underline"
+                  class="mpo-test-btn inline-flex w-fit max-w-full items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-surface-card px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn no-underline"
                 >
                   <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                   <span>{{ $t('projectOrientation.retakeTest') }}</span>

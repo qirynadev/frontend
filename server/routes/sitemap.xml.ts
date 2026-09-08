@@ -29,6 +29,10 @@ export default defineEventHandler(async (event) => {
     { path: '/destinations', priority: '0.9', changefreq: 'weekly' },
     { path: '/langues', priority: '0.9', changefreq: 'weekly' },
     { path: '/orientation', priority: '0.9', changefreq: 'weekly' },
+    // Absentes jusqu'ici (relevé par l'audit SEO du 4 septembre 2026) — la
+    // liste ci-dessus est écrite à la main, pas générée depuis les routes
+    // déclarées : ce sont des pages publiques comme les autres.
+    { path: '/logement', priority: '0.9', changefreq: 'weekly' },
   ]
 
   const urls: Array<{
@@ -75,6 +79,25 @@ export default defineEventHandler(async (event) => {
       alternates: [
         { code: 'fr', href: schoolsLocFr },
         { code: 'en', href: schoolsLocEn },
+      ],
+    })
+  }
+
+  // 2bis. Logement — mêmes destinations pays, absentes du sitemap jusqu'ici
+  // (l'audit SEO du 4 septembre 2026 les a trouvées publiques et bien
+  // titrées, mais jamais listées ici).
+  const livingsFr = snapshotFr?.livings ?? []
+  for (const living of livingsFr) {
+    const locFr = `${baseUrl}/logement/${living.slug}`
+    const locEn = `${baseUrl}/en/logement/${living.slug}`
+
+    urls.push({
+      loc: locFr,
+      changefreq: 'weekly',
+      priority: '0.7',
+      alternates: [
+        { code: 'fr', href: locFr },
+        { code: 'en', href: locEn },
       ],
     })
   }

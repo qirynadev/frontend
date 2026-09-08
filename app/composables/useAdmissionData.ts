@@ -1,20 +1,39 @@
-import type { AdmissionDocument, AdmissionStep, AdmissionStepStatus } from '~/core/contracts/admission'
-import type { OrderChecklistItem } from '~/core/contracts'
-import { paymentRepo } from '~/core/repositories'
+import type { AdmissionDocument, AdmissionDocumentsState, AdmissionStep, AdmissionStepStatus } from '~/core/contracts/admission'
+import type { OrderChecklistItem, OrderStatus } from '~/core/contracts'
+import { admissionDocumentsRepo, paymentRepo } from '~/core/repositories'
 
 /**
- * Donnée d'essai tirée de `mon-projet-admission.html`, conservée telle quelle
- * (voir le commentaire de `useAdmissionData` ci-dessous — aucun endpoint réel
- * ne couvre le suivi par pièce).
+ * Statut affiché pour une pièce.
+ *
+ * Tant que le dossier n'est **pas** finalisé (`!locked`), une pièce envoyée
+ * reste modifiable (le client peut la remplacer) : `pending` ne veut alors
+ * dire que « déjà envoyée », pas « en cours de vérification ».
+ *
+ * Une fois finalisé, il n'existe aucun suivi de vérification **par pièce**
+ * côté back-office (ni API, ni back-office lui-même : `Order/Edit.vue` ne
+ * propose qu'un statut de *commande* — « Vérifié »/« En attente de
+ * vérification »/« Annulé », voir `docs/directives-backend.md`). On réutilise
+ * donc ce statut de commande, déjà lu par `paymentRepo.orders()`
+ * (`Order.status`) — une approximation honnête (dérivée d'un champ réel),
+ * pas une vérité par document.
  */
-const DEMO_DOCUMENTS: AdmissionDocument[] = [
-  { id: 'passport', titleKey: 'admission.docPassport', required: true, fileType: 'pdf', fileCount: 1, status: 'validated', icon: '/img/icons/ic-mpa-doc-passport.png' },
-  { id: 'diploma', titleKey: 'admission.docDiploma', required: true, fileType: 'pdf', fileCount: 1, status: 'validated', icon: '/img/icons/ic-mpa-doc-diploma.png' },
-  { id: 'grades', titleKey: 'admission.docGrades', required: true, fileType: 'pdf', fileCount: 2, status: 'validated', icon: '/img/icons/ic-mpa-doc-grades.png' },
-  { id: 'language', titleKey: 'admission.docLanguage', required: false, fileType: 'pdf', fileCount: 1, status: 'pending', icon: '/img/icons/ic-mpa-doc-language.png' },
-  { id: 'letter', titleKey: 'admission.docLetter', required: false, fileType: 'pdf', fileCount: 1, status: 'upload', icon: '/img/icons/ic-mpa-doc-letter.png' },
-  { id: 'recommendation', titleKey: 'admission.docRecommendation', required: false, fileType: 'pdf', fileCount: 1, status: 'upload', icon: '/img/icons/ic-mpa-doc-recommendation.png' },
-]
+function toDocumentStatus(uploaded: boolean, locked: boolean, orderStatus: OrderStatus): AdmissionDocument['status'] {
+  if (!uploaded) return 'upload'
+  if (!locked) return 'pending'
+  return orderStatus === 'confirmed' ? 'validated' : 'pending'
+}
+
+function toAdmissionDocuments(state: AdmissionDocumentsState, orderStatus: OrderStatus): AdmissionDocument[] {
+  const { locked } = state
+  return [
+    { id: 'passport', titleKey: 'admission.docPassport', required: true, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-passport.png', formField: 'id_document', status: toDocumentStatus(state.idDocumentUrl !== null, locked, orderStatus), downloadUrl: state.idDocumentUrl },
+    { id: 'diploma', titleKey: 'admission.docDiploma', required: true, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-diploma.png', formField: 'diploma', status: toDocumentStatus(state.diplomaUrl !== null, locked, orderStatus), downloadUrl: state.diplomaUrl },
+    { id: 'grades', titleKey: 'admission.docGrades', required: true, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-grades.png', formField: 'transcripts', status: toDocumentStatus(state.transcriptsUrl !== null, locked, orderStatus), downloadUrl: state.transcriptsUrl },
+    { id: 'language', titleKey: 'admission.docLanguage', required: false, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-language.png', formField: 'language_certificate', status: toDocumentStatus(state.languageCertificateUrl !== null, locked, orderStatus), downloadUrl: state.languageCertificateUrl },
+    { id: 'letter', titleKey: 'admission.docLetter', required: false, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-letter.png', formField: 'cover_letter', status: toDocumentStatus(state.coverLetterUrl !== null, locked, orderStatus), downloadUrl: state.coverLetterUrl },
+    { id: 'recommendation', titleKey: 'admission.docRecommendation', required: false, fileType: 'pdf', icon: '/img/icons/ic-mpa-doc-recommendation.png', formField: 'recommendation', status: toDocumentStatus(state.recommendationUrl !== null, locked, orderStatus), downloadUrl: state.recommendationUrl },
+  ]
+}
 
 /**
  * Données de suivi d'admission école, pour `mon-projet/admission`.
@@ -37,13 +56,13 @@ const DEMO_DOCUMENTS: AdmissionDocument[] = [
  * `terminé`) — c'est elle que cet écran affiche en tant qu'étape active
  * (`current`), une lecture du statut `pending` plutôt qu'un champ à part.
  *
- * L'onglet Document (types de pièces, statut par pièce validé/en attente/à
- * téléverser) reste sur sa donnée d'essai : aucun endpoint ne l'expose.
- * `ClientPostPurchaseData` existe (`GET /client-data/show`) mais c'est un
- * formulaire à remplir une fois (`diplomas`: noms en texte libre, `additional_
- * documents`: chemins de fichiers bruts, `is_complete`: un seul booléen) — pas
- * un suivi par pièce avec un statut individuel. Rien à brancher sans inventer
- * la donnée manquante.
+ * L'onglet Document (dépôt de pièces) est câblé sur `ClientPostPurchaseData`
+ * (`GET/POST /client-data/{show,store}`, `service_type: 'area'`) via
+ * `admissionDocumentsRepo`. Les six pièces ont chacune leur colonne dédiée
+ * (`diploma`/`recommendation` depuis `qiryna-backoffice` `1b38ef2`,
+ * 2026-08-28) et l'envoi ne verrouille plus le dossier automatiquement — le
+ * client peut envoyer/remplacer ses pièces une à une, puis finaliser
+ * explicitement (`admissionDocumentsRepo.finalize`) quand il a terminé.
  */
 export async function useAdmissionData(locale: Ref<string>) {
   return usePageData(
@@ -54,10 +73,18 @@ export async function useAdmissionData(locale: Ref<string>) {
         .filter((candidate) => candidate.serviceType === 'areaofstudy')
         .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0] ?? null
 
+      const documentsState = order
+        ? await admissionDocumentsRepo.show(order.id, locale.value)
+        : { locked: false, finalizedAt: null, idDocumentUrl: null, transcriptsUrl: null, languageCertificateUrl: null, coverLetterUrl: null, diplomaUrl: null, recommendationUrl: null }
+
+      const documents = order ? toAdmissionDocuments(documentsState, order.status) : []
+
       return {
         order,
-        steps: order ? toAdmissionSteps(order.checklist) : [],
-        documents: DEMO_DOCUMENTS,
+        steps: order ? toAdmissionSteps(order.checklist, documents) : [],
+        documents,
+        documentsLocked: documentsState.locked,
+        documentsFinalizedAt: documentsState.finalizedAt ? toFrenchDate(documentsState.finalizedAt) : null,
       }
     },
     { watch: [locale] },
@@ -76,13 +103,33 @@ function toFrenchDate(isoDate: string): string {
   return `${day}/${month}/${year}`
 }
 
-function toAdmissionSteps(checklist: OrderChecklistItem[]): AdmissionStep[] {
-  return checklist.map((item) => ({
-    id: item.id,
-    stepNumber: item.position,
-    titleKey: `admission.step${item.position}Title`,
-    descKey: `admission.step${item.position}Desc`,
-    status: toChecklistStatus(item.status),
-    completedAt: item.completedAt ? toFrenchDate(item.completedAt) : undefined,
-  }))
+/**
+ * Étape « Dépôt des documents » (`stepKey: 'documents_submitted'`) — seul
+ * cas où le statut back-office ne suffit pas.
+ *
+ * Semée à `pending` dès la création de la commande (voir docblock plus
+ * haut), donc affichée « En cours » même quand le client n'a encore rien
+ * envoyé. On la corrige avec le seul signal réel disponible — le nombre de
+ * pièces effectivement envoyées (`status !== 'upload'`) — sans toucher au
+ * `done` : s'il est déjà posé, c'est qu'un employé l'a validé à la main
+ * (aucun autre chemin ne l'atteint aujourd'hui), une donnée réelle qu'on ne
+ * doit pas écraser.
+ */
+function toDocumentsStepStatus(mapped: AdmissionStepStatus, documents: AdmissionDocument[]): AdmissionStepStatus {
+  if (mapped !== 'current') return mapped
+  return documents.some((doc) => doc.status !== 'upload') ? 'current' : 'upcoming'
+}
+
+function toAdmissionSteps(checklist: OrderChecklistItem[], documents: AdmissionDocument[]): AdmissionStep[] {
+  return checklist.map((item) => {
+    const mapped = toChecklistStatus(item.status)
+    return {
+      id: item.id,
+      stepNumber: item.position,
+      titleKey: `admission.step${item.position}Title`,
+      descKey: `admission.step${item.position}Desc`,
+      status: item.stepKey === 'documents_submitted' ? toDocumentsStepStatus(mapped, documents) : mapped,
+      completedAt: item.completedAt ? toFrenchDate(item.completedAt) : undefined,
+    }
+  })
 }

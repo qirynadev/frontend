@@ -94,6 +94,49 @@ describe('champ manquant', () => {
   })
 })
 
+/**
+ * Charge utile réelle de `GET /user/me` (`ProfileResource`), relevée en
+ * direct sur la recette (2026-08-30) — forme inversée de `rawLogin` :
+ * prénom/nom/photo en racine, `user` imbriqué porte email/nom/rôle.
+ */
+const rawProfileMe = {
+  id: 'c9f3797e-5f32-4afa-bb73-d3d709978d62',
+  last_name: 'SEMEVO',
+  first_name: 'Victor',
+  full_name: 'Victor SEMEVO',
+  phone: null,
+  role: 'admin',
+  photo: 'https://ui-avatars.com/api/?name=SEMEVO+Victor',
+  city: null,
+  user: {
+    id: '275f803e-a0f5-45f5-9a99-6780a000392f',
+    email: 'sessouv@gmail.com',
+    name: 'Victor SEMEVO',
+    is_activated: 1,
+    role: 'admin',
+  },
+}
+
+describe('forme `/user/me` (ProfileResource, `user` imbriqué)', () => {
+  it('lit e-mail/nom/rôle depuis `user`, pas la racine', () => {
+    const user = toUser(rawProfileMe)
+
+    expect(user.id).toBe('275f803e-a0f5-45f5-9a99-6780a000392f')
+    expect(user.email).toBe('sessouv@gmail.com')
+    expect(user.name).toBe('Victor SEMEVO')
+    expect(user.role).toBe('admin')
+    expect(user.isActivated).toBe(true)
+  })
+
+  it('lit le profil depuis la racine, pas `.profile`', () => {
+    expect(toUser(rawProfileMe).profile).toMatchObject({ firstName: 'Victor', lastName: 'SEMEVO' })
+  })
+
+  it('retombe sur la photo du profil sans `avatar` dédié', () => {
+    expect(toUser(rawProfileMe).avatar).toBe('https://ui-avatars.com/api/?name=SEMEVO+Victor')
+  })
+})
+
 describe('cas dégradé', () => {
   it('refuse une session sans jeton', () => {
     // Une réponse 200 sans `access_token` (compte désactivé) produirait sinon un

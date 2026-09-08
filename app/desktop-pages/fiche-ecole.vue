@@ -6,6 +6,7 @@ import type { School, SchoolFormation, SchoolSummary } from '~/core/contracts'
 
 const props = defineProps<{
   school: School
+  formations: SchoolFormation[]
   similarSchools: SchoolSummary[]
   destinationSlug: string
   domaine: string
@@ -166,11 +167,11 @@ function similarLocation(item: SchoolSummary) {
         </div>
 
         <div v-show="activeTab === 'formations'" class="flex w-full flex-col gap-16">
-          <p v-if="school.formations.length === 0" class="m-0 text-[16px] leading-[22.75px] text-[#252525]">
+          <p v-if="formations.length === 0" class="m-0 text-[16px] leading-[22.75px] text-[#252525]">
             {{ $t('school.detail.emptyDescription') }}
           </p>
           <button
-            v-for="formation in school.formations"
+            v-for="formation in formations"
             :key="formation.title"
             type="button"
             class="flex w-full cursor-pointer items-start gap-16 rounded-[12px] border border-[#f3f4f6] bg-white p-20 text-left shadow-[0_1px_2px_rgba(0,0,0,0.05)]"

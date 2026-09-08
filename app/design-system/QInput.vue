@@ -115,7 +115,7 @@ const iconBox = computed(() => ({
 
     <div
       :class="[
-        'relative flex items-center gap-12 rounded-xl border bg-white px-17 py-15 transition-colors duration-150',
+        'relative flex items-center gap-12 rounded-xl border bg-surface-card px-17 py-15 transition-colors duration-150',
         borderClass[effectiveState],
         revealable ? 'pr-52' : '',
         disabled ? 'opacity-50' : '',

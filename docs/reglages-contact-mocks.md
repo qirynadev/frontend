@@ -18,7 +18,7 @@ Assets :
 
 | Élément | Source | Notes |
 |---|---|---|
-| Envoi du message | — | **Pas d’endpoint** contact / support |
+| Envoi du message | `POST /user/messages` | Réel, câblé 2026-08-27 (`contactRepo`) — authentifié. Persiste dans `Messaging` (visible dans la rubrique « Messagerie » du back-office) **et** envoie l'e-mail de notification. Voir `docs/directives-backend.md` §9 (essai initial via `/send-email`, qui n'enregistrait rien). |
 | Nom / email préremplis | `session.user` | Si connecté |
 | WhatsApp | `centreAideMock.whatsappPhone` | `wa.me` mock |
 | Être rappelé | — | **Pas d’écran** Figma branché (bouton inerte) |

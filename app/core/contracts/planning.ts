@@ -47,6 +47,18 @@ export interface Teacher {
   rating: number | null
   reviewsCount: number
   experienceYears: number | null
+  /** Pays déclaré sur le profil (`country.name` / `country_flag`, réels côté API). */
+  countryLabel: string | null
+  countryFlag: string | null
+  /**
+   * Premier créneau libre à venir, dérivé de `plannings[]` (déjà inclus dans
+   * cette même réponse — pas d'appel supplémentaire). `null` si aucun.
+   */
+  nextAvailableAt: string | null
+  /** Diplôme déclaré (`formations[0].diploma`) — qualité éditoriale variable, voir `docs/directives-backend.md`. */
+  qualification: string | null
+  /** `user.email_verified_at !== null` — confirmation d'e-mail, pas un contrôle de profil distinct côté API. */
+  verified: boolean
 }
 
 /** Un créneau du calendrier d'un professeur — libre ou déjà réservé. */
@@ -67,4 +79,10 @@ export interface PlannedSession {
   teacher: PlanningTeacherSummary | null
   /** `order.associated_service.id` — apparie une séance à sa `LanguageProgress`. */
   courseId: string | null
+  /**
+   * `meeting.session_name` — identifiant de la session Zoom Video SDK créée à
+   * la réservation (`PlanningAction::createMeeting`). `null` si la séance n'a
+   * jamais eu de session créée (échec de création côté back-office).
+   */
+  meetingSessionName: string | null
 }

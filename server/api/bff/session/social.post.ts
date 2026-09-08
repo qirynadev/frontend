@@ -23,6 +23,14 @@ const PROVIDERS: SocialProvider[] = ['google', 'facebook', 'linkedin']
  * LinkedIn fait exception : le navigateur n'obtient qu'un `code` d'autorisation
  * (pas de jeton), échangé par `/auth/social/linkedin`.
  *
+ * `unwrap: false` sur les appels à `/auth/social/register` (trouvé en
+ * l'auditant, 2026-08-30, avant même d'avoir des identifiants OAuth réels à
+ * tester) : sa réponse « e-mail déjà utilisé, confirmer le rattachement »
+ * est `{ success, requires_confirmation, message, data }` — `unwrapEnvelope`
+ * (voir `api-client.ts`) la confondrait sinon avec l'enveloppe Laravel
+ * habituelle et ne garderait que `data`, perdant `requires_confirmation` en
+ * route. `toSocialAuthResult` attend justement la forme complète.
+ *
  * ⚠️ Quotas du back-office : 10 requêtes/minute sur `login`, 5 sur `register`.
  */
 export default defineEventHandler(async (event): Promise<SocialAuthOutcome> => {
@@ -49,11 +57,11 @@ export default defineEventHandler(async (event): Promise<SocialAuthOutcome> => {
     }
 
     if (mode === 'link') {
-      return { raw: await client.request('/auth/social/register', { method: 'POST', body: { provider, token, confirm_link: true } }) }
+      return { raw: await client.request('/auth/social/register', { method: 'POST', body: { provider, token, confirm_link: true }, unwrap: false }) }
     }
 
     if (mode === 'register') {
-      return { raw: await client.request('/auth/social/register', { method: 'POST', body: { provider, token, confirm_link: false } }) }
+      return { raw: await client.request('/auth/social/register', { method: 'POST', body: { provider, token, confirm_link: false }, unwrap: false }) }
     }
 
     try {
@@ -64,7 +72,7 @@ export default defineEventHandler(async (event): Promise<SocialAuthOutcome> => {
       // Première connexion tierce : le compte n'existe pas encore côté
       // back-office, `register` le crée ou rattache le fournisseur.
       if (!/not found/i.test(message)) throw error
-      return { raw: await client.request('/auth/social/register', { method: 'POST', body: { provider, token, confirm_link: false } }) }
+      return { raw: await client.request('/auth/social/register', { method: 'POST', body: { provider, token, confirm_link: false }, unwrap: false }) }
     }
   }
 

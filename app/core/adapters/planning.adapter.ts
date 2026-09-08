@@ -61,11 +61,34 @@ export function toPlannedSession(raw: unknown): PlannedSession {
     // `title` est une saisie libre à la réservation, pas une clé de
     // regroupement fiable — `order.associated_service.id` l'est.
     courseId: optionalStr(asRecord(dig(source, 'order.associated_service')), 'id'),
+    meetingSessionName: optionalStr(source, 'meeting.session_name'),
   }
 }
 
 export function toPlannedSessionList(raw: unknown): PlannedSession[] {
   return asArray(raw).map(toPlannedSession)
+}
+
+/**
+ * Premier créneau libre à venir d'un professeur, à partir de `plannings[]`
+ * (déjà présent sur `TeacherResource` — un appel par professeur en plus
+ * n'est pas nécessaire pour ça).
+ */
+function toNextAvailableAt(raw: unknown): string | null {
+  const now = Date.now()
+  let earliest: string | null = null
+
+  for (const entry of asArray(raw)) {
+    const source = asRecord(entry)
+    if (str(source, 'status') !== 'free') continue
+    const start = optionalStr(source, 'start_date')
+    if (start === null) continue
+    const time = new Date(start).getTime()
+    if (Number.isNaN(time) || time <= now) continue
+    if (earliest === null || time < new Date(earliest).getTime()) earliest = start
+  }
+
+  return earliest
 }
 
 export function toTeacher(raw: unknown): Teacher | null {
@@ -82,6 +105,11 @@ export function toTeacher(raw: unknown): Teacher | null {
     rating: optionalNum(source, 'rating'),
     reviewsCount: num(source, 'reviews_count', 0),
     experienceYears: optionalNum(source, 'experience_years'),
+    countryLabel: optionalStr(source, 'country.name'),
+    countryFlag: toUrl(source.country_flag),
+    nextAvailableAt: toNextAvailableAt(source.plannings),
+    qualification: optionalStr(source, 'formations.0.diploma'),
+    verified: optionalStr(source, 'user.email_verified_at') !== null,
   }
 }
 

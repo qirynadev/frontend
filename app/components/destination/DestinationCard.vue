@@ -23,7 +23,7 @@ const localePath = useLocalePath()
 <template>
   <NuxtLink
     :to="localePath(`/destinations/${destination.slug}`)"
-    class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-white px-7 pt-7 pb-10 text-left text-text no-underline shadow-card"
+    class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-surface-card px-7 pt-7 pb-10 text-left text-text no-underline shadow-card"
   >
     <div class="relative h-112 w-full shrink-0">
       <NuxtImg

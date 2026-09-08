@@ -59,6 +59,27 @@ describe('réponse nominale', () => {
     expect(toOrder({ ...rawOrder, mentor_name: 'Sarah Kouamé' })?.advisorName).toBe('Sarah Kouamé')
   })
 
+  it('lit `school_name` et `destination_country` à plat (commande admission)', () => {
+    const order = toOrder({ ...rawOrder, school_name: 'IESEG School of management', destination_country: 'France' })
+    expect(order?.schoolName).toBe('IESEG School of management')
+    expect(order?.destinationCountry).toBe('France')
+  })
+
+  it('retombe sur `associated_service.country.name` pour le pays d’un logement (jamais à plat pour ce type)', () => {
+    const order = toOrder({
+      ...rawOrder,
+      destination_country: undefined,
+      associated_service: { id: 'c1', country: { name: 'Royaume-Uni' } },
+    })
+    expect(order?.destinationCountry).toBe('Royaume-Uni')
+  })
+
+  it('donne `null` sans école ni pays de destination', () => {
+    const order = toOrder(rawOrder)
+    expect(order?.schoolName).toBeNull()
+    expect(order?.destinationCountry).toBeNull()
+  })
+
   it('dérive une référence lisible faute de numéro en base', () => {
     expect(toOrderReference('0d549216-6a3c-4c8f')).toBe('QRY-0D549216')
     expect(toOrderReference('')).toBe('')

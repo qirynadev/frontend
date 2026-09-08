@@ -2,9 +2,12 @@
 /**
  * Choix du professeur ← Figma `865:2982` « Mon Projet - Professeur ».
  *
- * API : `planningRepo.teachersByCourse` → `Teacher` (nom, photo, bio, note, avis, expérience).
- * Hors API (mock) : pays/drapeau, badge vérifié, qualification, disponibilité, prix.
- * Voir `docs/mon-projet-professeur-mocks.md`.
+ * API : `planningRepo.teachersByCourse` → `Teacher` (nom, photo, bio, note, avis,
+ * expérience, pays/drapeau, disponibilité, qualification, vérifié — voir
+ * `planning.adapter.ts:toTeacher`). Qualité éditoriale de `qualification`
+ * encore inégale selon le profil, et `verified` reflète une confirmation
+ * d'e-mail plutôt qu'un contrôle de profil dédié — utilisés quand même en dev
+ * (voir `docs/directives-backend.md`). Toujours hors API (mock) : prix.
  */
 import type { Teacher } from '~/core/contracts'
 import {
@@ -15,6 +18,7 @@ import {
   langueTeachersMock,
 } from '~/config/projet-langue-mock'
 import { planningRepo } from '~/core/repositories'
+import { resolveTeacherAvailability } from '~/utils/teacher-availability'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -65,19 +69,21 @@ const availabilityToneClass: Record<LangueTeacherAvailabilityTone, { bg: string;
 }
 
 function fromApi(teacher: Teacher): TeacherCardView {
+  const availability = resolveTeacherAvailability(teacher.nextAvailableAt, locale.value, t)
+
   return {
     id: teacher.id,
     fullName: teacher.fullName,
     photo: teacher.photo,
-    verified: false,
-    countryLabel: null,
-    flagSrc: null,
+    verified: teacher.verified,
+    countryLabel: teacher.countryLabel,
+    flagSrc: teacher.countryFlag,
     rating: teacher.rating,
     reviewsCount: teacher.reviewsCount,
-    qualification: null,
+    qualification: teacher.qualification,
     experienceYears: teacher.experienceYears,
-    availabilityLabel: null,
-    availabilityTone: null,
+    availabilityLabel: availability?.label ?? null,
+    availabilityTone: availability?.tone ?? null,
     priceFrom: '-',
   }
 }
@@ -139,7 +145,7 @@ usePageSeo(() => ({
 
 <template>
   <div class="flex w-full flex-col gap-16 pb-22">
-    <AppTopBar back back-to="/mon-projet/langues" :notifications="3" :gap="0" />
+    <AppTopBar back back-to="/mon-projet/langues" :gap="0" />
 
     <h1 class="m-0 text-[20px] leading-normal font-semibold tracking-[-0.65px] text-[#191919]">
       {{ $t('languagePlanning.teachersAvailableTitle') }}
@@ -165,7 +171,7 @@ usePageSeo(() => ({
         <article
           v-for="teacher in pagedTeachers"
           :key="teacher.id"
-          class="box-border flex w-full gap-14 rounded-[10px] border border-[#f3f4f6] bg-white p-15 shadow-[0_2px_6px_rgba(0,0,0,0.03)]"
+          class="box-border flex w-full gap-14 rounded-[10px] border border-[#f3f4f6] bg-surface-card p-15 shadow-[0_2px_6px_rgba(0,0,0,0.03)]"
         >
           <div class="h-113 w-75 shrink-0 overflow-hidden rounded-[10px] bg-[#f3f4f6]">
             <img

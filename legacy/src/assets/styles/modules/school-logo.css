@@ -1,0 +1,28 @@
+.study-page .q-school {
+  width: 100%;
+  height: 6rem;
+  box-sizing: border-box;
+  border: 0.09375rem solid var(--q-border, #e9ebf2);
+  border-radius: 0.5625rem;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.study-page .q-school img {
+  max-width: 86%;
+  max-height: 68%;
+  object-fit: contain;
+}
+
+.study-page .q-school span {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: #0a1330;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}

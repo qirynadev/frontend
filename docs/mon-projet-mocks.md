@@ -1,26 +1,49 @@
-# Mon projet — mocks hors API
+# Mon projet — statut des données (mis à jour 2026-08-23)
 
-Écran : `/mon-projet` ← maquette `pwa/pages/mon-projet.html`  
-Config : `app/config/projet-accompagnements-mock.ts`
+Écran : `/mon-projet` ← maquette `pwa/pages/mon-projet.html`
+Logique : `app/composables/useProjetData.ts`
 
 ## Source API
 
 | Élément | Source | Notes |
 |---|---|---|
-| Liste commandes | `paymentRepo.orders` | Types `areaofstudy`, `costofliving`, `profilage` |
-| Langues | `planningRepo.unplanned` + `planned` | Une carte par langue (heures cumulées) |
+| Commandes école/logement | `paymentRepo.orders` | Types `areaofstudy`, `costofliving` |
+| Langues | `planningRepo.unplanned` + `planned` | Groupées par langue |
+| Orientation | `orientationEvaluationRepo.list` | Un bilan par commande `profilage` |
 
-## Mockés (absents / incomplets côté API)
+## Règles confirmées par le responsable (2026-08-23)
 
-| Élément | Mock maquette | Quand |
-|---|---|---|
-| 4 cartes complètes | Admission 80 %, Logement 30 %, Langues 50 %, Orientation 100 % | Aucune commande / langue API |
-| Sous-titre | ESA Paris, Recherche…, Anglais B1, Profil généré | `offer.title` / langue vide |
-| Progression % | 80 / 30 / 50 / 100 | `Order.status` ne porte que le paiement → % `null` |
-| Conseiller | Sarah Kouamé, Idriss Traoré, Amina Diallo, Marie Konan | `advisorName` souvent `null` |
-| Date de mise à jour | hier / 2j / 1j / 5j | `updatedAt` absent |
+- **Exactement 4 cartes, une par rubrique** (Admission, Logement, Langues,
+  Orientation) — jamais une carte par commande, par langue ou par bilan. Un
+  client qui achète plusieurs cours de langues, plusieurs commandes de
+  logement/admission ou plusieurs bilans d'orientation (E-Testing) voit
+  toujours **une seule carte par rubrique** ; le détail par commande n'existe
+  qu'au clic, sur l'écran dédié à cette rubrique.
+- **Score = moyenne des avancements individuels**, le nombre de produits
+  achetés dans la rubrique servant de dénominateur. Exemple donné par le
+  responsable : deux cours de langues différents (20h d'anglais + 30h de
+  français) → dénominateur = 2, pas la somme des heures. Chaque produit
+  contribue son propre pourcentage (0 si non mesurable — commande non
+  confirmée, checklist vide, ou aucune évaluation encore créée), la moyenne de
+  ces pourcentages est le score affiché.
+- **Client sans aucun achat** : les 4 rubriques s'affichent quand même,
+  toutes à **0 %**, sans conseiller ni date, plutôt qu'un contenu d'exemple
+  (l'ancien mock affichait 80/30/50/100 % avec de faux noms de conseillers —
+  ce fichier a été retiré, `ensureAllTypes()` injecte une carte à 0 % par
+  rubrique sans données réelles).
 
-Enrichissement : `enrichAccompagnementFromMock()` — complète carte par carte sans écraser une valeur API déjà présente.
+Détail par type dans `useProjetData.ts` :
+`toOrderAggregateAccompagnement` (école/logement, moyenne des checklists),
+`toLanguageAccompagnement` (langues, moyenne des heures complétées/expirées
+par langue), `toOrientationAccompagnement` (orientation, moyenne des jalons
+par bilan, voir `app/utils/orientation-progress.ts`).
+
+## Encore hors API
+
+| Élément | Statut |
+|---|---|
+| Sous-titre (Admission/Logement/Orientation) | `offer.title` de la commande la plus récente — vide si absent côté API |
+| Conseiller / date de mise à jour | Masqués sur la carte agrégée (plusieurs commandes peuvent avoir des valeurs différentes, arbitraire d'en choisir une) |
 
 ## Navigation
 
@@ -32,8 +55,5 @@ Enrichissement : `enrichAccompagnementFromMock()` — complète carte par carte 
 | Carte Admission | `/mon-projet/admission` |
 | Carte Logement | `/mon-projet/logement` |
 
-Doc destinations logement (badge villes) : `docs/logement-mocks.md`  
+Doc destinations logement (badge villes) : `docs/logement-mocks.md`
 Doc messages : `docs/messages-mocks.md`
-
-Les 4 cartes maquette sont **toujours** affichées : types manquants côté API
-injectés via `mergeAccompagnementsWithMaquette()`.

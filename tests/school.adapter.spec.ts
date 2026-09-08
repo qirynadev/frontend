@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toSchool, toSchoolSummary } from '~/core/adapters/school.adapter'
+import { toFormations, toSchool, toSchoolSummary } from '~/core/adapters/school.adapter'
 import { rawSchool, rawSchoolWithFormations } from './fixtures/all-data'
 
 describe('réponse nominale', () => {
@@ -13,18 +13,10 @@ describe('réponse nominale', () => {
     expect(school.presentation).toContain('<p>')
   })
 
-  it('écarte les entrées fantômes de formations et details', () => {
+  it('écarte les entrées fantômes de details', () => {
     const school = toSchool(rawSchoolWithFormations)
 
     // L’API insère systématiquement un `{ title: null, description: null }`.
-    expect(school.formations).toHaveLength(1)
-    expect(school.formations[0]?.title).toBe('Global Bachelor of Business Administration')
-    expect(school.formations[0]?.summary).toContain('Bachelor international')
-    expect(school.formations[0]?.summary).not.toContain('Le lycéen')
-    expect(school.formations[0]?.bodyHtml).toContain('Bachelor international')
-    expect(school.formations[0]?.sections.some((s) => s.label === 'Cible')).toBe(true)
-    expect(school.formations[0]?.grade).toBe('Grade Bachelor')
-    expect(school.formations[0]?.duration).toBe('3 ans')
     expect(school.details).toHaveLength(1)
     expect(school.details[0]?.title).toBe('Classement')
   })
@@ -32,26 +24,8 @@ describe('réponse nominale', () => {
   it('donne des tableaux vides quand il n’y a que des entrées fantômes', () => {
     const school = toSchool(rawSchool)
 
-    expect(school.formations).toEqual([])
     expect(school.details).toEqual([])
     expect(school.formationCount).toBe(0)
-  })
-
-  it('lit grade et duration API le jour où le back-office les alimentera', () => {
-    const school = toSchool({
-      ...rawSchoolWithFormations,
-      formations: [
-        {
-          title: 'Programme test',
-          description: '<p>Accroche libre.</p>',
-          grade: 'Grade Licence',
-          duration: '4 ans',
-        },
-      ],
-    })
-
-    expect(school.formations[0]?.grade).toBe('Grade Licence')
-    expect(school.formations[0]?.duration).toBe('4 ans')
   })
 
   it('expose foundedYear et studentCount à null sans les inventer', () => {
@@ -83,9 +57,18 @@ describe('version liste', () => {
     const summary = toSchoolSummary(rawSchoolWithFormations, 'france')
 
     expect(Object.keys(summary).sort()).toEqual(
-      ['city', 'country', 'destinationSlug', 'excerpt', 'formationCount', 'id', 'image', 'logo', 'slug', 'title'].sort(),
+      ['city', 'country', 'destinationSlug', 'excerpt', 'formationCount', 'foundedYear', 'id', 'image', 'logo', 'slug', 'studentCount', 'title'].sort(),
     )
     expect(summary.formationCount).toBe(1)
+  })
+
+  it('expose foundedYear et studentCount à null sans les inventer, réels le jour où l’API les alimentera', () => {
+    expect(toSchoolSummary(rawSchool).foundedYear).toBeNull()
+    expect(toSchoolSummary(rawSchool).studentCount).toBeNull()
+
+    const summary = toSchoolSummary({ ...rawSchool, founded_year: 1810, student_count: '34000' })
+    expect(summary.foundedYear).toBe(1810)
+    expect(summary.studentCount).toBe(34_000)
   })
 })
 
@@ -105,7 +88,6 @@ describe('champs manquants', () => {
     expect(school.logo).toBeNull()
     expect(school.image).toBeNull()
     expect(school.presentation).toBe('')
-    expect(school.formations).toEqual([])
     expect(school.destinationSlug).toBe('')
   })
 
@@ -113,8 +95,51 @@ describe('champs manquants', () => {
     expect(toSchoolSummary({ ...rawSchool, logo: 'photos/logo.png' }).logo).toBeNull()
   })
 
-  it('accepte un tableau formations absent', () => {
-    expect(toSchool({ ...rawSchool, formations: undefined, details: 'oups' }).formations).toEqual([])
+  it('accepte un tableau details absent', () => {
     expect(toSchool({ ...rawSchool, details: 'oups' }).details).toEqual([])
+  })
+})
+
+/**
+ * `toFormations()` — consommée par `GET /schools/{id}/formations`
+ * (directives-backend §12), plus par `toSchool()`.
+ */
+describe('toFormations', () => {
+  it('écarte les entrées fantômes', () => {
+    const formations = toFormations(rawSchoolWithFormations.formations)
+
+    // L’API insère systématiquement un `{ title: null, description: null }`.
+    expect(formations).toHaveLength(1)
+    expect(formations[0]?.title).toBe('Global Bachelor of Business Administration')
+    expect(formations[0]?.summary).toContain('Bachelor international')
+    expect(formations[0]?.summary).not.toContain('Le lycéen')
+    expect(formations[0]?.bodyHtml).toContain('Bachelor international')
+    expect(formations[0]?.sections.some((s) => s.label === 'Cible')).toBe(true)
+  })
+
+  it('donne un tableau vide quand il n’y a que des entrées fantômes, ou rien', () => {
+    expect(toFormations(rawSchool.formations)).toEqual([])
+    expect(toFormations(undefined)).toEqual([])
+  })
+
+  it('« - » si grade/duration ne sont pas renseignés, pas une valeur devinée depuis le titre', () => {
+    const formations = toFormations(rawSchoolWithFormations.formations)
+
+    expect(formations[0]?.grade).toBe('-')
+    expect(formations[0]?.duration).toBe('-')
+  })
+
+  it('grade/duration réels quand le back-office les alimente', () => {
+    const formations = toFormations([
+      {
+        title: 'Programme test',
+        description: '<p>Accroche libre.</p>',
+        grade: 'Grade Licence',
+        duration: '4 ans',
+      },
+    ])
+
+    expect(formations[0]?.grade).toBe('Grade Licence')
+    expect(formations[0]?.duration).toBe('4 ans')
   })
 })

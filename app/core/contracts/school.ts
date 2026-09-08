@@ -24,6 +24,9 @@ export interface SchoolSummary {
   excerpt: string
   /** Slugs traduits par locale quand fournis par l'API. Ex: { fr: "hec-paris", en: "hec-paris" } */
   slugs?: Record<string, string>
+  /** `null` pour la quasi-totalité du catalogue actuel — le champ existe mais n'est pas alimenté. Masqué plutôt qu'un chiffre inventé (voir `ecoles/index.vue`). */
+  foundedYear: number | null
+  studentCount: number | null
 }
 
 export interface FormationSection {
@@ -42,15 +45,9 @@ export interface SchoolFormation {
   sections: FormationSection[]
   /** Paragraphes libres hors rubriques — corps détaillé de la modale. */
   bodyHtml: string
-  /**
-   * Grade affiché sur la carte (`.ed-form-meta`).
-   * Absent de l’API stage → mock via `resolveFormationMeta` (documenté).
-   */
+  /** Grade affiché sur la carte (`.ed-form-meta`). `-` si le back-office ne l'a pas renseigné. */
   grade: string
-  /**
-   * Durée / année(s) affichée sur la carte.
-   * Absent de l’API stage → mock via `resolveFormationMeta` (documenté).
-   */
+  /** Durée / année(s) affichée sur la carte. `-` si le back-office ne l'a pas renseigné. */
   duration: string
 }
 
@@ -64,10 +61,12 @@ export interface SchoolDetail {
 export interface School extends SchoolSummary {
   /** HTML de présentation. Chaîne vide si l'API n'a rien renvoyé. */
   presentation: string
-  formations: SchoolFormation[]
+  /**
+   * Pas ici : `GET /schools/{id}/formations` (directives-backend §12), un
+   * appel dédié — plus besoin de faire porter les formations par la fiche
+   * complète (`/all-data`) pour n'afficher qu'un onglet. Voir
+   * `schoolRepo.formations()`.
+   */
   details: SchoolDetail[]
-  /** `null` pour l'intégralité du catalogue actuel — le champ existe mais n'est pas alimenté. */
-  foundedYear: number | null
-  studentCount: number | null
   seo: SeoMeta
 }

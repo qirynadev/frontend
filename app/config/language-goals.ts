@@ -5,6 +5,10 @@
  * choix. Ils vivent donc dans une configuration, traduits, plutôt que recopiés
  * dans le template.
  *
+ * Les libellés/descriptions sont génériques à toute langue — `{language}`
+ * (le nom de la langue du cours courant) s'interpole dans les clés qui en ont
+ * besoin, `objectifs.vue` le passe systématiquement à `$t()`.
+ *
  * Les teintes de pastille et les icônes sont celles de la maquette
  * (`.objectifs-icon--exam`, `--conversation`, `--pro`, `--niveau`,
  * `--admission`, `--autre`).

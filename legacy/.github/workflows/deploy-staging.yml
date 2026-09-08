@@ -1,0 +1,85 @@
+name: 🚧 Deploy Frontend — qiryna-client (staging)
+
+# Déclenché à chaque push sur la branche staging (déploiement continu de staging),
+# ou manuellement. Build de la SPA Vue dans le runner, puis envoi de dist/ par rsync
+# vers le docroot Plesk du client staging. Secrets SSH dédiés (STAGING_SSH_*) :
+# serveur différent de la prod. Les valeurs VITE_* ci-dessous sont volontairement en
+# clair : ce sont soit des identifiants publics (Client ID OAuth, clé publique Stripe
+# — jamais des secrets par nature), soit l'URL publique de l'API staging. VITE_GA_ID
+# est omis exprès pour ne pas polluer les statistiques de prod avec du trafic de test.
+#
+# Cible serveur : /var/www/vhosts/qiryna.com/stage.qiryna.com
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Raison du déploiement manuel"
+        required: false
+        default: "Déploiement manuel staging"
+
+env:
+  DEPLOY_PATH: /var/www/vhosts/qiryna.com/stage.qiryna.com
+  BACKOFFICE_PATH: /var/www/vhosts/qiryna.com/admin.stage.qiryna.com
+  PLESK_PHP: /opt/plesk/php/8.3/bin/php
+
+jobs:
+  deploy:
+    name: Build & deploy Vue SPA (staging)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: ✅ Checkout (main)
+        uses: actions/checkout@v5
+
+      - name: 🟢 Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: 📦 Install
+        run: npm install
+
+      - name: 🏗️ Build (staging)
+        env:
+          VITE_API_BASE_URL: https://admin.stage.qiryna.com/api
+          VITE_BASE_URL: /
+          VITE_DEFAULT_LOCALE: fr
+          VITE_FALLBACK_LOCALE: fr
+          VITE_SUPPORTED_LOCALES: fr,en
+          VITE_STRIPE_PK: pk_test_51M3VTjGWy8fsTyFLrZnr6dzOmKmeVav3Q63t2N3IZRnjheRJjm0BbJ6aS406CgjvgTc1K5HGze8BjTVFuzFJUmJA005eVxzIJg
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_FACEBOOK_CLIENT_ID: ${{ secrets.VITE_FACEBOOK_CLIENT_ID }}
+          VITE_LINKEDIN_CLIENT_ID: ${{ secrets.VITE_LINKEDIN_CLIENT_ID }}
+          VITE_COUNTRY_ID: ${{ secrets.VITE_COUNTRY_ID }}
+        run: npm run build-only
+
+      - name: 🔑 Configuration clé SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.STAGING_SSH_PORT }} -H ${{ secrets.STAGING_SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🚀 Envoi de dist/ vers le serveur (rsync)
+        run: |
+          rsync -avz --delete \
+            --exclude='.php-version' \
+            --exclude='.php-ini' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.STAGING_SSH_PORT }}" \
+            dist/ \
+            ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}:${{ env.DEPLOY_PATH }}/
+
+      - name: 🔒 Réappliquer la restriction d'IP (gate Coming soon), si configurée sur staging
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.STAGING_SSH_PORT }} \
+            ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }} \
+            "cd ${{ env.BACKOFFICE_PATH }} && ${{ env.PLESK_PHP }} artisan qiryna:sync-ip-gate" \
+            || echo '⚠️ Sync gate IP non effectué (normal si non configuré sur staging).'
+
+      - name: ❌ Notifier l'échec
+        if: failure()
+        run: echo "Le déploiement staging du frontend a échoué. Voir les logs ci-dessus."

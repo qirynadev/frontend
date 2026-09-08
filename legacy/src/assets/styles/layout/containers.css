@@ -1,0 +1,98 @@
+.global-container {
+    width: 1100px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    overflow-x: hidden;
+
+    .container-inner {
+        display: flex;
+        flex-direction: row;
+        /* justify-content: space-between; */
+        padding-top: 100px;
+        padding-bottom: 80px;
+        padding-right: 15px;
+
+        .left-part {
+            width: 733.33px;
+        }
+
+        .right-part {
+            width: 336.66px;
+            margin-left: 15px;
+
+            .areas-container {
+                border: 1px solid #c0c0c069 !important;
+                padding: 10px;
+                margin-top: 0;
+                margin-bottom: 30px;
+                border-radius: 5px;
+
+                .header {
+                    background: #273c66 !important;
+                    padding: 10px;
+                    color: white;
+                    border-radius: 6px;
+                    margin: 0;
+                    margin-bottom: 10px;
+                    text-align: left;
+                    font-size: 16px;
+                    font-weight: 500;
+                    text-align: center;
+                    line-height: 1.1;
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .global-container {
+        width: 100%;
+        max-width: 1000px;
+        padding: 0 10px;
+        margin-bottom: 0;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .global-container {
+        width: 100%;
+        padding: 0 10px;
+        margin-bottom: 10px;
+
+        .container-inner {
+            padding-top: 65px;
+            padding-right: 0;
+
+            .left-part {
+                width: 100%;
+            }
+
+            .right-part {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .global-container {
+        .container-inner {
+            .left-part {
+                width: 100%;
+            }
+
+            .right-part {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    }
+
+    .global-container {
+        width: 100%;
+        padding: 0 10px;
+    }
+}

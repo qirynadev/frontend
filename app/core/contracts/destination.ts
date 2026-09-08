@@ -22,10 +22,23 @@ export interface DestinationSummary {
   slugs?: Record<string, string>
 }
 
+/**
+ * Statistique éditoriale du bandeau d'excellence (« 295 » / « Universités et
+ * grandes écoles »…) — saisie librement par pays dans le back-office
+ * (`SchoolFile.stats`, jusqu'à 4 entrées), pas une catégorie fixe : deux pays
+ * n'alignent pas forcément les mêmes libellés sur la même position.
+ */
+export interface DestinationStat {
+  value: string
+  label: string
+}
+
 export interface Destination extends DestinationSummary {
   /** HTML. */
   description: string
   /** Version légère : jamais la présentation HTML complète des écoles. */
   schools: SchoolSummary[]
+  /** Jusqu'à 4 entrées, parfois moins (voire aucune) — jamais complété artificiellement. */
+  stats: DestinationStat[]
   seo: SeoMeta
 }
