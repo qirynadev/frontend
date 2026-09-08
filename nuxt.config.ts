@@ -197,28 +197,17 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        /**
+         * `fonts.googleapis.com`/`fonts.gstatic.com` : encore nécessaires pour
+         * `Plus Jakarta Sans`, chargée séparément par la seule page qui s'en
+         * sert (`.font-jakarta`, `[school].vue`) — Jost, elle, n'en dépend
+         * plus (auto-hébergée, voir `assets/css/main.css`, corrigé le
+         * 2026-09-09 : ce lien ajoutait ~300ms de blocage du rendu, le temps
+         * de la résolution DNS/TLS vers ce domaine tiers).
+         */
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'preconnect', href: mediaOrigin },
-        /**
-         * Feuille de style classique, bloquante — pas la technique
-         * `preload` + bascule `onload`/`media=print` tentée le 5 septembre
-         * (audit perf FCP/LCP) : Google Fonts renvoie pour la requête de
-         * préchargement une réponse dont les métriques de `Jost` diffèrent
-         * mesurablement de celles obtenues par une feuille de style classique
-         * (+6,5px sur « Votre avenir commence par », assez pour faire déborder
-         * le texte sur une ligne de plus dans la colonne étroite de
-         * `connexion.vue`/`inscription.vue`/`mot-de-passe.vue` — repéré en
-         * comparant précisément danube.qiryna.com à lab.qiryna.com le
-         * 6 septembre). Le gain de blocage de rendu ne vaut pas la régression
-         * visuelle. `Plus Jakarta Sans` (700) retiré d'ici : seule la fiche
-         * école en a besoin (`.font-jakarta`, `[school].vue`), chargé là
-         * uniquement.
-         */
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap',
-        },
       ],
     },
   },
