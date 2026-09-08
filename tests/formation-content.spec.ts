@@ -44,6 +44,31 @@ describe('parseFormationDescription', () => {
     expect(parsed.bodyHtml).toBe('')
   })
 
+  it('reconnaît « Admissions » au pluriel (vu en direct, École Polytechnique 2026-09-08)', () => {
+    const html = [
+      '<p class="ql-align-justify"><strong>Cible :</strong> Trois ans en anglais.</p>',
+      '<p class="ql-align-justify"><strong>Admissions : </strong> Dossier complet, entretien.</p>',
+    ].join('')
+
+    const parsed = parseFormationDescription(html)
+
+    expect(parsed.sections.map((s) => s.label)).toEqual(['Cible', 'Admission'])
+    expect(parsed.sections[1]?.content).toContain('entretien')
+  })
+
+  it('reconnaît une rubrique saisie en titre `<h4>` plutôt qu\'en `<p>` (vu en direct, Birmingham Business School / Caltech 2026-09-08)', () => {
+    const html = [
+      '<h4 class="ql-align-justify"><strong>Cible :</strong>&nbsp;l\'étudiant visé.</h4>',
+      '<p class="ql-align-justify">Programme détaillé sur plusieurs phrases.</p>',
+    ].join('')
+
+    const parsed = parseFormationDescription(html)
+
+    expect(parsed.sections).toHaveLength(1)
+    expect(parsed.sections[0]?.label).toBe('Cible')
+    expect(parsed.sections[0]?.content).toContain('étudiant visé')
+  })
+
   it('fonctionne après assainissement HTML (pipeline adapter)', async () => {
     const { sanitizeHtml } = await import('~/core/adapters/sanitize')
     const raw = [

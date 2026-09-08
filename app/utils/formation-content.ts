@@ -19,12 +19,34 @@ export interface ParsedFormationContent {
   bodyHtml: string
 }
 
-const MODAL_SECTION_ORDER = ['Cible', 'Programmes', 'Frais', 'Admission', 'Débouchés'] as const
+/**
+ * Rubriques reconnues, dans l'ordre d'affichage voulu de la modale — source
+ * unique : `pattern` détecte la rubrique (`s?` sur « programme »/
+ * « admission », l'admin saisissant indifféremment le singulier ou le
+ * pluriel — « Admissions : » vu en direct sur Polytechnique, 2026-09-08),
+ * `label` est la forme canonique affichée, qui absorbe cette variation —
+ * sans ça, une rubrique « Admissions » ne correspondait plus à « Admission »
+ * dans `MODAL_SECTION_ORDER` et retombait en fin de liste plutôt qu'à sa
+ * place.
+ */
+const KNOWN_SECTIONS: { pattern: RegExp; label: string }[] = [
+  { pattern: /^cible\b/i, label: 'Cible' },
+  { pattern: /^programmes?\b/i, label: 'Programmes' },
+  { pattern: /^frais\b/i, label: 'Frais' },
+  { pattern: /^admissions?\b/i, label: 'Admission' },
+  { pattern: /^d[ée]bouch[ée]s\b/i, label: 'Débouchés' },
+]
 
-const SECTION_LABEL_RE = /^(cible|programmes|frais|admission|d[ée]bouch[ée]s)\b/i
-
+/**
+ * L'admin ponctue le libellé indifféremment en `?` (« Cible ? ») ou en `:`
+ * (« Cible : », vu en direct sur École Polytechnique/Birmingham/Caltech,
+ * 2026-09-08) — les deux doivent disparaître : le gabarit de la modale
+ * (`[school].vue`) ajoute lui-même « ? » après le libellé, et les
+ * comparaisons (`orderSections`, `summaryFromSections`) le comparent aux
+ * noms nus (« cible », « programmes »…).
+ */
 function normalizeLabel(raw: string): string {
-  return raw.trim().replace(/\?+$/, '').trim()
+  return raw.trim().replace(/[?:]+\s*$/, '').trim()
 }
 
 function stripHtml(html: string): string {
@@ -44,28 +66,44 @@ function truncate(text: string, max: number): string {
   return `${base}…`
 }
 
-function paragraphBlocks(html: string): string[] {
-  return html.match(/<p[^>]*>[\s\S]*?<\/p>/gi) ?? []
+/**
+ * Bloc reconnu comme unité de rubrique : `<p>`, ou un titre (`<h2>`-`<h6>`)
+ * quand l'admin choisit un style « Titre » dans Quill plutôt que « Normal »
+ * — les deux survivent à `sanitizeHtml` (`core/adapters/sanitize.ts`,
+ * `ALLOWED_TAGS`). Repéré en direct (2026-09-08) : Birmingham Business
+ * School et Caltech saisissent leur rubrique « Cible » en `<h4>` — en ne
+ * cherchant que des `<p>`, ces rubriques n'étaient jamais détectées.
+ */
+const BLOCK_RE = /<(p|h[2-6])(?:\s[^>]*)?>[\s\S]*?<\/\1>/gi
+
+function contentBlocks(html: string): string[] {
+  return html.match(BLOCK_RE) ?? []
+}
+
+/** Nom de la balise ouvrante d'un bloc (`p`, `h4`…) — pour un retrait symétrique. */
+function blockTag(block: string): string {
+  return block.match(/^<([a-z0-9]+)/i)?.[1]?.toLowerCase() ?? 'p'
 }
 
 /**
- * Rubrique structurée = le `<strong>` ouvre le paragraphe et porte un
- * libellé connu (`Cible ?`, `Programmes ?`…). Un `<strong>` d'emphase
- * au milieu d'une phrase (ex. « Le Global BBA ») n'en est pas une.
+ * Rubrique structurée = le `<strong>` ouvre le bloc et porte un libellé
+ * connu (`Cible ?`, `Programmes ?`…). Un `<strong>` d'emphase au milieu
+ * d'une phrase (ex. « Le Global BBA ») n'en est pas une.
  */
 function sectionLabelFromBlock(block: string): string | null {
-  const inner = block.replace(/^<p[^>]*>/i, '').replace(/<\/p>$/i, '').trim()
+  const tag = blockTag(block)
+  const inner = block.replace(new RegExp(`^<${tag}[^>]*>`, 'i'), '').replace(new RegExp(`</${tag}>$`, 'i'), '').trim()
   const match = inner.match(/^<strong>\s*([^<]+?)\s*<\/strong>/i)
   if (!match) return null
-  const label = normalizeLabel(match[1])
-  if (!SECTION_LABEL_RE.test(label)) return null
-  return label
+  const label = normalizeLabel(match[1] ?? '')
+  return KNOWN_SECTIONS.find((section) => section.pattern.test(label))?.label ?? null
 }
 
 function sectionContentFromBlock(block: string): string {
+  const tag = blockTag(block)
   const inner = block
-    .replace(/^<p[^>]*>/i, '')
-    .replace(/<\/p>$/i, '')
+    .replace(new RegExp(`^<${tag}[^>]*>`, 'i'), '')
+    .replace(new RegExp(`</${tag}>$`, 'i'), '')
     .replace(/^<strong>\s*[^<]+?\s*<\/strong>\s*(?:&nbsp;|\u00a0|\s)*/i, '')
     .trim()
   return inner.startsWith('<') ? inner : `<p>${inner}</p>`
@@ -74,7 +112,7 @@ function sectionContentFromBlock(block: string): string {
 function extractSections(html: string): FormationSection[] {
   const sections: FormationSection[] = []
 
-  for (const block of paragraphBlocks(html)) {
+  for (const block of contentBlocks(html)) {
     const label = sectionLabelFromBlock(block)
     if (!label) continue
     const content = sectionContentFromBlock(block)
@@ -85,9 +123,9 @@ function extractSections(html: string): FormationSection[] {
 }
 
 function extractBodyHtml(html: string): string {
-  const blocks = paragraphBlocks(html)
+  const blocks = contentBlocks(html)
   if (blocks.length === 0) {
-    // Pas de `<p>` : tout le HTML libre sauf s'il n'est qu'une rubrique.
+    // Pas de bloc reconnu : tout le HTML libre sauf s'il n'est qu'une rubrique.
     return sectionLabelFromBlock(`<p>${html}</p>`) ? '' : html.trim()
   }
 
@@ -98,7 +136,7 @@ function orderSections(sections: FormationSection[]): FormationSection[] {
   const used = new Set<FormationSection>()
   const ordered: FormationSection[] = []
 
-  for (const name of MODAL_SECTION_ORDER) {
+  for (const { label: name } of KNOWN_SECTIONS) {
     const match = sections.find((section) => section.label.toLowerCase() === name.toLowerCase())
     if (match) {
       ordered.push(match)
@@ -116,7 +154,7 @@ function orderSections(sections: FormationSection[]): FormationSection[] {
 /** Premier paragraphe libre (hors rubriques) → accroche carte. */
 function summaryFromBody(bodyHtml: string): string {
   if (!bodyHtml) return ''
-  const first = paragraphBlocks(bodyHtml)[0] ?? bodyHtml
+  const first = contentBlocks(bodyHtml)[0] ?? bodyHtml
   const text = stripHtml(first)
   return text ? truncate(text, 160) : ''
 }
