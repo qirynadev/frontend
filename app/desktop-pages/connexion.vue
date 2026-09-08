@@ -219,6 +219,8 @@ const trustItems = [
             height="1152"
             format="webp"
             fit="cover"
+            loading="lazy"
+            decoding="async"
             class="absolute inset-0 size-full object-cover object-center"
           />
         </div>

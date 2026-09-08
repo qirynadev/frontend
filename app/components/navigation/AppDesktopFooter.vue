@@ -69,6 +69,8 @@ function onNewsletterSubmit(event: Event) {
       alt=""
       width="1360"
       height="89"
+      loading="lazy"
+      decoding="async"
       class="block h-auto w-full"
     >
 
@@ -143,6 +145,8 @@ function onNewsletterSubmit(event: Event) {
                   alt="Qiryna"
                   width="174"
                   height="65"
+                  loading="lazy"
+                  decoding="async"
                   class="mt-15 h-65 w-174 object-contain object-left"
                 >
               </NuxtLink>
@@ -222,7 +226,7 @@ function onNewsletterSubmit(event: Event) {
                   class="flex size-38 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-[#ff3942] p-0 transition-colors hover:bg-[#273c66]"
                   :aria-label="$t('desktop.footer.subscribe')"
                 >
-                  <img :src="`${ASSET}/mail.png`" alt="" width="20" height="20" class="size-20 object-contain">
+                  <NuxtImg :src="`${ASSET}/mail.png`" alt="" width="20" height="20" format="webp" loading="lazy" decoding="async" class="size-20 object-contain" />
                 </button>
               </form>
             </div>
@@ -233,10 +237,10 @@ function onNewsletterSubmit(event: Event) {
               <span class="text-[14px] text-white">{{ $t('desktop.footer.download') }}</span>
               <ul class="mt-10 mb-0 flex list-none gap-10 p-0">
                 <li>
-                  <img :src="`${ASSET}/app-store.svg`" alt="App Store" width="120" height="40" class="h-40 w-auto">
+                  <img :src="`${ASSET}/app-store.svg`" alt="App Store" width="120" height="40" loading="lazy" decoding="async" class="h-40 w-auto">
                 </li>
                 <li>
-                  <img :src="`${ASSET}/google-play.svg`" alt="Google Play" width="134" height="40" class="h-40 w-134 object-contain">
+                  <img :src="`${ASSET}/google-play.svg`" alt="Google Play" width="134" height="40" loading="lazy" decoding="async" class="h-40 w-134 object-contain">
                 </li>
               </ul>
             </div>

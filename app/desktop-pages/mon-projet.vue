@@ -105,6 +105,8 @@ function actionWhen(iso: string | null): string | null {
                     alt=""
                     width="36"
                     height="40"
+                    loading="lazy"
+                    decoding="async"
                     class="absolute top-[-13%] left-0 block h-[125%] w-[372%] max-w-none object-cover"
                   >
                 </span>

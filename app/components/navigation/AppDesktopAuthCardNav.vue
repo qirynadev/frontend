@@ -31,6 +31,8 @@ async function toggleLocale() {
         alt="Qiryna"
         width="134"
         height="50"
+        loading="lazy"
+        decoding="async"
         class="block h-50 w-134 object-contain"
       >
     </NuxtLink>

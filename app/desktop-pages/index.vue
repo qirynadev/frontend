@@ -74,6 +74,8 @@ const destinations = [
           width="1400"
           height="516"
           format="webp"
+          loading="lazy"
+          decoding="async"
           class="block aspect-[1400/516] w-full object-cover"
         />
         <div class="absolute bottom-22 left-1/2 flex -translate-x-1/2 gap-8" aria-hidden="true">

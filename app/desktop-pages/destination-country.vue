@@ -89,6 +89,8 @@ const trustItems = computed(() => [
         height="503"
         format="webp"
         fit="cover"
+        loading="lazy"
+        decoding="async"
         class="absolute inset-0 block size-full object-cover object-center"
       />
       <div
