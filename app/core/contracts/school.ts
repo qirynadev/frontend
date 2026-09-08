@@ -29,22 +29,17 @@ export interface SchoolSummary {
   studentCount: number | null
 }
 
-export interface FormationSection {
-  label: string
-  /** HTML du corps de la rubrique (sans le libellé). */
-  content: string
-}
-
 export interface SchoolFormation {
   title: string
-  /** HTML brut renvoyé par l'API. */
+  /**
+   * HTML brut renvoyé par l'API — affiché tel quel dans la modale (`RichText`,
+   * voir `[school].vue`) : aucun découpage en rubriques ni restyle, sur
+   * demande explicite du 2026-09-08 (la mise en forme reste celle du
+   * back-office).
+   */
   description: string
-  /** Accroche carte — description courte, jamais la rubrique « Cible ». */
+  /** Accroche carte — aperçu texte brut de `description`, sans HTML. */
   summary: string
-  /** Rubriques modale (Cible, Programmes, Frais…). */
-  sections: FormationSection[]
-  /** Paragraphes libres hors rubriques — corps détaillé de la modale. */
-  bodyHtml: string
   /** Grade affiché sur la carte (`.ed-form-meta`). `-` si le back-office ne l'a pas renseigné. */
   grade: string
   /** Durée / année(s) affichée sur la carte. `-` si le back-office ne l'a pas renseigné. */

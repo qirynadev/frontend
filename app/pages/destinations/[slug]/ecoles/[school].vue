@@ -484,28 +484,8 @@ useSchoolSchemaOrg(school)
         </header>
 
         <div class="flex flex-col gap-18 overflow-y-auto px-20 pt-16 pb-[calc(24px+env(safe-area-inset-bottom,0px))]">
-          <section
-            v-for="section in activeFormation?.sections ?? []"
-            :key="section.label"
-            class="ed-form-modal-section flex flex-col"
-          >
-            <h3 class="m-0 mb-6 text-lg leading-20 font-bold text-le-chip-selected-border">
-              {{ section.label }} ?
-            </h3>
-            <RichText :content="section.content" class="text-lg leading-21 text-text [&_p]:m-0 [&_p]:text-lg [&_p]:leading-21" />
-          </section>
-
-          <div
-            v-if="activeFormation?.bodyHtml"
-            class="ed-form-modal-body-free text-lg leading-21 text-text [&_p]:m-0 [&_p+p]:mt-12"
-          >
-            <RichText :content="activeFormation.bodyHtml" />
-          </div>
-
-          <p
-            v-else-if="!(activeFormation?.sections.length) && !activeFormation?.bodyHtml"
-            class="m-0 text-lg leading-21 text-text"
-          >
+          <RichText v-if="activeFormation?.description" :content="activeFormation.description" />
+          <p v-else class="m-0 text-lg leading-21 text-text">
             {{ $t('school.detail.emptyDescription') }}
           </p>
         </div>

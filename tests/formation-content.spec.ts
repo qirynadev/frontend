@@ -1,84 +1,24 @@
 import { describe, expect, it } from 'vitest'
-import { parseFormationDescription } from '~/utils/formation-content'
+import { summaryFromHtml } from '~/utils/formation-content'
 
-describe('parseFormationDescription', () => {
-  it('extrait les rubriques modale et une accroche hors « Cible »', () => {
-    const html = [
-      '<p class="ql-align-justify"><strong>Cible ?</strong>&nbsp;Le lycéen motivé.</p>',
-      '<p class="ql-align-justify"><strong>Programmes ?</strong>&nbsp;Cursus en 3 ans avec stages internationaux et parcours personnalisé.</p>',
-      '<p><strong>Frais ?</strong>&nbsp;Environ 12 000 € par an.</p>',
-    ].join('')
+describe('summaryFromHtml', () => {
+  it('dépouille le HTML pour une accroche carte en texte brut', () => {
+    const html = '<p class="ql-align-justify"><strong>Cible ?</strong>&nbsp;Le lycéen motivé.</p>'
 
-    const parsed = parseFormationDescription(html)
-
-    expect(parsed.summary).toContain('Cursus en 3 ans')
-    expect(parsed.summary).not.toContain('Cible')
-    expect(parsed.summary).not.toContain('Le lycéen')
-    expect(parsed.bodyHtml).toBe('')
-    expect(parsed.sections.map((s) => s.label)).toEqual(['Cible', 'Programmes', 'Frais'])
+    expect(summaryFromHtml(html)).toBe('Cible ? Le lycéen motivé.')
   })
 
-  it('privilégie un paragraphe d’intro libre, même avec emphase <strong>', () => {
-    const html = [
-      '<p class="ql-align-justify"><strong>Cible ?</strong>&nbsp;Le lycéen qui veut une formation internationale.</p>',
-      '<p class="ql-align-justify">NEOMA propose plusieurs programmes. Le&nbsp;<strong>Global BBA</strong>&nbsp;(4 ans) est le programme phare.</p>',
-      '<p>Complément sur les doubles diplômes et l’alternance.</p>',
-    ].join('')
+  it('tronque proprement sur un espace au-delà de la limite', () => {
+    const html = `<p>${'Cursus en trois ans avec stages internationaux et parcours personnalisé. '.repeat(4)}</p>`
 
-    const parsed = parseFormationDescription(html)
+    const summary = summaryFromHtml(html, 40)
 
-    expect(parsed.summary).toContain('NEOMA propose plusieurs programmes')
-    expect(parsed.summary).not.toContain('Le lycéen qui veut')
-    expect(parsed.sections).toHaveLength(1)
-    expect(parsed.sections[0]?.label).toBe('Cible')
-    expect(parsed.bodyHtml).toContain('Global BBA')
-    expect(parsed.bodyHtml).toContain('doubles diplômes')
+    expect(summary.length).toBeLessThanOrEqual(41)
+    expect(summary.endsWith('…')).toBe(true)
   })
 
-  it('ne réutilise jamais « Cible » comme accroche carte', () => {
-    const html = '<p class="ql-align-justify"><strong>Cible ?</strong>&nbsp;Le lycéen…</p>'
-    const parsed = parseFormationDescription(html)
-
-    expect(parsed.sections).toHaveLength(1)
-    expect(parsed.summary).toBe('')
-    expect(parsed.bodyHtml).toBe('')
-  })
-
-  it('reconnaît « Admissions » au pluriel (vu en direct, École Polytechnique 2026-09-08)', () => {
-    const html = [
-      '<p class="ql-align-justify"><strong>Cible :</strong> Trois ans en anglais.</p>',
-      '<p class="ql-align-justify"><strong>Admissions : </strong> Dossier complet, entretien.</p>',
-    ].join('')
-
-    const parsed = parseFormationDescription(html)
-
-    expect(parsed.sections.map((s) => s.label)).toEqual(['Cible', 'Admission'])
-    expect(parsed.sections[1]?.content).toContain('entretien')
-  })
-
-  it('reconnaît une rubrique saisie en titre `<h4>` plutôt qu\'en `<p>` (vu en direct, Birmingham Business School / Caltech 2026-09-08)', () => {
-    const html = [
-      '<h4 class="ql-align-justify"><strong>Cible :</strong>&nbsp;l\'étudiant visé.</h4>',
-      '<p class="ql-align-justify">Programme détaillé sur plusieurs phrases.</p>',
-    ].join('')
-
-    const parsed = parseFormationDescription(html)
-
-    expect(parsed.sections).toHaveLength(1)
-    expect(parsed.sections[0]?.label).toBe('Cible')
-    expect(parsed.sections[0]?.content).toContain('étudiant visé')
-  })
-
-  it('fonctionne après assainissement HTML (pipeline adapter)', async () => {
-    const { sanitizeHtml } = await import('~/core/adapters/sanitize')
-    const raw = [
-      '<p class="ql-align-justify"><strong>Cible ?</strong>&nbsp;Le lycéen…</p>',
-      '<p>Cursus public alliant conception et urbanité.</p>',
-    ].join('')
-    const parsed = parseFormationDescription(sanitizeHtml(raw))
-
-    expect(parsed.sections).toHaveLength(1)
-    expect(parsed.summary).toBe('Cursus public alliant conception et urbanité.')
-    expect(parsed.bodyHtml).toContain('Cursus public')
+  it('retourne une chaîne vide pour un HTML vide', () => {
+    expect(summaryFromHtml('')).toBe('')
+    expect(summaryFromHtml('   ')).toBe('')
   })
 })

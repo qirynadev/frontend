@@ -1,5 +1,5 @@
 import type { School, SchoolDetail, SchoolFormation, SchoolSummary } from '../contracts'
-import { parseFormationDescription } from '~/utils/formation-content'
+import { summaryFromHtml } from '~/utils/formation-content'
 import { toCountry, toSeo } from './common.adapter'
 import { asArray, asRecord, html, list, optionalNum, optionalStr, plainText, str, toUrl } from './primitives'
 
@@ -26,13 +26,10 @@ export function toFormations(raw: unknown): SchoolFormation[] {
       const source = asRecord(entry)
       const title = str(source, 'title')
       const description = html(source, 'description')
-      const parsed = parseFormationDescription(description)
       return {
         title,
         description,
-        summary: parsed.summary,
-        sections: parsed.sections,
-        bodyHtml: parsed.bodyHtml,
+        summary: summaryFromHtml(description),
         grade: optionalStr(source, 'grade') ?? '-',
         duration: optionalStr(source, 'duration') ?? optionalStr(source, 'duration_label') ?? '-',
       }

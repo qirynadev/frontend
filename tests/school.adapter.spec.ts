@@ -111,10 +111,11 @@ describe('toFormations', () => {
     // L’API insère systématiquement un `{ title: null, description: null }`.
     expect(formations).toHaveLength(1)
     expect(formations[0]?.title).toBe('Global Bachelor of Business Administration')
+    // `description` : HTML brut du back-office, non retravaillé (affiché tel
+    // quel par la modale — voir `[school].vue`).
+    expect(formations[0]?.description).toContain('<strong>Cible ?</strong>')
+    expect(formations[0]?.description).toContain('Bachelor international')
     expect(formations[0]?.summary).toContain('Bachelor international')
-    expect(formations[0]?.summary).not.toContain('Le lycéen')
-    expect(formations[0]?.bodyHtml).toContain('Bachelor international')
-    expect(formations[0]?.sections.some((s) => s.label === 'Cible')).toBe(true)
   })
 
   it('donne un tableau vide quand il n’y a que des entrées fantômes, ou rien', () => {
