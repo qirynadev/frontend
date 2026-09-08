@@ -18,10 +18,19 @@
  */
 const { choice, accept, decline } = useCookieConsent()
 const localePath = useLocalePath()
+const route = useRoute()
+
+/**
+ * Masquée sur `/pages/cookies` : cette page porte son propre formulaire de
+ * choix en bas de contenu (voir `pages/[slug].vue`) — la bannière par-dessus
+ * ferait doublon et gênerait la lecture de la page qu'elle-même invite à
+ * consulter (« En savoir plus »).
+ */
+const onCookiesPage = computed(() => route.name?.toString().startsWith('pages-slug') && route.params.slug === 'cookies')
 
 /** Ouverte tant qu'aucun choix n'a été fait ; `set` ignore toute tentative de fermeture implicite. */
 const open = computed({
-  get: () => choice.value === null,
+  get: () => choice.value === null && !onCookiesPage.value,
   set: (value) => {
     if (value) return
   },

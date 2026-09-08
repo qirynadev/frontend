@@ -22,6 +22,14 @@ const { t, locale } = useI18n()
 
 const slug = computed(() => String(route.params.slug ?? ''))
 
+/**
+ * Formulaire de choix cookies, en bas de contenu — seulement sur cette page
+ * (`CookieConsentBanner` s'y masque, voir son docblock) et seulement tant
+ * qu'aucun choix n'a été fait : redondant sinon.
+ */
+const { choice, accept, decline } = useCookieConsent()
+const showCookieChoice = computed(() => slug.value === 'cookies' && choice.value === null)
+
 const { data: page, apiError, isInitialLoading, refresh } = await usePageData(
   `page-${slug.value}`,
   () => pageRepo.bySlug(slug.value, locale.value),
@@ -53,6 +61,21 @@ useContractSeo(() => page.value?.seo, page.value?.title ?? t('page.fallbackTitle
         </h1>
 
         <RichText :content="page.content" />
+
+        <div v-if="showCookieChoice" class="mt-24 rounded-xl bg-surface-2 p-16">
+          <p class="m-0 text-lg leading-20 font-bold text-text">{{ $t('cookieBanner.pageFormTitle') }}</p>
+          <p class="m-0 mt-4 text-base leading-[19.5px] font-normal text-muted-2">
+            {{ $t('cookieBanner.message') }}
+          </p>
+          <div class="mt-16 flex gap-10">
+            <QButton variant="outline" tone="neutral" block @click="decline">
+              {{ $t('cookieBanner.decline') }}
+            </QButton>
+            <QButton variant="solid" tone="primary" block @click="accept">
+              {{ $t('cookieBanner.accept') }}
+            </QButton>
+          </div>
+        </div>
       </template>
 
       <div class="pt-20">
