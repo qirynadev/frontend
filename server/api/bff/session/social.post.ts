@@ -57,13 +57,22 @@ export default defineEventHandler(async (event): Promise<SocialAuthOutcome> => {
   async function exchange(): Promise<{ raw: unknown }> {
     // LinkedIn, confirmation d'une liaison : le `code` d'origine est déjà
     // consommé, on renvoie le `confirm_token` obtenu au premier appel.
+    //
+    // `unwrap: false` : comme /login et /register (voir en-tête), la route
+    // LinkedIn peut répondre `{ success, requires_confirmation, message, data }`
+    // (compte existant par e-mail, jamais lié à LinkedIn) — `unwrapEnvelope`
+    // la confondrait avec l'enveloppe Laravel, ne garderait que `data` et
+    // perdrait `requires_confirmation` → ni session ni demande de liaison →
+    // « Session non ouverte » à tort (constaté sur un compte existant lié via
+    // LinkedIn, 2026-09-10 ; ces deux appels étaient les seuls du fichier à ne
+    // pas avoir `unwrap: false`).
     if (confirmToken !== '') {
-      return { raw: await client.request('/auth/social/linkedin', { method: 'POST', body: { confirm_token: confirmToken } }) }
+      return { raw: await client.request('/auth/social/linkedin', { method: 'POST', body: { confirm_token: confirmToken }, unwrap: false }) }
     }
 
     // LinkedIn, premier appel : le navigateur ne reçoit qu'un code d'autorisation.
     if (code !== '') {
-      return { raw: await client.request('/auth/social/linkedin', { method: 'POST', body: { code, redirect_uri: redirectUri } }) }
+      return { raw: await client.request('/auth/social/linkedin', { method: 'POST', body: { code, redirect_uri: redirectUri }, unwrap: false }) }
     }
 
     if (mode === 'link') {
