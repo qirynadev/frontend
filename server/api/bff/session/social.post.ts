@@ -75,7 +75,16 @@ export default defineEventHandler(async (event): Promise<SocialAuthOutcome> => {
     }
 
     try {
-      return { raw: await client.request('/auth/social/login', { method: 'POST', body: { provider, token } }) }
+      // `unwrap: false` : depuis que `/auth/social/login` (back-office) ne
+      // force plus `confirm_link: true` en interne (2026-09-09), il peut lui
+      // aussi répondre `{ success, requires_confirmation, message, data }`
+      // (compte existant par e-mail, jamais lié à ce fournisseur) — sans
+      // `unwrap: false`, `unwrapEnvelope` la confond avec l'enveloppe Laravel
+      // habituelle, ne garde que `data` et perd `requires_confirmation` en
+      // route ; `toSocialAuthResult` ne trouve alors ni session ni demande de
+      // confirmation → « Session non ouverte » à tort (constaté en direct,
+      // 2026-09-09, compte créé manuellement puis lié via Google).
+      return { raw: await client.request('/auth/social/login', { method: 'POST', body: { provider, token }, unwrap: false }) }
     }
     catch (error) {
       const message = (error as { message?: string }).message ?? ''
