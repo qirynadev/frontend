@@ -301,14 +301,6 @@ usePageSeo(() => ({
     <div class="pt-15 pb-20">
       <div class="rounded-xl bg-white px-20 py-25 shadow-card">
         <QAlert
-          v-if="session.pendingPayment"
-          tone="info"
-          :title="$t('auth.resume.title')"
-          :message="$t('auth.resume.description', { label: pendingIntent?.label ?? '' })"
-          class="mb-20"
-        />
-
-        <QAlert
           v-if="visibleError"
           tone="danger"
           :title="$t('auth.error.title')"

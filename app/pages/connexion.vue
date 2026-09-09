@@ -228,15 +228,6 @@ usePageSeo(() => ({
     <!-- Formulaire -->
     <div class="pt-15">
       <div class="rounded-xl bg-white px-20 py-25 shadow-card">
-        <!-- Reprise d'un paiement interrompu : proposée, jamais déclenchée seule. -->
-        <QAlert
-          v-if="session.pendingPayment"
-          tone="info"
-          :title="$t('auth.resume.title')"
-          :message="$t('auth.resume.description', { label: pendingIntent?.label ?? '' })"
-          class="mb-22"
-        />
-
         <QAlert
           v-if="visibleError"
           tone="danger"

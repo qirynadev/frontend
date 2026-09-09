@@ -181,9 +181,6 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
                 <p :class="['m-0 text-6xl leading-[1.1] font-semibold whitespace-nowrap max-2xs:text-5xl', entry.visual.price]">
                   {{ n(entry.tier.price.amount, 'currency') }}
                 </p>
-                <p class="m-0 text-center text-base leading-[1.2] font-medium text-tier-period">
-                  {{ $t('offer.oneOff') }}
-                </p>
               </div>
 
               <button
