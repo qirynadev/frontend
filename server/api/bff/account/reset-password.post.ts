@@ -26,13 +26,19 @@ export default defineEventHandler(async (event): Promise<AuthOutcome | null> => 
 
   let raw: unknown
   try {
+    // Le back-office (`AuthController::newPassword`) attend `token` /
+    // `newPassword` / `confPassword` — pas `code` / `password` /
+    // `password_confirmation`. Le décalage rejetait toute réinitialisation en
+    // 400 « The new password field is required » (corrigé 2026-09-09, confirmé
+    // par appel direct du contrôleur). Le `token` est le code à 16 caractères
+    // reçu par e-mail.
     raw = await publicClient(event).request('/auth/new-password', {
       method: 'POST',
       body: {
         email,
-        code,
-        password,
-        password_confirmation: str(body, 'passwordConfirmation') || password,
+        token: code,
+        newPassword: password,
+        confPassword: str(body, 'passwordConfirmation') || password,
       },
     })
   }
