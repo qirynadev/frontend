@@ -67,6 +67,14 @@ export interface SocialLinkRequest {
   provider: SocialProvider
   /** Fournisseurs déjà rattachés au compte. Vide = compte créé par mot de passe. */
   existingProviders: string[]
+  /**
+   * LinkedIn seul : jeton de confirmation à usage unique (back-office,
+   * 5 minutes), à renvoyer tel quel pour finaliser la liaison — le `code`
+   * d'autorisation d'origine est déjà consommé à ce stade (OAuth : un code
+   * ne s'échange qu'une fois), impossible à renvoyer une seconde fois.
+   * `undefined` pour Google/Facebook, qui renvoient simplement leur jeton.
+   */
+  confirmToken?: string
 }
 
 export interface SocialAuthOutcome {

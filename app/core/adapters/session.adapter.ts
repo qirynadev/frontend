@@ -135,6 +135,7 @@ export function toSocialAuthResult(raw: unknown, provider: SocialProvider): Soci
         existingProviders: asArray(payload.existing_providers).filter(
           (entry): entry is string => typeof entry === 'string',
         ),
+        confirmToken: optionalStr(payload, 'confirm_token') ?? undefined,
       },
     }
   }

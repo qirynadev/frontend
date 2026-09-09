@@ -112,8 +112,16 @@ export function useSocialAuth(mode: MaybeRefOrGetter<SocialAuthMode> = 'login') 
   /** Clé i18n de la dernière erreur, jamais un message brut du fournisseur. */
   const errorKey = ref<string | null>(null)
 
-  /** Jeton conservé le temps que l'utilisateur réponde à la demande de liaison. */
-  let pendingToken: { provider: SocialProvider; token: string } | null = null
+  /**
+   * Conservé le temps que l'utilisateur réponde à la demande de liaison :
+   * le jeton OAuth pour Google/Facebook, le `confirmToken` du back-office
+   * pour LinkedIn (son `code` d'autorisation d'origine, lui, est à usage
+   * unique — déjà consommé au premier appel, voir `handleLinkedinReturn`).
+   */
+  let pendingToken:
+    | { provider: 'google' | 'facebook'; token: string }
+    | { provider: 'linkedin'; confirmToken: string }
+    | null = null
 
   function fail(key: string): void {
     errorKey.value = key
@@ -127,7 +135,9 @@ export function useSocialAuth(mode: MaybeRefOrGetter<SocialAuthMode> = 'login') 
     )
 
     if (result.linkRequest !== null) {
-      pendingToken = { provider, token }
+      // `provider` ici est forcément google/facebook (voir `start` : LinkedIn
+      // ne passe jamais par `exchange`, seulement par `handleLinkedinReturn`).
+      pendingToken = { provider: provider as 'google' | 'facebook', token }
       linkRequest.value = result.linkRequest
       pending.value = null
       return null
@@ -144,7 +154,9 @@ export function useSocialAuth(mode: MaybeRefOrGetter<SocialAuthMode> = 'login') 
     pending.value = pendingToken.provider
     try {
       const result = await authRepo.social(
-        { provider: pendingToken.provider, token: pendingToken.token, mode: 'link' },
+        pendingToken.provider === 'linkedin'
+          ? { provider: 'linkedin', confirmToken: pendingToken.confirmToken, mode: 'link' }
+          : { provider: pendingToken.provider, token: pendingToken.token, mode: 'link' },
         locale.value,
       )
       session.apply(result.outcome)
@@ -289,6 +301,12 @@ export function useSocialAuth(mode: MaybeRefOrGetter<SocialAuthMode> = 'login') 
         locale.value,
       )
       if (result.linkRequest !== null) {
+        // Le `code` qu'on vient d'envoyer est désormais consommé (OAuth,
+        // usage unique) : c'est le `confirmToken` renvoyé par le back-office
+        // qu'il faut garder pour `confirmLink`, pas ce `code`.
+        if (result.linkRequest.confirmToken !== undefined) {
+          pendingToken = { provider: 'linkedin', confirmToken: result.linkRequest.confirmToken }
+        }
         linkRequest.value = result.linkRequest
         return null
       }

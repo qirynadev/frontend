@@ -58,6 +58,8 @@ export const authRepo = {
       token?: string
       code?: string
       redirectUri?: string
+      /** LinkedIn uniquement : confirmation d'une liaison (voir `SocialLinkRequest.confirmToken`). */
+      confirmToken?: string
       mode?: 'login' | 'register' | 'link'
     },
     locale?: string,

@@ -21,7 +21,10 @@ const PROVIDERS: SocialProvider[] = ['google', 'facebook', 'linkedin']
  * s'arrêter là interdirait de créer un compte depuis l'écran de connexion.
  *
  * LinkedIn fait exception : le navigateur n'obtient qu'un `code` d'autorisation
- * (pas de jeton), échangé par `/auth/social/linkedin`.
+ * (pas de jeton), échangé par `/auth/social/linkedin`. Ce `code` est à usage
+ * unique (OAuth) : si la liaison demande une confirmation, le back-office l'a
+ * déjà consommé et renvoie un `confirm_token` (voir `SocialLinkRequest`) à la
+ * place — c'est lui qu'on renvoie pour finaliser, jamais le `code` d'origine.
  *
  * `unwrap: false` sur les appels à `/auth/social/register` (trouvé en
  * l'auditant, 2026-08-30, avant même d'avoir des identifiants OAuth réels à
@@ -39,19 +42,26 @@ export default defineEventHandler(async (event): Promise<SocialAuthOutcome> => {
   const token = str(body, 'token')
   const code = str(body, 'code')
   const redirectUri = str(body, 'redirectUri')
+  const confirmToken = str(body, 'confirmToken')
   const mode = str(body, 'mode', 'login')
 
   if (!PROVIDERS.includes(provider)) {
     throw createError({ statusCode: 422, statusMessage: 'Fournisseur inconnu', data: { message: 'Fournisseur inconnu', errors: {} } })
   }
-  if (token === '' && code === '') {
+  if (token === '' && code === '' && confirmToken === '') {
     throw createError({ statusCode: 422, statusMessage: 'Jeton absent', data: { message: 'Jeton absent', errors: {} } })
   }
 
   const client = publicClient(event)
 
   async function exchange(): Promise<{ raw: unknown }> {
-    // LinkedIn : le navigateur ne reçoit qu'un code d'autorisation.
+    // LinkedIn, confirmation d'une liaison : le `code` d'origine est déjà
+    // consommé, on renvoie le `confirm_token` obtenu au premier appel.
+    if (confirmToken !== '') {
+      return { raw: await client.request('/auth/social/linkedin', { method: 'POST', body: { confirm_token: confirmToken } }) }
+    }
+
+    // LinkedIn, premier appel : le navigateur ne reçoit qu'un code d'autorisation.
     if (code !== '') {
       return { raw: await client.request('/auth/social/linkedin', { method: 'POST', body: { code, redirect_uri: redirectUri } }) }
     }

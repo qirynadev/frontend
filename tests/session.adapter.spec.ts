@@ -190,4 +190,22 @@ describe('authentification tierce', () => {
 
     expect(result.linkRequest?.existingProviders).toEqual(['google'])
   })
+
+  it('lit le confirmToken LinkedIn (code d’autorisation déjà consommé)', () => {
+    const result = toSocialAuthResult(
+      { requires_confirmation: true, data: { email: 'a@b.c', confirm_token: 'tok123' } },
+      'linkedin',
+    )
+
+    expect(result.linkRequest?.confirmToken).toBe('tok123')
+  })
+
+  it('confirmToken indéfini pour Google/Facebook (jamais renvoyé par le back-office)', () => {
+    const result = toSocialAuthResult(
+      { requires_confirmation: true, data: { email: 'a@b.c' } },
+      'google',
+    )
+
+    expect(result.linkRequest?.confirmToken).toBeUndefined()
+  })
 })
