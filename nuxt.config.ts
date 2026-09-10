@@ -113,6 +113,18 @@ export default defineNuxtConfig({
 
     '/_i18n/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+
+    /**
+     * Statiques de `public/` : sans règle, Nitro ne pose qu'un `ETag`, donc le
+     * navigateur revalide **chaque** icône (~70 SVG par écran) et chaque police
+     * à chaque navigation — une requête conditionnelle par fichier, même en
+     * cache. Mesuré le 2026-09-10 : 86 requêtes sur l'accueil mobile, presque
+     * toutes des icônes de 0,8 Ko. Les polices ne changent jamais sans changer
+     * de nom → immuables. Les icônes/images ne sont pas hachées → 7 jours,
+     * puis `stale-while-revalidate` (servies en cache pendant la revalidation).
+     */
+    '/fonts/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },
   },
 
   css: ['~/assets/css/main.css'],
