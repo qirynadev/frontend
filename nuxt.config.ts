@@ -210,15 +210,11 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         /**
-         * `fonts.googleapis.com`/`fonts.gstatic.com` : encore nécessaires pour
-         * `Plus Jakarta Sans`, chargée séparément par la seule page qui s'en
-         * sert (`.font-jakarta`, `[school].vue`) — Jost, elle, n'en dépend
-         * plus (auto-hébergée, voir `assets/css/main.css`, corrigé le
-         * 2026-09-09 : ce lien ajoutait ~300ms de blocage du rendu, le temps
-         * de la résolution DNS/TLS vers ce domaine tiers).
+         * Plus aucun `preconnect` vers Google Fonts : Jost (2026-09-09) puis
+         * `Plus Jakarta Sans` (2026-09-10) sont auto-hébergées dans
+         * `public/fonts/` (voir `assets/css/main.css`). Le lien Google ajoutait
+         * ~300ms de blocage du rendu (résolution DNS/TLS d'un domaine tiers).
          */
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'preconnect', href: mediaOrigin },
       ],
     },

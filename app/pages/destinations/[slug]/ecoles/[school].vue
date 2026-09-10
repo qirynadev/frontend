@@ -37,17 +37,11 @@ const desktopDomaine = computed(() => String(route.query.domaine ?? ''))
 
 /**
  * `Plus Jakarta Sans` (700) : seule cette fiche l'utilise (`.font-jakarta`,
- * badge du héros) — chargée ici plutôt que globalement (`nuxt.config.ts`)
- * pour ne pas alourdir le chargement de toutes les autres pages.
+ * badge du héros). Auto-hébergée depuis le 2026-09-10 (`assets/css/main.css`,
+ * `@font-face` à `unicode-range`) — le navigateur ne télécharge le fichier
+ * que si un glyphe en a besoin, donc rien à charger ici ni sur les autres
+ * pages ; le lien `fonts.googleapis.com` qui vivait ici a été retiré.
  */
-useHead({
-  link: [
-    {
-      rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700&display=swap',
-    },
-  ],
-})
 
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
