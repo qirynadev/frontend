@@ -32,32 +32,17 @@
  * `GET /schools/{countryId}/{areaId}` — seul endpoint qui filtre
  * effectivement par domaine (voir `server/api/bff/schools/index.get.ts`).
  *
- * **Ordre aléatoire** (2026-09-03, sur demande explicite) : l'API trie les
- * écoles par un ordre pseudo-aléatoire tiré côté back-office (`SchoolAction::
- * getByCountryArea`, un hachage par ligne dépendant d'une graine).
- *
- * **Le front ne tire jamais cette graine lui-même** (corrigé le 2026-09-08,
- * bug constaté en direct) : un `Math.random()` dans ce `<script setup>`
- * s'exécute une fois côté serveur (SSR) et une seconde fois côté client
- * (hydratation) — deux exécutions JS indépendantes — donnant deux graines,
- * donc deux ordres différents pour la même page, donc un mismatch
- * d'hydratation Vue (une carte affichait le titre d'une école avec le lien
- * d'une autre). `useState` (essayé ensuite) et un cookie (essayé après)
- * réglaient bien la divergence SSR/client, mais Nuxt émet plusieurs
- * requêtes serveur pour une même visite (rendu HTML, prefetch du payload
- * de la page suivante lors d'un clic pagination…) : `useState` repart d'un
- * magasin vierge à chacune (une par requête Nitro), et même un cookie tiré
- * « si absent » peut être fixé deux fois en parallèle par deux de ces
- * requêtes avant que l'une ou l'autre n'ait vu le `Set-Cookie` de la
- * première — dans les deux cas, des requêtes de la même visite retombent
- * sur des graines différentes, et une même école réapparaît d'une page de
- * pagination à l'autre (constaté en direct, 2026-09-09).
- *
- * Le tirage vit donc entièrement côté back-office (`SchoolAction::
- * getByCountryArea`), dérivé de l'heure courante plutôt que d'un état à
- * synchroniser : identique pour toute requête tombant dans la même fenêtre
- * de 30 minutes, qu'elle vienne du rendu HTML, d'un prefetch ou d'un clic
- * pagination — sans le moindre aller-retour front/back à orchestrer.
+ * **Ordre pseudo-aléatoire FIXE** (2026-09-10, sur demande — « la pratique la
+ * plus sûre ») : les écoles sont triées par `MD5(id)`, côté back-office
+ * (`SchoolAction::getByCountryArea`) ET côté BFF pour le chemin sans domaine
+ * (`server/api/bff/schools/index.get.ts`). Cet ordre est brouillé mais
+ * DÉTERMINISTE — identique à chaque requête (rendu HTML, prefetch, clic
+ * pagination) — donc la pagination ne peut plus ni dupliquer ni faire
+ * disparaître d'école. Aucune graine à tirer ni à synchroniser : les tentatives
+ * précédentes (Math.random côté client → mismatch d'hydratation, puis seed par
+ * `useState`/cookie/fenêtre de 30 min → pages qui se recouvraient) sont
+ * abandonnées. Contrepartie assumée : l'ordre ne tourne pas d'une visite à
+ * l'autre.
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'

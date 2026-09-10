@@ -1,5 +1,17 @@
+import { createHash } from 'node:crypto'
 import type { SchoolSummary } from '~~/app/core/contracts'
 import { plainText, toSchoolSummary } from '~~/app/core/adapters'
+
+/**
+ * Clé de tri pseudo-aléatoire FIXE et déterministe — `MD5(id)`, exactement
+ * comme le back-office (`SchoolAction::getByCountryArea`). Identique à chaque
+ * requête : la pagination en mémoire (chemin sans domaine ci-dessous) ne peut
+ * donc ni dupliquer ni faire disparaître d'école, tout en gardant un ordre
+ * « au hasard ». Voir `ecoles/index.vue`.
+ */
+function shuffleKey(id: string): string {
+  return createHash('md5').update(id).digest('hex')
+}
 
 /**
  * Écoles en version résumé, filtrables et paginées côté serveur.
@@ -60,11 +72,16 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const filtered = schools.filter((school) => {
-    if (destination !== '' && school.destinationSlug !== destination) return false
-    if (search === '') return true
-    return school.title.toLowerCase().includes(search) || school.city.toLowerCase().includes(search)
-  })
+  const filtered = schools
+    .filter((school) => {
+      if (destination !== '' && school.destinationSlug !== destination) return false
+      if (search === '') return true
+      return school.title.toLowerCase().includes(search) || school.city.toLowerCase().includes(search)
+    })
+    // Ordre pseudo-aléatoire FIXE (MD5(id)), stable d'une requête à l'autre :
+    // la pagination reste cohérente (pas de doublon ni de disparition) et
+    // l'ordre reste « au hasard », aligné sur le back-office.
+    .sort((a, b) => shuffleKey(a.id).localeCompare(shuffleKey(b.id)))
 
   const start = (page - 1) * perPage
   const items: SchoolSummary[] = filtered.slice(start, start + perPage).map((school) => ({
