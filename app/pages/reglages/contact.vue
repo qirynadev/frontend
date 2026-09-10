@@ -189,7 +189,7 @@ usePageSeo(() => ({
       <template v-if="submitted">
         <section class="flex w-full flex-col items-center text-center" role="status">
           <img
-            :src="`${SUCCESS_ICON}/hero.png`"
+            :src="`${SUCCESS_ICON}/hero.webp`"
             alt=""
             width="160"
             height="106"

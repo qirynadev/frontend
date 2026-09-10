@@ -132,7 +132,7 @@ usePageSeo(() => ({
           <p class="m-0 mt-4 text-sm leading-16 font-normal text-ca-muted">{{ $t('settingsHelp.secureDesc') }}</p>
         </div>
         <img
-          :src="`${ICON}/illu-lock.png`"
+          :src="`${ICON}/illu-lock.webp`"
           alt=""
           width="52"
           height="38"
