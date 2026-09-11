@@ -23,6 +23,25 @@ useHead(() => ({
  */
 const { data: branding } = await useBranding()
 
+/**
+ * Préconnexion vers le back-office qui héberge les médias (logos, photos
+ * d'école, bannières) : la négociation TLS se fait pendant le chargement de
+ * la page au lieu de retarder la première image.
+ *
+ * Calculée à l'exécution, depuis l'API que le serveur interroge vraiment
+ * (`NUXT_API_BASE_URL`) : dans `nuxt.config.ts`, elle était figée au build,
+ * et danube préconnectait la recette au lieu d'`admin.qiryna.com`.
+ * `useState` transmet la valeur au navigateur, qui n'a pas accès à
+ * `apiBaseUrl` (clé privée) : même balise au rendu et à l'hydratation.
+ */
+const mediaOrigin = useState('media-origin', () =>
+  import.meta.server ? new URL(useRuntimeConfig().apiBaseUrl).origin : '',
+)
+
+useHead(() => (mediaOrigin.value
+  ? { link: [{ key: 'media-preconnect', rel: 'preconnect', href: mediaOrigin.value }] }
+  : {}))
+
 useHead(() => {
   const favicon = branding.value.favicon
   if (!favicon) return {}

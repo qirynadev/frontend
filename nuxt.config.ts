@@ -2,15 +2,22 @@ import tailwindcss from '@tailwindcss/vite'
 
 const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.com/api'
 /**
- * Origine du back-office, seule (pas le chemin `/api`) : sert à `preconnect`
- * (`app.head.link` plus bas) pour les médias qu'il héberge (logos/photos
- * d'école, bannière d'accueil) — relevé par l'audit perf du 4 septembre 2026
- * comme non préconnecté, chaque image payant alors sa propre negociation
- * TLS pendant que la connexion vers `stage.qiryna.com` reste inutilisée.
+ * Hôtes des back-offices qui servent les médias (logos, photos d'école,
+ * bannières), autorisés par l'optimiseur d'images (`image.domains`).
+ *
+ * **Les deux sont listés en dur**, en plus de celui du build : `apiBaseUrl`
+ * ci-dessus n'est lu qu'AU BUILD. Constaté le 2026-09-11 : danube
+ * (production, API `admin.qiryna.com`) avait été construit avec l'hôte de
+ * recette, son optimiseur refusait donc `admin.qiryna.com` (« Forbidden
+ * host ») et toutes ses images du back-office partaient brutes — 56 sur la
+ * liste des écoles, jusqu'à 92 Ko pour un logo qui en pèse 2 une fois
+ * optimisé. Le même build sert désormais `my` comme `danube`.
+ *
+ * La préconnexion vers ce back-office est posée à l'exécution par `app.vue`,
+ * pour la même raison.
  */
-const mediaOrigin = new URL(apiBaseUrl).origin
-/** Même hôte, sans le protocole : requis par `image.domains` ci-dessous. */
 const mediaHost = new URL(apiBaseUrl).host
+const MEDIA_HOSTS = [...new Set([mediaHost, 'admin.qiryna.com', 'admin.stage.qiryna.com'])]
 /** Même variable que `i18n.baseUrl` plus bas — exposée aussi en `public` pour `robots.txt` (comparaison d'hôte). */
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com'
 
@@ -183,7 +190,7 @@ export default defineNuxtConfig({
      * `/_ipx/...`. Seules les images de `public/` (locales) étaient donc
      * jamais concernées par ce bug — elles n'ont pas besoin d'être listées ici.
      */
-    domains: [mediaHost],
+    domains: MEDIA_HOSTS,
     /**
      * Durée de cache des images redimensionnées (`/_ipx/...`).
      *
@@ -238,8 +245,11 @@ export default defineNuxtConfig({
          * `Plus Jakarta Sans` (2026-09-10) sont auto-hébergées dans
          * `public/fonts/` (voir `assets/css/main.css`). Le lien Google ajoutait
          * ~300ms de blocage du rendu (résolution DNS/TLS d'un domaine tiers).
+         *
+         * La préconnexion vers le back-office des médias n'est plus ici : son
+         * origine était figée au build (danube préconnectait la recette).
+         * Elle est posée à l'exécution par `app.vue`.
          */
-        { rel: 'preconnect', href: mediaOrigin },
       ],
     },
   },
