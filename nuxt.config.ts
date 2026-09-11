@@ -112,7 +112,10 @@ export default defineNuxtConfig({
     '/langues': { swr: 60 },
 
     '/_i18n/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    // `/_ipx/**` n'a PAS de règle ici : l'optimiseur écrit ses en-têtes
+    // directement sur la réponse Node et ignorait celle-ci (mesuré le
+    // 2026-09-11 : 60 s en production malgré un an demandé). Sa durée de cache
+    // se règle dans `image.ipx`, plus bas.
 
     /**
      * Statiques de `public/` : sans règle, Nitro ne pose qu'un `ETag`, donc le
@@ -181,6 +184,24 @@ export default defineNuxtConfig({
      * jamais concernées par ce bug — elles n'ont pas besoin d'être listées ici.
      */
     domains: [mediaHost],
+    /**
+     * Durée de cache des images redimensionnées (`/_ipx/...`).
+     *
+     * `ipx` pose lui-même son `Cache-Control`, en contournant `routeRules` :
+     * sans ces options, il renvoyait 60 s pour les images de `public/` et
+     * 5 min pour celles du back-office (constaté en production le
+     * 2026-09-11). Un téléphone retéléchargeait donc chaque photo à presque
+     * chaque visite.
+     *
+     * - `fs` : images de `public/`, non hachées → 7 jours, comme `/img/**` ;
+     * - `http` : images du back-office qui n'envoient aucun `Cache-Control` →
+     *   1 jour. Quand le back-office en envoie un (directive §26), `ipx` le
+     *   reprend tel quel : c'est le back-office qui décide.
+     */
+    ipx: {
+      fs: { maxAge: 604800 },
+      http: { maxAge: 86400 },
+    },
     // Points de rupture alignés sur le shell mobile puis le desktop (Lot 3).
     screens: {
       xs: 360,
