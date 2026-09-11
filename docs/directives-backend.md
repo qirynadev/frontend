@@ -31,7 +31,7 @@ back-office et testé sur la recette.
 | 17 | notifications de commande et de planning écrites dans le fil | `591cc9a` | rien, l'onglet est déjà câblé |
 | 18 | `POST /send-email` sans `phone` | `591cc9a` | rien |
 | 19 | champ `points_forts` des écoles | `b9aa982` | déjà câblé |
-| 21 | `GET /schools/by-slug/{slug}`, `GET /areas-of-studies/offer/by-slug/{slug}` | `b9aa982` | sortir la fiche école et la page offre de `/all-data` |
+| 21 | `GET /schools/by-slug/{slug}`, `GET /areas-of-studies/offer/by-slug/{slug}` | `b9aa982`, doublons corrigés `2056ed0` | câblé le 2026-09-11 |
 | 22.1 | réservation E-Testing aussi pour les commandes de langue | `b9aa982` | — |
 | 23 | `deliverables[]` sur chaque commande de `/payment/list` | `dc38682` | affichage en attente de la page de Kader |
 | 25 | `logo_light`, `logo_dark`, `favicon` dans `/all-data` | `0ee8fe0` | logo clair + favicon ; logo sombre avec le thème sombre de Kader |
@@ -663,7 +663,25 @@ duration}]`). Si un futur endpoint fraîchement ajouté par le back-office
 semble ignorer son propre code, revérifier après quelques minutes avant de
 conclure à un bug plutôt qu'à un déploiement encore en cours.
 
-## 21. ✅ Livré (back, `b9aa982`) : routes par slug pour la fiche école et la page offre
+## 21. ✅ Livré (back, `b9aa982`) et câblé : routes par slug pour la fiche école et la page offre
+
+**Câblé le 2026-09-11.** La fiche école et la page d'offre de domaine lisent
+désormais ces deux routes, plus `/all-data`. Les formations de la fiche,
+qui partaient vers l'API sans cache à chaque visite, sont mises en cache
+avec la même politique que le dump. Si l'une de ces routes tombe, le BFF
+retombe sur le dump en cache.
+
+**Correctif back-office associé (`2056ed0`)** : sur les slugs en double, la
+route renvoyait la première traduction venue, donc parfois une autre école
+que celle de la liste. Elle retient maintenant l'école active de plus petit
+`id`, la règle de `dedupeBySlug`, et n'expose plus les écoles inactives.
+Vérifié sur la recette : les 20 doublons ouvrent la même école que la liste.
+
+**Ce que ça ne change pas** : le navigateur ne téléchargeait déjà pas le
+dump, le BFF le garde en cache mémoire. Le gain est la fraîcheur des fiches,
+la demi-seconde d'attente des formations en moins, et deux consommateurs du
+dump en moins. Le dump reste nécessaire au menu, à l'accueil et aux listes.
+
 
 Plan de priorité transmis par Prosper (par le responsable, 2026-08-31) pour
 sortir la fiche école et la page offre de `/all-data`, dans l'ordre :

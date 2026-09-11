@@ -20,6 +20,7 @@ import {
   toSchool,
   toSiteSettings,
 } from '~~/app/core/adapters'
+import { ApiError } from '~~/app/core/http/errors'
 
 /**
  * Source de données du BFF.
@@ -40,6 +41,17 @@ import {
  * | `/profilage`  | offre d'orientation                        | 5 Ko    |
  * | `/articles`   | actualités de l'accueil                    | vide    |
  *
+ * Servis à l'unité depuis le 2026-09-11 (§21), en dehors de l'instantané — voir
+ * la fin de ce fichier :
+ *
+ * | Endpoint                               | Sert à                    | Poids   |
+ * |----------------------------------------|---------------------------|---------|
+ * | `/schools/by-slug/{slug}`              | fiche école               | ~10 Ko  |
+ * | `/schools/{id}/formations`             | onglet « Formations »     | ~5 Ko   |
+ * | `/areas-of-studies/offer/by-slug/{slug}` | page d'offre de domaine | ~65 Ko  |
+ *
+ * Le dump reste nécessaire au menu, à l'accueil, aux listes de destinations et
+ * d'écoles : les fiches en sont sorties, pas encore le reste.
  * `/areas-of-studies/{id}` répond **500** : le rattachement école ↔ domaine
  * d'étude est donc indisponible (cf. LOT-4.md § Limites).
  */
@@ -166,4 +178,63 @@ export function readLocale(event: H3Event): string {
   const header = getHeader(event, 'lang')
   if (typeof header === 'string' && /^[a-z]{2}$/i.test(header)) return header.toLowerCase()
   return 'fr'
+}
+
+/**
+ * Entités servies à l'unité — directives-backend §21, sorties de `/all-data`.
+ *
+ * Même politique de cache que le dump (5 min, périmé servi jusqu'à 1 h pendant
+ * le rafraîchissement) : sans elle, chaque fiche paierait l'aller-retour vers
+ * l'API — 0,5 à 0,9 s mesurés depuis la recette le 2026-09-11 — là où le dump
+ * répondait depuis la mémoire.
+ *
+ * Un 404 est mis en cache comme n'importe quelle réponse (`null`) : une URL
+ * inexistante rappelée en boucle ne retape pas l'API. Une panne, elle, n'est
+ * jamais mise en cache — elle remonte, et la route appelante retombe sur le
+ * dump en cache plutôt que de faire tomber la page.
+ */
+
+/** Forme d'un slug produit par `str()->slug()` côté Laravel. Filtre les URL fantaisistes avant tout appel réseau. */
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+export function isPlausibleSlug(slug: string): boolean {
+  return slug.length > 0 && slug.length <= 150 && SLUG_PATTERN.test(slug)
+}
+
+async function requestOrNull<T>(event: H3Event, locale: string, path: string): Promise<T | null> {
+  try {
+    return await apiClient(event, locale).request<T>(path)
+  }
+  catch (error) {
+    if (error instanceof ApiError && error.kind === 'notFound') return null
+    throw error
+  }
+}
+
+const UNIT_CACHE = { name: 'qiryna', swr: true, maxAge: 300, staleMaxAge: 3600 } as const
+
+/** Fiche école brute — `GET /schools/by-slug/{slug}`, même forme qu'une entrée de `schoolSheets[*].schools[*]`. */
+export const cachedSchoolBySlug = defineCachedFunction(
+  (event: H3Event, locale: string, slug: string) =>
+    requestOrNull<Record<string, unknown>>(event, locale, `/schools/by-slug/${encodeURIComponent(slug)}`),
+  { ...UNIT_CACHE, group: 'school', getKey: (_event: H3Event, locale: string, slug: string) => `${locale}:${slug}` },
+)
+
+/** Formations brutes d'une école — `GET /schools/{id}/formations` (§12). */
+export const cachedSchoolFormations = defineCachedFunction(
+  (event: H3Event, locale: string, schoolId: string) =>
+    requestOrNull<unknown>(event, locale, `/schools/${encodeURIComponent(schoolId)}/formations`),
+  { ...UNIT_CACHE, group: 'formations', getKey: (_event: H3Event, locale: string, schoolId: string) => `${locale}:${schoolId}` },
+)
+
+/** Offre de domaine brute — `GET /areas-of-studies/offer/by-slug/{slug}`, même forme qu'une entrée de `offers[*]`. */
+export const cachedDomainOfferBySlug = defineCachedFunction(
+  (event: H3Event, locale: string, slug: string) =>
+    requestOrNull<Record<string, unknown>>(event, locale, `/areas-of-studies/offer/by-slug/${encodeURIComponent(slug)}`),
+  { ...UNIT_CACHE, group: 'offer', getKey: (_event: H3Event, locale: string, slug: string) => `${locale}:${slug}` },
+)
+
+/** Base des drapeaux et médias, telle que la passe `loadSnapshot` aux adapters. */
+export function mediaBase(event: H3Event): string {
+  return useRuntimeConfig(event).apiBaseUrl
 }

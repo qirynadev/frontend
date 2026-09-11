@@ -46,7 +46,7 @@ const desktopDomaine = computed(() => String(route.query.domaine ?? ''))
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
   async () => {
-    const school = await schoolRepo.bySlug(schoolSlug.value, locale.value)
+    const school = await schoolRepo.bySlug(schoolSlug.value, locale.value, apiSlug.value)
     // Formations : appel dédié (§12), pas la fiche complète — a besoin de
     // l'UUID de l'école, donc après sa résolution par slug.
     const formations = school ? await schoolRepo.formations(school.id, locale.value) : []

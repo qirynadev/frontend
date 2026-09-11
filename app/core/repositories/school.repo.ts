@@ -48,16 +48,22 @@ export const schoolRepo = {
   },
 
   /**
-   * Fiche complète par slug.
+   * Fiche complète par slug (`GET /schools/by-slug/{slug}` côté API, §21).
    *
-   * ⚠️ 21 slugs sont dupliqués en base (`universite-lille`, `hec-paris`,
-   * `insead`…). L'arbitrage — première entrée par `id` croissant — est fait par
-   * l'adapter et reproduit à l'identique par le BFF : la fiche ouverte depuis la
-   * liste est bien celle de la liste.
+   * ⚠️ 21 slugs sont dupliqués en base (`universite-lille`, `insead`…).
+   * L'arbitrage — école active de plus petit `id` — est le même côté API et
+   * dans `dedupeBySlug` pour la liste : la fiche ouverte depuis la liste est
+   * bien celle de la liste.
+   *
+   * `destination` (slug API de la destination) renseigne `School.destinationSlug`,
+   * que la réponse de l'API ne porte pas.
    */
-  async bySlug(slug: string, locale?: string): Promise<School | null> {
+  async bySlug(slug: string, locale?: string, destination?: string): Promise<School | null> {
     try {
-      return await bffFetch<School>(`/schools/${encodeURIComponent(slug)}`, { locale })
+      return await bffFetch<School>(`/schools/${encodeURIComponent(slug)}`, {
+        locale,
+        query: destination ? { destination } : undefined,
+      })
     }
     catch (error) {
       if (error instanceof ApiError && error.kind === 'notFound') return null
