@@ -973,7 +973,21 @@ charge du front une fois le backend prêt) :
 visiteurs pour un moment — mais à faire avant de mettre le sélecteur de
 thème en avant dans le produit.
 
-## 26. 🔵 Recommandation serveur : en-têtes de cache sur `/storage` du back-office
+## 26. ✅ Réglé dans le code (back-office `b299290`) : en-têtes de cache sur `/storage`
+
+**Mise à jour du 2026-09-11.** Pas besoin de Plesk : Apache sert `/storage`
+derrière nginx (ETag au format Apache), donc le `.htaccess` public du
+back-office suffit, et il est déployé avec le code. Images de `/storage` :
+`public, max-age=86400, stale-while-revalidate=604800` — un jour seulement,
+car les réglages et les bandeaux d'accueil réécrivent encore une image sous
+le même nom. En prime, les SVG de `/storage` reçoivent une
+`Content-Security-Policy` sans script : ceux téléversés avant le nettoyage
+du 2026-09-11 ne peuvent plus rien exécuter s'ils sont ouverts directement.
+Côté front, l'optimiseur d'images reprend ce `max-age` (commit `ac4bcf1`,
+qui corrige aussi le cache de `/_ipx`, bloqué à 60 s jusque-là).
+
+Constat d'origine, conservé :
+
 
 **Constat du 2026-09-11.** Les fichiers servis par
 `admin.stage.qiryna.com/storage/**` — photos et logos d'écoles, logo et
