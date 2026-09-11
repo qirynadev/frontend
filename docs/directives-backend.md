@@ -15,6 +15,30 @@ Convention : 🔴 aucune donnée du tout, rien à câbler · 🟡 donnée réell
 telle quelle, qualité éditoriale à parfaire côté back-office (n'empêche pas le
 fonctionnement) · 🔵 question de sémantique/produit à trancher.
 
+## État au 2026-09-11 — livraisons back-office non reportées jusqu'ici
+
+Entre le 2026-08-31 et le 2026-09-07, Prosper a livré dans `qiryna-backoffice`
+une série de directives, toutes présentes sur `staging` et `main`. Ce fichier
+n'en avait enregistré presque aucune : plusieurs points restaient marqués 🔴
+alors que l'API les servait déjà. Recoupé le 2026-09-11 avec l'historique du
+back-office et testé sur la recette.
+
+| § | Livré | Commit back-office | Reste côté front |
+|---|---|---|---|
+| 4 | champ `verified` du professeur, distinct de l'e-mail | `460d56b` | câbler le vrai champ |
+| 14 | retour Stripe d'un achat de langue | `5077cc9`, `121410b` | rien |
+| 16 | visio professeur migrée en UI Toolkit v2.5 | `9b9ef90`, `3d666ae` | rien — séance réelle validée par le responsable le 2026-09-11 |
+| 17 | notifications de commande et de planning écrites dans le fil | `591cc9a` | rien, l'onglet est déjà câblé |
+| 18 | `POST /send-email` sans `phone` | `591cc9a` | rien |
+| 19 | champ `points_forts` des écoles | `b9aa982` | déjà câblé |
+| 21 | `GET /schools/by-slug/{slug}`, `GET /areas-of-studies/offer/by-slug/{slug}` | `b9aa982` | sortir la fiche école et la page offre de `/all-data` |
+| 22.1 | réservation E-Testing aussi pour les commandes de langue | `b9aa982` | — |
+| 23 | `deliverables[]` sur chaque commande de `/payment/list` | `dc38682` | affichage en attente de la page de Kader |
+| 25 | `logo_light`, `logo_dark`, `favicon` dans `/all-data` | `0ee8fe0` | logo clair + favicon ; logo sombre avec le thème sombre de Kader |
+
+**Règle tirée de cet oubli** : avant de lister un point comme bloquant,
+relire `git log` du back-office sur `staging`, pas seulement ce fichier.
+
 ## 1. 🟡 Offres domaine — prestations (`OfferTierCard`, mode `domain`)
 
 **Câblé** (2026-08-22) : `OfferTierCard.vue` affiche désormais `tier.features`
@@ -39,7 +63,7 @@ libre court comme sur Ingénierie/MBA) ; et sur Management, retirer la
 duplication de l'item 3. `offer-domain-features.ts` (repli Figma) peut être
 retiré une fois les 8 domaines à niveau.
 
-## 2. 🔴 Fiche école — grade et durée de formation
+## 2. ✅ Résolu par le §20 : fiche école — grade et durée de formation
 
 `GET /all-data` → `schoolSheets[*].schools[*].formations[]` : vérifié sur les
 1011 formations renvoyées (toutes écoles/destinations confondues), le champ
@@ -66,7 +90,7 @@ tel quel. Qualité éditoriale vérifiée sur les deux coachs de test :
 **Ce qu'il faut, à terme (pas bloquant)** : que chaque profil coach publié
 porte un diplôme/certification réel avant la mise en production.
 
-## 4. 🟡 Professeur — badge « vérifié » (`user.email_verified_at`)
+## 4. ✅ Livré (back, `460d56b`) : badge professeur « vérifié » distinct de l'e-mail
 
 **Câblé** (2026-08-22) : `Teacher.verified` = `email_verified_at !== null`.
 Fonctionne (les deux coachs de test l'ont, donc le badge s'affiche), mais ce
@@ -387,7 +411,7 @@ pour choisir la bonne commande à afficher sur cet écran à route fixe (déjà
 documenté comme limitation dans `useAdmissionData.ts` — non traité ici,
 simplement confirmé qu'il peut se manifester en pratique).
 
-## 14. 🔵 Retour Stripe après paiement langue : atterrit sur l'écran générique au lieu du sien
+## 14. ✅ Corrigé (back, `5077cc9`) : retour Stripe après paiement langue
 
 **Reproduit en direct** (2026-08-29, signalé par le responsable après un
 achat réel) : un cours de langue payé (commande `b89ba93d-aad8-49cb-
@@ -488,7 +512,7 @@ justement pour ce cas.
 restent des assets front, résolus depuis `key` par `goalVisual()`. Une clé
 inconnue prend la pastille neutre d'« Autre » au lieu de casser l'écran.
 
-## 16. 🔴 Espace professeur (`qiryna-backoffice`) — la visio ne se connecte plus, SDK Zoom obsolète
+## 16. ✅ Corrigé (back, `9b9ef90`) : visio de l'espace professeur, SDK Zoom migré en v2.5
 
 **Pas un bug de `qiryna-front`** — reproduit par le responsable en direct
 (2026-08-30) sur `admin.stage.qiryna.com/espace-professeur/meeting/{id}`,
@@ -520,7 +544,7 @@ signature entre les deux versions majeures, puis redéployer. Le SDK brut
 utilisé côté élève (`@zoom/videosdk`, front) n'est pas concerné — versions
 et paquets différents, aucune action nécessaire de ce côté.
 
-## 17. 🔴 Onglet « Notification » (`/messages`) — seul le nouveau message écrit dans `notifications`
+## 17. ✅ Corrigé (back, `591cc9a`) : onglet « Notification » alimenté par les événements de commande
 
 **Câblé** (2026-08-30) : `/messages` a désormais deux onglets réels — Messages
 (`GET /user/messages`, déjà utilisé par `/reglages/contact`) et Notification
@@ -591,7 +615,7 @@ désormais `phone: ''` à chaque appel. **Ce qu'il faut, côté API** :
 appliqué à `lc_country_id`) — le contournement front reste inoffensif après
 correction, pas la peine de le retirer.
 
-## 19. 🔵 Suggestion : un vrai champ dédié pour « Points forts » (fiche école)
+## 19. ✅ Livré (back, `b9aa982`) et câblé : champ dédié « Points forts » (fiche école)
 
 **Pas un bug côté front** — corrigé le 2026-08-31 : la fiche école
 (`/destinations/{slug}/ecoles/{ecole}`, onglet « Points forts ») n'affichait
@@ -639,7 +663,7 @@ duration}]`). Si un futur endpoint fraîchement ajouté par le back-office
 semble ignorer son propre code, revérifier après quelques minutes avant de
 conclure à un bug plutôt qu'à un déploiement encore en cours.
 
-## 21. 🔴 Bloquant : résoudre un slug en UUID pour `/schools/{id}` et `/areas-of-studies/offer/{id}`
+## 21. ✅ Livré (back, `b9aa982`) : routes par slug pour la fiche école et la page offre
 
 Plan de priorité transmis par Prosper (par le responsable, 2026-08-31) pour
 sortir la fiche école et la page offre de `/all-data`, dans l'ordre :
@@ -679,7 +703,7 @@ en attendant (ex. faire transiter l'UUID via la navigation interne depuis
 les pages de liste) — remonter le besoin à Prosper plutôt que maintenir un
 contournement.
 
-## 22. 🔴 Parcours cours de langue : étapes de checklist fictives après la planification
+## 22. 🔴 Parcours cours de langue : étapes de checklist fictives après la planification (22.1 livré)
 
 Analyse du parcours client complet (relu avec le responsable, 2026-09-01),
 confronté au code front **et** back-office. Tout ce qui précède la
@@ -735,7 +759,7 @@ depuis le back-office (`Order/Edit.vue`, `OrderController::
 updateChecklistItem`, déjà fonctionnel pour n'importe quelle étape) — rien
 n'automatise `midterm_evaluation`/`final_certification`.
 
-## 23. 🔴 Mécanisme générique manquant : livrables de commande (résultats, rapports, certifications, documents utiles)
+## 23. ✅ Livré (back, `dc38682`) : documents remis au client sur chaque commande — affichage front en attente
 
 En vérifiant le point 22, le même trou se retrouve **à l'identique** sur
 les autres parcours à checklist — pas la peine d'attendre une relecture
@@ -826,7 +850,7 @@ validation, pas un contrôle — n'importe quel client peut le contourner en
 ajoutant `?etape=2` à l'URL. Acceptable temporairement sur demande explicite
 du responsable, mais à ne pas présenter comme un vrai contrôle métier.
 
-## 25. 🔴 Logo (clair/sombre) et favicon administrables — actuellement des fichiers statiques du dépôt
+## 25. ✅ Livré (back, `0ee8fe0`) : logo clair/sombre et favicon administrables
 
 **Contexte (2026-09-04)** : le mode sombre est maintenant fonctionnel côté
 front (`app/assets/css/main.css`, `theme.store.ts`). Un point reste bloquant :
