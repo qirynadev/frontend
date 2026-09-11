@@ -1,4 +1,4 @@
-import type { Catalog } from '../contracts'
+import type { Branding, Catalog } from '../contracts'
 import { bffFetch } from '../http/client'
 
 /**
@@ -11,5 +11,10 @@ import { bffFetch } from '../http/client'
 export const catalogRepo = {
   load(locale?: string): Promise<Catalog> {
     return bffFetch<Catalog>('/catalog', { locale })
+  },
+
+  /** Logo et favicon administrés — quelques octets, lus par `app.vue` avant tout rendu. */
+  branding(): Promise<Branding> {
+    return bffFetch<Branding>('/branding')
   },
 }

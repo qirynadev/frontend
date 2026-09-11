@@ -85,4 +85,22 @@ export interface SiteSettings {
   analyticsId: string | null
   socials: SocialLink[]
   locales: Array<{ code: string; label: string }>
+  /**
+   * Logo sur fond clair, téléversé dans les réglages du back-office
+   * (directives-backend §25). `null` tant que rien n'est téléversé : l'app
+   * affiche alors `public/img/logo.webp`. Le logo sombre attend le thème
+   * sombre de Kader et n'est pas encore lu.
+   */
+  logoLight: string | null
+  /** Favicon administré (§25). `null` : les icônes statiques de `public/` restent. */
+  favicon: string | null
+}
+
+/**
+ * Identité visuelle administrée, seule — ce qu'il faut à toutes les pages
+ * avant leur rendu, sans charger le catalogue entier (menu, accueil…).
+ */
+export interface Branding {
+  logoLight: string | null
+  favicon: string | null
 }

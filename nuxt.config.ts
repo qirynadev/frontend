@@ -205,9 +205,12 @@ export default defineNuxtConfig({
         // le logo complet a trop de marge/texte pour rester lisible en 16px).
         // Balises explicites plutôt que la convention implicite `/favicon.ico` :
         // fiable même si un cache CDN/navigateur a mémorisé une 404 passée.
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
-        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        //
+        // `key` : permet à `app.vue` de remplacer ces trois balises par le
+        // favicon administré (directives-backend §25) quand il existe.
+        { key: 'favicon', rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { key: 'favicon-32', rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { key: 'favicon-16', rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         /**
          * Plus aucun `preconnect` vers Google Fonts : Jost (2026-09-09) puis

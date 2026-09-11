@@ -120,6 +120,29 @@ describe('toSiteSettings', () => {
     expect(settings.name).toBe('Qiryna')
     expect(settings.socials).toEqual([])
     expect(settings.stripePublicKey).toBeNull()
+    expect(settings.logoLight).toBeNull()
+    expect(settings.favicon).toBeNull()
+  })
+
+  // directives-backend §25 : logo clair et favicon téléversés dans les réglages.
+  it('expose le logo clair et le favicon administrés', () => {
+    const settings = toSiteSettings({
+      site: {
+        logo_light: 'https://admin.stage.qiryna.com/storage/photos/settings/logo.webp',
+        logo_dark: 'https://admin.stage.qiryna.com/storage/photos/settings/logo-fond-dark.webp',
+        favicon: 'https://admin.stage.qiryna.com/storage/photos/settings/ic-orientation-logo.webp',
+      },
+    })
+
+    expect(settings.logoLight).toBe('https://admin.stage.qiryna.com/storage/photos/settings/logo.webp')
+    expect(settings.favicon).toBe('https://admin.stage.qiryna.com/storage/photos/settings/ic-orientation-logo.webp')
+  })
+
+  it('traite un champ vide comme « rien de téléversé »', () => {
+    const settings = toSiteSettings({ site: { logo_light: '', favicon: null } })
+
+    expect(settings.logoLight).toBeNull()
+    expect(settings.favicon).toBeNull()
   })
 })
 

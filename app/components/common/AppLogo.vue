@@ -26,7 +26,18 @@
  *
  * Le fichier vectoriel d'origine reste à demander à l'équipe design : il
  * remplacera ce WebP sans toucher au reste du code.
+ *
+ * **Logo administré (directives-backend §25, depuis le 2026-09-11)** : si un
+ * logo clair est téléversé dans les réglages du back-office, il remplace ce
+ * fichier. Il est posé dans la même boîte, en `object-contain` : pour notre
+ * WebP, dont le ratio est celui de la boîte, le rendu est identique au pixel
+ * près — et c'est le fichier actuellement téléversé en recette, octet pour
+ * octet. Un autre logo, de ratio différent, reste proportionné et centré au
+ * lieu d'être déformé. S'il ne se charge pas, retour au fichier local.
+ * Le logo sombre attend le thème sombre de Kader.
  */
+import type { Branding } from '~/core/contracts'
+
 withDefaults(
   defineProps<{
     /** Largeur du cadre, en px. La maquette utilise 145 et 150. */
@@ -35,17 +46,24 @@ withDefaults(
   }>(),
   { width: 145, height: 45 },
 )
+
+const LOCAL_LOGO = '/img/logo.webp'
+
+const { data: branding } = useNuxtData<Branding>('branding')
+const failed = ref(false)
+const src = computed(() => (failed.value ? null : branding.value?.logoLight) || LOCAL_LOGO)
 </script>
 
 <template>
   <span class="relative block shrink-0 overflow-hidden" :style="{ width: `${width}px`, height: `${height}px` }">
     <img
-      src="/img/logo.webp"
+      :src="src"
       alt="Qiryna"
       width="450"
       height="141"
-      class="absolute block max-w-none"
+      class="absolute block max-w-none object-contain"
       style="width: 93.1%; height: 94%; left: 3.41%; top: 4.29%;"
+      @error="failed = true"
     >
   </span>
 </template>

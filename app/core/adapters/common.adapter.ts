@@ -1,5 +1,5 @@
 import type { Country, FeatureItem, Menu, MenuEntry, MenuSection, Price, SeoMeta, SiteSettings, SocialLink } from '../contracts'
-import { asArray, asRecord, bool, list, num, optionalStr, plainText, str, toUrl } from './primitives'
+import { asArray, asRecord, bool, dig, list, num, optionalStr, plainText, str, toUrl } from './primitives'
 
 /**
  * Pays.
@@ -146,5 +146,7 @@ export function toSiteSettings(raw: unknown): SiteSettings {
         return { code: str(locale, 'value'), label: str(locale, 'label') }
       })
       .filter((locale) => locale.code !== ''),
+    logoLight: toUrl(dig(source, 'site.logo_light')),
+    favicon: toUrl(dig(source, 'site.favicon')),
   }
 }
