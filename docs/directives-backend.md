@@ -34,7 +34,7 @@ back-office et testé sur la recette.
 | 21 | `GET /schools/by-slug/{slug}`, `GET /areas-of-studies/offer/by-slug/{slug}` | `b9aa982`, doublons corrigés `2056ed0` | câblé le 2026-09-11 |
 | 22.1 | réservation E-Testing aussi pour les commandes de langue | `b9aa982` | — |
 | 23 | `deliverables[]` sur chaque commande de `/payment/list` | `dc38682` | affichage en attente de la page de Kader |
-| 25 | `logo_light`, `logo_dark`, `favicon` dans `/all-data` | `0ee8fe0` | logo clair + favicon ; logo sombre avec le thème sombre de Kader |
+| 25 | `logo_light`, `logo_dark`, `favicon` dans `/all-data` | `0ee8fe0` | logo clair + favicon câblés le 2026-09-11 ; logo sombre avec le thème sombre de Kader |
 
 **Règle tirée de cet oubli** : avant de lister un point comme bloquant,
 relire `git log` du back-office sur `staging`, pas seulement ce fichier.
@@ -472,7 +472,30 @@ back-office calcule sa propre URL sans lire de champ client. À garder en
 tête seulement si un jour le back-office décide de laisser le front piloter
 cette URL plutôt que de la déduire lui-même de `service_type`.
 
-## 15. 🟡 Câblé : objectifs d'apprentissage par langue — clé non stable entre locales
+## 15. ✅ Câblé, clé stable livrée : objectifs d'apprentissage par langue
+
+**Mise à jour du 2026-09-11 — clé stable (`qiryna-backoffice` `8cd05a0`,
+sur `staging`).** La réserve 1 ci-dessous est levée : la clé est désormais
+stockée dans chaque objectif et figée à sa création. Hors du français, la
+fiche langue du back-office propose « Traduction de l'objectif », qui relie
+chaque objectif à sa version française et lui en donne la clé. Le lien est
+explicite, pas positionnel : en recette, le deuxième objectif anglais de
+l'anglais correspond au troisième français.
+
+**Action admin restante, trois objectifs anglais à relier** (les objectifs
+saisis avant ce correctif gardent le slug de leur titre tant que la fiche
+n'est pas réenregistrée) :
+
+| Langue | Objectif anglais | À relier à |
+|---|---|---|
+| Français | International exams | Examens internationaux |
+| Anglais | International exams | Examens internationaux |
+| Anglais | Professional English | Anglais professionnel |
+
+L'objectif « Conversation » du français partage déjà la clé `conversation`
+dans les deux langues. Côté front, rien à changer : la clé reste une chaîne,
+et `goalVisual()` reconnaît les clés françaises.
+
 
 Les 6 objectifs de cet écran (Examens internationaux, Conversation, …
 Professionnel, Remise à niveau, Admission internationale, Autre) étaient
@@ -879,6 +902,17 @@ du responsable, mais à ne pas présenter comme un vrai contrôle métier.
 
 ## 25. ✅ Livré (back, `0ee8fe0`) : logo clair/sombre et favicon administrables
 
+**Câblé le 2026-09-11, logo clair et favicon seulement.** Une route BFF
+`/branding` sert les deux URL, résolues par `app.vue` avant le rendu :
+`AppLogo` affiche le logo administré, et les trois balises d'icône sont
+remplacées par le favicon administré. Sans fichier téléversé, ou si l'image
+ne charge pas, les fichiers statiques de `public/` restent. Les fichiers
+téléversés en recette sont identiques octet pour octet aux nôtres : aucun
+changement visuel. Le logo sombre attend le thème sombre de Kader, décision
+du responsable. Le logo de la barre de navigation desktop
+(`/img/desktop/logo-nav.png`) reste statique, il relève du desktop de Kader.
+
+
 **Contexte (2026-09-04)** : le mode sombre est maintenant fonctionnel côté
 front (`app/assets/css/main.css`, `theme.store.ts`). Un point reste bloquant :
 le logo est une **image raster figée dans le dépôt**
@@ -938,6 +972,21 @@ charge du front une fois le backend prêt) :
 (le mode par défaut), qui restera probablement le choix de la plupart des
 visiteurs pour un moment — mais à faire avant de mettre le sélecteur de
 thème en avant dans le produit.
+
+## 26. 🔵 Recommandation serveur : en-têtes de cache sur `/storage` du back-office
+
+**Constat du 2026-09-11.** Les fichiers servis par
+`admin.stage.qiryna.com/storage/**` — photos et logos d'écoles, logo et
+favicon administrés, images d'offres — ne portent aucun `Cache-Control`,
+seulement `ETag` et `Last-Modified`. Le navigateur applique alors une durée
+de fraîcheur heuristique, puis revalide chaque image par une requête
+conditionnelle. Sur mobile, chaque revalidation coûte un aller-retour, image
+par image, alors que ces fichiers ne changent presque jamais sous la même URL.
+
+**Ce qu'il faut, côté serveur (Plesk, nginx ou Apache)** : poser sur
+`/storage/` un `Cache-Control: public, max-age=604800` au minimum — ce que
+le front applique déjà à ses propres images (`routeRules` de
+`nuxt.config.ts`). Aucune modification de code Laravel nécessaire.
 
 ## Pour mémoire — pas des écarts, aucune action requise
 

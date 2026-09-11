@@ -22,7 +22,12 @@ export interface CourseLevel {
  * l'API, comme convenu dans cette même directive.
  */
 export interface CourseObjective {
-  /** Slug du titre, transmis dans l'URL du tunnel (`/offres/{slug}?objectif={key}`). */
+  /**
+   * Identifiant stable, transmis dans l'URL du tunnel (`/offres/{slug}?objectif={key}`)
+   * puis dans la commande. Le même dans toutes les langues d'un objectif relié
+   * à sa version française (back-office `8cd05a0`, 2026-09-11) ; un objectif
+   * pas encore relié garde le slug de son propre titre.
+   */
   key: string
   title: string
   /** Texte brut : l'API renvoie du HTML (`<p>`), la maquette n'a qu'une ligne. */

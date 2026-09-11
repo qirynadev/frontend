@@ -57,11 +57,14 @@ const VISUAL_BY_ID: Record<string, GoalVisual> = Object.fromEntries(
 /**
  * Motifs reconnus dans la `key` d'un objectif administré, dans l'ordre d'essai.
  *
- * L'API dérive `key` du **titre traduit** (`examens-internationaux` en français,
- * `international-exams` en anglais, et `{langue}-professionnel` varie avec la
- * langue enseignée) : on reconnaît donc des fragments plutôt qu'une liste close
- * d'identifiants. Un objectif ajouté demain par l'admin avec une clé inconnue
- * n'est pas une erreur — il prend la pastille neutre d'« Autre ».
+ * Depuis le 2026-09-11, `key` est stockée et partagée entre les langues d'un
+ * même objectif (back-office `8cd05a0`) : c'est en pratique le slug de son
+ * titre français, figé à la création. Mais `{langue}-professionnel` varie
+ * toujours avec la langue enseignée, et les objectifs non encore reliés
+ * gardent le slug de leur titre anglais (`international-exams`) : on
+ * reconnaît donc des fragments plutôt qu'une liste close d'identifiants. Un
+ * objectif ajouté demain avec une clé inconnue n'est pas une erreur — il
+ * prend la pastille neutre d'« Autre ».
  */
 const VISUAL_PATTERNS: [RegExp, string][] = [
   [/exam/, 'exams'],
