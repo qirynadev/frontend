@@ -300,7 +300,6 @@ usePageSeo(() => ({
             </div>
             <div class="flex min-w-98 shrink-0 flex-col items-end">
               <p class="m-0 text-4xl leading-22 font-bold text-right text-lp-price">{{ $n(order?.price.amount ?? 0, 'currency') }}</p>
-              <p class="m-0 mt-4 text-md leading-[16.5px] font-medium text-right text-muted">{{ $t('logementConfirmation.offerPeriod') }}</p>
               <span v-if="paidOnDate" class="mt-4 inline-flex rounded-md bg-lp-paid-bg px-5 py-3 text-2xs leading-16 font-medium whitespace-nowrap text-lp-paid">
                 {{ $t('logementConfirmation.offerPaidOn', { date: paidOnDate }) }}
               </span>

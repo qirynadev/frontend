@@ -6,7 +6,6 @@
 - succès inline ← Figma `1572:3044` (Confirmation de demande)
 
 Config :
-- `app/config/centre-aide-mock.ts` (WhatsApp)
 - `app/config/contact-success-mock.ts` (repli récap)
 
 Assets :
@@ -20,7 +19,7 @@ Assets :
 |---|---|---|
 | Envoi du message | `POST /user/messages` | Réel, câblé 2026-08-27 (`contactRepo`) — authentifié. Persiste dans `Messaging` (visible dans la rubrique « Messagerie » du back-office) **et** envoie l'e-mail de notification. Voir `docs/directives-backend.md` §9 (essai initial via `/send-email`, qui n'enregistrait rien). |
 | Nom / email préremplis | `session.user` | Si connecté |
-| WhatsApp | `centreAideMock.whatsappPhone` | `wa.me` mock |
+| WhatsApp | `settings.site.phone` (`/all-data`) | Réel depuis le 2026-09-11 : téléphone des réglages, en attendant un champ WhatsApp dédié. Carte masquée sans numéro. |
 | Être rappelé | — | **Pas d’écran** Figma branché (bouton inerte) |
 | Politique de confidentialité | lien `/reglages/mentions` | |
 
@@ -31,7 +30,6 @@ Assets :
 | Confirmation | Validation locale + délai ~400 ms | Toujours |
 | Récap sujet / nom / email | Valeurs du formulaire | Après soumission |
 | Repli récap | `contactSuccessMock` | Champ vide |
-| WhatsApp | numéro `33700000000` | Hub |
 
 ## Navigation
 
