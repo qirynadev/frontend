@@ -1,9 +1,12 @@
 /**
  * Objectifs d'apprentissage — contenu de `objectifs.html`.
  *
- * **Éditorial, non administré** : aucun endpoint de l'API ne décrit ces six
- * choix. Ils vivent donc dans une configuration, traduits, plutôt que recopiés
- * dans le template.
+ * **Repli éditorial depuis le 2026-09-11** : les objectifs sont désormais
+ * administrés par langue (`Course.objectives`, voir `course.adapter.ts`). Cette
+ * liste ne sert plus que quand l'API n'en renvoie aucun pour la langue **et la
+ * locale** demandées — c'est encore le cas de la majorité du catalogue en
+ * anglais, les traductions étant en cours de saisie côté back-office. Sans ce
+ * repli, l'écran se viderait de ses six cartes.
  *
  * Les libellés/descriptions sont génériques à toute langue — `{language}`
  * (le nom de la langue du cours courant) s'interpole dans les clés qui en ont
@@ -40,3 +43,41 @@ export const languageGoals: LanguageGoal[] = [
   { id: 'admission', labelKey: 'goal.admission', descriptionKey: 'goal.admissionDesc', icon: 'ic-obj-admission', tint: 'bg-goal-admission' },
   { id: 'other', labelKey: 'goal.other', descriptionKey: 'goal.otherDesc', icon: 'ic-obj-autre', tint: 'bg-goal-other' },
 ]
+
+/** Icône + teinte d'une pastille, seule partie non administrée d'un objectif. */
+export interface GoalVisual {
+  icon: string
+  tint: string
+}
+
+const VISUAL_BY_ID: Record<string, GoalVisual> = Object.fromEntries(
+  languageGoals.map((goal) => [goal.id, { icon: goal.icon, tint: goal.tint }]),
+)
+
+/**
+ * Motifs reconnus dans la `key` d'un objectif administré, dans l'ordre d'essai.
+ *
+ * L'API dérive `key` du **titre traduit** (`examens-internationaux` en français,
+ * `international-exams` en anglais, et `{langue}-professionnel` varie avec la
+ * langue enseignée) : on reconnaît donc des fragments plutôt qu'une liste close
+ * d'identifiants. Un objectif ajouté demain par l'admin avec une clé inconnue
+ * n'est pas une erreur — il prend la pastille neutre d'« Autre ».
+ */
+const VISUAL_PATTERNS: [RegExp, string][] = [
+  [/exam/, 'exams'],
+  [/conversation|oral|speak/, 'conversation'],
+  [/professionnel|professional|business|pro\b/, 'professional'],
+  [/niveau|level|remise/, 'level'],
+  [/admission|universit|etude|study/, 'admission'],
+]
+
+export function goalVisual(key: string): GoalVisual {
+  const direct = VISUAL_BY_ID[key]
+  if (direct) return direct
+
+  const normalized = key.toLowerCase()
+  for (const [pattern, id] of VISUAL_PATTERNS) {
+    if (pattern.test(normalized)) return VISUAL_BY_ID[id]!
+  }
+  return VISUAL_BY_ID.other!
+}

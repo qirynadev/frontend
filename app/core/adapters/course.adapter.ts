@@ -1,6 +1,6 @@
-import type { Course, CourseLevel, CourseSummary } from '../contracts'
+import type { Course, CourseLevel, CourseObjective, CourseSummary } from '../contracts'
 import { toSeo } from './common.adapter'
-import { asRecord, dedupeBySlug, html, list, optionalStr, str, toUrl } from './primitives'
+import { asRecord, bool, dedupeBySlug, html, list, optionalStr, plainText, str, toUrl } from './primitives'
 
 /**
  * Langues étrangères — source `GET /courses`, pas `/all-data`.
@@ -18,6 +18,30 @@ function toLevels(raw: unknown): CourseLevel[] {
       return { name: str(source, 'name'), description: str(source, 'description') }
     })
     .filter((level) => level.name !== '')
+}
+
+/**
+ * Objectifs d'apprentissage administrés, propres à chaque langue.
+ *
+ * `description` arrive en HTML (`<p>…</p>`, éditeur riche du back-office) alors
+ * que la maquette n'accorde qu'une ligne de 12,5px à ce texte : on l'aplatit
+ * plutôt que de laisser des marges de paragraphe casser la carte.
+ *
+ * Une entrée sans `key` ni `title` n'est pas affichable (et `key` voyage dans
+ * l'URL du tunnel) : écartée, comme les entrées fantômes des autres adapters.
+ */
+function toObjectives(raw: unknown): CourseObjective[] {
+  return list({ objectives: raw }, 'objectives')
+    .map((entry) => {
+      const source = asRecord(entry)
+      return {
+        key: str(source, 'key'),
+        title: str(source, 'title'),
+        description: plainText(source.description),
+        popular: bool(source, 'popular', false),
+      }
+    })
+    .filter((objective) => objective.key !== '' && objective.title !== '')
 }
 
 export function toCourseSummary(raw: unknown): CourseSummary {
@@ -50,6 +74,7 @@ export function toCourse(raw: unknown): Course {
     ...summary,
     description,
     levels: toLevels(source.levels),
+    objectives: toObjectives(source.objectives),
     seo: toSeo(source, summary.title, description),
   }
 }

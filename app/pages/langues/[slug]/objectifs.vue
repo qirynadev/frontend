@@ -16,14 +16,24 @@
  * | appel à l'action | pleine largeur, `padding: 16px 24px`, fond `#4309fc` |
  * | sous 400px | liste pleine largeur · carte `padding: 14px 12px`, `gap: 10px`, alignée en haut · pastille 42×42, icône 18×18 · titre 13px/18px · description 12px/16px · aide `min-height: 86px`, `padding: 12px 9px`, enroulable |
  *
- * Les six objectifs sont **éditoriaux** : aucun endpoint ne les décrit. Ils
- * viennent de `config/language-goals.ts`.
+ * Les objectifs sont **administrés par langue** depuis le 2026-09-11
+ * (`Course.objectives`) : l'anglais en propose six, le français trois,
+ * l'allemand et l'espagnol deux, avec les certifications réelles de chaque
+ * langue (DELF/DALF, Goethe-Zertifikat, DELE…). `config/language-goals.ts` ne
+ * sert plus que de repli quand l'API n'en renvoie aucun pour la langue **et la
+ * locale** courantes — la majorité du catalogue en anglais aujourd'hui, les
+ * traductions restant à saisir (voir `docs/directives-backend.md` §15).
+ * Sans ce repli, l'écran se viderait de ses cartes.
+ *
+ * Icône et teinte restent des assets front, résolus depuis la clé de
+ * l'objectif (`goalVisual`) : une clé inconnue prend la pastille d'« Autre »
+ * plutôt que de casser l'écran.
  *
  * L'objectif choisi voyage dans l'URL de l'étape suivante : le tunnel reste
  * partageable et rechargeable, ce que la maquette perd.
  */
 import { courseRepo } from '~/core/repositories'
-import { languageGoals } from '~/config/language-goals'
+import { goalVisual, languageGoals } from '~/config/language-goals'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -41,8 +51,54 @@ if (course.value === null && !apiError.value) {
   throw createError({ statusCode: 404, statusMessage: t('course.notFound'), fatal: true })
 }
 
-/** Le premier objectif est présélectionné, comme dans la maquette. */
-const selected = ref(languageGoals[0]!.id)
+/**
+ * Objectifs affichés : ceux de la langue si l'admin en a saisi, sinon les six
+ * éditoriaux. Le titre et la description administrés sont déjà traduits et
+ * propres à la langue ; ceux du repli interpolent `{language}` pour le rester.
+ */
+interface DisplayGoal {
+  key: string
+  label: string
+  description: string
+  popular: boolean
+  icon: string
+  tint: string
+}
+
+const goals = computed<DisplayGoal[]>(() => {
+  const language = course.value?.name ?? ''
+  const administered = course.value?.objectives ?? []
+
+  if (administered.length > 0) {
+    return administered.map((objective) => ({
+      key: objective.key,
+      label: objective.title,
+      description: objective.description,
+      popular: objective.popular,
+      ...goalVisual(objective.key),
+    }))
+  }
+
+  return languageGoals.map((goal) => ({
+    key: goal.id,
+    label: t(goal.labelKey, { language }),
+    description: t(goal.descriptionKey, { language }),
+    popular: goal.badgeKey !== undefined,
+    icon: goal.icon,
+    tint: goal.tint,
+  }))
+})
+
+/**
+ * Le premier objectif est présélectionné, comme dans la maquette — recalculé
+ * si la liste change (changement de locale : l'API renvoie d'autres clés, une
+ * sélection devenue introuvable n'enverrait plus rien au tunnel).
+ */
+const selected = ref(goals.value[0]?.key ?? '')
+
+watch(goals, (list) => {
+  if (!list.some((goal) => goal.key === selected.value)) selected.value = list[0]?.key ?? ''
+})
 
 usePageSeo(() => ({
   title: t('goal.seoTitle', { language: course.value?.name ?? '' }),
@@ -79,35 +135,38 @@ usePageSeo(() => ({
         :aria-label="$t('goal.title')"
       >
         <button
-          v-for="goal in languageGoals"
-          :key="goal.id"
+          v-for="goal in goals"
+          :key="goal.key"
           type="button"
           role="option"
-          :aria-selected="selected === goal.id"
+          :aria-selected="selected === goal.key"
           :class="[
             'flex w-full cursor-pointer items-center gap-12 rounded-xl border bg-white p-17 text-left',
             'max-xs:items-start max-xs:gap-10 max-xs:px-12 max-xs:py-14',
-            selected === goal.id ? 'border-goal-selected' : 'border-goal-border',
+            selected === goal.key ? 'border-goal-selected' : 'border-goal-border',
           ]"
-          @click="selected = goal.id"
+          @click="selected = goal.key"
         >
           <span class="flex min-w-0 flex-1 items-center gap-14 max-xs:gap-10">
-            <span :class="['flex size-48 shrink-0 items-center justify-center rounded-full max-xs:size-42', goal.tint]">
+            <span :class="['flex size-48 shrink-0 items-center justify-center rounded-full max-xs:size-42', goal.tint]" aria-hidden="true">
               <!-- 20×20, ramené à 18×18 sous 400px. -->
               <QIcon :name="goal.icon" :size="20" class="max-xs:size-18" />
             </span>
 
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="flex flex-wrap items-center gap-5">
-                <span class="text-xl leading-[20.625px] font-semibold text-navy-2 max-xs:text-lg max-xs:leading-18">{{ $t(goal.labelKey, { language: course?.name ?? '' }) }}</span>
+                <span class="text-xl leading-[20.625px] font-semibold text-navy-2 max-xs:text-lg max-xs:leading-18">{{ goal.label }}</span>
                 <span
-                  v-if="goal.badgeKey"
+                  v-if="goal.popular"
                   class="inline-flex rounded-md bg-primary-bg px-8 py-2 text-md leading-[16.5px] font-bold whitespace-nowrap text-goal-check"
-                >{{ $t(goal.badgeKey) }}</span>
+                >{{ $t('goal.popular') }}</span>
               </span>
               <!-- 12,5px : valeur de la maquette, sans équivalent dans l'échelle. -->
-              <span class="pt-2 pr-8 text-[12.5px] leading-[17.188px] text-black max-xs:pr-0 max-xs:text-base max-xs:leading-16">
-                {{ $t(goal.descriptionKey, { language: course?.name ?? '' }) }}
+              <span
+                v-if="goal.description"
+                class="pt-2 pr-8 text-[12.5px] leading-[17.188px] text-black max-xs:pr-0 max-xs:text-base max-xs:leading-16"
+              >
+                {{ goal.description }}
               </span>
             </span>
           </span>
@@ -117,12 +176,12 @@ usePageSeo(() => ({
             :class="[
               'flex size-18 shrink-0 items-center justify-center rounded-full',
               'max-xs:mt-2',
-              selected === goal.id
+              selected === goal.key
                 ? 'border-2 border-goal-check bg-goal-check p-2'
                 : 'border border-goal-radio bg-white',
             ]"
           >
-            <QIcon v-if="selected === goal.id" name="ic-lang-check" :size="11" />
+            <QIcon v-if="selected === goal.key" name="ic-lang-check" :size="11" />
           </span>
         </button>
       </div>

@@ -439,48 +439,54 @@ back-office calcule sa propre URL sans lire de champ client. À garder en
 tête seulement si un jour le back-office décide de laisser le front piloter
 cette URL plutôt que de la déduire lui-même de `service_type`.
 
-## 15. 🔴 Objectifs d'apprentissage (`/langues/{slug}/objectifs`) — 100 % éditorial front, à administrer
+## 15. 🟡 Câblé : objectifs d'apprentissage par langue — clé non stable entre locales
 
-Les 6 objectifs proposés sur cet écran (Examens internationaux, Conversation,
-Anglais professionnel, Remise à niveau, Admission internationale, Autre) ne
-viennent d'aucun endpoint API — ils vivent entièrement dans
-`app/config/language-goals.ts` (id/icône/teinte) et les traductions
-`i18n/locales/{fr,en}.json` (clés `goal.*`). Rien à câbler aujourd'hui, ce
-n'est pas une question de qualité : la donnée n'existe simplement pas
-côté back-office.
+Les 6 objectifs de cet écran (Examens internationaux, Conversation, …
+Professionnel, Remise à niveau, Admission internationale, Autre) étaient
+100 % éditoriaux côté front. **Ils sont administrables depuis le
+2026-09-11** : `CourseResource` expose `objectives[]`
+(`key`, `title`, `description`, `popular`) et le front les affiche
+(`Course.objectives`, `course.adapter.ts`, `objectifs.vue`). Merci.
 
-**Corrigé en attendant côté front (2026-08-30)** : les textes citaient
-l'anglais explicitement (« Anglais professionnel », « Améliorez votre
-anglais… », examens « IELTS, TOEFL, TOEIC, Cambridge » — tous propres à
-l'anglais) alors que l'écran sert n'importe quelle langue du catalogue.
-Les clés `goal.professional`, `goal.professionalDesc`, `goal.examsDesc`,
-`goal.admissionDesc` interpolent maintenant `{language}` (le nom réel de la
-langue du cours, déjà utilisé par `goal.seoTitle`) pour rester génériques
-tant que ces textes restent en dur.
+**Réponse à la question produit laissée ouverte ici** : les objectifs sont
+**propres à chaque langue**, pas globaux — le catalogue de recette en compte
+6 pour l'anglais, 3 pour le français, 2 pour l'allemand et 2 pour l'espagnol,
+avec les certifications réelles de chaque langue (DELF/DALF,
+Goethe-Zertifikat, DELE…). Le choix `GET /courses/{slug}` porteur de ses
+objectifs est le bon, rien à changer de ce côté.
 
-**Ce qu'il faut, pour rendre ces objectifs éditables depuis le back-office**
-un endpoint (ex. `GET /language-goals`) exposant, par objectif :
-- `id` (slug stable — sert de valeur à l'`objectif` transmis dans l'URL de
-  l'étape suivante, `/offres/{slug}?objectif={id}`, donc ne doit pas changer
-  une fois publié) ;
-- `label` et `description` traduits (respectant l'en-tête `lang`, comme
-  `/all-data` le fait déjà pour le reste du contenu éditorial) ;
-- `popular` (ou équivalent) — un seul objectif porte aujourd'hui l'étiquette
-  « Populaire », en dur sur le premier (`exams`) ;
-- un `order` d'affichage, si l'admin doit pouvoir réordonner.
+**Réserve 1 — `key` est dérivée du titre traduit, donc elle change avec la
+locale.** La ressource fait `str()->slug($o['title'])` : le même objectif
+répond `examens-internationaux` en `lang: fr` et `international-exams` en
+`lang: en`. Or cette clé part dans l'URL de l'étape suivante
+(`/offres/{slug}?objectif={key}`) puis dans la commande (`options.goal`,
+`useCheckout.ts`). Conséquences concrètes :
 
-**Volontairement hors périmètre de cet endpoint** : l'icône et la teinte de
-pastille (`icon`/`tint` dans `language-goals.ts`) restent des assets front,
-pas du contenu éditorial — pas la peine de les administrer, un identifiant
-front (`id`) suffit à les résoudre côté client, comme c'est déjà le cas.
+- un lien partagé en français puis rouvert en anglais transporte une clé
+  introuvable dans la liste anglaise ;
+- deux commandes du même objectif s'enregistrent sous deux valeurs
+  différentes, ce qui interdit tout regroupement statistique côté back-office ;
+- le libellé « Professionnel » contient le nom de la langue enseignée
+  (`anglais-professionnel`, `francais-professionnel`), donc la clé varie
+  aussi d'une langue à l'autre pour un objectif identique.
 
-**Point produit à trancher avec le back-office** : ces objectifs sont-ils
-globaux (les 6 mêmes pour toutes les langues, ce qu'implique l'écran
-actuel) ou personnalisables par langue (ex. proposer un objectif spécifique
-pour le chinois qui n'aurait pas de sens pour l'espagnol) ? La réponse
-change la forme de l'endpoint (`GET /language-goals` global vs `GET
-/courses/{slug}/goals` par langue) — à clarifier avant de le spécifier
-définitivement.
+**Ce qu'il faudrait** : un identifiant stable, stocké une fois à la création
+de l'objectif et indépendant des traductions (un `uuid`, ou un slug saisi par
+l'admin dans une seule langue de référence), renvoyé tel quel dans `key`
+quelle que soit l'en-tête `lang`. Le titre traduit reste dans `title`, il
+n'a pas à servir d'identifiant.
+
+**Réserve 2 — traductions anglaises incomplètes.** En `lang: en`, seuls
+l'anglais et le français ont des objectifs saisis ; l'allemand et l'espagnol
+en renvoient zéro. Ce n'est pas un bug, c'est du contenu à saisir. En
+attendant, le front retombe sur la liste éditoriale de
+`config/language-goals.ts` (6 cartes génériques interpolant le nom de la
+langue) plutôt que d'afficher un écran vide — ce repli reste en place
+justement pour ce cas.
+
+**Volontairement hors périmètre de l'API** : l'icône et la teinte de pastille
+restent des assets front, résolus depuis `key` par `goalVisual()`. Une clé
+inconnue prend la pastille neutre d'« Autre » au lieu de casser l'écran.
 
 ## 16. 🔴 Espace professeur (`qiryna-backoffice`) — la visio ne se connecte plus, SDK Zoom obsolète
 
