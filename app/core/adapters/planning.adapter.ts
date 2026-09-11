@@ -109,7 +109,12 @@ export function toTeacher(raw: unknown): Teacher | null {
     countryFlag: toUrl(source.country_flag),
     nextAvailableAt: toNextAvailableAt(source.plannings),
     qualification: optionalStr(source, 'formations.0.diploma'),
-    verified: optionalStr(source, 'user.email_verified_at') !== null,
+    // Badge « vérifié » posé à la main par un admin (directives-backend §4,
+    // livré le 2026-09-05), plus la confirmation d'e-mail : celle-ci était
+    // vraie pour tout compte dès sa création, sans aucun contrôle de profil.
+    // `TeacherResource` le nomme `verified` ; `/user/plannings/teachers/{id}`
+    // sérialise le modèle brut, où il garde son nom de colonne.
+    verified: bool(source, 'verified', bool(source, 'is_verified', false)),
   }
 }
 

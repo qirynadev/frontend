@@ -5,9 +5,10 @@
  * API : `planningRepo.teachersByCourse` → `Teacher` (nom, photo, bio, note, avis,
  * expérience, pays/drapeau, disponibilité, qualification, vérifié — voir
  * `planning.adapter.ts:toTeacher`). Qualité éditoriale de `qualification`
- * encore inégale selon le profil, et `verified` reflète une confirmation
- * d'e-mail plutôt qu'un contrôle de profil dédié — utilisés quand même en dev
- * (voir `docs/directives-backend.md`). Toujours hors API (mock) : prix.
+ * encore inégale selon le profil — utilisée quand même en dev (voir
+ * `docs/directives-backend.md`). `verified` est le contrôle de profil posé à la
+ * main par un admin depuis le 2026-09-11 (§4), plus la confirmation d'e-mail.
+ * Toujours hors API (mock) : prix.
  */
 import type { Teacher } from '~/core/contracts'
 import {

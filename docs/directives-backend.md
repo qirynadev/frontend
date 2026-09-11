@@ -25,7 +25,7 @@ back-office et testé sur la recette.
 
 | § | Livré | Commit back-office | Reste côté front |
 |---|---|---|---|
-| 4 | champ `verified` du professeur, distinct de l'e-mail | `460d56b` | câbler le vrai champ |
+| 4 | champ `verified` du professeur, distinct de l'e-mail | `460d56b` | câblé le 2026-09-11 |
 | 14 | retour Stripe d'un achat de langue | `5077cc9`, `121410b` | rien |
 | 16 | visio professeur migrée en UI Toolkit v2.5 | `9b9ef90`, `3d666ae` | rien — séance réelle validée par le responsable le 2026-09-11 |
 | 17 | notifications de commande et de planning écrites dans le fil | `591cc9a` | rien, l'onglet est déjà câblé |
@@ -90,7 +90,16 @@ tel quel. Qualité éditoriale vérifiée sur les deux coachs de test :
 **Ce qu'il faut, à terme (pas bloquant)** : que chaque profil coach publié
 porte un diplôme/certification réel avant la mise en production.
 
-## 4. ✅ Livré (back, `460d56b`) : badge professeur « vérifié » distinct de l'e-mail
+## 4. ✅ Livré (back, `460d56b`) et câblé : badge professeur « vérifié » distinct de l'e-mail
+
+**Câblé le 2026-09-11.** Le badge suit désormais le contrôle de profil posé
+par un admin (fiche professeur du back-office), plus la confirmation d'e-mail.
+`/courses/{id}/teachers` le sert sous `verified` ; `/user/plannings/teachers/
+{courseId}` sérialise le modèle brut et le sert sous `is_verified` — le front
+lit les deux. Conséquence visible : sur la recette, aucun des deux
+professeurs n'est encore coché, donc le badge a disparu jusqu'à ce qu'un
+admin les valide.
+
 
 **Câblé** (2026-08-22) : `Teacher.verified` = `email_verified_at !== null`.
 Fonctionne (les deux coachs de test l'ont, donc le badge s'affiche), mais ce

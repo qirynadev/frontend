@@ -57,7 +57,7 @@ export interface Teacher {
   nextAvailableAt: string | null
   /** Diplôme déclaré (`formations[0].diploma`) — qualité éditoriale variable, voir `docs/directives-backend.md`. */
   qualification: string | null
-  /** `user.email_verified_at !== null` — confirmation d'e-mail, pas un contrôle de profil distinct côté API. */
+  /** Profil contrôlé par un admin (`Profile.is_verified`, §4) — pas la simple confirmation d'e-mail. */
   verified: boolean
 }
 
