@@ -148,8 +148,8 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
         </div>
       </div>
 
-      <!-- Domaines (.dom-section) -->
-      <div class="mt-22 flex w-full flex-col gap-22">
+      <!-- Domaines (.dom-section) — masqués tant qu'aucun n'a d'école -->
+      <div v-if="areas.length > 0" class="mt-22 flex w-full flex-col gap-22">
         <h2 class="m-0 text-xl leading-16 font-semibold tracking-wider text-text">
           {{ $t('destination.detail.domainsTitle') }}
         </h2>
