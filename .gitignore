@@ -29,5 +29,9 @@ public/_maquette/
 *.zip
 *.tar.gz
 
+# Ancienne app de référence à la racine uniquement — jamais un sous-dossier
+# homonyme (ex. public/img/desktop/legacy/).
+/legacy/
+
 # Cache du script de synchro de la maquette (clone du depot UzaLab/qiryna)
 .cache/

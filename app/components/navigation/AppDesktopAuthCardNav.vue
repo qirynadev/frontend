@@ -23,17 +23,17 @@ async function toggleLocale() {
 <template>
   <!-- Intégrée à la carte — panneau droit hero visible derrière (z-10) -->
   <header
-    class="relative z-10 box-border flex h-80 shrink-0 items-center justify-between bg-transparent py-15 pl-[clamp(24px,8.68vw,150px)] pr-55 lg:pr-90"
+    class="relative z-10 box-border flex h-80 shrink-0 items-center justify-between bg-transparent py-15 px-48 lg:pr-90"
   >
     <NuxtLink :to="localePath('/')" class="shrink-0 no-underline" :aria-label="$t('nav.home')">
       <img
         src="/img/desktop/logo-nav.png"
         alt="Qiryna"
-        width="134"
-        height="50"
+        width="174"
+        height="65"
         loading="lazy"
         decoding="async"
-        class="block h-50 w-134 object-contain"
+        class="block h-65 w-174 object-contain"
       >
     </NuxtLink>
 

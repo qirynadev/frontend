@@ -196,6 +196,12 @@
   /* Bord des boutons de connexion tierce (`.social-btn`), séparateurs de la
      liste d'écoles et de la fiche école — un cran plus soutenu que `-soft`. */
   --color-border-slate: #e2e8f0;
+  /* Fond des cartes. Arrivé avec le hub « mentions légales » de Kader, qui
+     l'emploie à la place de `bg-white`. Seul rescapé de la palette sombre
+     retirée le 2026-09-05 : le jeton est utile en soi, le reste du bloc non.
+     Quand le mode sombre reviendra, c'est ici que la variante s'ajoutera —
+     pas dans chaque composant. */
+  --color-surface-card: #ffffff;
   --color-surface: #f7f6fe;
   --color-surface-2: #f5f3ff;
   --color-surface-3: #f9f8fe;
@@ -462,8 +468,32 @@
   --color-rt-radio-border: #8383b6;
   --color-rt-radio-selected-border: #3f11fe;
 
-  /* ─── Réglages — mentions légales (`reglages-mentions.html`) ───── */
+  /* ─── Réglages — informations légales (Figma `1656:1204` / `1659:1287` / `1588:1722`) ───── */
   --color-rml-card-border: rgb(226 232 240 / 0.7);
+  --color-rml-banner: #f3effd;
+  --color-rml-banner-icon: #e8dffc;
+  --color-rml-heading: #1a1542;
+  --color-rml-muted: #4b5563;
+  --color-rml-desc: #6b7280;
+  --color-rml-row-border: #f3f4f6;
+  --color-rml-tile: #f3f0ff;
+  --color-rml-help: #f8f6ff;
+  --color-rml-help-text: #3c3b5b;
+  --color-rml-link: #4e36d9;
+  --color-rml-pending: #d97706;
+  --color-rml-value: #1a1542;
+  --color-rml-usurp: #f2eefc;
+  --color-rml-usurp-icon: #e6dcfe;
+  --color-rml-rights-info: rgb(243 232 255 / 0.6);
+  --color-rml-badge-bg: #ecfdf5;
+  --color-rml-badge-border: #dcfce7;
+  --color-rml-badge: #10b981;
+  --color-rml-danger: #ef4444;
+  --color-rml-danger-bg: #fde8e5;
+  --color-rml-cnil-tile: #f3f2f7;
+  --color-rml-updated: #b5b5b5;
+  --color-rml-team-tile: #f3e8ff;
+  --color-rml-row-title: #1e1e1e;
 
   /* ─── Réglages — mot de passe (`reglages-mdp.html`) ────────────── */
   --color-rm-placeholder: #94a3b8;
@@ -767,12 +797,17 @@
   }
 }
 
-/* Desktop Web (Figma 1728) — gutters boxed partagés nav / contenu / footer */
+/* Desktop Web — colonne boxed partagée nav / contenu.
+   Plus large que la carte partenaires du footer (~1068 px dans
+   `max-w-[1100px]`), mais plafonnée pour garder des gouttières
+   généreuses et centrer le contenu sur les grands écrans. */
 @layer components {
   .desktop-boxed {
     box-sizing: border-box;
     width: 100%;
-    padding-inline: clamp(24px, 8.68vw, 150px);
+    max-width: 1550px;
+    margin-inline: auto;
+    padding-inline: clamp(24px, 3.5vw, 48px);
   }
 }
 

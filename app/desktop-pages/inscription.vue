@@ -61,8 +61,8 @@ const trustItems = [
 </script>
 
 <template>
-  <!-- Wings + carte — nav intégrée au-dessus du split -->
-  <div class="box-border flex h-full min-h-0 w-full flex-col bg-[#f2f1f6] p-30">
+  <!-- Wings + carte — boxed porté par le layout (même colonne que nav). -->
+  <div class="box-border flex h-full min-h-0 flex-col py-30">
     <div
       class="relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-[50px] bg-white shadow-[0_18px_10px_rgba(112,144,176,0.1)]"
     >
@@ -97,7 +97,7 @@ const trustItems = [
         <section
           class="box-border flex h-full w-full flex-col overflow-y-auto bg-white px-48 pb-48 pt-16 lg:w-738 lg:shrink-0 lg:rounded-bl-[50px] lg:bg-transparent"
         >
-        <div class="flex w-full flex-col gap-5 pl-[clamp(0px,6.36vw,110px)]">
+        <div class="flex w-full flex-col gap-5">
           <div class="w-full">
             <h1 class="m-0 text-[36px] leading-40 font-semibold text-black">
               {{ $t('desktop.register.titleLine1') }}

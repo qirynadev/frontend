@@ -89,17 +89,17 @@ const navItems = computed(() =>
       ? 'flex h-80 items-stretch border-b border-[#f1f1f3] bg-white/70 shadow-[0_1px_2px_rgba(0,0,0,0.05)] backdrop-blur-sm'
       : 'h-80 border-b border-[rgba(229,232,240,0.85)]'"
   >
-    <!-- Auth : gutters Figma inchangés -->
-    <div v-if="isAuthScreen" class="desktop-boxed flex min-w-0 flex-1 items-stretch justify-between">
+    <!-- Auth : barre pleine largeur, logo / CTAs dans la colonne boxed (comme l’accueil). -->
+    <div v-if="isAuthScreen" class="desktop-boxed flex h-full min-w-0 items-stretch justify-between">
       <NuxtLink :to="localePath('/')" class="flex shrink-0 items-center self-center no-underline" :aria-label="$t('nav.home')">
         <img
           src="/img/desktop/logo-nav.png"
           alt="Qiryna"
-          width="134"
-          height="50"
+          width="174"
+          height="65"
           loading="lazy"
           decoding="async"
-          class="block h-50 w-134 object-contain"
+          class="block h-65 w-174 object-contain"
         >
       </NuxtLink>
       <div class="flex shrink-0 items-center self-center gap-20">

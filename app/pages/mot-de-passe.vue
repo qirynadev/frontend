@@ -4,31 +4,18 @@
  *
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
- * | accroche | `.mdp-hero` `padding: 30px 0 97px`, `position: relative` · texte `min-height: 84.75px`, paragraphe `width: 165px` |
+ * | accroche | `pt-30 pb-22`, min-height 230 (30 + illus 178 + 22) · texte `min-height: 84.75px`, paragraphe `width: 165px` |
  * | illustration | **absolue** `left: 185px`, `top: 30px`, 185×178 · image 228×181 décalée de −25 / 0 |
  * | carte | `padding: 25px 20px` · champs `padding-bottom: 20px` · envoi `padding-top: 5px` |
  * | séparateur | `padding: 14px 0`, libellé `padding: 0 16px`, en capitales |
  * | retour | `.btn-outline` `padding: 17px`, bord `--q-primary`, icône 20×20 |
- * | frise | `gap: 7px`, `padding-top: 12px` · colonne d'icônes 56px, colonne de numéros 21px, `gap: 6px` |
- * | pastilles | 40×40 violettes, **50×50** verte pour la dernière étape |
- * | numéros | 15×14, 9px / 20px — `#5121fc`, `#0ca62f` pour le dernier |
- * | textes | `gap: 44px` · titre 12px / 20px gras · description 10px, `min-height: 32px` |
- * | encart d'aide | `padding-top: 24px`, `min-height: 86px` |
+ * | frise | une **ligne par étape**, cercle / numéro / titre alignés au milieu |
+ * | pastilles | 40×40 violettes, **50×50** verte pour la dernière · colonne 56px |
+ * | numéros | 15×14, centrés sur le cercle · `#5121fc`, `#0ca62f` pour le dernier |
+ * | connecteurs | pointillés sous les pastilles, trait plein sous les numéros |
+ * | textes | titre 12px / 20px gras, centré sur le cercle · description 10px, `min-height: 32px` |
+ * | encart d'aide | `padding-top: 24px`, même bloc que `/inscription` (`min-h-86`, `px-9`, `py-21`) |
  * | sous 360px | titre enroulable · illustration calée à droite, en `clamp()` |
- *
- * ### Les connecteurs sont **horizontaux**, et c'est voulu
- *
- * `ic-step-connector-short.svg` mesure **32 × 1** et
- * `ic-step-connector-long.svg` **72 × 1** : ce sont des traits *horizontaux*.
- * La maquette les place dans une boîte de **largeur nulle** et de 32px (ou
- * 72px) de haut, centrée — l'image déborde donc de part et d'autre et s'affiche
- * en travers de l'espace vertical.
- *
- * L'intention de la maquette Figma était visiblement un trait vertical, et la
- * rotation s'est perdue à l'export. Mais **la maquette fait foi** : mesuré, son
- * rendu est bien un trait horizontal de 32px à `x = 28`, et de 72px à
- * `x = 53,5`. On le reproduit tel quel plutôt que de « corriger » un écran
- * validé. À signaler à l'équipe design — voir LOT-5.md.
  *
  * ### Deux étapes, là où la maquette n'en montre qu'une
  *
@@ -91,9 +78,9 @@ const strengthTone = computed<'neutral' | 'error' | 'ok'>(() => {
 
 /** Les trois étapes de la frise — éditoriales, aucune donnée derrière. */
 const steps = [
-  { icon: 'ic-step-email', width: 20, height: 16, titleKey: 'auth.reset.step1Title', descKey: 'auth.reset.step1Desc' },
-  { icon: 'ic-step-link', width: 19.887, height: 19.867, titleKey: 'auth.reset.step2Title', descKey: 'auth.reset.step2Desc' },
-  { icon: 'ic-step-check', width: 20, height: 20, titleKey: 'auth.reset.step3Title', descKey: 'auth.reset.step3Desc' },
+  { icon: 'ic-step-email', width: 20, height: 16, circle: 40, titleKey: 'auth.reset.step1Title', descKey: 'auth.reset.step1Desc' },
+  { icon: 'ic-step-link', width: 19.887, height: 19.867, circle: 40, titleKey: 'auth.reset.step2Title', descKey: 'auth.reset.step2Desc' },
+  { icon: 'ic-step-check', width: 20, height: 20, circle: 50, titleKey: 'auth.reset.step3Title', descKey: 'auth.reset.step3Desc' },
 ] as const
 
 function applyError(error: unknown): void {
@@ -198,8 +185,8 @@ usePageSeo(() => ({
       </NuxtLink>
     </div>
 
-    <!-- Accroche. L'illustration est hors flux et déborde sous le bloc. -->
-    <div class="relative pt-30 pb-97">
+    <!-- Accroche. L'illustration est hors flux ; le bas du bloc reste à 22px. -->
+    <div class="relative min-h-[230px] pt-30 pb-22">
       <div class="relative z-1 min-h-[84.75px]">
         <h1
           class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] whitespace-nowrap text-text max-3xs:whitespace-normal"
@@ -344,65 +331,47 @@ usePageSeo(() => ({
         {{ $t('auth.reset.stepsHeading') }}
       </h2>
 
-      <div class="flex items-start gap-7 pt-12">
-        <!-- Colonne des pastilles -->
-        <div class="flex w-56 shrink-0 flex-col items-center gap-6">
-          <template v-for="(item, index) in steps" :key="item.icon">
-            <!-- La dernière pastille est verte et plus grande (50 contre 40). -->
-            <span
-              :class="[
-                'flex shrink-0 items-center justify-center rounded-full',
-                index === steps.length - 1 ? 'size-50 bg-success-bg' : 'size-40 bg-step-circle-violet',
-              ]"
-            >
+      <div class="flex flex-col gap-16 pt-12">
+        <div
+          v-for="(item, index) in steps"
+          :key="item.icon"
+          class="mdp-step relative flex items-stretch gap-7"
+        >
+          <div class="flex shrink-0 items-stretch self-stretch gap-10">
+            <div class="mdp-step-icon-rail relative flex w-56 flex-col items-center">
               <span
-                class="relative block shrink-0"
-                :style="{ width: `${item.width}px`, height: `${item.height}px` }"
+                :class="[
+                  'relative z-1 flex shrink-0 items-center justify-center rounded-full',
+                  index === steps.length - 1 ? 'size-50 bg-success-bg' : 'size-40 bg-step-circle-violet',
+                ]"
               >
-                <QIcon
-                  :name="item.icon"
-                  :size="item.width + 1.5"
-                  :height="item.height + 1.5"
-                  class="absolute -top-[0.75px] -left-[0.75px] max-w-none"
-                />
+                <span
+                  class="relative block shrink-0"
+                  :style="{ width: `${item.width}px`, height: `${item.height}px` }"
+                >
+                  <QIcon
+                    :name="item.icon"
+                    :size="item.width + 1.5"
+                    :height="item.height + 1.5"
+                    class="absolute -top-[0.75px] -left-[0.75px] max-w-none"
+                  />
+                </span>
               </span>
-            </span>
-
-            <!-- Connecteur court : trait horizontal 32×1 débordant d'une boîte
-                 de largeur nulle. Voir l'en-tête du fichier. -->
-            <span
-              v-if="index < steps.length - 1"
-              aria-hidden="true"
-              class="flex h-32 w-0 shrink-0 items-center justify-center"
-            >
-              <QIcon name="ic-step-connector-short" :size="32" :height="1" class="max-w-none" />
-            </span>
-          </template>
-        </div>
-
-        <!-- Colonne des numéros -->
-        <div class="flex w-21 shrink-0 flex-col items-center gap-6">
-          <template v-for="(item, index) in steps" :key="item.icon">
-            <span
-              :class="[
-                'flex h-14 w-15 shrink-0 items-center justify-center rounded-full text-xs leading-20 font-semibold text-white',
-                index === steps.length - 1 ? 'bg-step-badge-done' : 'bg-step-badge',
-              ]"
-            >{{ index + 1 }}</span>
-
-            <span
-              v-if="index < steps.length - 1"
-              aria-hidden="true"
-              class="flex h-72 w-0 shrink-0 items-center justify-center"
-            >
-              <QIcon name="ic-step-connector-long" :size="72" :height="1" class="max-w-none" />
-            </span>
-          </template>
-        </div>
-
-        <!-- Colonne des textes -->
-        <div class="flex min-w-0 flex-1 flex-col gap-44">
-          <div v-for="item in steps" :key="item.icon" class="flex flex-col">
+            </div>
+            <div class="mdp-step-num-rail relative flex w-21 flex-col items-center">
+              <span
+                :class="[
+                  'relative z-1 flex h-14 w-15 shrink-0 items-center justify-center rounded-full text-xs leading-20 font-semibold text-white',
+                  index === steps.length - 1 ? 'bg-step-badge-done' : 'bg-step-badge',
+                ]"
+                :style="{ marginTop: `${(item.circle - 14) / 2}px` }"
+              >{{ index + 1 }}</span>
+            </div>
+          </div>
+          <div
+            class="min-w-0 flex-1"
+            :style="{ paddingTop: `${(item.circle - 20) / 2}px` }"
+          >
             <p class="m-0 text-base leading-20 font-bold text-text">{{ $t(item.titleKey) }}</p>
             <p class="m-0 min-h-32 text-sm leading-normal font-medium text-text">{{ $t(item.descKey) }}</p>
           </div>
@@ -410,22 +379,15 @@ usePageSeo(() => ({
       </div>
     </div>
 
-    <!-- Besoin d'aide ? -->
+    <!-- Besoin d'aide ? — même encart que `/inscription`. -->
     <div class="pt-24">
       <div class="flex min-h-86 items-center justify-between rounded-xl bg-surface-2 px-9 py-21">
         <span class="flex size-44 shrink-0 items-center justify-center rounded-full bg-primary-soft">
           <QIcon name="ic-headset" :size="24" />
         </span>
-        <!-- `my-12` / `my-10` restituent la marge par défaut des `<p>`
-             (`margin: 1em 0`), que le preflight Tailwind supprime. Le
-             `.help-box` partagé de `app.css` ne la remet pas à zéro — à la
-             différence de `.inscription-help-box` — et l'encart en tire 34px
-             de hauteur. Les marges adjacentes se recouvrent (12 et 10 → 12),
-             et restent contenues : `.help-text` est un élément flex, donc un
-             contexte de formatage à part. -->
         <div class="min-w-0 flex-1 px-11">
-          <p class="my-12 text-base leading-20 font-bold text-text">{{ $t('auth.reset.helpTitle') }}</p>
-          <p class="my-10 pt-4 text-sm leading-16 font-normal text-text">{{ $t('auth.reset.helpDescription') }}</p>
+          <p class="m-0 text-base leading-20 font-bold text-text">{{ $t('auth.reset.helpTitle') }}</p>
+          <p class="m-0 pt-4 text-sm leading-16 font-normal text-text">{{ $t('auth.reset.helpDescription') }}</p>
         </div>
         <SupportLink
           prefer-contact-page
@@ -456,3 +418,37 @@ usePageSeo(() => ({
     />
   </div>
 </template>
+
+<style scoped>
+.mdp-step:not(:last-child) .mdp-step-icon-rail::after,
+.mdp-step:not(:last-child) .mdp-step-num-rail::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mdp-step:not(:last-child) .mdp-step-icon-rail::after {
+  top: 40px;
+  height: calc(100% - 40px + 16px);
+  background-image: linear-gradient(
+    to bottom,
+    #dbd9ee 0,
+    #dbd9ee 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  background-repeat: repeat-y;
+  background-size: 1px 4px;
+}
+
+.mdp-step:not(:last-child) .mdp-step-num-rail::after {
+  top: 27px;
+  height: calc(100% - 27px + 16px);
+  background: #dbd9ee;
+}
+</style>
+
