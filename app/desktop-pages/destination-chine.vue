@@ -64,7 +64,7 @@ const schools = [
   { src: `${assetBase}/schools/school-4.png`, w: 48, h: 48, line1Key: `${i18n}.school4a`, line2Key: `${i18n}.school4b` },
   { src: `${assetBase}/schools/school-5.png`, w: 41, h: 41, line1Key: `${i18n}.school5a`, line2Key: `${i18n}.school5b` },
   { src: `${assetBase}/schools/school-6.png`, w: 36, h: 40, line1Key: `${i18n}.school6a`, line2Key: `${i18n}.school6b` },
-  { src: `${assetBase}/schools/school-7.png`, w: 44, h: 44, line1Key: `${i18n}.school7a`, line2Key: `${i18n}.school7b` },
+  { src: `${assetBase}/schools/school-7.png`, w: 44, h: 44, line1Key: `${i18n}.school7a`, line2Key: null },
   { src: `${assetBase}/schools/school-8.png`, w: 47, h: 47, line1Key: `${i18n}.school8a`, line2Key: `${i18n}.school8b` },
 ] as const
 
@@ -264,7 +264,7 @@ const trustItems = [
               />
             </span>
             <p class="m-0 text-center text-[8px] leading-10 font-semibold whitespace-pre-line text-[#1f2937]">
-              {{ $t(school.line1Key) }}<template v-if="$t(school.line2Key).trim()"><br>{{ $t(school.line2Key) }}</template>
+              {{ $t(school.line1Key) }}<template v-if="school.line2Key"><br>{{ $t(school.line2Key) }}</template>
             </p>
           </div>
         </div>
