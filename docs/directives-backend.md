@@ -1002,6 +1002,43 @@ par image, alors que ces fichiers ne changent presque jamais sous la même URL.
 le front applique déjà à ses propres images (`routeRules` de
 `nuxt.config.ts`). Aucune modification de code Laravel nécessaire.
 
+## 27. ✅ Réglé dans le code (back-office) : jeton de retour de paiement
+
+**Le défaut.** Sur iPhone, le client qui revenait de Stripe tombait sur l'écran
+de connexion au lieu de sa confirmation — alors qu'il était forcément connecté
+avant de payer, le parcours l'imposant. Android et ordinateur : rien à signaler.
+
+**La cause, hors de notre code.** Le retour de Stripe est une navigation
+**inter-site**, et le cookie de session ne fait pas toujours le voyage sur iOS :
+prévention du pistage de Safari, ou parcours démarré dans le navigateur intégré
+d'une application (Instagram, WhatsApp, Gmail), qui a son propre bocal à
+cookies. Sur Android, les onglets personnalisés partagent celui de Chrome — d'où
+un défaut visible seulement sur iPhone. Aucun réglage de cookie ne le corrige :
+le nôtre est déjà `SameSite=Lax`, `Secure`, `httpOnly`, c'est-à-dire le plus
+permissif qui reste sûr.
+
+**Ce qui a été fait, côté back-office** (`PaymentController`, `Order`, migration
+`2026_09_12_100000`) :
+
+- `orders.payment_return_token` / `payment_return_token_expires_at` — seule
+  l'**empreinte** du jeton est stockée, comme Sanctum le fait pour les siens ;
+- l'URL de retour Stripe (premier paiement **et** relance) porte `&rt=<jeton>`.
+  **Uniquement l'URL de retour Stripe** : ni les liens des e-mails
+  (`MessageAction`), ni la journalisation, ni le parcours d'une offre gratuite
+  — celle-ci ne quitte jamais le site, sa session est intacte ;
+- `POST /api/payment/return-session` (publique, `throttle:20,1`) échange le
+  jeton contre un jeton de session **du propriétaire de la commande**. Usage
+  unique, une heure de validité, effacé à la première utilisation.
+
+**Côté front** : `server/middleware/payment-return.ts` consomme `rt` avant tout
+rendu, repose le cookie de session, puis redirige vers l'URL nettoyée — le jeton
+ne reste ni dans la barre d'adresse, ni dans l'historique, ni dans un `Referer`.
+Une session déjà valide n'est jamais remplacée ; un jeton refusé ne bloque rien
+et le parcours retombe sur le comportement antérieur.
+
+**Ordre de déploiement** : le back-office d'abord. Le front livré seul ne casse
+rien — l'échange échoue en silence et le comportement reste celui d'avant.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
