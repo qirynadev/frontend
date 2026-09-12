@@ -28,5 +28,10 @@ export function useCookieConsent() {
     choice.value = 'declined'
   }
 
-  return { choice, accept, decline }
+  /** Efface le choix pour rouvrir la bannière (« Gérer mes cookies »). */
+  function reset() {
+    choice.value = null
+  }
+
+  return { choice, accept, decline, reset }
 }

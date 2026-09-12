@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Connexion desktop ← Figma `Connexion` (567:5582).
- * Gauche 772 · droite flex + pr 150 · trust bar centrée (max 560).
+ * Gauche 680 (alignée logo) · hero flex · trust bar centrée.
  * Viewport lock : pas de scroll page, image pleine hauteur.
  */
 import type { SocialLinkRequest, SocialProvider } from '~/core/contracts'
@@ -44,14 +44,13 @@ const trustItems = [
 </script>
 
 <template>
-  <!-- Hauteur = viewport − nav → pas de scroll page ; image remplit le panneau droit -->
+  <!-- Hauteur = viewport − nav ; boxed porté par le layout desktop. -->
   <div class="flex h-full min-h-0 w-full flex-col overflow-hidden lg:flex-row">
-    <!-- 567:5945 — 772 · pl 48 / pr 31 · form inset 110
-         Nav hors flux : le py-48 Figma est sous la nav → pt visible ≈ 39 -->
+    <!-- Colonne form alignée au logo ; hero reprend l’espace à gauche. -->
     <section
-      class="box-border flex h-full w-full flex-col overflow-y-auto bg-white pb-48 pl-48 pr-31 pt-0 lg:w-772 lg:shrink-0"
+      class="box-border flex h-full w-full flex-col overflow-y-auto bg-white pb-48 pr-32 pt-0 lg:w-680 lg:shrink-0"
     >
-      <div class="flex w-full flex-col gap-7 pl-[clamp(0px,6.36vw,110px)] pt-39">
+      <div class="flex w-full flex-col gap-7 pt-39">
         <div class="w-full pt-32">
           <h1 class="m-0 text-[43px] leading-40 font-semibold text-black">
             {{ $t('desktop.auth.welcomeBefore') }}
@@ -203,9 +202,9 @@ const trustItems = [
       </div>
     </section>
 
-    <!-- 1146:777 — flex-1 + pr 150 (wing droite = gutter nav) · panel 567:6034 -->
+    <!-- 1146:777 — flex-1 · gutter désormais via `.desktop-boxed` -->
     <aside
-      class="relative hidden h-full min-h-0 flex-1 items-stretch pr-[clamp(24px,8.68vw,150px)] lg:flex"
+      class="relative hidden h-full min-h-0 flex-1 items-stretch lg:flex"
     >
       <div
         class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]"

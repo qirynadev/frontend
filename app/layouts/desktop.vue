@@ -14,6 +14,12 @@ const navVariant = computed(() => {
 const showGlobalNav = computed(() => route.meta.desktopNav !== 'auth-card')
 const showFooter = computed(() => route.meta.desktopFooter !== false)
 const shellAuthCard = computed(() => route.meta.desktopNav === 'auth-card')
+/** Auth : contenu boxed ; la nav est pleine largeur (comme l’accueil). */
+const shellAuthColumn = computed(() =>
+  route.meta.desktopNav === 'auth'
+  || route.meta.desktopNav === 'auth-reset'
+  || route.meta.desktopNav === 'auth-card',
+)
 </script>
 
 <template>
@@ -26,9 +32,12 @@ const shellAuthCard = computed(() => route.meta.desktopNav === 'auth-card')
     ]"
   >
     <AppDesktopNav v-if="showGlobalNav" :variant="navVariant" />
-    <main
+      <main
       class="min-h-0 w-full flex-1"
-      :class="showFooter ? 'overflow-y-auto' : 'overflow-hidden'"
+      :class="[
+        showFooter ? 'overflow-y-auto' : 'overflow-hidden',
+        shellAuthColumn ? 'desktop-boxed flex flex-col' : '',
+      ]"
     >
       <slot />
     </main>

@@ -48,11 +48,10 @@ const trustItems = [
 
 <template>
   <div class="flex h-full min-h-0 w-full flex-col overflow-hidden lg:flex-row">
-    <!-- 576:64 — panneau gauche 772 -->
     <section
-      class="box-border flex h-full w-full flex-col overflow-y-auto bg-white pb-48 pl-48 pr-31 pt-0 lg:w-772 lg:shrink-0"
+      class="box-border flex h-full w-full flex-col overflow-y-auto bg-white pb-48 pr-32 pt-0 lg:w-680 lg:shrink-0"
     >
-      <div class="flex w-full flex-col gap-41 pl-[clamp(0px,6.36vw,110px)] pt-39">
+      <div class="flex w-full flex-col gap-41 pt-39">
         <div class="w-full pt-32">
           <!-- 583:835 — retour connexion -->
           <NuxtLink
@@ -218,9 +217,9 @@ const trustItems = [
       </div>
     </section>
 
-    <!-- 1146:778 — panneau droit hero -->
+    <!-- 1146:778 — panneau droit hero · gutter via `.desktop-boxed` -->
     <aside
-      class="relative hidden h-full min-h-0 flex-1 items-stretch pr-[clamp(24px,8.68vw,150px)] lg:flex"
+      class="relative hidden h-full min-h-0 flex-1 items-stretch lg:flex"
     >
       <div
         class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]"
