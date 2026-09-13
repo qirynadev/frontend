@@ -33,10 +33,12 @@ const localePath = useLocalePath()
 const session = useSessionStore()
 
 /**
- * Avancement moyen de tous les accompagnements du client (école, logement,
- * langues, orientation) — 0 % pour un visiteur non connecté, qui n'a par
- * définition aucune commande. Réutilise `toAccompagnements` (même agrégation
- * que `mon-projet/index.vue`) plutôt qu'un calcul dédié.
+ * Progression globale du client — somme des progressions de chaque commande
+ * sur le nombre de commandes (`globalJourneyProgress`). 0 % pour un visiteur
+ * non connecté, qui n'a par définition aucune commande.
+ *
+ * Jusqu'au 2026-09-13, moyenne des quatre cartes de `mon-projet`, rubriques
+ * jamais achetées comprises : un seul achat à 14 % affichait 4 %.
  */
 async function loadJourneyProgress(): Promise<number> {
   if (!session.isAuthenticated) return 0
@@ -45,11 +47,7 @@ async function loadJourneyProgress(): Promise<number> {
     paymentRepo.orders(locale.value),
     orientationEvaluationRepo.list(locale.value),
   ])
-  const accompagnements = toAccompagnements(orders, evaluations)
-  if (accompagnements.length === 0) return 0
-
-  const total = accompagnements.reduce((sum, item) => sum + (item.progressPercent ?? 0), 0)
-  return Math.round(total / accompagnements.length)
+  return globalJourneyProgress(orders, evaluations)
 }
 
 const { data, apiError, isInitialLoading, refresh } = await usePageData(

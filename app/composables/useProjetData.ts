@@ -1,6 +1,7 @@
 import type { Order, OrientationEvaluation } from '~/core/contracts'
 import type { ProjetAccompagnement, ProjetBadgeTone } from '~/core/contracts/projet'
 import { orientationEvaluationProgress } from '~/utils/orientation-progress'
+import { orderChecklistProgress } from '~/utils/journey-progress'
 import { orientationEvaluationRepo, paymentRepo, planningRepo } from '~/core/repositories'
 
 /**
@@ -88,26 +89,6 @@ function toOverallStatus(orders: Order[], progressPercent: number): string {
   if (orders.every((order) => order.status === 'failed')) return 'myProject.statusFailed'
   if (!orders.some((order) => order.status === 'confirmed')) return 'myProject.statusPending'
   return progressPercent >= 100 ? 'myProject.statusDone' : 'myProject.statusInProgress'
-}
-
-/**
- * Avancement d'**une** commande (0-100), même formule que
- * `useAdmissionData`/`useLogementData` : `done/total` de sa checklist. 0 si
- * la commande a échoué, ou n'a pas de checklist (antérieure au mécanisme, ou
- * type qui n'en a jamais) — un vrai zéro plutôt qu'une valeur inconnue.
- *
- * Ne filtre plus sur `status === 'confirmed'` : la checklist est seedée dès
- * `/payment/init` (paiement réussi), avant même qu'un statut « vérifié »
- * n'arrive — une commande « en attente de vérification » (paiement confirmé,
- * dossier en cours d'examen) a une checklist bien réelle, ignorée à tort par
- * l'ancien filtre (repéré 2026-08-27 : une commande école réelle du compte de
- * test, checklist 1/7, contribuait 0 % au lieu de 14 %). Seul un `échoué`
- * reste exclu.
- */
-export function orderChecklistProgress(order: Order): number {
-  if (order.status === 'failed' || order.checklist.length === 0) return 0
-  const done = order.checklist.filter((item) => item.status === 'done').length
-  return Math.round((done / order.checklist.length) * 100)
 }
 
 /**

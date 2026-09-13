@@ -32,12 +32,12 @@
  * l'utilisateur) : cet écran est un aperçu au sens maquette du terme, distinct
  * de la liste réelle par commande de `mon-projet/index.vue`.
  *
- * La progression et les compteurs, eux, sont réels — recalculés le
- * 2026-08-31 sur `toAccompagnements` (même agrégation que
- * `mon-projet/index.vue` et l'anneau de la home) plutôt que sur un ratio
- * `commandes confirmées / total` propre à cet écran : deux endroits qui
- * affichent « votre avancement global » sans jamais donner le même chiffre
- * aurait été plus trompeur qu'utile.
+ * La progression et les compteurs, eux, sont réels. La progression globale
+ * suit la même règle que l'anneau de l'accueil (`globalJourneyProgress`,
+ * 2026-09-13) : somme des progressions par commande sur le nombre de
+ * commandes — deux endroits qui affichent « votre avancement global » ne
+ * doivent jamais donner deux chiffres différents. Les compteurs restent par
+ * rubrique (`toAccompagnements`).
  */
 import { orientationEvaluationRepo, paymentRepo } from '~/core/repositories'
 
@@ -61,12 +61,12 @@ const { data, apiError, isInitialLoading, refresh } = await usePageData(
 /** Toujours 4 entrées (une par rubrique), 0 %/« en attente » si le client n'a encore rien acheté. */
 const accompagnements = computed(() => toAccompagnements(data.value?.orders ?? [], data.value?.evaluations ?? []))
 
-/** Moyenne des 4 rubriques — même calcul que `mon-projet/index.vue` et l'anneau de la home. */
-const progressPct = computed(() => {
-  const list = accompagnements.value
-  if (list.length === 0) return 0
-  return Math.round(list.reduce((sum, item) => sum + (item.progressPercent ?? 0), 0) / list.length)
-})
+/**
+ * Progression globale : somme des progressions par commande sur le nombre de
+ * commandes — même calcul que l'anneau de l'accueil. Plus la moyenne des 4
+ * rubriques, qui comptait à 0 % celles jamais achetées.
+ */
+const progressPct = computed(() => globalJourneyProgress(data.value?.orders ?? [], data.value?.evaluations ?? []))
 
 /** Calcul du stroke-dasharray SVG pour le graphique (rayon r=34.5 -> circonférence ≈ 216.77). */
 const circumference = 2 * Math.PI * 34.5
