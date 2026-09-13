@@ -14,6 +14,9 @@
  *
  * Orientation : logo Qiryna inchangé à l'actif — seul le libellé se colore.
  *
+ * `indicator` (2026-09-13) : pastille verte cerclée de blanc en haut à droite
+ * de l'icône — sur Compte, le client voit d'un coup d'œil qu'il est connecté.
+ *
  * Primitive muette : elle reçoit des entrées **déjà traduites** et
  * l'identifiant de l'onglet actif. Elle ne connaît ni les routes du produit,
  * ni i18n, ni la route courante — c'est `AppBottomNav` qui s'en charge.
@@ -50,13 +53,19 @@ withDefaults(
       :aria-current="item.id === active ? 'page' : undefined"
       class="flex min-w-0 flex-1 flex-col items-center justify-start gap-1 text-center text-sm leading-20 font-medium no-underline"
     >
-      <span class="flex h-34 w-36 shrink-0 items-center justify-center">
+      <span class="relative flex h-34 w-36 shrink-0 items-center justify-center">
         <!-- Icône active (violet) sauf Orientation : pas d'`iconActive`, logo conservé. -->
         <QIcon
           :name="item.id === active && item.iconActive ? item.iconActive : item.icon"
           :size="item.iconWidth"
           :height="item.iconHeight"
         />
+        <span
+          v-if="item.indicator"
+          aria-hidden="true"
+          class="absolute top-3 right-4 size-10 rounded-full border-2 border-white bg-success"
+        />
+        <span v-if="item.indicator && item.indicatorLabel" class="sr-only">{{ item.indicatorLabel }}</span>
       </span>
       <span
         :class="[

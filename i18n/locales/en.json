@@ -199,7 +199,7 @@
       "stepsHeading": "What happens now?",
       "subtitle": "Thank you for your trust.\nYour support to join your school\nis now confirmed",
       "title": "Payment successful!",
-      "welcomeDescription": "You’ll receive a confirmation email with all the details of your support",
+      "welcomeDescription": "You’ll receive a confirmation email with all the details",
       "welcomeTitle": "Welcome to Qiryna support!"
     }
   },
@@ -1225,7 +1225,8 @@
     "notifications": "Notifications",
     "notificationsCount": "{count} notification | {count} notification | {count} notifications",
     "orientation": "Guidance",
-    "project": "My project"
+    "project": "My project",
+    "signedIn": "signed in"
   },
   "offer": {
     "choose": "Choose this plan",

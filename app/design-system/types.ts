@@ -62,6 +62,12 @@ export interface NavItem {
   /** Dimensions relevées dans `app.css` — 24×24, ou 36×34 pour « Orientation ». */
   iconWidth: number
   iconHeight: number
+  /**
+   * Pastille verte sur l'icône — aujourd'hui : « connecté » sur Compte.
+   * `indicatorLabel`, déjà traduit, est lu par les lecteurs d'écran.
+   */
+  indicator?: boolean
+  indicatorLabel?: string
 }
 
 export const TONES: Tone[] = ['primary', 'success', 'warning', 'danger', 'info', 'neutral']

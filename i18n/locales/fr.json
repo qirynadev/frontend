@@ -199,7 +199,7 @@
       "stepsHeading": "Et maintenant ?",
       "subtitle": "Merci pour votre confiance.\nVotre accompagnement pour intégrer votre école\nest désormais confirmé",
       "title": "Paiement réussi !",
-      "welcomeDescription": "Vous allez recevoir un email de confirmation avec tous les détails de votre accompagnement",
+      "welcomeDescription": "Vous allez recevoir un email de confirmation avec tous les détails",
       "welcomeTitle": "Bienvenue dans l'accompagnement Qiryna !"
     }
   },
@@ -1225,7 +1225,8 @@
     "notifications": "Notifications",
     "notificationsCount": "{count} notification | {count} notification | {count} notifications",
     "orientation": "Orientation",
-    "project": "Mon projet"
+    "project": "Mon projet",
+    "signedIn": "connecté"
   },
   "offer": {
     "choose": "Choisir cette formule",
