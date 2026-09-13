@@ -1,16 +1,18 @@
 <script setup lang="ts">
 /**
- * `/compte` n'a pas d'écran propre : la maquette n'en a jamais dessiné un,
- * `reglages.html` en tient lieu (thème, mot de passe, langue…). L'onglet
- * bottom-nav et la cloche d'`AppTopBar` pointent tous deux ici — redirection
- * plutôt que doublon, pour ne garder qu'un seul écran de compte.
+ * `/compte` n'a pas d'écran propre : `reglages.html` en tient lieu. Plus aucun
+ * lien du produit n'y mène (barre du bas, menu latéral, barre desktop vont
+ * directement sur `/reglages` depuis le 2026-09-13) — la page ne reste que
+ * comme alias, pour un ancien lien ou un favori.
  *
- * Toujours protégé par la garde d'authentification : sans elle, un visiteur
- * non connecté atterrirait directement sur `/reglages` (elle-même gardée),
- * perdant la destination d'origine que `middleware/auth.ts` restaure après
- * connexion.
+ * **Plus de garde d'authentification ici**, volontairement. Elle faisait
+ * transiter chaque clic sur « Mon compte » par `middleware/auth.ts` puis, en
+ * cas de session pas encore résolue, par `/connexion?redirect=/compte`, qui
+ * renvoyait aussitôt l'utilisateur connecté vers `/compte` : une boucle
+ * connexion → redirection → déconnexion constatée sur mobile. `/reglages` est
+ * un sommaire public ; les écrans qui exigent un compte (informations
+ * personnelles, mot de passe…) portent leur propre garde.
  */
-definePageMeta({ middleware: 'auth' })
 
 const localePath = useLocalePath()
 

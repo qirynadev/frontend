@@ -197,7 +197,7 @@ const navItems = computed(() =>
 
         <NuxtLink
           v-if="session.isAuthenticated"
-          :to="localePath('/compte')"
+          :to="localePath('/reglages')"
           class="flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#fef2f2] text-xl leading-20 font-semibold tracking-[-0.154px] text-desktop-brand no-underline"
           :aria-label="$t('nav.account')"
         >

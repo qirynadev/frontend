@@ -79,14 +79,17 @@ export const bottomNavEntries: NavEntry[] = [
   },
   {
     id: 'account',
-    to: '/compte',
+    // Directement `/reglages` (2026-09-13) : passer par `/compte` ajoutait un
+    // aller-retour par la garde d'authentification, source d'une boucle
+    // connexion → redirection → déconnexion constatée sur mobile.
+    to: '/reglages',
     labelKey: 'nav.account',
     icon: 'nav-compte',
     iconActive: 'nav-compte-active',
     iconWidth: 24,
     iconHeight: 24,
-    // `/compte` redirige vers `/reglages` ; auth + réglages allument l'onglet.
-    match: [...AUTH_PATHS, '/reglages'],
+    // Auth + réglages allument l'onglet ; `/compte` reste un alias de `/reglages`.
+    match: [...AUTH_PATHS, '/reglages', '/compte'],
   },
 ]
 

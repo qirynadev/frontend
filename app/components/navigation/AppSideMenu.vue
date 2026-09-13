@@ -115,7 +115,7 @@ async function onLogout() {
           <div class="flex w-full shrink-0 flex-col gap-10 px-24 pb-24">
             <template v-if="session.isAuthenticated">
               <NuxtLink
-                :to="localePath('/compte')"
+                :to="localePath('/reglages')"
                 class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-white no-underline"
               >
                 {{ $t('menu.account') }}

@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { bottomNavEntries, resolveActiveNavId } from '~/config/navigation'
 
+describe('entrée Compte', () => {
+  /**
+   * Directement `/reglages` depuis le 2026-09-13 : passer par `/compte`
+   * (gardé) provoquait sur mobile une boucle connexion → redirection →
+   * déconnexion. Ce test empêche d'y revenir sans le voir.
+   */
+  it('mène directement aux réglages, sans passer par /compte', () => {
+    expect(bottomNavEntries.find((entry) => entry.id === 'account')?.to).toBe('/reglages')
+  })
+})
+
 describe('onglet actif', () => {
   it('allume l’onglet correspondant au chemin exact', () => {
     expect(resolveActiveNavId('/')).toBe('home')
@@ -20,7 +31,7 @@ describe('onglet actif', () => {
     expect(resolveActiveNavId('/destinations/france')).toBe('orientation')
     expect(resolveActiveNavId('/offres/mba')).toBe('orientation')
     // L’authentification et les réglages appartiennent à l’onglet Compte
-    // (`/compte` redirige vers `/reglages`).
+    // (`/compte` n’est plus qu’un alias de `/reglages`).
     expect(resolveActiveNavId('/connexion')).toBe('account')
     expect(resolveActiveNavId('/inscription')).toBe('account')
     expect(resolveActiveNavId('/reglages')).toBe('account')
