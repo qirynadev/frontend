@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { toCourse, toCourseList, toCourseSummary } from '~/core/adapters/course.adapter'
-import { orderTiers, toDomainOfferPage, toLanguageOfferPage } from '~/core/adapters/offer-page.adapter'
+import { orderTiers, toCourseTier, toDomainOfferPage, toLanguageOfferPage } from '~/core/adapters/offer-page.adapter'
 import { toArticleList, toOrientation } from '~/core/adapters/editorial.adapter'
 import { flagUrl, toCountry } from '~/core/adapters/common.adapter'
 import { rawCourse, rawOffer, rawProfilage } from './fixtures/all-data'
@@ -176,5 +176,42 @@ describe('drapeaux', () => {
   it('est branché sur toCountry', () => {
     expect(toCountry({ name: 'Chine', iso_alpha_2: 'CN' }, 'https://x.test/api').flag)
       .toBe('https://x.test/vendor/blade-flags/country-cn.svg')
+  })
+})
+
+/**
+ * Formules de langue déclinées par niveau (back-office `50b9d83`, `4e4e689`) :
+ * la langue annonce ses niveaux, chaque palier ses objectifs.
+ */
+describe('niveaux de langue', () => {
+  it('garde les niveaux proposés par la langue, et écarte une clé inconnue', () => {
+    expect(toCourseSummary({ ...rawCourse, available_levels: ['beginner', 'expert', 'advanced'] }).availableLevels)
+      .toEqual(['beginner', 'advanced'])
+    // Langue pas encore déclinée : aucun niveau, le parcours saute ce choix.
+    expect(toCourseSummary(rawCourse).availableLevels).toEqual([])
+  })
+
+  it('garde sur chaque palier les seules déclinaisons actives, avec leur objectif', () => {
+    const tier = toCourseTier({
+      id: 'f1',
+      title: 'Volta',
+      amount: 290,
+      scope_label: 'Un palier',
+      levels: [
+        { key: 'beginner', active: true, goal: 'Passer de A1 à A2.1' },
+        { key: 'advanced', active: false, goal: 'Masquée au client' },
+        { key: 'expert', active: true, goal: 'Clé inconnue' },
+      ],
+    })
+
+    expect(tier.scopeLabel).toBe('Un palier')
+    expect(tier.levels).toEqual([{ key: 'beginner', goal: 'Passer de A1 à A2.1' }])
+  })
+
+  it('un palier non décliné est proposé à tous les niveaux', () => {
+    const tier = toCourseTier({ id: 'f2', title: 'Ogooué', amount: 550 })
+
+    expect(tier.levels).toEqual([])
+    expect(tier.scopeLabel).toBeNull()
   })
 })

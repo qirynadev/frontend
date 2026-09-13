@@ -1,4 +1,5 @@
-import type { Course, CourseLevel, CourseObjective, CourseSummary } from '../contracts'
+import type { Course, CourseLevel, CourseObjective, CourseSummary, LanguageLevelKey } from '../contracts'
+import { LANGUAGE_LEVEL_KEYS } from '../contracts/course'
 import { toSeo } from './common.adapter'
 import { asRecord, bool, dedupeBySlug, html, list, optionalStr, plainText, str, toUrl } from './primitives'
 
@@ -44,6 +45,11 @@ function toObjectives(raw: unknown): CourseObjective[] {
     .filter((objective) => objective.key !== '' && objective.title !== '')
 }
 
+/** Clé de niveau reconnue — une clé inconnue est écartée plutôt qu'affichée brute. */
+export function isLanguageLevelKey(value: unknown): value is LanguageLevelKey {
+  return typeof value === 'string' && (LANGUAGE_LEVEL_KEYS as readonly string[]).includes(value)
+}
+
 export function toCourseSummary(raw: unknown): CourseSummary {
   const source = asRecord(raw)
   const name = str(source, 'language')
@@ -62,6 +68,7 @@ export function toCourseSummary(raw: unknown): CourseSummary {
     // `config/language-badges.ts` pour la traduction par tonalité.
     badge: optionalStr(source, 'badge'),
     levelCount: toLevels(source.levels).length,
+    availableLevels: (Array.isArray(source.available_levels) ? source.available_levels : []).filter(isLanguageLevelKey),
   }
 }
 

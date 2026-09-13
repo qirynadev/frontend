@@ -34,12 +34,17 @@
  */
 import { courseRepo } from '~/core/repositories'
 import { goalVisual, languageGoals } from '~/config/language-goals'
+import { isLanguageLevel } from '~/config/language-levels'
 
 const route = useRoute()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 const slug = computed(() => String(route.params.slug ?? ''))
+
+/** Niveau choisi sur `/langues`, transmis tel quel aux offres et au retour. */
+const niveau = computed(() => (isLanguageLevel(route.query.niveau) ? route.query.niveau : null))
+const niveauQuery = computed(() => (niveau.value ? `niveau=${niveau.value}` : ''))
 
 const { data: course, apiError, isInitialLoading, refresh } = await usePageData(
   `course-${slug.value}`,
@@ -110,7 +115,7 @@ usePageSeo(() => ({
 
 <template>
   <div>
-    <AppTopBar back back-to="/langues" />
+    <AppTopBar back :back-to="niveau ? `/langues?${niveauQuery}` : '/langues'" />
 
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
       <template #loading>
@@ -189,7 +194,7 @@ usePageSeo(() => ({
       <!-- Commencer -->
       <div class="w-full py-20">
         <NuxtLink
-          :to="localePath(`/offres/${slug}?objectif=${selected}`)"
+          :to="localePath(`/offres/${slug}?objectif=${selected}${niveau ? `&${niveauQuery}` : ''}`)"
           class="mt-8 flex w-full items-center justify-center gap-10 rounded-xl bg-primary-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white no-underline"
         >
           <span>{{ $t('goal.cta') }}</span>

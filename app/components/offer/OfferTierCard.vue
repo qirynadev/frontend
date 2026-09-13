@@ -24,6 +24,8 @@ const props = withDefaults(
     domainSlug?: string
     /** Pile verticale + ruban (formules langue / orientation). */
     stacked?: boolean
+    /** Objectif du niveau de langue sélectionné (« Passer de A1 à A2.1… »). Vide : pas d'encart. */
+    goal?: string
   }>(),
   {
     index: 0,
@@ -33,6 +35,7 @@ const props = withDefaults(
     domain: false,
     domainSlug: '',
     stacked: false,
+    goal: '',
   },
 )
 
@@ -177,8 +180,26 @@ const ribbonLabel = computed(() => {
         {{ tagline }}
       </p>
 
+      <!-- Portée (« Un palier ») — renseignée par l'admin, langues uniquement -->
+      <span
+        v-if="tier.scopeLabel"
+        class="mt-8 inline-flex rounded-md bg-surface-2 px-8 py-2 text-md leading-16 font-medium text-muted"
+      >
+        {{ tier.scopeLabel }}
+      </span>
+
       <hr class="mt-14 w-full border-0 border-t border-border-soft">
     </header>
+
+    <!-- Objectif du niveau choisi -->
+    <div v-if="goal" class="w-full rounded-lg bg-primary-bg px-12 py-10">
+      <p class="m-0 text-md leading-16 font-semibold text-goal-check">
+        {{ $t('offer.yourGoal') }}
+      </p>
+      <p class="m-0 pt-2 text-lg leading-18 font-medium text-navy">
+        {{ goal }}
+      </p>
+    </div>
 
     <ul v-if="tier.features.length > 0" class="m-0 flex w-full list-none flex-col gap-8 p-0">
       <li

@@ -1,7 +1,8 @@
-import type { OfferPage, OfferTier } from '../contracts'
+import type { OfferPage, OfferTier, OfferTierLevel } from '../contracts'
+import { isLanguageLevelKey } from './course.adapter'
 import { toPrice, toSeo } from './common.adapter'
 import { toLivingDestination, toLivingStats } from './living.adapter'
-import { asArray, asRecord, html, num, optionalNum, optionalStr, str, toUrl } from './primitives'
+import { asArray, asRecord, bool, html, num, optionalNum, optionalStr, str, toUrl } from './primitives'
 
 /**
  * Unification des deux formes tarifaires de l'API.
@@ -24,6 +25,19 @@ function toFeatures(raw: unknown): string[] {
     .filter((label) => label !== '')
 }
 
+/**
+ * Déclinaisons par niveau d'une formule de langue (`formulas[].levels`).
+ *
+ * Seules les actives : le back-office expose aussi les désactivées, pour
+ * pouvoir les rééditer. Une clé inconnue est écartée.
+ */
+function toTierLevels(raw: unknown): OfferTierLevel[] {
+  return asArray(raw)
+    .map(asRecord)
+    .filter((level) => bool(level, 'active', false) && isLanguageLevelKey(level.key))
+    .map((level) => ({ key: str(level, 'key') as OfferTierLevel['key'], goal: str(level, 'goal') }))
+}
+
 /** Palier issu d'une formule de langue (`courses[].formulas[]`). */
 export function toCourseTier(raw: unknown): OfferTier {
   const source = asRecord(raw)
@@ -40,6 +54,8 @@ export function toCourseTier(raw: unknown): OfferTier {
     hours,
     stripeProductId: optionalStr(source, 'stripe_product_id'),
     highlighted: false,
+    scopeLabel: optionalStr(source, 'scope_label'),
+    levels: toTierLevels(source.levels),
   }
 }
 
@@ -66,6 +82,8 @@ export function toLivingTier(raw: unknown): OfferTier {
     periodLabel: 'once',
     hours: optionalNum(source, 'nbr_hours'),
     stripeProductId: optionalStr(source, 'stripe_product_id'),
+    scopeLabel: null,
+    levels: [],
     highlighted: false,
   }
 }
@@ -91,6 +109,8 @@ export function toOrientationTier(raw: unknown): OfferTier {
     periodLabel: 'once',
     hours: optionalNum(source, 'nbr_hours'),
     stripeProductId: optionalStr(source, 'stripe_product_id'),
+    scopeLabel: null,
+    levels: [],
     highlighted: false,
   }
 }
@@ -110,6 +130,8 @@ export function toDomainTier(raw: unknown): OfferTier {
     periodLabel: price.mode === 'subscription' ? 'month' : 'once',
     hours: optionalNum(source, 'nbr_hours'),
     stripeProductId: optionalStr(source, 'stripe_product_id'),
+    scopeLabel: null,
+    levels: [],
     highlighted: true,
   }
 }

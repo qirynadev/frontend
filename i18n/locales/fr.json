@@ -253,6 +253,13 @@
       "trending": "Tendance",
       "veryPopular": "Très populaire"
     },
+    "level": {
+      "advanced": "Avancé",
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "subtitle": "Cela nous permettra de vous proposer un parcours adapté.",
+      "title": "Quel est votre niveau actuel ?"
+    },
     "levelCount": "aucun niveau | 1 niveau | {count} niveaux",
     "list": {
       "continue": "Continuer",
@@ -1248,6 +1255,7 @@
     },
     "fromPrice": "À partir de {price}",
     "hoursPerMonth": "{count} h par mois",
+    "levelLabel": "Où vous en êtes",
     "notFound": "Offre introuvable",
     "perMonth": "par mois",
     "startAccompaniment": "Démarrer mon accompagnement",
@@ -1256,7 +1264,8 @@
     "tagline2": "Un bon équilibre pour progresser efficacement",
     "tagline3": "Pour des progrès rapides et durables",
     "tiersLabel": "Formules disponibles",
-    "title": "Choisissez la formule qui vous correspond"
+    "title": "Choisissez la formule qui vous correspond",
+    "yourGoal": "Votre objectif"
   },
   "orientation": {
     "calloutDesc": "Notre service d'orientation vous aide à mieux vous connaître, explorer les métiers et choisir le parcours fait pour vous.",

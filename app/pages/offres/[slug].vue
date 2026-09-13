@@ -4,10 +4,20 @@
  *
  * **Langue / domaine** : même UI que `/orientation/formules` — pile verticale,
  * titre/sous-titre communs (`offer.title` / `offer.subtitle`), CTA plein.
+ *
+ * **Niveau de langue** (2026-09-13) : quand les paliers d'une langue sont
+ * déclinés par niveau, des onglets « Où vous en êtes » filtrent les paliers et
+ * chaque carte affiche l'objectif propre au niveau. Le niveau vit dans l'URL
+ * (`?niveau=`), choisi sur `/langues` et modifiable ici. Un palier sans
+ * déclinaison reste affiché à tous les niveaux ; une langue sans aucune
+ * déclinaison affiche ses paliers comme avant, sans onglets.
  */
+import type { LanguageLevelKey, OfferTier } from '~/core/contracts'
+import { isLanguageLevel, levelsAmong } from '~/config/language-levels'
 import { offerPageRepo } from '~/core/repositories'
 
 const route = useRoute()
+const router = useRouter()
 const { t, locale } = useI18n()
 
 const slug = computed(() => String(route.params.slug ?? ''))
@@ -26,9 +36,36 @@ if (offer.value === null && !apiError.value) {
 const isDomain = computed(() => offer.value?.kind === 'domain')
 const tiers = computed(() => offer.value?.tiers ?? [])
 
+/** Niveaux couverts par au moins un palier, dans l'ordre de l'écran. */
+const levelOptions = computed(() =>
+  isDomain.value ? [] : levelsAmong(tiers.value.flatMap((tier) => tier.levels.map((level) => level.key))),
+)
+
+/** Niveau de l'URL s'il est proposé, sinon le premier. `null` : pas de déclinaison. */
+const level = computed<LanguageLevelKey | null>(() => {
+  const requested = route.query.niveau
+  const available = levelOptions.value.map((option) => option.key)
+  if (isLanguageLevel(requested) && available.includes(requested)) return requested
+  return available[0] ?? null
+})
+
+function chooseLevel(key: LanguageLevelKey) {
+  router.replace({ query: { ...route.query, niveau: key } })
+}
+
+const visibleTiers = computed(() =>
+  level.value === null
+    ? tiers.value
+    : tiers.value.filter((tier) => tier.levels.length === 0 || tier.levels.some((entry) => entry.key === level.value)),
+)
+
+const goalFor = (tier: OfferTier) => tier.levels.find((entry) => entry.key === level.value)?.goal ?? ''
+
 const backTo = computed(() => {
   if (isDomain.value) return '/destinations'
-  return objectif.value ? `/langues/${slug.value}/objectifs` : '/langues'
+  const niveau = level.value ? `niveau=${level.value}` : ''
+  if (objectif.value) return `/langues/${slug.value}/objectifs${niveau ? `?${niveau}` : ''}`
+  return niveau ? `/langues?${niveau}` : '/langues'
 })
 
 const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startCheckout } = useCheckout()
@@ -59,6 +96,29 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
             </p>
           </div>
 
+          <!-- Où vous en êtes — seulement si la langue est déclinée par niveau -->
+          <div v-if="levelOptions.length > 0" class="w-full">
+            <p class="m-0 pb-8 text-md leading-16 font-medium text-muted">
+              {{ $t('offer.levelLabel') }}
+            </p>
+            <div role="tablist" :aria-label="$t('offer.levelLabel')" class="flex w-full gap-4 rounded-xl bg-surface-2 p-4">
+              <button
+                v-for="option in levelOptions"
+                :key="option.key"
+                type="button"
+                role="tab"
+                :aria-selected="level === option.key"
+                :class="[
+                  'min-w-0 flex-1 cursor-pointer rounded-lg border-0 px-8 py-8 text-lg leading-18 whitespace-nowrap',
+                  level === option.key ? 'bg-white font-semibold text-text shadow-soft' : 'bg-transparent font-medium text-muted',
+                ]"
+                @click="chooseLevel(option.key)"
+              >
+                {{ $t(option.labelKey) }}
+              </button>
+            </div>
+          </div>
+
           <QAlert
             v-if="checkoutErrorKey"
             tone="danger"
@@ -81,14 +141,15 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
           </div>
 
           <!-- Langue : pile verticale -->
-          <div v-else-if="tiers.length > 0" class="flex w-full flex-col gap-22 pt-8">
+          <div v-else-if="visibleTiers.length > 0" class="flex w-full flex-col gap-22 pt-8">
             <OfferTierCard
-              v-for="(tier, index) in tiers"
+              v-for="(tier, index) in visibleTiers"
               :key="tier.id"
               stacked
               :tier="tier"
+              :goal="goalFor(tier)"
               :index="index"
-              :total="tiers.length"
+              :total="visibleTiers.length"
               :loading="checkoutPending === tier.id"
               :disabled="checkoutPending !== null && checkoutPending !== tier.id"
               @choose="offer && startCheckout(offer, $event)"

@@ -62,6 +62,12 @@ export function useCheckout() {
     }
     const goal = route.query.objectif
     if (typeof goal === 'string' && goal !== '') options.goal = goal
+    // Niveau de langue (`?niveau=beginner`) : le back-office refuse un niveau
+    // que la formule ne propose pas — on n'envoie donc que l'un des siens.
+    const level = route.query.niveau
+    if (offer.kind === 'language' && typeof level === 'string' && tier.levels.some((entry) => entry.key === level)) {
+      options.level = level
+    }
 
     return {
       offerId: tier.id,

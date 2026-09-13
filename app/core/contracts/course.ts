@@ -36,6 +36,15 @@ export interface CourseObjective {
   popular: boolean
 }
 
+/**
+ * Niveaux de langue du parcours d'achat — vocabulaire fixe du back-office
+ * (`LanguageLevelEnum`), commun à toutes les langues. Libellés côté front
+ * (`config/language-levels.ts`).
+ */
+export const LANGUAGE_LEVEL_KEYS = ['beginner', 'intermediate', 'advanced'] as const
+
+export type LanguageLevelKey = typeof LANGUAGE_LEVEL_KEYS[number]
+
 /** Langue étrangère enseignée, en version liste. */
 export interface CourseSummary {
   id: string
@@ -49,6 +58,12 @@ export interface CourseSummary {
   /** Étiquette administrée (« La plus demandée »). `null` dans le catalogue actuel. */
   badge: string | null
   levelCount: number
+  /**
+   * Niveaux réellement proposés pour cette langue — ceux qu'au moins une
+   * formule active couvre (`available_levels`). Vide : la langue n'est pas
+   * encore déclinée par niveau, le parcours saute ce choix.
+   */
+  availableLevels: LanguageLevelKey[]
 }
 
 export interface Course extends CourseSummary {

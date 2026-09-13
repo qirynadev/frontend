@@ -12,10 +12,19 @@
  *
  * Écart de **donnée** : la maquette montre huit langues (arabe, mandarin,
  * japonais, coréen…), l'API n'en administre que quatre.
+ *
+ * **Niveau actuel** (2026-09-13) : sous la grille, le client choisit son
+ * niveau. Seuls les niveaux que la langue sélectionnée propose réellement
+ * (`availableLevels`) sont affichés ; une langue pas encore déclinée par
+ * niveau n'affiche pas le bloc, et le parcours reste celui d'avant. Le niveau
+ * voyage dans l'URL (`?niveau=`) jusqu'aux offres, qui en dépendent.
  */
 import { courseRepo } from '~/core/repositories'
 import { orderByMaquette } from '~/config/language-badges'
+import { isLanguageLevel, levelsAmong } from '~/config/language-levels'
+import type { LanguageLevelKey } from '~/core/contracts'
 
+const route = useRoute()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
@@ -39,6 +48,25 @@ const selected = ref<string | null>(null)
 // inerte au premier affichage.
 watchEffect(() => {
   if (!selected.value && courses.value.length > 0) selected.value = courses.value[0]!.slug
+})
+
+const selectedCourse = computed(() => courses.value.find((course) => course.slug === selected.value) ?? null)
+const levelOptions = computed(() => levelsAmong(selectedCourse.value?.availableLevels ?? []))
+
+/** Niveau revenu dans l'URL (retour depuis les objectifs), sinon le premier proposé. */
+const selectedLevel = ref<LanguageLevelKey | null>(isLanguageLevel(route.query.niveau) ? route.query.niveau : null)
+
+watchEffect(() => {
+  const available = levelOptions.value.map((level) => level.key)
+  if (selectedLevel.value === null || !available.includes(selectedLevel.value)) {
+    selectedLevel.value = available[0] ?? null
+  }
+})
+
+const nextStep = computed(() => {
+  if (!selected.value) return localePath('/langues')
+  const level = levelOptions.value.length > 0 && selectedLevel.value ? `?niveau=${selectedLevel.value}` : ''
+  return localePath(`/langues/${selected.value}/objectifs${level}`)
 })
 
 /** La maquette range les cartes en deux colonnes, pas en grille. */
@@ -94,10 +122,30 @@ usePageSeo(() => ({
         </div>
       </div>
 
+      <!-- Niveau actuel — seulement si la langue est déclinée par niveau -->
+      <section v-if="levelOptions.length > 0" class="w-full pt-24" :aria-label="$t('course.level.title')">
+        <h2 class="m-0 text-2xl leading-normal font-semibold tracking-tight text-text">
+          {{ $t('course.level.title') }}
+        </h2>
+        <p class="m-0 text-lg leading-[22.75px] text-muted">
+          {{ $t('course.level.subtitle') }}
+        </p>
+
+        <div role="radiogroup" :aria-label="$t('course.level.title')" class="flex w-full gap-10 pt-12">
+          <LevelCard
+            v-for="level in levelOptions"
+            :key="level.key"
+            :level="level"
+            :selected="selectedLevel === level.key"
+            @select="selectedLevel = $event"
+          />
+        </div>
+      </section>
+
       <!-- Continuer -->
       <div class="w-full py-20">
         <NuxtLink
-          :to="selected ? localePath(`/langues/${selected}/objectifs`) : localePath('/langues')"
+          :to="nextStep"
           class="flex w-full items-center justify-center gap-10 rounded-xl bg-primary-cta px-24 py-16 text-xl leading-[22.5px] font-semibold text-white no-underline"
         >
           <span>{{ $t('course.list.continue') }}</span>

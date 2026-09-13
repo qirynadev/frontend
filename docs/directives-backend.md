@@ -1103,8 +1103,18 @@ e-mails. L'ancien libellé libre
 (« Débutant », « Beginner ») reste accepté et normalisé en clé : un front pas
 encore mis à jour n'est pas bloqué dès que l'admin décline ses formules.
 
-**Reste à faire côté front** : brancher l'écran de choix du niveau et les cartes
-d'offres sur ce contrat, et envoyer la clé du niveau au paiement.
+**Côté front — branché (2026-09-13)** :
+
+- `/langues` : bloc « Quel est votre niveau actuel ? » sous la grille, limité
+  aux `availableLevels` de la langue sélectionnée (`LevelCard`,
+  `config/language-levels.ts`) ; absent pour une langue non déclinée ;
+- le niveau voyage dans l'URL (`?niveau=`) : `/langues` → objectifs →
+  `/offres/{slug}`, et revient avec les liens de retour ;
+- `/offres/{slug}` : onglets « Où vous en êtes », paliers filtrés (un palier non
+  décliné reste visible à tous les niveaux), encart « Votre objectif » et
+  étiquette de portée sur la carte (`OfferTierCard`) ;
+- paiement : `options.level` envoyé seulement si le palier propose ce niveau
+  (`useCheckout`).
 
 **Écartés pour l'instant** : prix ou produit Stripe par niveau (même prix sur
 les maquettes, et la décision sur la source du prix est en attente) ; référence

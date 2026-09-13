@@ -1,4 +1,5 @@
 import type { Price, SeoMeta } from './common'
+import type { LanguageLevelKey } from './course'
 import type { LivingDestination, LivingStats } from './living'
 
 /**
@@ -28,6 +29,20 @@ export interface OfferTier {
   stripeProductId: string | null
   /** Palier mis en avant (le plus complet). */
   highlighted: boolean
+  /** « Un palier », « Deux paliers et préparation d'examen ». Langues uniquement. */
+  scopeLabel: string | null
+  /**
+   * Niveaux de langue pour lesquels ce palier est proposé, chacun avec son
+   * objectif (« Passer de A1 à A2.1… »). Seules les déclinaisons actives.
+   * **Vide : proposé à tous les niveaux** — palier pas encore décliné, ou
+   * palier qui n'est pas une formule de langue.
+   */
+  levels: OfferTierLevel[]
+}
+
+export interface OfferTierLevel {
+  key: LanguageLevelKey
+  goal: string
 }
 
 export interface OfferPage {

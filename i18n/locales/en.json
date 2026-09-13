@@ -253,6 +253,13 @@
       "trending": "Trending",
       "veryPopular": "Very popular"
     },
+    "level": {
+      "advanced": "Advanced",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "subtitle": "This helps us suggest the right path for you.",
+      "title": "What is your current level?"
+    },
     "levelCount": "no levels | 1 level | {count} levels",
     "list": {
       "continue": "Continue",
@@ -1248,6 +1255,7 @@
     },
     "fromPrice": "From {price}",
     "hoursPerMonth": "{count} h per month",
+    "levelLabel": "Where you are",
     "notFound": "Offer not found",
     "perMonth": "per month",
     "startAccompaniment": "Start my support",
@@ -1256,7 +1264,8 @@
     "tagline2": "A good balance to make steady progress",
     "tagline3": "For fast and lasting progress",
     "tiersLabel": "Available plans",
-    "title": "Choose the plan that fits you"
+    "title": "Choose the plan that fits you",
+    "yourGoal": "Your goal"
   },
   "orientation": {
     "calloutDesc": "Our guidance service helps you get to know yourself better, explore careers, and choose the path that fits you.",
