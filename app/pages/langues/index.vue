@@ -123,15 +123,20 @@ usePageSeo(() => ({
       </div>
 
       <!-- Niveau actuel — seulement si la langue est déclinée par niveau -->
+      <!-- Titre et sous-titre : mêmes règles que l'introduction de la page
+           (taille, couleur, `pb-13` et hauteur minimale du paragraphe), pour un
+           écart identique avant les cartes. -->
       <section v-if="levelOptions.length > 0" class="w-full pt-24" :aria-label="$t('course.level.title')">
-        <h2 class="m-0 text-2xl leading-normal font-semibold tracking-tight text-text">
-          {{ $t('course.level.title') }}
-        </h2>
-        <p class="m-0 text-lg leading-[22.75px] text-muted">
-          {{ $t('course.level.subtitle') }}
-        </p>
+        <div class="w-full pb-13">
+          <h2 class="m-0 text-4xl leading-normal font-semibold tracking-tight text-text">
+            {{ $t('course.level.title') }}
+          </h2>
+          <p class="m-0 min-h-31 text-xl leading-[22.75px] text-text">
+            {{ $t('course.level.subtitle') }}
+          </p>
+        </div>
 
-        <div role="radiogroup" :aria-label="$t('course.level.title')" class="flex w-full gap-10 pt-12">
+        <div role="radiogroup" :aria-label="$t('course.level.title')" class="flex w-full gap-10">
           <LevelCard
             v-for="level in levelOptions"
             :key="level.key"
