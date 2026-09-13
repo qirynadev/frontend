@@ -1039,6 +1039,78 @@ et le parcours retombe sur le comportement antérieur.
 **Ordre de déploiement** : le back-office d'abord. Le front livré seul ne casse
 rien — l'échange échoue en silence et le comportement reste celui d'avant.
 
+## 28. ✅ Codé (back-office, `staging`) : formules de langue déclinées par niveau
+
+**Le besoin.** Le parcours langue fait choisir un niveau (débutant,
+intermédiaire, avancé) avant d'afficher les offres, et les offres montrées
+dépendent de ce choix. Sur les maquettes reçues, les trois formules — Volta,
+Ogooué, Zambèze — gardent nom, prix, heures, badge et prestations d'un niveau à
+l'autre ; seul l'encart **« Votre objectif »** change (« Passer de A1 à A2.1… »,
+« Décrocher l'IELTS 6.5… »).
+
+**Le choix.** Pas neuf formules recopiées (prix et prestations dériveraient au
+premier changement), mais trois formules et une déclinaison légère par niveau,
+qui ne porte que ce qui varie.
+
+**Ce qui a été ajouté** (migration `2026_09_13_100000`) :
+
+- vocabulaire fixe, commun à toutes les langues : `beginner`, `intermediate`,
+  `advanced` (`App\Enums\LanguageLevelEnum`) — libellés et icônes côté front ;
+- `formula_translations.scope_label` : « Un palier », « Deux paliers et
+  préparation d'examen » ;
+- `formula_levels` : `level`, `status`, `position` — communs à toutes les
+  langues ;
+- `formula_level_translations` : `goal` — traduit comme le reste du
+  back-office, une ligne par locale, saisi langue par langue depuis le
+  sélecteur du formulaire. Bornes CECRL et examens visés, un temps prévus,
+  retirés le jour même à la demande du responsable : l'objectif les dit déjà en
+  toutes lettres (migration `2026_09_13_120000`) ;
+- l'accroche de la carte (`description`) devient saisissable dans le formulaire
+  des formules de cours : elle existait en base mais n'y était pas éditable.
+
+**Contrat API** (`GET /courses`, `GET /courses/{slug}`) :
+
+```json
+{
+  "available_levels": ["beginner", "intermediate"],
+  "formulas": [{
+    "title": "Volta",
+    "description": "Débloquer ce qui vous freine, et le prouver.",
+    "scope_label": "Un palier",
+    "amount": 290,
+    "nbr_hours": 55,
+    "levels": [
+      { "key": "beginner", "active": true,
+        "goal": "Passer de A1 à A2.1 : tenir une conversation simple du quotidien" }
+    ]
+  }]
+}
+```
+
+- `available_levels` : niveaux couverts par au moins une formule active de la
+  langue, dans l'ordre d'affichage. **N'afficher que ceux-là** — pas de niveau
+  sans offre derrière.
+- `levels[].active: false` : déclinaison masquée au client (exposée pour que le
+  back-office puisse la rééditer). **Le front filtre sur `active`.**
+- Formule **sans aucune** déclinaison active : proposée à tous les niveaux,
+  comme avant.
+
+**Paiement** (`POST /payment/init`, `service_type: course`) : envoyer la clé du
+niveau dans `options.level`. Si la formule est déclinée, le niveau doit en faire
+partie, sinon **422**. La commande conserve `options.level` et
+`options.level_goal` — de quoi afficher l'objectif dans le suivi et les
+e-mails. L'ancien libellé libre
+(« Débutant », « Beginner ») reste accepté et normalisé en clé : un front pas
+encore mis à jour n'est pas bloqué dès que l'admin décline ses formules.
+
+**Reste à faire côté front** : brancher l'écran de choix du niveau et les cartes
+d'offres sur ce contrat, et envoyer la clé du niveau au paiement.
+
+**Écartés pour l'instant** : prix ou produit Stripe par niveau (même prix sur
+les maquettes, et la décision sur la source du prix est en attente) ; référence
+E-Testing par niveau (le catalogue du prestataire n'a pas encore de test de
+langue) — l'un comme l'autre s'ajouterait à `formula_levels` sans rien casser.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :
