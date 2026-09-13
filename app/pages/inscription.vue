@@ -297,7 +297,7 @@ usePageSeo(() => ({
       <AuthToggle active="signUp" />
     </div>
 
-    <!-- Formulaire : carte, puis séparateur et réseaux hors de la carte. -->
+    <!-- Formulaire : réseaux sociaux, séparateur, puis formulaire — dans la carte. -->
     <div class="pt-15 pb-20">
       <div class="rounded-xl bg-white px-20 py-25 shadow-card">
         <QAlert
@@ -323,7 +323,27 @@ usePageSeo(() => ({
           </template>
         </QAlert>
 
-        <!-- Étape 1 — le formulaire de la maquette. -->
+        <!-- Étape 1 — réseaux sociaux d'abord, puis le formulaire de la maquette. -->
+        <template v-if="step === 'form'">
+          <!-- Réseaux sociaux d'abord (2026-09-13), comme sur ordinateur : un
+               tap suffit, le formulaire e-mail reste en dessous. -->
+          <p class="m-0 pb-12 text-center text-base leading-16 font-semibold text-navy">
+            {{ $t('desktop.register.socialTitle') }}
+          </p>
+
+          <AuthSocialRow :configured="socialConfigured" :pending="socialPending" @select="onSocial" />
+
+          <!-- Séparateur « ou » -->
+          <div class="flex items-center py-14">
+            <span aria-hidden="true" class="h-1 flex-1 bg-border" />
+            <span class="px-10 text-base leading-16 font-medium tracking-widest whitespace-nowrap text-muted-2 uppercase">
+              {{ $t('auth.or') }}
+            </span>
+            <span aria-hidden="true" class="h-1 flex-1 bg-border" />
+          </div>
+
+        </template>
+
         <form v-if="step === 'form'" novalidate @submit.prevent="onSubmit">
           <div class="flex flex-col">
             <div class="pb-20">
@@ -486,18 +506,6 @@ usePageSeo(() => ({
         </form>
       </div>
 
-      <!-- Hors de la carte, comme dans la maquette. -->
-      <template v-if="step === 'form'">
-        <div class="flex items-center py-14">
-          <span aria-hidden="true" class="h-1 flex-1 bg-border" />
-          <span class="px-10 text-base leading-16 font-medium tracking-widest whitespace-nowrap text-muted-2 uppercase">
-            {{ $t('auth.orContinueWith') }}
-          </span>
-          <span aria-hidden="true" class="h-1 flex-1 bg-border" />
-        </div>
-
-        <AuthSocialRow :configured="socialConfigured" :pending="socialPending" @select="onSocial" />
-      </template>
     </div>
 
     <!-- Besoin d'aide ? -->

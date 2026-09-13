@@ -253,6 +253,23 @@ usePageSeo(() => ({
           </template>
         </QAlert>
 
+        <!-- Réseaux sociaux d'abord (2026-09-13), comme sur ordinateur : un
+             tap suffit, le formulaire e-mail reste en dessous. -->
+        <p class="m-0 pb-12 text-center text-base leading-16 font-semibold text-navy">
+          {{ $t('desktop.auth.socialTitle') }}
+        </p>
+
+        <AuthSocialRow :configured="socialConfigured" :pending="socialPending" @select="onSocial" />
+
+        <!-- Séparateur « ou » -->
+        <div class="flex items-center py-14">
+          <span aria-hidden="true" class="h-1 flex-1 bg-border" />
+          <span class="px-10 text-base leading-16 font-medium tracking-widest whitespace-nowrap text-muted-2 uppercase">
+            {{ $t('auth.or') }}
+          </span>
+          <span aria-hidden="true" class="h-1 flex-1 bg-border" />
+        </div>
+
         <form novalidate @submit.prevent="onSubmit">
           <div class="flex flex-col gap-22">
             <QInput
@@ -307,17 +324,6 @@ usePageSeo(() => ({
               <span v-else>{{ $t('auth.signIn') }}</span>
             </button>
           </div>
-
-          <!-- Séparateur « ou continuer avec » -->
-          <div class="flex items-center py-14">
-            <span aria-hidden="true" class="h-1 flex-1 bg-border" />
-            <span class="px-10 text-base leading-16 font-medium tracking-widest whitespace-nowrap text-muted-2 uppercase">
-              {{ $t('auth.orContinueWith') }}
-            </span>
-            <span aria-hidden="true" class="h-1 flex-1 bg-border" />
-          </div>
-
-          <AuthSocialRow :configured="socialConfigured" :pending="socialPending" @select="onSocial" />
         </form>
       </div>
     </div>
