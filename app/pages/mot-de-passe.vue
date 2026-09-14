@@ -40,19 +40,37 @@ const localePath = useLocalePath()
 const session = useSessionStore()
 const { resume } = useAuthFlow()
 
-/** `request` : demande du code · `reset` : saisie du code et du nouveau mot de passe. */
-const step = ref<'request' | 'reset'>('request')
+const route = useRoute()
+const router = useRouter()
 
-const email = ref('')
-const code = ref('')
+/**
+ * `request` : demande du lien · `reset` : nouveau mot de passe.
+ *
+ * L'étape `reset` s'atteint par le lien de l'e-mail
+ * (`/mot-de-passe?email=…&token=…`, back-office `Mail/ResetPassword`), valable
+ * une heure. Jusqu'au 2026-09-14, l'écran réclamait un « code à 6 chiffres »
+ * que l'e-mail ne contenait pas : le client redemandait sans fin le même mail.
+ */
+const linkEmail = typeof route.query.email === 'string' ? route.query.email : ''
+const linkToken = typeof route.query.token === 'string' ? route.query.token : ''
+const step = ref<'request' | 'reset'>(linkEmail !== '' && linkToken !== '' ? 'reset' : 'request')
+
+const email = ref(linkEmail)
+const token = ref(linkToken)
 const password = ref('')
 
 const submitting = ref(false)
 const formError = ref<string | null>(null)
-const notice = ref<string | null>(null)
+const notice = ref<string | null>(step.value === 'reset' ? t('auth.reset.linkFor', { email: linkEmail }) : null)
 const fieldErrors = ref<Record<string, string[]>>({})
 
 const { score, valid: passwordValid, missing, hasDisallowedChars } = usePasswordStrength(password)
+
+// Le jeton ne reste pas dans la barre d'adresse ni dans l'historique : il est
+// gardé en mémoire le temps de la saisie.
+onMounted(() => {
+  if (linkToken !== '') router.replace({ query: {} })
+})
 
 /** Même règle que l'inscription (`newPassword` porte le même regex côté back-office). */
 const strengthHint = computed(() => {
@@ -89,7 +107,7 @@ function applyError(error: unknown): void {
     return
   }
 
-  const mapping: Record<string, string> = { email: 'email', code: 'code', password: 'password' }
+  const mapping: Record<string, string> = { email: 'email', password: 'password' }
   const mapped: Record<string, string[]> = {}
   for (const [key, target] of Object.entries(mapping)) {
     if (error.fieldErrors[key]) mapped[target] = error.fieldErrors[key]!
@@ -122,7 +140,6 @@ async function onRequest(): Promise<void> {
   submitting.value = true
   try {
     await authRepo.forgotPassword(value, locale.value)
-    step.value = 'reset'
     // Formulé sans confirmer que le compte existe : ce serait offrir un moyen
     // d'énumérer les comptes. Le back-office répond 200 dans les deux cas.
     notice.value = t('auth.reset.sent', { email: value })
@@ -139,14 +156,14 @@ async function onReset(): Promise<void> {
   formError.value = null
   fieldErrors.value = {}
 
-  if (code.value.trim() === '') fieldErrors.value.code = [t('auth.error.emailRequired')]
+  if (token.value === '') return restart()
   if (!passwordValid.value) fieldErrors.value.password = [t('auth.register.strengthHint')]
   if (Object.keys(fieldErrors.value).length > 0 || submitting.value) return
 
   submitting.value = true
   try {
     const outcome = await authRepo.resetPassword(
-      { email: email.value.trim(), code: code.value.trim(), password: password.value },
+      { email: email.value.trim(), token: token.value, password: password.value },
       locale.value,
     )
 
@@ -166,6 +183,16 @@ async function onReset(): Promise<void> {
   finally {
     submitting.value = false
   }
+}
+
+/** Lien expiré ou déjà utilisé : retour à la demande d'un nouveau lien. */
+function restart(): void {
+  step.value = 'request'
+  token.value = ''
+  password.value = ''
+  formError.value = null
+  notice.value = null
+  fieldErrors.value = {}
 }
 
 usePageSeo(() => ({
@@ -256,25 +283,8 @@ usePageSeo(() => ({
           </div>
         </form>
 
-        <!-- Étape 2 — code et nouveau mot de passe. Absente de la maquette. -->
+        <!-- Étape 2 — nouveau mot de passe, ouverte par le lien de l'e-mail. -->
         <form v-else novalidate @submit.prevent="onReset">
-          <div class="pb-20">
-            <QInput
-              v-model="code"
-              icon="ic-email"
-              :icon-width="16.25"
-              :icon-height="12.5"
-              :icon-bleed="0.6"
-              :label="$t('auth.reset.codeLabel')"
-              :placeholder="$t('auth.reset.codePlaceholder')"
-              :error="fieldErrors.code?.[0]"
-              :disabled="submitting"
-              inputmode="numeric"
-              autocomplete="one-time-code"
-              name="code"
-            />
-          </div>
-
           <div class="pb-10">
             <QInput
               v-model="password"
@@ -303,6 +313,10 @@ usePageSeo(() => ({
               <QSpinner v-if="submitting" size="sm" class="text-white" />
               <span v-else>{{ $t('auth.reset.submitNew') }}</span>
             </button>
+          </div>
+
+          <div class="flex justify-center pt-14">
+            <QButton variant="link" size="sm" @click="restart">{{ $t('auth.reset.requestNewLink') }}</QButton>
           </div>
         </form>
 
@@ -404,7 +418,6 @@ usePageSeo(() => ({
     <DesktopMotDePasse
       :step="step"
       v-model:email="email"
-      v-model:code="code"
       v-model:password="password"
       :submitting="submitting"
       :form-error="formError"
@@ -415,6 +428,7 @@ usePageSeo(() => ({
       :strength-tone="strengthTone"
       @request="onRequest"
       @reset="onReset"
+      @restart="restart"
     />
   </div>
 </template>

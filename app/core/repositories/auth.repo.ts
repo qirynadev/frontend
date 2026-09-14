@@ -96,7 +96,7 @@ export const authRepo = {
 
   /** `null` quand le back-office ne connecte pas automatiquement. */
   resetPassword(
-    input: { email: string; code: string; password: string; passwordConfirmation?: string },
+    input: { email: string; token: string; password: string; passwordConfirmation?: string },
     locale?: string,
   ): Promise<AuthOutcome | null> {
     return bffFetch<AuthOutcome | null>('/account/reset-password', { method: 'POST', body: input, locale })

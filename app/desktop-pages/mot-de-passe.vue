@@ -6,7 +6,6 @@
 defineProps<{
   step: 'request' | 'reset'
   email: string
-  code: string
   password: string
   submitting: boolean
   formError: string | null
@@ -19,10 +18,10 @@ defineProps<{
 
 const emit = defineEmits<{
   'update:email': [value: string]
-  'update:code': [value: string]
   'update:password': [value: string]
   request: []
   reset: []
+  restart: []
 }>()
 
 const localePath = useLocalePath()
@@ -87,7 +86,7 @@ const trustItems = [
 
         <QAlert v-if="notice" tone="success" :message="notice" />
 
-        <!-- Étape 1 — demande du code -->
+        <!-- Étape 1 — demande du lien -->
         <div v-if="step === 'request'" class="flex w-full flex-col gap-22">
           <form class="flex w-full flex-col gap-18" novalidate @submit.prevent="emit('request')">
             <div class="flex flex-col gap-10 pb-10">
@@ -155,26 +154,10 @@ const trustItems = [
           </p>
         </div>
 
-        <!-- Étape 2 — code + nouveau mot de passe -->
+        <!-- Étape 2 — nouveau mot de passe, ouverte par le lien de l'e-mail -->
         <div v-else class="flex w-full flex-col gap-22">
           <form class="w-full" novalidate @submit.prevent="emit('reset')">
             <div class="flex flex-col gap-18">
-              <QInput
-                :model-value="code"
-                icon="ic-email"
-                :icon-width="16.25"
-                :icon-height="12.5"
-                :icon-bleed="0.6"
-                :label="$t('auth.reset.codeLabel')"
-                :placeholder="$t('auth.reset.codePlaceholder')"
-                :error="fieldErrors.code?.[0]"
-                :disabled="submitting"
-                inputmode="numeric"
-                autocomplete="one-time-code"
-                name="code"
-                @update:model-value="emit('update:code', $event)"
-              />
-
               <div>
                 <div class="pb-10">
                   <QInput
@@ -206,6 +189,10 @@ const trustItems = [
                 <QSpinner v-if="submitting" size="sm" class="text-white" />
                 <span v-else>{{ $t('auth.reset.submitNew') }}</span>
               </button>
+
+              <QButton variant="link" size="sm" class="self-center" @click="emit('restart')">
+                {{ $t('auth.reset.requestNewLink') }}
+              </QButton>
             </div>
           </form>
 

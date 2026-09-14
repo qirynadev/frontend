@@ -12,12 +12,12 @@ import { asRecord, str, toSession } from '~~/app/core/adapters'
 export default defineEventHandler(async (event): Promise<AuthOutcome | null> => {
   const body = asRecord(await readBody(event))
   const email = str(body, 'email').toLowerCase()
-  const code = str(body, 'code')
+  const token = str(body, 'token')
   const password = str(body, 'password')
 
   const errors: Record<string, string[]> = {}
   if (email === '') errors.email = ['required']
-  if (code === '') errors.code = ['required']
+  if (token === '') errors.token = ['required']
   if (password === '') errors.password = ['required']
 
   if (Object.keys(errors).length > 0) {
@@ -30,13 +30,13 @@ export default defineEventHandler(async (event): Promise<AuthOutcome | null> => 
     // `newPassword` / `confPassword` — pas `code` / `password` /
     // `password_confirmation`. Le décalage rejetait toute réinitialisation en
     // 400 « The new password field is required » (corrigé 2026-09-09, confirmé
-    // par appel direct du contrôleur). Le `token` est le code à 16 caractères
-    // reçu par e-mail.
+    // par appel direct du contrôleur). Le `token` vient du lien de l'e-mail
+    // (`/mot-de-passe?email=…&token=…`), valable une heure.
     raw = await publicClient(event).request('/auth/new-password', {
       method: 'POST',
       body: {
         email,
-        token: code,
+        token,
         newPassword: password,
         confPassword: str(body, 'passwordConfirmation') || password,
       },
