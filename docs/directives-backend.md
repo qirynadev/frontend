@@ -15,6 +15,66 @@ Convention : 🔴 aucune donnée du tout, rien à câbler · 🟡 donnée réell
 telle quelle, qualité éditoriale à parfaire côté back-office (n'empêche pas le
 fonctionnement) · 🔵 question de sémantique/produit à trancher.
 
+## Feuille de route au 2026-09-14 — chantiers back-office restants
+
+Recoupé le 2026-09-14 avec `git log origin/staging` du back-office : tout ce qui
+a été poussé depuis le 2026-09-08 est déjà reporté (§1 à §28). Les bugs §10
+(`lc_country_id` à l'inscription) et §18 (`phone` du contact public) sont
+corrigés côté API (`?? null`) — les contournements du BFF peuvent être retirés.
+
+Page partageable pour Prosper, même contenu : https://claude.ai/code/artifact/592d97f2-2505-4e74-b968-1fc23353496e
+
+### Nécessaires au lancement mobile
+
+| Chantier | Constat dans le code | Attendu |
+|---|---|---|
+| Suppression de compte | Aucun endpoint dans `routes/api.php`. | Endpoint authentifié + règle de conservation à valider (commandes payées, factures). |
+| « Être rappelé » | Rien n'existe (ni modèle, ni route). | Enregistrer la demande et la faire arriver au back-office, comme la messagerie. Après l'écran de Kader. |
+| E-mails transactionnels | 6 gabarits (`resources/views/emails`) et 10 notifications (`app/Notifications`). | Contenu et présentation harmonisés d'un e-mail à l'autre. |
+| Test de niveau langue (§22, §24) | `LEVEL_TEST` marqué « terminé » à l'achat ; aucun statut consultable par le client. | Déclencher le test pour les cours, exposer son statut, ne plus cocher l'étape d'office. Dépend du catalogue du prestataire. |
+| Tarification | Double saisie : prix affiché en base, prix Stripe à part. | Décision du promoteur (source du prix), puis mise en œuvre. |
+
+### Importants, non bloquants
+
+| Chantier | Constat | Attendu |
+|---|---|---|
+| Notifications push | `app/Notifications/PushNotification.php` n'est utilisé nulle part ; aucun service d'envoi installé. | Choisir les événements déclencheurs, puis l'infrastructure d'envoi. |
+| Contact visiteur | `POST /send-email` envoie un e-mail sans rien enregistrer. | Persister le message comme ceux de la messagerie. |
+| Préférences logement | Pas de colonne école, ville, nombre d'occupants — regroupés dans `special_requirements`. | Colonnes dédiées. |
+| Fin du parcours langue (§22.2, §5) | Pas d'évaluation de mi-parcours, pas de certificat déposable, pas de notification. | Dépôt par l'équipe contre une commande, notification, endpoint de statut. |
+| Sortie de `/all-data` (§12) | Menu et accueil lisent encore le dump. | Endpoints dédiés. |
+| RDV conseiller (§6) | Rien n'existe. | Seulement si un système de rendez-vous est prévu. |
+
+### Questions produit (pas du code)
+
+- §7 : règle d'agrégation des étapes quand un client a plusieurs commandes de langue.
+- §23 : affichage des documents remis au client — attend la page de Kader.
+- Plusieurs achats de la même offre — attend le design.
+
+### Données et réglages (pas de développement)
+
+- Activation de l'application Facebook chez Meta.
+- Textes de remplissage : 5 domaines (§1), diplômes de test sur des profils professeurs (§3).
+- Objectifs des formules de langue identiques d'une formule à l'autre ; objectif « Avancé » à revoir ; formule « Free » à confirmer.
+- Recette : relier 3 objectifs anglais à leur version française, cocher « vérifié » sur les professeurs contrôlés.
+
+### À nettoyer
+
+- `DashboardController` contient un profil d'exemple codé en dur, avec des données personnelles (nom, e-mail, téléphone, date de naissance) : à retirer du code.
+
+### Améliorations de gestion du back-office (nice to have)
+
+Vérifiées dans le code : l'historique des statuts de commande (`OrderStatusHistory`) et les filtres de la liste des commandes (statut, service, recherche client) existent déjà.
+
+1. Tableau de bord réel : commandes par statut et service, chiffre d'affaires, file « à vérifier », documents reçus.
+2. Fiche client complète — il n'existe qu'une liste : commandes, messages, documents, bilans.
+3. Alertes à l'équipe : nouvelle commande, documents déposés, message client, demande de rappel.
+4. Export des commandes (CSV ou Excel) et filtre par période — seule la newsletter s'exporte.
+5. Signal de traduction manquante sur les fiches traduisibles.
+6. Garde-fou avant publication : textes de remplissage et champs vides.
+7. « Voir côté client » depuis une école, une offre ou une formule.
+8. Contrôle de cohérence prix saisi / prix Stripe, tant que les deux coexistent.
+
 ## État au 2026-09-11 — livraisons back-office non reportées jusqu'ici
 
 Entre le 2026-08-31 et le 2026-09-07, Prosper a livré dans `qiryna-backoffice`
