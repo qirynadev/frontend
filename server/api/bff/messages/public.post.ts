@@ -7,11 +7,10 @@ import { asRecord, str } from '~~/app/core/adapters'
  * (`docs/directives-backend.md`) — e-mail de notification seulement. Accepté
  * ici parce qu'aucun compte connecté ne peut fournir nom/e-mail à sa place.
  *
- * `phone: ''` envoyé explicitement — bug confirmé en direct (2026-08-30,
- * même motif que `lc_country_id` au point 10 de `docs/directives-backend.md`) :
- * `MessageAction::sendEmail()` accède `$inputs['phone']` sans repli `?? null`
- * alors que la validation le déclare `nullable` ; une requête qui ne
- * l'envoie pas du tout plante en 500 (« Undefined array key "phone" »).
+ * Pas de téléphone dans ce formulaire : l'API l'accepte absent depuis la
+ * correction de `MessageAction::sendEmail()` (repli `?? null`,
+ * directives-backend §18) — le contournement qui envoyait `phone: ''` a été
+ * retiré le 2026-09-14.
  */
 export default defineEventHandler(async (event): Promise<{ ok: boolean }> => {
   const body = asRecord(await readBody(event).catch(() => ({})))
@@ -29,7 +28,7 @@ export default defineEventHandler(async (event): Promise<{ ok: boolean }> => {
   try {
     await publicClient(event).request('/send-email', {
       method: 'POST',
-      body: { first_name: firstName, last_name: lastName, phone: '', email, subject, message },
+      body: { first_name: firstName, last_name: lastName, email, subject, message },
     })
     return { ok: true }
   }

@@ -20,7 +20,8 @@ fonctionnement) · 🔵 question de sémantique/produit à trancher.
 Recoupé le 2026-09-14 avec `git log origin/staging` du back-office : tout ce qui
 a été poussé depuis le 2026-09-08 est déjà reporté (§1 à §28). Les bugs §10
 (`lc_country_id` à l'inscription) et §18 (`phone` du contact public) sont
-corrigés côté API (`?? null`) — les contournements du BFF peuvent être retirés.
+corrigés côté API (`?? null`, présents sur `staging` et `main`) — contournements
+du BFF retirés le 2026-09-14 (`account/index.post.ts`, `messages/public.post.ts`).
 
 Page partageable pour Prosper, même contenu : https://claude.ai/code/artifact/592d97f2-2505-4e74-b968-1fc23353496e
 
