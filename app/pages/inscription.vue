@@ -269,9 +269,11 @@ usePageSeo(() => ({
       </NuxtLink>
     </div>
 
-    <!-- Accroche. L'illustration est hors flux et déborde de 28px sur la
-         bascule : c'est ce que fait la maquette, d'où le `z-index` plus bas. -->
-    <div class="relative flex items-start gap-10 pt-30 pb-97">
+    <!-- Accroche. L'illustration est hors flux et déborde sur la bascule, d'où
+         le `z-index` plus bas. `pb-62` (au lieu de 97, 2026-09-15) : l'espace
+         visible sous l'illustration a été réduit de 70 % sur demande — la
+         bascule, au-dessus, recouvre le blanc du bas de l'image. -->
+    <div class="relative flex items-start gap-10 pt-30 pb-62">
       <div class="relative z-1 min-h-[84.75px] min-w-0 flex-1">
         <h1 class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] text-text">
           {{ $t('auth.register.title') }}

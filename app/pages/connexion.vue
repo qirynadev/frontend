@@ -5,10 +5,10 @@
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
  * | logo | cadre 150×47 centré, `padding-bottom: 20px` |
- * | accroche | `.connexion-hero` `padding: 30px 0 7px`, `gap: 10px` · texte `flex: 1 1 0`, `min-height: 84.75px` |
+ * | accroche | `.connexion-hero` `padding-top: 30px` (marge basse de 7px retirée le 2026-09-15), `gap: 10px` · texte `flex: 1 1 0`, `min-height: 84.75px` |
  * | titre | 20px / 31,25px, `-0.625px`, insécable — sauf sous 360px |
  * | illustration | cadre 185×178, image 250×204 décalée de −41 / −26 · au-delà de 520px, cadre et image en pourcentage |
- * | bascule | `.auth-toggle` bord 1px, rayon 10, `padding: 7px`, `padding-top: 24px` |
+ * | bascule | `.auth-toggle` bord 1px, rayon 10, `padding: 7px` — `padding-top: 24px` retiré le 2026-09-15 (espace sous l'illustration réduit de 70 %) |
  * | carte | `padding: 25px 20px`, rayon 10, ombre `0 0 3.5px` · champs `gap: 22px` |
  * | oubli | rangée de 32px, alignée à droite, lien 12px souligné |
  * | envoi | `padding-top: 5px`, bouton `padding: 16px` |
@@ -193,8 +193,9 @@ usePageSeo(() => ({
       </NuxtLink>
     </div>
 
-    <!-- Accroche + illustration -->
-    <div class="flex items-start gap-10 pt-30 pb-7">
+    <!-- Accroche + illustration. Plus de marge basse (2026-09-15) : l'espace
+         visible sous l'illustration a été réduit de 70 % sur demande. -->
+    <div class="flex items-start gap-10 pt-30">
       <div class="min-h-[84.75px] min-w-0 flex-1">
         <h1
           class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] whitespace-nowrap text-text max-3xs:whitespace-normal"
@@ -221,7 +222,7 @@ usePageSeo(() => ({
     </div>
 
     <!-- Se connecter / S'inscrire -->
-    <div class="pt-24">
+    <div>
       <AuthToggle active="signIn" />
     </div>
 

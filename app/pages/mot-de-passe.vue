@@ -4,7 +4,7 @@
  *
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
- * | accroche | `pt-30 pb-22`, min-height 230 (30 + illus 178 + 22) · texte `min-height: 84.75px`, paragraphe `width: 165px` |
+ * | accroche | `pt-30 pb-22`, min-height 208 (30 + illus 178) · texte `min-height: 84.75px`, paragraphe `width: 165px` — espace sous l'illustration réduit de 70 % le 2026-09-15 |
  * | illustration | **absolue** `left: 185px`, `top: 30px`, 185×178 · image 228×181 décalée de −25 / 0 |
  * | carte | `padding: 25px 20px` · champs `padding-bottom: 20px` · envoi `padding-top: 5px` |
  * | séparateur | `padding: 14px 0`, libellé `padding: 0 16px`, en capitales |
@@ -212,8 +212,9 @@ usePageSeo(() => ({
       </NuxtLink>
     </div>
 
-    <!-- Accroche. L'illustration est hors flux ; le bas du bloc reste à 22px. -->
-    <div class="relative min-h-[230px] pt-30 pb-22">
+    <!-- Accroche. L'illustration est hors flux ; le bloc s'arrête au bas exact de
+         l'image (208 = 30 + 178) pour qu'elle ne recouvre pas la carte. -->
+    <div class="relative min-h-[208px] pt-30 pb-22">
       <div class="relative z-1 min-h-[84.75px]">
         <h1
           class="m-0 text-4xl leading-[31.25px] font-semibold tracking-[-0.625px] whitespace-nowrap text-text max-3xs:whitespace-normal"
@@ -240,7 +241,7 @@ usePageSeo(() => ({
     </div>
 
     <!-- Formulaire -->
-    <div class="pt-15 pb-20">
+    <div class="pt-2 pb-20">
       <div class="rounded-xl bg-white px-20 py-25 shadow-card">
         <QAlert
           v-if="formError"
