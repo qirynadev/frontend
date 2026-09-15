@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
- * Shell desktop — pleine largeur.
- * Auth (sans footer) : `h-dvh` verrouillé, pas de scroll page.
+ * Shell desktop — artboard Figma 1728 px, zoom uniforme (100vw / 1728).
+ * Auth (sans footer) : hauteur viewport verrouillée.
+ * Pages avec footer : le shell grandit, le footer défile avec le contenu.
  * Variantes via `definePageMeta({ desktopNav, desktopFooter })`.
  */
 const route = useRoute()
@@ -14,7 +15,6 @@ const navVariant = computed(() => {
 const showGlobalNav = computed(() => route.meta.desktopNav !== 'auth-card')
 const showFooter = computed(() => route.meta.desktopFooter !== false)
 const shellAuthCard = computed(() => route.meta.desktopNav === 'auth-card')
-/** Auth : contenu boxed ; la nav est pleine largeur (comme l’accueil). */
 const shellAuthColumn = computed(() =>
   route.meta.desktopNav === 'auth'
   || route.meta.desktopNav === 'auth-reset'
@@ -25,18 +25,18 @@ const shellAuthColumn = computed(() =>
 <template>
   <div
     id="q-shell-desktop"
-    class="flex w-full flex-col"
+    class="flex flex-col"
     :class="[
-      showFooter ? 'min-h-dvh' : 'h-dvh overflow-hidden',
       shellAuthCard ? 'bg-[#f2f1f6]' : 'bg-white',
+      showFooter ? '' : 'is-locked',
     ]"
   >
     <AppDesktopNav v-if="showGlobalNav" :variant="navVariant" />
-      <main
-      class="min-h-0 w-full flex-1"
+    <main
+      class="w-full flex-1"
       :class="[
-        showFooter ? 'overflow-y-auto' : 'overflow-hidden',
-        shellAuthColumn ? 'desktop-boxed flex flex-col' : '',
+        showFooter ? '' : 'min-h-0 overflow-hidden',
+        shellAuthColumn ? 'flex min-h-0 flex-col' : '',
       ]"
     >
       <slot />

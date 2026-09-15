@@ -52,7 +52,7 @@ function similarLocation(item: SchoolSummary) {
 </script>
 
 <template>
-  <div class="desktop-boxed flex items-start gap-23 pt-32 pb-32">
+  <div class="desktop-boxed desktop-split gap-23 pt-32 pb-32">
     <div class="flex min-w-0 flex-1 flex-col gap-23">
       <!-- Héros -->
       <div class="relative h-407 w-full overflow-hidden rounded-[16px] bg-[#0a1128] shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
@@ -213,7 +213,7 @@ function similarLocation(item: SchoolSummary) {
     </div>
 
     <!-- Colonne droite 334 -->
-    <aside class="flex w-334 shrink-0 flex-col gap-23">
+    <aside class="desktop-rail-sm flex flex-col gap-23">
       <div
         v-if="similarSchools.length > 0"
         class="flex w-full flex-col gap-12 rounded-[16px] border border-[#f9fafb] bg-white px-33 pt-30 pb-14 shadow-[0_0_3px_rgba(0,0,0,0.12)]"

@@ -2,6 +2,7 @@
 /**
  * Footer desktop ← chrome legacy (`Footer.vue`) : courbe, carrousel partenaires,
  * colonnes mentions / contact / newsletter, stores et réseaux.
+ * Pas de `lg:` / `flex-wrap` : le zoom 1728 du shell conserve la composition.
  */
 import { useCatalogStore } from '~/core/stores'
 
@@ -135,8 +136,8 @@ function onNewsletterSubmit(event: Event) {
         </div>
 
         <div :class="showCarousel ? 'mt-[-45px]' : 'pt-48'">
-          <div class="relative flex flex-wrap items-start justify-between px-4">
-            <div class="w-full lg:w-1/4">
+          <div class="relative flex items-start justify-between px-4">
+            <div class="w-1/4 shrink-0">
               <NuxtLink :to="localePath('/')" class="inline-flex items-start no-underline" :aria-label="$t('nav.home')">
                 <img
                   src="/img/desktop/logo-nav.png"
@@ -148,7 +149,7 @@ function onNewsletterSubmit(event: Event) {
               </NuxtLink>
             </div>
 
-            <div class="mt-[-10px] w-full lg:w-1/4">
+            <div class="mt-[-10px] w-1/4 shrink-0">
               <h3 class="my-10 text-[20px] font-medium text-white">{{ $t('desktop.footer.mention') }}</h3>
               <ul class="m-0 flex list-none flex-col p-0">
                 <li v-for="page in pages" :key="page.id" class="mt-15">
@@ -174,7 +175,7 @@ function onNewsletterSubmit(event: Event) {
               </ul>
             </div>
 
-            <div class="mt-[-10px] w-full lg:w-1/4">
+            <div class="mt-[-10px] w-1/4 shrink-0">
               <h3 class="my-10 text-[20px] font-medium text-white">{{ $t('desktop.footer.contactUs') }}</h3>
               <ul class="m-0 flex list-none flex-col gap-12 p-0">
                 <li v-if="settings?.email">
@@ -202,7 +203,7 @@ function onNewsletterSubmit(event: Event) {
               </ul>
             </div>
 
-            <div class="mt-[-10px] w-full ps-10 lg:w-1/4">
+            <div class="mt-[-10px] w-1/4 shrink-0 ps-10">
               <h3 class="my-10 text-[20px] font-medium text-white">{{ $t('desktop.footer.newsletter') }}</h3>
               <form
                 class="mt-20 mr-10 flex items-center justify-between rounded-full bg-white py-2 pr-2 pl-5"
@@ -229,7 +230,7 @@ function onNewsletterSubmit(event: Event) {
           </div>
 
           <div class="relative mt-30 flex justify-between border-t border-[#c0c0c0] pt-20">
-            <div class="w-full lg:w-1/2">
+            <div class="w-1/2 shrink-0">
               <span class="text-[14px] text-white">{{ $t('desktop.footer.download') }}</span>
               <ul class="mt-10 mb-0 flex list-none gap-10 p-0">
                 <li>
@@ -240,7 +241,7 @@ function onNewsletterSubmit(event: Event) {
                 </li>
               </ul>
             </div>
-            <div class="flex w-full items-center justify-end pe-3 lg:w-1/2">
+            <div class="flex w-1/2 shrink-0 items-center justify-end pe-3">
               <ul class="mb-8 flex list-none items-center gap-12 p-0">
                 <li class="me-12 text-[18px] text-white">{{ $t('desktop.footer.follow') }}</li>
                 <li v-for="social in settings?.socials ?? []" :key="social.name">

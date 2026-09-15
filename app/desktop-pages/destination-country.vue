@@ -81,7 +81,7 @@ const trustItems = computed(() => [
 
 <template>
   <div class="flex w-full flex-col items-center bg-white pb-30 text-[#1a1d2b]">
-    <section class="relative mb-[-36px] h-503 w-full overflow-hidden bg-white">
+    <section class="relative mb-[-36px] min-h-[503px] w-full overflow-hidden bg-white">
       <img
         :src="`${assetBase}/${screen.hero}`"
         alt=""
@@ -94,35 +94,21 @@ const trustItems = computed(() => [
         aria-hidden="true"
       />
 
-      <div class="desktop-boxed relative flex h-full items-start justify-between">
-        <div class="flex max-w-672 flex-col items-start pt-[93px] pr-64">
-          <div class="flex w-267 flex-col gap-12">
+      <div class="desktop-boxed desktop-split relative h-full justify-between">
+        <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start pt-93 pr-64">
+          <div class="flex w-full max-w-504 flex-col gap-12">
             <div class="flex w-full flex-col items-start gap-19">
               <span class="rounded-[6px] bg-[#fef2f2] px-12 py-4 text-[16px] leading-18 font-semibold tracking-[0.6px] text-[#ff1b40]">
                 {{ $t(`${i18n}.badge`) }}
               </span>
-              <div class="relative h-113 w-full">
-                <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
-                  <span class="block text-[#1a1a1a]">{{ $t(`${i18n}.titleBefore`) }}</span>
-                  <span class="block text-[#ff1b40]">{{ $t(`${i18n}.titleAccent`) }}</span>
-                </h1>
-                <span
-                  class="absolute overflow-clip"
-                  :class="screen.flag.class"
-                >
-                  <img
-                    :src="`${assetBase}/${screen.flag.src}`"
-                    alt=""
-                    :width="screen.flag.w"
-                    :height="screen.flag.h"
-                    class="block size-full object-contain"
-                  >
-                </span>
-              </div>
+              <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
+                <span class="block text-[#1a1a1a]">{{ $t(`${i18n}.titleBefore`) }}</span>
+                <span class="block text-[#ff1b40]">{{ $t(`${i18n}.titleAccent`) }}</span>
+              </h1>
             </div>
 
             <div class="flex w-full flex-col items-start gap-19">
-              <p class="m-0 w-504 max-w-none text-[18px] leading-26 font-medium tracking-[-0.32px] whitespace-pre-line text-black">
+              <p class="m-0 w-full max-w-504 text-[18px] leading-26 font-medium tracking-[-0.32px] whitespace-pre-line text-black">
                 {{ $t(`${i18n}.subtitle`) }}
               </p>
               <NuxtLink
@@ -138,7 +124,7 @@ const trustItems = computed(() => [
           </div>
         </div>
 
-        <aside class="mt-19 flex w-476 shrink-0 flex-col items-start gap-8 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+        <aside class="mt-19 flex desktop-rail flex-col items-start gap-8 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <h2 class="m-0 w-full text-[20px] leading-28 font-semibold tracking-[-0.46px] text-[#040c3d]">
             {{ $t(`${i18n}.domainsTitle`) }}
           </h2>
@@ -185,7 +171,7 @@ const trustItems = computed(() => [
       </div>
     </section>
 
-    <div class="desktop-boxed relative z-10 flex w-full items-start gap-24 pb-25">
+    <div class="desktop-boxed desktop-split relative z-10 w-full pb-25">
       <div class="flex min-w-0 flex-1 flex-col gap-25">
         <div class="flex w-full items-start justify-center gap-15 rounded-[9px] border border-[#f9fafb] bg-white px-21 py-18 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <template v-for="(stat, index) in stats" :key="stat.labelKey">
@@ -239,7 +225,7 @@ const trustItems = computed(() => [
         </div>
       </div>
 
-      <aside class="flex w-476 shrink-0 flex-col gap-32 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+      <aside class="flex desktop-rail flex-col gap-32 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
         <h2 class="m-0 text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
           {{ $t(`${i18n}.schoolsTitle`) }}
         </h2>
@@ -266,7 +252,7 @@ const trustItems = computed(() => [
       </aside>
     </div>
 
-    <div class="desktop-boxed relative z-10 flex w-full items-center gap-25">
+    <div class="desktop-boxed desktop-split relative z-10 w-full items-center">
       <div class="flex min-w-0 flex-1 items-center justify-between rounded-[9px] border border-[#f3f4f6] bg-white p-21">
         <div class="flex min-w-0 flex-1 items-center gap-15">
           <template v-for="(item, index) in trustItems" :key="index">
@@ -291,7 +277,7 @@ const trustItems = computed(() => [
         </div>
       </div>
 
-      <div class="relative flex w-476 shrink-0 items-center justify-between overflow-hidden rounded-[9px] bg-[#192339] px-20 py-25 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
+      <div class="relative flex desktop-rail items-center justify-between overflow-hidden rounded-[9px] bg-[#192339] px-20 py-25 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
         <div
           class="pointer-events-none absolute top-0 right-0 size-160 rounded-full bg-white/5 blur-[20px]"
           aria-hidden="true"

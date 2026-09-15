@@ -8,21 +8,39 @@ Référence : page **🖥️ Web** du fichier [Working_Files_Qiryrna](https://ww
 |---|---|---|
 | `--breakpoint-shell` | `768px` | Bascule mobile / desktop (`shell:`) |
 | Artboard Figma | `1728px` | Largeur de référence des maquettes Web |
+| Palier FHD | `1920px` | Maquette à l’échelle 1 + gouttières 150 px |
 
-## Gutters « boxed » (contenu applicatif)
+**Sous 1920 px** (13", 1366×768, etc.) : canevas 1728, `zoom: 100vw / 1728`. Même composition, pas de reflow.
+
+**Dès 1920 px** (FHD, 2K, 4K, 5K) : `zoom: 1`, shell pleine largeur, `.desktop-boxed` plafonné à 1728 px centré, padding 150 px (marges Figma). Le palier est une largeur CSS (`min-width: 1920px`) : la hauteur 1080 du FHD n’est pas exigée (barre d’OS / chrome du navigateur).
+
+## Wings internes (contenu boxed)
 
 Classe CSS : **`.desktop-boxed`**
 
+Le desktop est l’artboard Figma 1728 px. **Sous 1920 px**, un `zoom: 100vw / 1728` l’adapte sans reflow. **Dès 1920 px**, plus de zoom : gouttières boxed **150 px**, colonne max 1728 px centrée (marges Figma).
+
+Les 150 px sont un **padding interne** du canevas (wings), pas des marges autour d’une fenêtre.
+
 | Propriété | Valeur |
 |---|---|
-| `width` | `100%` |
-| `padding-inline` | `clamp(24px, 8.68vw, 150px)` |
+| `width` | `100%` du canevas 1728 |
+| `padding-inline` | `150px` |
 
-**Où l’appliquer :** navbar (`AppDesktopNav`), sections accueil (`desktop-pages/index.vue`), footer (`AppDesktopFooter`).
+**Où l’appliquer :** navbar (`AppDesktopNav`), sections accueil, pages pays / écoles.
 
-À 1728 px : gutter **150 px** de chaque côté → zone utile **1428 px**.
+Le footer est **dans** le canevas et défile avec la page. Auth (sans footer) : `#q-shell-desktop.is-locked`.
 
-Formule du clamp : `150 / 1728 ≈ 8,68 vw`.
+## Footer (`AppDesktopFooter`)
+
+Chrome legacy (courbe, carrousel, mentions / contact / newsletter, stores). Sous 1920 px, le zoom du canevas réduit l’ensemble sans reflow (`w-1/4` / `w-1/2`, pas de `lg:` ni de `flex-wrap`). Dès 1920 px, même composition à l’échelle 1.
+
+| Zone | Valeur |
+|---|---|
+| Courbe | pleine largeur du canevas |
+| Fond | `#273c66` · pleine largeur |
+| Colonne utile | `max-w-[1100px]` centrée |
+| Grille | 4 × `w-1/4` · barre bas 2 × `w-1/2` |
 
 ## Wings (écrans auth carte)
 
@@ -45,7 +63,7 @@ Variante **Inscription-V2** (`640:6`) : le contenu est une carte flottante sur f
 | Propriété | Valeur |
 |---|---|
 | Hauteur | `80px` → `h-80` |
-| Padding horizontal | `.desktop-boxed` (150 px max) |
+| Padding horizontal | `.desktop-boxed` (wings internes) |
 | Fond | `bg-white/70` + `backdrop-blur-sm` |
 | Bordure | `border-b #f1f1f3` |
 
@@ -135,7 +153,9 @@ definePageMeta({
 
 | Rôle | Fichier |
 |---|---|
-| Classe boxed | `app/assets/css/main.css` → `.desktop-boxed` |
+| Classe boxed | `app/assets/css/main.css` → `.desktop-boxed` (wings 150 px) |
+| Échelle uniforme | `app/assets/css/main.css` → `#q-shell-desktop` (`zoom: 100vw / 1728`) |
+| Footer | `app/components/navigation/AppDesktopFooter.vue` |
 | Shell | `app/layouts/desktop.vue` |
 | Nav shell | `app/components/navigation/AppDesktopNav.vue` |
 | Nav carte auth | `app/components/navigation/AppDesktopAuthCardNav.vue` |

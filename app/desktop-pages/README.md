@@ -46,7 +46,7 @@ mock. CTA : `?domaine=` → `/offres/{domaine}`, sinon `/orientation`.
 | Frame | [Mon projet](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=955-1230) (`955:1230`) |
 
 Branchement : `pages/mon-projet/index.vue` (mobile) et `desktop-pages/mon-projet.vue`.
-Le CTA **Profilage** de la navbar desktop pointe vers `/mon-projet` (middleware `auth`).
+Le CTA **Orientation** de la navbar desktop pointe vers `/orientation` (Figma Profilage `998:555`).
 
 Données = mêmes accompagnements que le mobile (`useProjetData` + mock si API vide).
 Libellés cartes Figma (« Intégrer une école », …) via `desktop.monProjet.*`.

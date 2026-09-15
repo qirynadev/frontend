@@ -73,6 +73,7 @@
       "housing": "Hébergement",
       "mba": "MBA",
       "profiling": "Profilage",
+      "orientation": "Orientation",
       "language": "Changer de langue",
       "countries": {
         "fr": "France",
@@ -298,6 +299,40 @@
         "de": "Allemagne",
         "es": "Espagne",
         "more": "Et plus encore"
+      }
+    },
+    "orientation": {
+      "badge": "Profilage & orientation",
+      "titleBefore": "Construisons ensemble",
+      "titleMid": "votre ",
+      "titleAccent": "avenir.",
+      "intro": "Répondez à quelques questions et obtenez des recommandations personnalisées adaptées à votre profil et à vos ambitions.",
+      "stat1Value": "+10 000",
+      "stat1Label": "profils analysés",
+      "stat2Value": "98%",
+      "stat2Label": "de satisfaction",
+      "stat3Value": "Experts",
+      "stat3Label": "en orientation",
+      "popular": "Populaire",
+      "trustPayTitle": "Paiement sécurisé",
+      "trustPayDesc": "Vos transactions sont protégées.",
+      "trustVisioTitle": "Entretiens en visio",
+      "trustVisioDesc": "100% interactifs.",
+      "trustExpertsTitle": "Experts en orientation",
+      "trustExpertsDesc": "Des professionnels à votre écoute.",
+      "guaranteeTitle": "Satisfait ou remboursé",
+      "guaranteeDesc": "Vous avez 7 jours après votre achat pour changer d'avis.",
+      "socialTitle": "Ils nous font confiance",
+      "socialCount": "+1000 étudiants accompagnés",
+      "audience": {
+        "title": "Votre sélection actuelle",
+        "lead": "Choisissez le type de situation qui vous correspond le mieux.",
+        "studentHighschool": "Élève",
+        "studentHighschoolDesc": "Vous êtes au lycée et préparez votre orientation post-bac.",
+        "studentUni": "Étudiant",
+        "studentUniDesc": "Vous êtes en études supérieures et souhaitez trouver votre voie ou vous réorienter.",
+        "pro": "Professionnel",
+        "proDesc": "Vous êtes en activité et souhaitez évoluer, changer de carrière ou vous reconvertir."
       }
     },
     "destination": {

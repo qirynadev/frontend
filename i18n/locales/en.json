@@ -73,6 +73,7 @@
       "housing": "Housing",
       "mba": "MBA",
       "profiling": "Profiling",
+      "orientation": "Guidance",
       "language": "Change language",
       "countries": {
         "fr": "France",
@@ -298,6 +299,40 @@
         "de": "Germany",
         "es": "Spain",
         "more": "And more"
+      }
+    },
+    "orientation": {
+      "badge": "Profiling & guidance",
+      "titleBefore": "Let's build together",
+      "titleMid": "your ",
+      "titleAccent": "future.",
+      "intro": "Answer a few questions and get personalised recommendations tailored to your profile and ambitions.",
+      "stat1Value": "+10,000",
+      "stat1Label": "profiles analysed",
+      "stat2Value": "98%",
+      "stat2Label": "satisfaction",
+      "stat3Value": "Experts",
+      "stat3Label": "in guidance",
+      "popular": "Popular",
+      "trustPayTitle": "Secure payment",
+      "trustPayDesc": "Your transactions are protected.",
+      "trustVisioTitle": "Video interviews",
+      "trustVisioDesc": "100% interactive.",
+      "trustExpertsTitle": "Guidance experts",
+      "trustExpertsDesc": "Professionals ready to listen.",
+      "guaranteeTitle": "Satisfied or refunded",
+      "guaranteeDesc": "You have 7 days after purchase to change your mind.",
+      "socialTitle": "They trust us",
+      "socialCount": "1,000+ students supported",
+      "audience": {
+        "title": "Your current selection",
+        "lead": "Choose the situation that fits you best.",
+        "studentHighschool": "High-school student",
+        "studentHighschoolDesc": "You are in high school and preparing your post-baccalaureate path.",
+        "studentUni": "University student",
+        "studentUniDesc": "You are in higher education and want to find your path or change direction.",
+        "pro": "Professional",
+        "proDesc": "You are working and want to grow, change career or retrain."
       }
     },
     "destination": {

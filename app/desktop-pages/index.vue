@@ -89,11 +89,10 @@ const housingTypes = [
       >
     </section>
 
-    <div class="mx-auto flex w-full max-w-[1400px] flex-col px-24 shell:px-0">
+    <div class="desktop-boxed flex w-full flex-col">
       <!-- ── Orientation ── -->
-      <section class="flex flex-col items-center gap-26 pt-30 pb-20 lg:flex-row lg:items-center">
-        <div class="relative flex min-w-0 flex-1 items-start gap-10">
-          <div class="flex w-full shrink-0 flex-col justify-center lg:w-[472px]">
+      <section class="desktop-home-band pt-30 pb-20">
+        <div class="desktop-home-copy flex flex-col justify-center">
             <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
               <img :src="`${ASSET}/badge-orientation.svg`" alt="" width="12" height="12" class="size-12 shrink-0">
               {{ $t('desktop.home.orientation.badge') }}
@@ -122,16 +121,12 @@ const housingTypes = [
                 {{ $t('desktop.home.orientation.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16">
               </NuxtLink>
-              <span class="inline-flex items-center gap-8 text-[14px] leading-20 font-medium text-[#2c2c2c]">
-                <img :src="`${ASSET}/cta-play.svg`" alt="" width="20" height="20" class="size-20">
-                {{ $t('desktop.home.howItWorks') }}
-              </span>
             </div>
           </div>
 
-          <div class="relative hidden h-469 w-495 shrink-0 lg:block">
+        <div class="desktop-home-media desktop-home-media--short">
             <img :src="`${ASSET}/orientation-photo.png`" alt="" class="absolute inset-0 size-full object-cover object-[center_20%]">
-            <div class="absolute top-104 left-[271px] flex h-223 w-280 flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
+            <div class="absolute top-[22%] left-[55%] flex w-[min(280px,58%)] flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
               <p class="m-0 text-[14px] leading-20 font-bold text-[#242424]">{{ $t('desktop.home.orientation.resultsTitle') }}</p>
               <ul class="m-0 mt-16 flex list-none flex-col gap-12 p-0">
                 <li v-for="i in 4" :key="i" class="flex items-center gap-8 text-[11px] leading-[16.5px] font-medium text-[#141414]">
@@ -145,9 +140,8 @@ const housingTypes = [
               </p>
             </div>
           </div>
-        </div>
 
-        <div class="w-full rounded-16 border border-[#f3f4f6] bg-white p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)] lg:w-342 lg:shrink-0">
+        <div class="desktop-home-card rounded-16 border border-[#f3f4f6] bg-white p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <h3 class="m-0 text-[14px] leading-20 font-bold text-[#242424]">{{ $t('desktop.home.orientation.satTitle') }}</h3>
           <div class="mt-20 flex items-center gap-24">
             <div class="relative size-[111px] shrink-0">
@@ -173,9 +167,8 @@ const housingTypes = [
       </section>
 
       <!-- ── Fiches écoles ── -->
-      <section class="flex flex-col items-start gap-26 py-20 lg:flex-row">
-        <div class="relative flex min-w-0 flex-1 items-start gap-10">
-          <div class="flex w-full shrink-0 flex-col justify-center lg:w-564">
+      <section class="desktop-home-band py-20">
+        <div class="desktop-home-copy flex flex-col justify-center">
             <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
               <img :src="`${ASSET}/badge-school.svg`" alt="" width="12" height="8" class="h-8 w-12 shrink-0">
               {{ $t('desktop.home.school.badge') }}
@@ -201,24 +194,19 @@ const housingTypes = [
                 {{ $t('desktop.home.school.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16">
               </NuxtLink>
-              <span class="inline-flex items-center gap-8 text-[14px] leading-20 font-medium text-[#2c2c2c]">
-                <img :src="`${ASSET}/cta-play.svg`" alt="" width="20" height="20" class="size-20">
-                {{ $t('desktop.home.howItWorks') }}
-              </span>
             </div>
           </div>
 
-          <div class="relative hidden h-555 w-495 shrink-0 lg:block">
+        <div class="desktop-home-media desktop-home-media--tall">
             <img :src="`${ASSET}/school-photo.jpg`" alt="" class="size-full object-contain">
             <img
               :src="`${ASSET}/school-comparatif.png`"
               alt=""
-              class="absolute top-87 left-[249px] h-324 w-302 rounded-[10px] border border-[#f3f5fb] object-cover"
+              class="absolute top-[15.7%] left-[50.3%] h-auto w-[61%] rounded-[10px] border border-[#f3f5fb] object-cover"
             >
           </div>
-        </div>
 
-        <div class="flex w-full flex-col lg:w-[342px] lg:shrink-0">
+        <div class="desktop-home-card flex flex-col">
           <div class="rounded-16 border border-[#f3f5fb] bg-white p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
             <h3 class="m-0 text-[14px] leading-20 font-bold">{{ $t('desktop.home.school.destTitle') }}</h3>
             <div class="mt-16 grid grid-cols-2 gap-16">
@@ -253,9 +241,8 @@ const housingTypes = [
       </section>
 
       <!-- ── Langues ── -->
-      <section class="flex flex-col items-center gap-26 py-20 lg:flex-row">
-        <div class="relative flex min-w-0 flex-1 items-start gap-10">
-          <div class="flex w-full shrink-0 flex-col justify-center lg:max-w-[472px]">
+      <section class="desktop-home-band py-20">
+        <div class="desktop-home-copy flex flex-col justify-center">
             <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
               <img :src="`${ASSET}/badge-lang.svg`" alt="" width="14" height="14" class="size-14 shrink-0">
               {{ $t('desktop.home.languages.badge') }}
@@ -281,18 +268,13 @@ const housingTypes = [
                 {{ $t('desktop.home.languages.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16">
               </NuxtLink>
-              <span class="inline-flex items-center gap-8 text-[14px] leading-20 font-medium text-[#2c2c2c]">
-                <img :src="`${ASSET}/cta-play.svg`" alt="" width="20" height="20" class="size-20">
-                {{ $t('desktop.home.howItWorks') }}
-              </span>
             </div>
           </div>
-          <div class="hidden h-469 w-495 shrink-0 lg:block">
+        <div class="desktop-home-media desktop-home-media--short">
             <img :src="`${ASSET}/languages-photo.png`" alt="" class="size-full object-contain">
           </div>
-        </div>
 
-        <div class="flex w-full flex-col lg:w-[342px] lg:shrink-0">
+        <div class="desktop-home-card flex flex-col">
           <div class="rounded-16 border border-[#f3f5fb] bg-white p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
             <h3 class="m-0 text-[14px] leading-20 font-bold">{{ $t('desktop.home.languages.listTitle') }}</h3>
             <ul class="m-0 mt-16 flex list-none flex-col p-0">
@@ -319,9 +301,8 @@ const housingTypes = [
       </section>
 
       <!-- ── Hébergement ── -->
-      <section class="flex flex-col items-start gap-26 border-b border-[#f3f4f6] pt-20 pb-50 lg:flex-row">
-        <div class="relative flex min-w-0 flex-1 items-start gap-10">
-          <div class="flex w-full min-w-0 flex-col justify-center">
+      <section class="desktop-home-band border-b border-[#f3f4f6] pt-20 pb-50">
+        <div class="desktop-home-copy flex min-w-0 flex-col justify-center">
             <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
               <img :src="`${ASSET}/badge-housing.svg`" alt="" width="14" height="14" class="size-14 shrink-0">
               {{ $t('desktop.home.housing.badge') }}
@@ -353,9 +334,9 @@ const housingTypes = [
             </div>
           </div>
 
-          <div class="relative hidden h-555 w-495 shrink-0 lg:block">
+        <div class="desktop-home-media desktop-home-media--tall">
             <img :src="`${ASSET}/housing-photo.png`" alt="" class="size-full object-contain object-bottom">
-            <div class="absolute top-80 left-[277px] flex w-260 flex-col gap-12">
+            <div class="absolute top-[14.4%] left-[56%] flex w-[min(260px,53%)] flex-col gap-12">
               <div
                 v-for="item in housingTypes"
                 :key="item.title"
@@ -371,16 +352,15 @@ const housingTypes = [
                 <img :src="item.thumb" alt="" width="48" height="40" class="h-40 w-48 shrink-0 rounded-[4px] object-cover shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
               </div>
             </div>
-            <div class="absolute top-146 left-42 flex max-w-160 items-center gap-12 rounded-full bg-white p-12">
+            <div class="absolute top-[26%] left-[8.5%] flex max-w-160 items-center gap-12 rounded-full bg-white p-12">
               <span class="flex size-36 shrink-0 items-center justify-center rounded-full bg-[#fceff0]">
                 <img :src="`${ASSET}/type-appart.svg`" alt="" width="20" height="20" class="size-20">
               </span>
               <p class="m-0 text-[11px] leading-[15px] font-semibold text-[#131b33] whitespace-pre-line">{{ $t('desktop.home.housing.homeLabel') }}</p>
             </div>
           </div>
-        </div>
 
-        <div class="flex w-full flex-col lg:w-[342px] lg:shrink-0">
+        <div class="desktop-home-card flex flex-col">
           <div class="rounded-16 border border-[#f3f4f6] bg-white p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
             <h3 class="m-0 text-[14px] leading-20 font-bold">{{ $t('desktop.home.housing.destTitle') }}</h3>
             <div class="mt-16 grid grid-cols-3 gap-16">

@@ -17,7 +17,6 @@ export interface DesktopCountryScreen {
   assetBase: string
   i18n: string
   hero: string
-  flag: { src: string, w: number, h: number, class: string }
   domains: DesktopCountryDomain[]
   stats: { valueKey: string, labelKey: string, bold: boolean }[]
   schools: { w: number, h: number }[]
@@ -38,7 +37,6 @@ export const desktopCountryScreens: Record<DesktopCountrySlug, DesktopCountryScr
     assetBase: '/img/desktop/destination/canada',
     i18n: 'desktop.destination.canada',
     hero: 'hero-canada.jpg',
-    flag: { src: 'flag.svg', w: 47, h: 31, class: 'top-[69px] left-[176px] h-31 w-47' },
     domains: sixDomains,
     stats: [
       { valueKey: 'stat1Value', labelKey: 'stat1Label', bold: false },
@@ -67,7 +65,6 @@ export const desktopCountryScreens: Record<DesktopCountrySlug, DesktopCountryScr
     assetBase: '/img/desktop/destination/angleterre',
     i18n: 'desktop.destination.angleterre',
     hero: 'hero-angleterre.jpg',
-    flag: { src: 'flag.svg', w: 36, h: 36, class: 'top-[69px] left-[233px] size-36' },
     domains: sixDomains,
     stats: [
       { valueKey: 'stat1Value', labelKey: 'stat1Label', bold: false },
@@ -96,7 +93,6 @@ export const desktopCountryScreens: Record<DesktopCountrySlug, DesktopCountryScr
     assetBase: '/img/desktop/destination/usa',
     i18n: 'desktop.destination.usa',
     hero: 'hero-usa.jpg',
-    flag: { src: 'flag.svg', w: 39, h: 39, class: 'top-[63px] left-[106px] size-[39px]' },
     domains: sixDomains,
     stats: [
       { valueKey: 'stat1Value', labelKey: 'stat1Label', bold: false },

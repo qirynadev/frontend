@@ -21,6 +21,8 @@
  * `.osp-bilan` (encart de prix) existe dans `app.css` mais n'apparaît nulle
  * part dans le HTML de la maquette : bloc CSS mort, non reproduit.
  */
+import DesktopOrientation from '~/desktop-pages/orientation.vue'
+
 const path = ref<'moi' | 'enfant'>('moi')
 const localePath = useLocalePath()
 const { t } = useI18n()
@@ -69,6 +71,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
+  <div class="shell:hidden">
   <AppTopBar back back-to="/" :gap="0" />
 
   <!-- Introduction -->
@@ -214,4 +217,9 @@ usePageSeo(() => ({
   </div>
 
   <TrustStrip class="mt-22" />
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopOrientation />
+  </div>
 </template>

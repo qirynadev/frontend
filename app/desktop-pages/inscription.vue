@@ -61,8 +61,8 @@ const trustItems = [
 </script>
 
 <template>
-  <!-- Wings + carte — boxed porté par le layout (même colonne que nav). -->
-  <div class="box-border flex h-full min-h-0 flex-col py-30">
+  <!-- Wings internes 30 px (fond gris du shell) + carte. -->
+  <div class="box-border flex h-full min-h-0 flex-col p-30">
     <div
       class="relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-[50px] bg-white shadow-[0_18px_10px_rgba(112,144,176,0.1)]"
     >
