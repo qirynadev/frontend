@@ -6,8 +6,10 @@
  * titre/sous-titre communs (`offer.title` / `offer.subtitle`), CTA plein.
  *
  * **Niveau de langue** (2026-09-13) : quand les paliers d'une langue sont
- * déclinés par niveau, des onglets « Où vous en êtes » filtrent les paliers et
- * chaque carte affiche l'objectif propre au niveau. Le niveau vit dans l'URL
+ * déclinés par niveau, des onglets filtrent les paliers et chaque carte affiche
+ * l'objectif propre au niveau. Les onglets se lisent seuls : leur intitulé
+ * visible a été retiré (2026-09-16), `offer.levelLabel` ne sert plus qu'au
+ * lecteur d'écran via `aria-label`. Le niveau vit dans l'URL
  * (`?niveau=`), choisi sur `/langues` et modifiable ici. Un palier sans
  * déclinaison reste affiché à tous les niveaux ; une langue sans aucune
  * déclinaison affiche ses paliers comme avant, sans onglets.
@@ -87,7 +89,7 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
 
       <template v-if="offer">
         <div class="flex w-full flex-col gap-22">
-          <div class="w-full pb-8">
+          <div class="w-full" :class="{ 'pb-8': levelOptions.length === 0 }">
             <h1 class="m-0 text-exact-16 leading-normal font-semibold tracking-tight text-text">
               {{ $t('offer.title') }}
             </h1>
@@ -96,12 +98,13 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
             </p>
           </div>
 
-          <!-- Où vous en êtes — seulement si la langue est déclinée par niveau -->
-          <div v-if="levelOptions.length > 0" class="w-full">
-            <p class="m-0 pb-8 text-md leading-16 font-medium text-muted">
-              {{ $t('offer.levelLabel') }}
-            </p>
-            <div role="tablist" :aria-label="$t('offer.levelLabel')" class="flex w-full gap-4 rounded-xl bg-surface-2 p-4">
+          <!-- Onglets de niveau — seulement si la langue est déclinée par niveau -->
+          <div
+            v-if="levelOptions.length > 0"
+            role="tablist"
+            :aria-label="$t('offer.levelLabel')"
+            class="flex w-full gap-4 rounded-xl bg-surface-2 p-4"
+          >
               <button
                 v-for="option in levelOptions"
                 :key="option.key"
