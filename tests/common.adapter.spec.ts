@@ -7,9 +7,9 @@ import { rawHome, rawMenu, rawPage, rawSettings } from './fixtures/all-data'
 describe('toCountry', () => {
   it('unifie les deux formes renvoyées par l’API', () => {
     // Forme « destination ».
-    expect(toCountry({ id: 73, name: 'France', iso_alpha_2: 'FR' })).toEqual({ id: '73', name: 'France', code: 'FR', flag: null })
+    expect(toCountry({ id: 73, name: 'France', iso_alpha_2: 'FR', international_phone: '33' })).toEqual({ id: '73', name: 'France', code: 'FR', phoneCode: '33', flag: null })
     // Forme « école ».
-    expect(toCountry({ name: 'France' })).toEqual({ id: null, name: 'France', code: null, flag: null })
+    expect(toCountry({ name: 'France' })).toEqual({ id: null, name: 'France', code: null, phoneCode: null, flag: null })
   })
 
   it('met le code en majuscules et supporte les alias', () => {
@@ -17,8 +17,14 @@ describe('toCountry', () => {
     expect(toCountry({ name: 'Canada', iso: 'ca' }).code).toBe('CA')
   })
 
+  it('remonte l’indicatif téléphonique quand l’API le fournit', () => {
+    // `international_phone` alimente le sélecteur d’indicatif du profil.
+    expect(toCountry({ name: 'Côte d’Ivoire', international_phone: '225' }).phoneCode).toBe('225')
+    expect(toCountry({ name: 'France' }).phoneCode).toBeNull()
+  })
+
   it('ne lève pas sur une entrée absente', () => {
-    expect(toCountry(null)).toEqual({ id: null, name: '', code: null, flag: null })
+    expect(toCountry(null)).toEqual({ id: null, name: '', code: null, phoneCode: null, flag: null })
   })
 })
 

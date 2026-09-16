@@ -16,6 +16,7 @@ export function toCountry(raw: unknown, flagBase?: string): Country {
     id: optionalStr(source, 'id'),
     name: str(source, 'name'),
     code: normalized,
+    phoneCode: optionalStr(source, 'international_phone'),
     // Le drapeau fourni tel quel l'emporte (les langues en ont un) ; sinon on
     // le déduit du code ISO, quand l'appelant nous a donné l'hôte de l'API.
     flag: toUrl(source.country_flag) ?? toUrl(source.flag) ?? flagUrl(normalized, flagBase),

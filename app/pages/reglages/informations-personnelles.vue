@@ -6,7 +6,6 @@
  * |---|---|
  * | sections | `gap-22` (norme produit ; Figma 24px) entre topbar / intro / cartes |
  * | cartes | rayon 16, filet `rp-card-border`, ombre `shadow-rp-card`, fond blanc |
- * | photo | avatar 72 · pastille caméra 27 · CTA outline `rp-photo-cta` |
  * | champs | tuile 46×46 + label 11px `rp-label` + input h-46 rayon 12 |
  * | danger | pastille 48 `rp-delete-bg` · chevron rouge |
  *
@@ -14,6 +13,11 @@
  * réellement en base. L'e-mail reste en lecture seule (champ non pris en
  * charge par cet endpoint, jamais transmis) ; le pays est un identifiant
  * réel (`lc_country_id`, `countryRepo`), plus un texte libre.
+ *
+ * 2026-09-16 : la photo de profil et la ville sont retirées de cet écran —
+ * la photo n'apportait rien au dossier, la ville n'était exploitée nulle part.
+ * Le téléphone passe après le pays, pour que l’indicatif se lise dans la
+ * foulée du pays choisi.
  */
 import { ApiError } from '~/core/http/errors'
 import { authRepo, countryRepo } from '~/core/repositories'
@@ -30,38 +34,71 @@ const ICON = '/img/icons/reglages-profil'
 const profile = session.user?.profile
 const firstName = ref(profile?.firstName ?? '')
 const lastName = ref(profile?.lastName ?? '')
-const phone = ref(profile?.phone ?? '')
 const birthDate = ref(profile?.birthday ?? '')
 const countryId = ref(profile?.country?.id ?? '')
-const city = ref(profile?.city ?? '')
 
 const { data: countries } = await useAsyncData('countries', () => countryRepo.list(locale.value), { watch: [locale] })
 
-const photoUrl = computed(() => session.user?.profile.photo ?? session.user?.avatar ?? null)
+/**
+ * Indicatif et numéro vivent séparément à l'écran, mais l'API ne connaît
+ * qu'un seul champ `phone` (texte libre). On les recompose à l'envoi et on les
+ * redécoupe à la relecture — sans quoi un numéro déjà préfixé repartirait avec
+ * deux indicatifs.
+ *
+ * La longueur d'un indicatif ne se devine pas : `+33612345678` se découpe en
+ * `33` + `612345678`, pas en `3361` + `2345678`. On la reconnaît donc dans la
+ * liste réelle des pays, le plus long candidat l'emportant (`1242` avant `1`).
+ * D'où le découpage ici, après le chargement des pays, et non plus avant.
+ */
+function decouper(brut: string, codes: string[]): { code: string, numero: string } {
+  const valeur = brut.trim()
+  if (!valeur.startsWith('+')) return { code: '', numero: valeur }
 
-/** Aperçu local après sélection ; le fichier réel part avec l'enregistrement. */
-const localPhoto = ref<string | null>(null)
-const selectedPhoto = ref<File | null>(null)
-const displayPhoto = computed(() => localPhoto.value ?? photoUrl.value)
+  const chiffres = valeur.slice(1)
+  const trouve = [...codes]
+    .sort((a, b) => b.length - a.length)
+    .find((c) => chiffres.startsWith(c))
 
-const fileInput = useTemplateRef<HTMLInputElement>('fileInput')
-
-function openPhotoPicker() {
-  fileInput.value?.click()
+  if (!trouve) return { code: '', numero: valeur }
+  return { code: trouve, numero: chiffres.slice(trouve.length).replace(/^[\s.-]+/, '') }
 }
 
-function onPhotoSelected(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file || !file.type.startsWith('image/')) return
-  if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
-  localPhoto.value = URL.createObjectURL(file)
-  selectedPhoto.value = file
-  input.value = ''
-}
+const decoupe = decouper(
+  profile?.phone ?? '',
+  (countries.value ?? []).map((c) => c.phoneCode).filter((c): c is string => !!c),
+)
+const phone = ref(decoupe.numero)
+const phoneCode = ref(decoupe.code)
 
-onBeforeUnmount(() => {
-  if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
+/** Les pays dont l'API donne l'indicatif (`international_phone`), par nom. */
+const indicatifs = computed(() =>
+  (countries.value ?? [])
+    .filter((c) => c.phoneCode)
+    .sort((a, b) => a.name.localeCompare(b.name)),
+)
+
+/**
+ * Changer de pays réaligne l'indicatif : c'est tout l'intérêt d'avoir mis le
+ * téléphone après le pays. Le numéro saisi, lui, n'est jamais touché.
+ */
+watch(countryId, (id) => {
+  const pays = (countries.value ?? []).find((c) => c.id === id)
+  if (pays?.phoneCode) phoneCode.value = pays.phoneCode
+})
+
+/** À la première ouverture, un numéro sans indicatif hérite de celui du pays. */
+onMounted(() => {
+  if (phoneCode.value) return
+  const pays = (countries.value ?? []).find((c) => c.id === countryId.value)
+  if (pays?.phoneCode) phoneCode.value = pays.phoneCode
+})
+
+/** Ce qui part réellement à l'API : indicatif + numéro, jamais l'un sans l'autre. */
+const numeroComplet = computed(() => {
+  const numero = phone.value.trim()
+  if (!numero) return ''
+  if (numero.startsWith('+')) return numero
+  return phoneCode.value ? `+${phoneCode.value} ${numero}` : numero
 })
 
 const saving = ref(false)
@@ -75,11 +112,9 @@ async function save() {
     const updated = await authRepo.updateProfile({
       firstName: firstName.value,
       lastName: lastName.value,
-      phone: phone.value,
+      phone: numeroComplet.value,
       countryId: countryId.value,
-      city: city.value || undefined,
       birthday: birthDate.value || null,
-      photo: selectedPhoto.value,
     }, locale.value)
     session.apply({ user: updated, pendingPayment: session.pendingPayment })
     await navigateTo(localePath('/'))
@@ -113,67 +148,6 @@ usePageSeo(() => ({
         </p>
       </section>
 
-      <!-- Photo de profil -->
-      <section class="rp-card box-border flex w-full flex-col rounded-[16px] border border-rp-card-border bg-white px-20 py-16 shadow-rp-card">
-        <h2 class="m-0 text-exact-16 leading-24 font-semibold text-rp-input">
-          {{ $t('settingsPersonal.photoTitle') }}
-        </h2>
-
-        <div class="mt-16 flex h-88 w-full items-center">
-          <!-- Cercle avatar (overflow) + pastille caméra hors cercle, cliquable -->
-          <div class="relative size-72 shrink-0">
-            <div class="flex size-72 items-center justify-center overflow-hidden rounded-full bg-rp-avatar-bg">
-              <img
-                v-if="displayPhoto"
-                :src="displayPhoto"
-                alt=""
-                class="size-full object-cover"
-                width="72"
-                height="72"
-              >
-              <img
-                v-else
-                :src="`${ICON}/ic-rp-avatar-user.svg`"
-                alt=""
-                width="32"
-                height="32"
-                class="block size-32"
-              >
-            </div>
-
-            <button
-              type="button"
-              class="absolute top-[52px] left-[45px] z-1 flex size-27 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-rp-camera-border bg-rp-avatar-bg p-0"
-              :aria-label="$t('settingsPersonal.photoCta')"
-              @click="openPhotoPicker"
-            >
-              <img :src="`${ICON}/ic-rp-camera.svg`" alt="" width="16" height="16" class="block size-16">
-            </button>
-
-            <input
-              ref="fileInput"
-              type="file"
-              accept="image/*"
-              class="sr-only"
-              tabindex="-1"
-              @change="onPhotoSelected"
-            >
-          </div>
-
-          <div class="flex min-w-0 flex-1 flex-col items-start pl-16">
-            <p class="m-0 text-base leading-15 font-normal text-rp-photo-hint">
-              {{ $t('settingsPersonal.photoHint') }}
-            </p>
-            <button
-              type="button"
-              class="mt-8 box-border flex h-34 w-[140.766px] cursor-pointer items-center justify-center rounded-lg border border-rp-photo-cta-border bg-transparent px-0 text-xl leading-20 font-medium text-rp-photo-cta"
-              @click="openPhotoPicker"
-            >
-              {{ $t('settingsPersonal.photoCta') }}
-            </button>
-          </div>
-        </div>
-      </section>
 
       <!-- Informations -->
       <section class="rp-card box-border flex w-full flex-col gap-20 rounded-[16px] border border-rp-card-border bg-white p-20 shadow-rp-card">
@@ -237,22 +211,6 @@ usePageSeo(() => ({
             </span>
           </label>
 
-          <!-- Téléphone -->
-          <label class="flex w-full items-end gap-11" for="rp-phone">
-            <img :src="`${ICON}/ic-rp-phone-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
-            <span class="flex min-w-0 flex-1 flex-col items-start">
-              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.phone') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
-                <input
-                  id="rp-phone"
-                  v-model="phone"
-                  type="tel"
-                  autocomplete="tel"
-                  class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
-                >
-              </span>
-            </span>
-          </label>
 
           <!-- Date de naissance -->
           <label class="flex w-full items-end gap-11" for="rp-birthDate">
@@ -289,22 +247,33 @@ usePageSeo(() => ({
             </span>
           </label>
 
-          <!-- Ville -->
-          <label class="flex w-full items-end gap-11" for="rp-city">
-            <img :src="`${ICON}/ic-rp-city-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+          <!-- Téléphone -->
+          <label class="flex w-full items-end gap-11" for="rp-phone">
+            <img :src="`${ICON}/ic-rp-phone-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
-              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.city') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
+              <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.phone') }}</span>
+              <span class="mt-4 box-border flex h-46 w-full items-center gap-8 overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
+                <select
+                  v-model="phoneCode"
+                  :aria-label="$t('settingsPersonal.phoneCodeLabel')"
+                  class="w-84 shrink-0 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+                >
+                  <option value="">—</option>
+                  <option v-for="c in indicatifs" :key="c.id ?? c.name" :value="c.phoneCode">
+                    +{{ c.phoneCode }} {{ c.code }}
+                  </option>
+                </select>
                 <input
-                  id="rp-city"
-                  v-model="city"
-                  type="text"
-                  autocomplete="address-level2"
+                  id="rp-phone"
+                  v-model="phone"
+                  type="tel"
+                  autocomplete="tel"
                   class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
                 >
               </span>
             </span>
           </label>
+
         </div>
       </section>
 

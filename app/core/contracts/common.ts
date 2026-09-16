@@ -20,6 +20,14 @@ export interface Country {
   /** ISO 3166-1 alpha-2 en majuscules, ou `null` si l'API ne l'a pas fourni. */
   code: string | null
   /**
+   * Indicatif téléphonique international, sans `+` (`"33"`, `"225"`).
+   *
+   * `international_phone` côté API. Sert le sélecteur d'indicatif du
+   * formulaire profil : le pays étant saisi juste avant le téléphone,
+   * l'indicatif se déduit sans rien demander de plus à l'utilisateur.
+   */
+  phoneCode: string | null
+  /**
    * Drapeau **SVG** servi par le back-office
    * (`/vendor/blade-flags/country-fr.svg`).
    *

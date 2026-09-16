@@ -1777,7 +1777,6 @@
   },
   "settingsPersonal": {
     "birthDate": "Date de naissance",
-    "city": "Ville",
     "country": "Pays de résidence",
     "countryPlaceholder": "Choisissez votre pays",
     "deleteDesc": "Cette action est irréversible. Toutes vos données seront définitivement supprimées.",
@@ -1788,9 +1787,7 @@
     "intro": "Modifiez vos informations personnelles.",
     "lastName": "Nom",
     "phone": "Téléphone",
-    "photoCta": "Modifier la photo",
-    "photoHint": "Ajoutez une photo pour personnaliser votre profil.",
-    "photoTitle": "Photo de profil",
+    "phoneCodeLabel": "Indicatif du pays",
     "save": "Enregistrer mes informations",
     "saveError": "Impossible d'enregistrer vos informations. Réessayez dans un instant.",
     "saving": "Enregistrement…",

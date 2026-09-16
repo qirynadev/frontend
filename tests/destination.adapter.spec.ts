@@ -24,7 +24,7 @@ describe('réponse nominale', () => {
   })
 
   it('normalise le pays', () => {
-    expect(toDestination(rawDestination).country).toEqual({ id: '73', name: 'France', code: 'FR', flag: null })
+    expect(toDestination(rawDestination).country).toEqual({ id: '73', name: 'France', code: 'FR', phoneCode: null, flag: null })
   })
 
   it('expose les écoles en version légère, sans présentation HTML', () => {
@@ -84,7 +84,7 @@ describe('champs manquants', () => {
     expect(empty.title).toBe('')
     expect(empty.schools).toEqual([])
     expect(empty.image).toBeNull()
-    expect(empty.country).toEqual({ id: null, name: '', code: null, flag: null })
+    expect(empty.country).toEqual({ id: null, name: '', code: null, phoneCode: null, flag: null })
     // Pas de repli inventé (`Canada` n’a par ex. aucune statistique sur stage) :
     // un tableau vide, à charge de la page d’afficher « - » pour chaque pastille.
     expect(empty.stats).toEqual([])
