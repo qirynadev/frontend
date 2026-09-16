@@ -77,18 +77,33 @@ const indicatifs = computed(() =>
     .sort((a, b) => a.name.localeCompare(b.name)),
 )
 
+/** Drapeau déduit du code ISO (`FR` → 🇫🇷) : une `<option>` n'accepte pas d'image. */
+function drapeau(code: string | null): string {
+  if (!code || code.length !== 2) return ''
+  return [...code.toUpperCase()]
+    .map((lettre) => String.fromCodePoint(127397 + lettre.charCodeAt(0)))
+    .join('')
+}
+
 /**
- * Changer de pays réaligne l'indicatif : c'est tout l'intérêt d'avoir mis le
- * téléphone après le pays. Le numéro saisi, lui, n'est jamais touché.
+ * Un numéro déjà enregistré ne suit jamais le pays.
+ *
+ * On vit à un endroit et on garde le numéro d'un autre : réaligner
+ * l'indicatif sur le pays de résidence corromprait un numéro valide, sans
+ * que le client s'en aperçoive. L'indicatif ne se déduit donc du pays que
+ * pour un profil qui n'avait pas encore de téléphone — et il reste
+ * modifiable à la main dans tous les cas.
  */
+const numeroPreexistant = (profile?.phone ?? '').trim() !== ''
+
 watch(countryId, (id) => {
+  if (numeroPreexistant) return
   const pays = (countries.value ?? []).find((c) => c.id === id)
   if (pays?.phoneCode) phoneCode.value = pays.phoneCode
 })
 
-/** À la première ouverture, un numéro sans indicatif hérite de celui du pays. */
 onMounted(() => {
-  if (phoneCode.value) return
+  if (numeroPreexistant || phoneCode.value) return
   const pays = (countries.value ?? []).find((c) => c.id === countryId.value)
   if (pays?.phoneCode) phoneCode.value = pays.phoneCode
 })
@@ -256,11 +271,11 @@ usePageSeo(() => ({
                 <select
                   v-model="phoneCode"
                   :aria-label="$t('settingsPersonal.phoneCodeLabel')"
-                  class="w-84 shrink-0 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+                  class="w-96 shrink-0 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
                 >
                   <option value="">—</option>
                   <option v-for="c in indicatifs" :key="c.id ?? c.name" :value="c.phoneCode">
-                    +{{ c.phoneCode }} {{ c.code }}
+                    {{ drapeau(c.code) }} +{{ c.phoneCode }}
                   </option>
                 </select>
                 <input

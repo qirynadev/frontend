@@ -21,6 +21,9 @@ describe('toCountry', () => {
     // `international_phone` alimente le sélecteur d’indicatif du profil.
     expect(toCountry({ name: 'Côte d’Ivoire', international_phone: '225' }).phoneCode).toBe('225')
     expect(toCountry({ name: 'France' }).phoneCode).toBeNull()
+    // Ponctué côté API : seuls les chiffres comptent, sinon l'indicatif ne se
+    // reconnaît plus dans un numéro déjà enregistré.
+    expect(toCountry({ name: 'Antigua-et-Barbuda', international_phone: '1-268' }).phoneCode).toBe('1268')
   })
 
   it('ne lève pas sur une entrée absente', () => {

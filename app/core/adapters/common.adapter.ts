@@ -16,7 +16,10 @@ export function toCountry(raw: unknown, flagBase?: string): Country {
     id: optionalStr(source, 'id'),
     name: str(source, 'name'),
     code: normalized,
-    phoneCode: optionalStr(source, 'international_phone'),
+    // `international_phone` arrive parfois ponctué (« 1-268 » pour
+    // Antigua-et-Barbuda) : on ne garde que les chiffres, sinon l'indicatif ne
+    // se reconnaît plus dans un numéro stocké et s'affiche « +1-268 ».
+    phoneCode: (optionalStr(source, 'international_phone') ?? '').replace(/\D/g, '') || null,
     // Le drapeau fourni tel quel l'emporte (les langues en ont un) ; sinon on
     // le déduit du code ISO, quand l'appelant nous a donné l'hôte de l'API.
     flag: toUrl(source.country_flag) ?? toUrl(source.flag) ?? flagUrl(normalized, flagBase),
