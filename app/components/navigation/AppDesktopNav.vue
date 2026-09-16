@@ -3,7 +3,7 @@
  * Topbar desktop ← chrome legacy (`NavBar.vue` + `Menu.vue`).
  *
  * Variantes auth inchangées (écrans connexion / mot de passe).
- * Variante app : logo 174×65, menus au hover, pilule Profilage.
+ * Variante app : logo 174×65, menus au hover, pilule Orientation.
  * Le CTA « Se connecter » (et l’avatar si session) est conservé.
  */
 import {
@@ -35,26 +35,9 @@ async function toggleLocale() {
   await setLocale(locale.value === 'fr' ? 'en' : 'fr')
 }
 
-const photoUrl = computed(() =>
-  session.user?.profile.photo || session.user?.avatar || null,
-)
-
-const initials = computed(() => {
-  const user = session.user
-  if (!user) return ''
-  const first = user.profile.firstName?.charAt(0) ?? ''
-  const last = user.profile.lastName?.charAt(0) ?? ''
-  if (first || last) return `${first}${last}`.toUpperCase()
-  return user.name.slice(0, 2).toUpperCase()
-})
-
 const isAuthLogin = computed(() => props.variant === 'auth')
 const isAuthReset = computed(() => props.variant === 'auth-reset')
 const isAuthScreen = computed(() => isAuthLogin.value || isAuthReset.value)
-
-const profilingLabel = computed(() =>
-  catalog.menu?.profiling.label || t('desktop.nav.profiling'),
-)
 
 const navItems = computed(() =>
   desktopNavSections.map((section) => {
@@ -97,16 +80,16 @@ const navItems = computed(() =>
           alt="Qiryna"
           width="174"
           height="65"
+          class="block h-65 w-auto max-w-174 object-contain"
           loading="lazy"
           decoding="async"
-          class="block h-65 w-174 object-contain"
         >
       </NuxtLink>
       <div class="flex shrink-0 items-center self-center gap-20">
         <template v-if="isAuthLogin">
           <NuxtLink
             :to="localePath('/mot-de-passe')"
-            class="hidden text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] no-underline sm:inline"
+            class="text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] no-underline"
           >
             {{ $t('auth.forgotPassword') }}
           </NuxtLink>
@@ -118,7 +101,7 @@ const navItems = computed(() =>
           </NuxtLink>
         </template>
         <template v-else>
-          <span class="hidden text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] sm:inline">
+          <span class="text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937]">
             {{ $t('desktop.nav.alreadyAccount') }}
           </span>
           <NuxtLink
@@ -137,7 +120,7 @@ const navItems = computed(() =>
           :aria-label="$t('desktop.nav.language')"
           @click="toggleLocale"
         >
-          <img :src="flagSrc" alt="" width="28" height="28" class="size-28 shrink-0 rounded-full object-cover">
+          <img :src="flagSrc" alt="" width="28" height="28" class="size-28 shrink-0 rounded-full object-cover" loading="lazy" decoding="async">
         </button>
       </div>
     </div>
@@ -154,7 +137,9 @@ const navItems = computed(() =>
           alt="Qiryna"
           width="174"
           height="65"
-          class="block h-65 w-174 object-contain"
+          class="block h-65 w-auto max-w-174 object-contain"
+          loading="lazy"
+          decoding="async"
         >
       </NuxtLink>
 
@@ -179,11 +164,11 @@ const navItems = computed(() =>
 
       <div class="relative z-1 ml-auto flex h-full shrink-0 items-center gap-20">
         <NuxtLink
-          :to="localePath('/mon-projet')"
+          :to="localePath('/orientation')"
           class="flex h-48 items-center justify-center gap-8 rounded-full bg-[#fc1e3d] px-24 text-[16px] font-semibold whitespace-nowrap text-white no-underline transition-colors duration-150 hover:bg-[#e2122f]"
         >
-          <img src="/img/desktop/legacy/light.svg" alt="" width="24" height="24" class="size-24 shrink-0">
-          {{ profilingLabel }}
+          <img src="/img/desktop/orientation/pin.svg" alt="" width="16" height="16" class="size-16 shrink-0" loading="lazy" decoding="async">
+          {{ $t('desktop.nav.orientation') }}
         </NuxtLink>
 
         <button
@@ -192,25 +177,10 @@ const navItems = computed(() =>
           :aria-label="$t('desktop.nav.language')"
           @click="toggleLocale"
         >
-          <img :src="flagSrc" alt="" width="26" height="26" class="size-26 shrink-0 rounded-full object-cover">
+          <img :src="flagSrc" alt="" width="26" height="26" class="size-26 shrink-0 rounded-full object-cover" loading="lazy" decoding="async">
         </button>
 
-        <NuxtLink
-          v-if="session.isAuthenticated"
-          :to="localePath('/reglages')"
-          class="flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#fef2f2] text-xl leading-20 font-semibold tracking-[-0.154px] text-desktop-brand no-underline"
-          :aria-label="$t('nav.account')"
-        >
-          <img
-            v-if="photoUrl"
-            :src="photoUrl"
-            alt=""
-            width="40"
-            height="40"
-            class="block size-full object-cover"
-          >
-          <span v-else>{{ initials }}</span>
-        </NuxtLink>
+        <AppDesktopAccountMenu v-if="session.isAuthenticated" />
         <NuxtLink
           v-else
           :to="localePath('/connexion')"

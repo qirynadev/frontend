@@ -112,7 +112,7 @@ const stats = [
 </script>
 
 <template>
-  <div class="desktop-boxed flex items-start gap-32 pt-32 pb-32">
+  <div class="desktop-boxed desktop-split gap-32 pt-32 pb-32">
     <!-- Colonne gauche -->
     <div class="flex min-w-0 flex-1 flex-col gap-32 pr-25">
       <div class="flex w-full items-start justify-between">
@@ -285,7 +285,7 @@ const stats = [
     </div>
 
     <!-- Colonne droite 404 -->
-    <aside class="flex w-404 shrink-0 flex-col gap-19">
+    <aside class="desktop-rail-md flex flex-col gap-19">
       <div class="flex w-full flex-col gap-8 rounded-[8px] border border-[#f9fafb] bg-[#fcfcfe] px-13 pt-33 pb-14 shadow-[0_0_2px_rgba(0,0,0,0.1)]">
         <h2 class="m-0 text-[20px] leading-28 font-semibold tracking-[-0.45px] text-black">
           {{ $t('desktop.domaines.trustTitle') }}

@@ -10,11 +10,9 @@ const props = defineProps<{
   similarSchools: SchoolSummary[]
   destinationSlug: string
   domaine: string
-  isFavourite: boolean
 }>()
 
 const emit = defineEmits<{
-  favourite: []
   share: []
   'select-formation': [formation: SchoolFormation]
 }>()
@@ -52,7 +50,7 @@ function similarLocation(item: SchoolSummary) {
 </script>
 
 <template>
-  <div class="desktop-boxed flex items-start gap-23 pt-32 pb-32">
+  <div class="desktop-boxed desktop-split gap-23 pt-32 pb-32">
     <div class="flex min-w-0 flex-1 flex-col gap-23">
       <!-- Héros -->
       <div class="relative h-407 w-full overflow-hidden rounded-[16px] bg-[#0a1128] shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
@@ -80,24 +78,6 @@ function similarLocation(item: SchoolSummary) {
           >
             <span class="size-16 overflow-clip">
               <img :src="`${ASSET}/share.svg`" alt="" width="16" height="16" class="block size-full">
-            </span>
-          </button>
-          <button
-            type="button"
-            class="flex size-40 cursor-pointer items-center justify-center rounded-full bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
-            :aria-label="$t('school.detail.favourite')"
-            @click="emit('favourite')"
-          >
-            <span class="size-16 overflow-clip">
-              <img
-                v-if="!isFavourite"
-                :src="`${ASSET}/heart.svg`"
-                alt=""
-                width="16"
-                height="16"
-                class="block size-full"
-              >
-              <QIcon v-else name="heart-filled" :size="16" class="text-[#ff1b40]" />
             </span>
           </button>
         </div>
@@ -215,7 +195,7 @@ function similarLocation(item: SchoolSummary) {
     </div>
 
     <!-- Colonne droite 334 -->
-    <aside class="flex w-334 shrink-0 flex-col gap-23">
+    <aside class="desktop-rail-sm flex flex-col gap-23">
       <div
         v-if="similarSchools.length > 0"
         class="flex w-full flex-col gap-12 rounded-[16px] border border-[#f9fafb] bg-white px-33 pt-30 pb-14 shadow-[0_0_3px_rgba(0,0,0,0.12)]"
@@ -267,8 +247,9 @@ function similarLocation(item: SchoolSummary) {
             </span>
           </span>
           <div class="flex min-w-0 flex-1 flex-col gap-8 pt-8">
-            <p class="m-0 text-[13px] leading-28 font-semibold tracking-[-0.45px] text-[#040c3d]">
-              {{ $t('desktop.ficheEcole.ctaTitle', { school: school.title }) }}
+            <p class="m-0 text-[13px] leading-[18px] font-semibold tracking-[-0.45px] text-[#040c3d]">
+              {{ $t('desktop.ficheEcole.ctaTitle') }}
+              <span class="block">{{ school.title }} ?</span>
             </p>
             <p class="m-0 pb-16 text-[13px] leading-[19.5px] tracking-[-0.078px] text-[#040c3d]">
               {{ $t('desktop.ficheEcole.ctaDesc') }}

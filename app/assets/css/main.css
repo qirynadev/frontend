@@ -797,17 +797,145 @@
   }
 }
 
-/* Desktop Web — colonne boxed partagée nav / contenu.
-   Plus large que la carte partenaires du footer (~1068 px dans
-   `max-w-[1100px]`), mais plafonnée pour garder des gouttières
-   généreuses et centrer le contenu sur les grands écrans. */
+/* Desktop — artboard Figma 1728 px.
+   Sous 1920 : `zoom: 100vw / 1728` (même composition, pas de reflow).
+   Dès 1920 (FHD) : échelle 1, gouttières boxed 150 px, canevas centré. */
+@media (min-width: 768px) {
+  html {
+    --q-desktop-scale: calc(100vw / 1728px);
+    overflow-x: hidden;
+  }
+
+  #q-shell-desktop {
+    box-sizing: border-box;
+    width: 1728px;
+    min-height: calc(100dvh / var(--q-desktop-scale));
+    margin-inline: auto;
+    zoom: var(--q-desktop-scale);
+    --q-desktop-gutter: 150px;
+    --q-desktop-band-gap: 26px;
+    --q-fs-hero: 40px;
+    --q-fs-display: 27px;
+    --q-fs-title: 24px;
+    --q-fs-body: 16px;
+    --q-fs-small: 13px;
+    --q-space-section: 24px;
+  }
+
+  #q-shell-desktop.is-locked {
+    height: calc(100dvh / var(--q-desktop-scale));
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    --q-desktop-scale: 1;
+  }
+
+  #q-shell-desktop {
+    width: 100%;
+    min-height: 100dvh;
+    zoom: 1;
+  }
+
+  #q-shell-desktop.is-locked {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .desktop-boxed {
+    max-width: 1728px;
+    margin-inline: auto;
+    padding-inline: 150px;
+  }
+
+  .desktop-canvas {
+    max-width: 1728px;
+    margin-inline: auto;
+  }
+}
+
 @layer components {
   .desktop-boxed {
     box-sizing: border-box;
     width: 100%;
-    max-width: 1550px;
-    margin-inline: auto;
-    padding-inline: clamp(24px, 3.5vw, 48px);
+    padding-inline: var(--q-desktop-gutter, 150px);
+  }
+
+  /* Canevas 1728 sans gouttières — auth split / carte. Dès 1920 : centré. */
+  .desktop-canvas {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .desktop-home-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 495px 342px;
+    gap: var(--q-desktop-band-gap, 26px);
+    align-items: center;
+  }
+
+  .desktop-home-copy {
+    min-width: 0;
+    width: 100%;
+    max-width: 564px;
+  }
+
+  .desktop-home-media {
+    position: relative;
+    width: 495px;
+    max-width: 495px;
+    min-width: 0;
+  }
+
+  .desktop-home-media--short {
+    aspect-ratio: 495 / 469;
+  }
+
+  .desktop-home-media--tall {
+    aspect-ratio: 495 / 555;
+  }
+
+  .desktop-home-card {
+    width: 342px;
+    max-width: 342px;
+    min-width: 0;
+  }
+
+  .desktop-rail,
+  .desktop-rail-md,
+  .desktop-rail-sm {
+    min-width: 0;
+  }
+
+  .desktop-rail {
+    flex: 0 0 476px;
+    width: 476px;
+    max-width: 476px;
+  }
+
+  .desktop-rail-md {
+    flex: 0 0 404px;
+    width: 404px;
+    max-width: 404px;
+  }
+
+  .desktop-rail-sm {
+    flex: 0 0 342px;
+    width: 342px;
+    max-width: 342px;
+  }
+
+  .desktop-split {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
   }
 }
 

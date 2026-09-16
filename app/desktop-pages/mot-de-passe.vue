@@ -228,7 +228,7 @@ const trustItems = [
         <!-- 576:150 — trust bar 3 étapes (hauteur fluide) -->
         <div class="absolute inset-x-0 bottom-0 flex justify-center px-48 pb-48">
           <div
-            class="box-border flex w-full min-h-0 items-stretch justify-center gap-[clamp(8px,1.2vw,16px)] rounded-[10px] border border-[#f1f5f9] bg-white px-[clamp(8px,1vw,13px)] py-[clamp(8px,0.9vw,11px)] shadow-[0_0_3.5px_rgba(0,0,0,0.15)]"
+            class="box-border flex w-full min-h-0 items-stretch justify-center gap-16 rounded-[10px] border border-[#f1f5f9] bg-white px-13 py-11 shadow-[0_0_3.5px_rgba(0,0,0,0.15)]"
           >
             <template v-for="(item, index) in trustItems" :key="item.titleKey">
               <div
@@ -236,17 +236,17 @@ const trustItems = [
                 class="w-px shrink-0 self-stretch bg-[#e6e5f5]"
                 aria-hidden="true"
               />
-              <div class="flex min-w-0 flex-1 items-center gap-[clamp(6px,0.8vw,10px)]">
+              <div class="flex min-w-0 flex-1 items-center gap-10">
                 <img
                   :src="item.icon"
                   alt=""
                   width="40"
                   height="40"
-                  class="block size-[clamp(28px,3.2vw,40px)] shrink-0"
+                  class="block size-40 shrink-0"
                 >
-                <div class="min-w-0 text-[clamp(9px,0.75vw,11px)] leading-[1.2] text-black">
+                <div class="min-w-0 text-[11px] leading-[1.2] text-black">
                   <p class="m-0 font-semibold">{{ $t(item.titleKey) }}</p>
-                  <p class="m-0 pt-[clamp(2px,0.4vw,6px)] font-normal">{{ $t(item.descKey) }}</p>
+                  <p class="m-0 pt-6 font-normal">{{ $t(item.descKey) }}</p>
                 </div>
               </div>
             </template>
