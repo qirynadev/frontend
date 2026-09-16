@@ -32,8 +32,11 @@ const localePath = useLocalePath()
 const destinationSlug = computed(() => String(route.params.slug ?? ''))
 const apiSlug = computed(() => resolveDestinationApiSlug(destinationSlug.value))
 const schoolSlug = computed(() => String(route.params.school ?? ''))
-const domaine = computed(() => String(route.query.domaine ?? 'architecture'))
-const desktopDomaine = computed(() => String(route.query.domaine ?? ''))
+const domaine = computed(() => String(route.query.domaine ?? ''))
+const desktopDomaine = computed(() => domaine.value)
+const offersTo = computed(() =>
+  domaine.value ? `/offres/${domaine.value}` : '/orientation',
+)
 
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
   `school-${schoolSlug.value}`,
@@ -64,11 +67,6 @@ const similarSchools = computed(() =>
 
 if (school.value === null && !apiError.value) {
   throw createError({ statusCode: 404, message: t('school.detail.notFound'), fatal: true })
-}
-
-const isFavourite = ref(false)
-function toggleFavourite() {
-  isFavourite.value = !isFavourite.value
 }
 
 function shareSchool() {
@@ -283,14 +281,6 @@ useSchoolSchemaOrg(school)
             <button
               type="button"
               class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card p-0 shadow-ed-icon-btn"
-              :aria-label="$t('school.detail.favourite')"
-              @click="toggleFavourite"
-            >
-              <QIcon :name="isFavourite ? 'heart-filled' : 'ic-ed-heart'" :size="18" :class="isFavourite ? 'text-danger' : 'text-navy'" />
-            </button>
-            <button
-              type="button"
-              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card p-0 shadow-ed-icon-btn"
               :aria-label="$t('school.detail.share')"
               @click="shareSchool"
             >
@@ -398,7 +388,7 @@ useSchoolSchemaOrg(school)
 
       <!-- CTA `.ed-float-cta` -->
       <NuxtLink
-        :to="localePath(`/offres/${domaine}`)"
+        :to="localePath(offersTo)"
         class="ed-float-cta z-49 box-border rounded-xl bg-primary px-16 py-16 text-center text-xl leading-20 font-semibold whitespace-nowrap text-white no-underline shadow-ed-float-cta transition-[transform,opacity] duration-250 ease-in-out"
         :class="[
           floatCtaDocked
@@ -437,8 +427,6 @@ useSchoolSchemaOrg(school)
         :similar-schools="similarSchools"
         :destination-slug="destinationSlug"
         :domaine="desktopDomaine"
-        :is-favourite="isFavourite"
-        @favourite="toggleFavourite"
         @share="shareSchool"
         @select-formation="activeFormation = $event"
       />

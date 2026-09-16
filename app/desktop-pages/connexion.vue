@@ -44,11 +44,10 @@ const trustItems = [
 </script>
 
 <template>
-  <!-- Hauteur = viewport − nav ; boxed porté par le layout desktop. -->
-  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden lg:flex-row">
-    <!-- Colonne form alignée au logo ; hero reprend l’espace à gauche. -->
+  <!-- Canevas 1728 · form aligné au logo (gutter 150) · hero flex · pas de `lg:`. -->
+  <div class="desktop-canvas flex min-h-0 flex-row overflow-hidden">
     <section
-      class="box-border flex h-full w-full flex-col overflow-y-auto bg-white pb-48 pr-32 pt-0 lg:w-680 lg:shrink-0"
+      class="box-border flex h-full w-[calc(var(--q-desktop-gutter)+680px)] shrink-0 flex-col overflow-y-auto bg-white pb-48 pr-32 pl-[var(--q-desktop-gutter)] pt-0"
     >
       <div class="flex w-full flex-col gap-7 pt-39">
         <div class="w-full pt-32">
@@ -202,10 +201,7 @@ const trustItems = [
       </div>
     </section>
 
-    <!-- 1146:777 — flex-1 · gutter désormais via `.desktop-boxed` -->
-    <aside
-      class="relative hidden h-full min-h-0 flex-1 items-stretch lg:flex"
-    >
+    <aside class="relative flex h-full min-h-0 flex-1 items-stretch">
       <div
         class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]"
       >

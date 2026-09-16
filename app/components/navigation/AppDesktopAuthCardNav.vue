@@ -23,7 +23,7 @@ async function toggleLocale() {
 <template>
   <!-- Intégrée à la carte — panneau droit hero visible derrière (z-10) -->
   <header
-    class="relative z-10 box-border flex h-80 shrink-0 items-center justify-between bg-transparent py-15 px-48 lg:pr-90"
+    class="relative z-10 box-border flex h-80 shrink-0 items-center justify-between bg-transparent py-15 pl-48 pr-90"
   >
     <NuxtLink :to="localePath('/')" class="shrink-0 no-underline" :aria-label="$t('nav.home')">
       <img
@@ -37,7 +37,7 @@ async function toggleLocale() {
 
     <div class="flex shrink-0 items-center gap-20">
       <template v-if="variant === 'signup'">
-        <span class="hidden text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] sm:inline">
+        <span class="text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937]">
           {{ $t('desktop.nav.alreadyAccount') }}
         </span>
         <NuxtLink
@@ -50,7 +50,7 @@ async function toggleLocale() {
       <template v-else>
         <NuxtLink
           :to="localePath('/mot-de-passe')"
-          class="hidden text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] no-underline sm:inline"
+          class="text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] no-underline"
         >
           {{ $t('auth.forgotPassword') }}
         </NuxtLink>

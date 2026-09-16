@@ -14,6 +14,7 @@ export const desktopDomainTabIcons: Record<string, string> = {
   'classes-prepa': `${ASSET}/domain-prepa.svg`,
   prepa: `${ASSET}/domain-prepa.svg`,
   'classe-prepa': `${ASSET}/domain-prepa.svg`,
+  mba: `${ASSET}/domain-mba.svg`,
 }
 
 export const desktopDomainManagementActiveIcon = `${ASSET}/domain-management-active.svg`

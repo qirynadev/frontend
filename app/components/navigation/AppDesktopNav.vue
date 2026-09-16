@@ -87,7 +87,7 @@ const navItems = computed(() =>
         <template v-if="isAuthLogin">
           <NuxtLink
             :to="localePath('/mot-de-passe')"
-            class="hidden text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] no-underline sm:inline"
+            class="text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] no-underline"
           >
             {{ $t('auth.forgotPassword') }}
           </NuxtLink>
@@ -99,7 +99,7 @@ const navItems = computed(() =>
           </NuxtLink>
         </template>
         <template v-else>
-          <span class="hidden text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937] sm:inline">
+          <span class="text-2xl leading-[22.5px] font-medium tracking-[-0.24px] text-[#1f2937]">
             {{ $t('desktop.nav.alreadyAccount') }}
           </span>
           <NuxtLink

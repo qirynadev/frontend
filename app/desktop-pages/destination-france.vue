@@ -135,33 +135,21 @@ const features = [
     icon: `${assetBase}/features/feature-1.svg`,
     titleKey: 'desktop.destination.france.feature1Title',
     descKey: 'desktop.destination.france.feature1Desc',
-    radius: 'rounded-[9px]',
-    pad: 'p-21',
-    gap: 'gap-8',
   },
   {
     icon: `${assetBase}/features/feature-2.svg`,
     titleKey: 'desktop.destination.france.feature2Title',
     descKey: 'desktop.destination.france.feature2Desc',
-    radius: 'rounded-[16px]',
-    pad: 'p-21',
-    gap: 'gap-8',
   },
   {
     icon: `${assetBase}/features/feature-3.png`,
     titleKey: 'desktop.destination.france.feature3Title',
     descKey: 'desktop.destination.france.feature3Desc',
-    radius: 'rounded-[16px]',
-    pad: 'px-21 pt-21 pb-29',
-    gap: 'gap-8',
   },
   {
     icon: `${assetBase}/features/feature-4.png`,
     titleKey: 'desktop.destination.france.feature4Title',
     descKey: 'desktop.destination.france.feature4Desc',
-    radius: 'rounded-[16px]',
-    pad: 'px-21 pt-21 pb-29',
-    gap: 'gap-11',
   },
 ] as const
 
@@ -193,12 +181,8 @@ const trustItems = [
         alt=""
         width="1728"
         height="503"
-        class="absolute inset-0 block size-full object-cover object-center"
+        class="pointer-events-none absolute inset-0 block size-full object-cover object-center"
       >
-      <div
-        class="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-white/50 via-white/40 to-transparent"
-        aria-hidden="true"
-      />
 
       <!-- Gutters boxed (pas d'absolu left/right : ignore le padding) -->
       <div class="desktop-boxed desktop-split relative h-full justify-between">
@@ -327,8 +311,8 @@ const trustItems = [
       </div>
     </section>
 
-    <!-- Stats + pourquoi + écoles -->
-    <div class="desktop-boxed desktop-split relative z-10 w-full pb-25">
+    <!-- Stats + pourquoi + confiance | écoles + CTA — une seule rangée, même gouttière -->
+    <div class="desktop-boxed desktop-split relative z-10 w-full items-stretch">
       <div class="flex min-w-0 flex-1 flex-col gap-25">
         <div class="flex w-full items-start justify-center gap-15 rounded-[9px] border border-[#f9fafb] bg-white px-21 py-18 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <template v-for="(stat, index) in stats" :key="stat.labelKey">
@@ -364,14 +348,13 @@ const trustItems = [
             <article
               v-for="feature in features"
               :key="feature.titleKey"
-              class="flex flex-col border border-[#f3f4f6] bg-white"
-              :class="[feature.radius, feature.pad, feature.gap]"
+              class="flex flex-col gap-8 rounded-[16px] border border-[#f3f4f6] bg-white p-16 first:rounded-[9px]"
             >
-              <div class="flex items-center gap-8">
-                <span class="size-40 shrink-0 overflow-clip">
-                  <img :src="feature.icon" alt="" width="40" height="40" class="block size-full">
+              <div class="flex items-center gap-6">
+                <span class="size-36 shrink-0 overflow-clip">
+                  <img :src="feature.icon" alt="" width="36" height="36" class="block size-full">
                 </span>
-                <h3 class="m-0 text-[14px] leading-[19.5px] font-bold tracking-[-0.078px] text-[#040c3d]">
+                <h3 class="m-0 min-w-0 text-[13px] leading-16 font-bold tracking-[-0.5px] whitespace-nowrap text-[#040c3d]">
                   {{ $t(feature.titleKey) }}
                 </h3>
               </div>
@@ -381,90 +364,89 @@ const trustItems = [
             </article>
           </div>
         </div>
-      </div>
 
-      <aside class="flex desktop-rail flex-col gap-32 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-26 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-        <h2 class="m-0 text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
-          {{ $t('desktop.destination.france.schoolsTitle') }}
-        </h2>
-        <div class="grid grid-cols-4 gap-12">
-          <div
-            v-for="(school, index) in schools"
-            :key="index"
-            class="flex h-95 items-center justify-center rounded-[12px] border border-[#f3f4f6] bg-white px-5 py-6"
-          >
-            <span
-              class="relative shrink-0 overflow-hidden"
-              :style="{ width: `${school.w}px`, height: `${school.h}px` }"
-            >
-              <img
-                :src="school.src"
-                alt=""
-                :width="school.w"
-                :height="school.h"
-                :class="school.crop
-                  ? 'absolute top-[-11.49%] left-[-15.44%] h-[124.94%] w-[132.35%] max-w-none'
-                  : 'block size-full object-contain'"
-              >
-            </span>
+        <div class="flex min-h-108 min-w-0 items-center rounded-[9px] border border-[#f3f4f6] bg-white px-21 py-18">
+          <div class="flex min-w-0 flex-1 items-center gap-15">
+            <template v-for="(item, index) in trustItems" :key="index">
+              <div
+                v-if="index > 0"
+                class="h-49 w-px shrink-0 bg-[#f3f4f6]"
+                aria-hidden="true"
+              />
+              <div class="flex min-w-0 flex-1 items-center gap-8">
+                <span class="flex shrink-0 rounded-full bg-[#fef2f2] p-10">
+                  <span class="size-20 overflow-clip">
+                    <img :src="item.icon" alt="" width="20" height="20" class="block size-full">
+                  </span>
+                </span>
+                <p class="m-0 text-[13px] leading-16 font-medium text-black">
+                  <template v-for="(line, lineIndex) in item.lines" :key="line">
+                    <br v-if="lineIndex > 0">{{ $t(line) }}
+                  </template>
+                </p>
+              </div>
+            </template>
           </div>
         </div>
-      </aside>
-    </div>
+      </div>
 
-    <!-- Confiance (flex) + CTA 476 — même colonne droite que domaines / écoles -->
-    <div class="desktop-boxed desktop-split relative z-10 w-full items-center">
-      <div class="flex min-w-0 flex-1 items-center justify-between rounded-[9px] border border-[#f3f4f6] bg-white p-21">
-        <div class="flex min-w-0 flex-1 items-center gap-15">
-          <template v-for="(item, index) in trustItems" :key="index">
+      <div class="flex desktop-rail flex-col justify-between gap-25">
+        <aside class="flex flex-1 flex-col gap-32 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-26 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+          <h2 class="m-0 text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
+            {{ $t('desktop.destination.france.schoolsTitle') }}
+          </h2>
+          <div class="grid grid-cols-4 gap-12">
             <div
-              v-if="index > 0"
-              class="h-49 w-px shrink-0 bg-[#f3f4f6]"
-              aria-hidden="true"
-            />
-            <div class="flex min-w-0 flex-1 items-center gap-8">
-              <span class="flex shrink-0 rounded-full bg-[#fef2f2] p-10">
-                <span class="size-20 overflow-clip">
-                  <img :src="item.icon" alt="" width="20" height="20" class="block size-full">
-                </span>
+              v-for="(school, index) in schools"
+              :key="index"
+              class="flex h-95 items-center justify-center rounded-[12px] border border-[#f3f4f6] bg-white px-5 py-6"
+            >
+              <span
+                class="relative shrink-0 overflow-hidden"
+                :style="{ width: `${school.w}px`, height: `${school.h}px` }"
+              >
+                <img
+                  :src="school.src"
+                  alt=""
+                  :width="school.w"
+                  :height="school.h"
+                  :class="school.crop
+                    ? 'absolute top-[-11.49%] left-[-15.44%] h-[124.94%] w-[132.35%] max-w-none'
+                    : 'block size-full object-contain'"
+                >
               </span>
-              <p class="m-0 max-w-130 text-[14px] leading-15 font-medium text-black">
-                <template v-for="(line, lineIndex) in item.lines" :key="line">
-                  <br v-if="lineIndex > 0">{{ $t(line) }}
-                </template>
+            </div>
+          </div>
+        </aside>
+
+        <div class="relative flex min-h-108 items-center justify-between overflow-hidden rounded-[9px] bg-[#192339] px-16 py-18 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
+          <div
+            class="pointer-events-none absolute top-0 right-0 size-160 rounded-full bg-white/5 blur-[20px]"
+            aria-hidden="true"
+          />
+          <div class="flex min-w-0 flex-1 items-center gap-10">
+            <span class="size-40 shrink-0 overflow-clip">
+              <img :src="`${assetBase}/cta-icon.png`" alt="" width="40" height="40" class="block size-full">
+            </span>
+            <div class="flex min-w-0 flex-col gap-4">
+              <p class="m-0 text-[14px] leading-18 font-normal tracking-[-0.24px] text-white">
+                {{ $t('desktop.destination.france.ctaTitle') }}
+              </p>
+              <p class="m-0 text-[13px] leading-16 font-normal tracking-[-0.078px] text-[#9ca3af]">
+                {{ $t('desktop.destination.france.ctaDesc') }}
               </p>
             </div>
-          </template>
-        </div>
-      </div>
-
-      <div class="relative flex desktop-rail items-center justify-between overflow-hidden rounded-[9px] bg-[#192339] px-20 py-25 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)]">
-        <div
-          class="pointer-events-none absolute top-0 right-0 size-160 rounded-full bg-white/5 blur-[20px]"
-          aria-hidden="true"
-        />
-        <div class="flex min-w-0 flex-1 items-center gap-10">
-          <span class="size-40 shrink-0 overflow-clip">
-            <img :src="`${assetBase}/cta-icon.png`" alt="" width="40" height="40" class="block size-full">
-          </span>
-          <div class="flex min-w-0 flex-col gap-6">
-            <p class="m-0 text-[16px] leading-[18.75px] font-normal tracking-[-0.24px] text-white">
-              {{ $t('desktop.destination.france.ctaTitle') }}
-            </p>
-            <p class="m-0 text-[14px] leading-[19.5px] font-normal tracking-[-0.078px] text-[#9ca3af]">
-              {{ $t('desktop.destination.france.ctaDesc') }}
-            </p>
           </div>
+          <NuxtLink
+            :to="schoolsCtaLink"
+            class="inline-flex shrink-0 items-center gap-8 rounded-[12px] bg-[#ff1b40] px-16 py-10 text-[14px] leading-20 font-semibold tracking-[-0.154px] text-white no-underline"
+          >
+            {{ $t('desktop.destination.france.ctaButton') }}
+            <span class="size-16 shrink-0 overflow-clip">
+              <img :src="`${assetBase}/cta-pin.svg`" alt="" width="16" height="16" class="block size-full">
+            </span>
+          </NuxtLink>
         </div>
-        <NuxtLink
-          :to="schoolsCtaLink"
-          class="inline-flex shrink-0 items-center gap-8 rounded-[12px] bg-[#ff1b40] px-20 py-12 text-[16px] leading-20 font-semibold tracking-[-0.154px] text-white no-underline"
-        >
-          {{ $t('desktop.destination.france.ctaButton') }}
-          <span class="size-16 shrink-0 overflow-clip">
-            <img :src="`${assetBase}/cta-pin.svg`" alt="" width="16" height="16" class="block size-full">
-          </span>
-        </NuxtLink>
       </div>
     </div>
   </div>

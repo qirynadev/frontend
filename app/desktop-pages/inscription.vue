@@ -61,15 +61,15 @@ const trustItems = [
 </script>
 
 <template>
-  <!-- Wings internes 30 px (fond gris du shell) + carte. -->
-  <div class="box-border flex h-full min-h-0 flex-col p-30">
+  <!-- Canevas 1728 · wings carte 30 px · split fixe (pas de `lg:`). -->
+  <div class="desktop-canvas flex min-h-0 flex-col">
+    <div class="box-border flex min-h-0 flex-1 flex-col p-30">
     <div
       class="relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-[50px] bg-white shadow-[0_18px_10px_rgba(112,144,176,0.1)]"
     >
-      <!-- Hero pleine hauteur panneau droit — derrière la navbar -->
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-y-0 right-0 hidden overflow-hidden opacity-85 lg:left-738 lg:block lg:rounded-br-[50px] lg:rounded-tr-[50px]"
+        class="pointer-events-none absolute inset-y-0 right-0 left-738 overflow-hidden rounded-br-[50px] rounded-tr-[50px] opacity-85"
       >
         <img
           src="/img/desktop/auth/inscription-hero.jpg"
@@ -78,18 +78,16 @@ const trustItems = [
         >
       </div>
 
-      <!-- Fond blanc colonne gauche (nav + formulaire) -->
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-y-0 left-0 hidden bg-white lg:block lg:w-738"
+        class="pointer-events-none absolute inset-y-0 left-0 w-738 bg-white"
       />
 
       <AppDesktopAuthCardNav variant="signup" class="relative z-10" />
 
-      <div class="relative z-10 flex min-h-0 w-full flex-1 flex-col overflow-hidden lg:flex-row">
-        <!-- 640:46 — panneau gauche 738 -->
+      <div class="relative z-10 flex min-h-0 w-full flex-1 flex-row overflow-hidden">
         <section
-          class="box-border flex h-full w-full flex-col overflow-y-auto bg-white px-48 pb-48 pt-16 lg:w-738 lg:shrink-0 lg:rounded-bl-[50px] lg:bg-transparent"
+          class="box-border flex h-full w-738 shrink-0 flex-col overflow-y-auto rounded-bl-[50px] bg-transparent px-48 pb-48 pt-16"
         >
         <div class="flex w-full flex-col gap-5">
           <div class="w-full">
@@ -341,10 +339,9 @@ const trustItems = [
         </div>
       </section>
 
-      <!-- 640:159 — panneau droit (trust bar sur hero) -->
-      <aside class="relative hidden h-full min-h-0 flex-1 lg:flex">
-        <div class="relative min-h-0 min-w-0 flex-1 px-78 py-48 lg:rounded-br-[50px]">
-          <div class="absolute inset-x-0 bottom-0 flex justify-center px-55 pb-60 lg:pr-90">
+      <aside class="relative flex h-full min-h-0 flex-1">
+        <div class="relative min-h-0 min-w-0 flex-1 rounded-br-[50px] px-78 py-48">
+          <div class="absolute inset-x-0 bottom-0 flex justify-center pl-55 pr-90 pb-60">
             <div
               class="box-border flex h-74 w-full items-center justify-center gap-16 rounded-[10px] border border-[#f1f5f9] bg-white px-21 py-11 shadow-[0_0_3.5px_rgba(0,0,0,0.15)]"
             >
@@ -373,6 +370,7 @@ const trustItems = [
         </div>
       </aside>
       </div>
+    </div>
     </div>
   </div>
 </template>
