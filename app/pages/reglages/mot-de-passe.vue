@@ -4,12 +4,16 @@
  *
  * | Bloc | Règles reprises de `app.css` |
  * |---|---|
- * | encart | `.rm-protect` `min-height: 86px`, `padding: 17px 9px`, icône 44×44 |
  * | carte | `.rm-card` `margin-top: 20px`, `padding: 16px`, ombre `0 0 3.5px` |
  * | champ | `.rm-input` `padding: 7px`, filet `#e2e8f0` · icône 36×36 · saisie 13,5px |
  * | œil | `.rm-eye` positionné à `right: 10px`, icône 20×20 opacité 0,7 |
  * | robustesse | `margin-top: 20px` via `.rm-field + .rm-strength` · 6 barres de 6px en grille, `gap: 6px` · 4 règles en deux colonnes |
  * | conseil | `.rm-tip` `min-height: 61px`, `padding: 8px 9px` |
+ *
+ * L'encart « Protégez votre compte » de la maquette a été retiré le
+ * 2026-09-16 : il énonçait mot pour mot les critères que les quatre règles
+ * affichent déjà sous le champ, en les cochant à la saisie. Deux fois la même
+ * consigne, dont une inerte.
  *
  * Les quatre règles et la jauge sont évaluées à la saisie, comme dans la
  * maquette. `POST /user/update-password` (`authRepo.updatePassword`) : exige
@@ -117,16 +121,6 @@ const fields = [
           {{ $t('settingsPassword.intro') }}
         </p>
       </section>
-
-      <aside class="rm-protect flex min-h-86 w-full items-start gap-11 rounded-xl bg-surface-2 px-9 py-17 box-border">
-        <span class="rm-protect-icon size-44 shrink-0 overflow-hidden">
-          <QIcon name="ic-rm-shield" :size="44" />
-        </span>
-        <div class="rm-protect-copy min-w-0 flex-1">
-          <p class="rm-protect-title m-0 text-base leading-20 font-bold text-text">{{ $t('settingsPassword.protectTitle') }}</p>
-          <p class="rm-protect-desc m-0 mt-4 text-sm leading-16 font-normal text-text">{{ $t('settingsPassword.protectDesc') }}</p>
-        </div>
-      </aside>
 
       <form class="rm-card mt-20 flex w-full flex-col rounded-xl bg-white p-16 shadow-card box-border" @submit.prevent="save">
         <label

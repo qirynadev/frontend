@@ -1760,8 +1760,6 @@
     "matchOk": "Les mots de passe correspondent",
     "newLabel": "Nouveau mot de passe",
     "newPlaceholder": "Entrez votre nouveau mot de passe",
-    "protectDesc": "Votre mot de passe doit contenir au minimum 8 caractères avec une majuscule, une minuscule, un chiffre et un caractère spécial.",
-    "protectTitle": "Protégez votre compte",
     "ruleDigit": "Au moins un chiffre",
     "ruleLength": "Au moins 8 caractères",
     "ruleSymbol": "Au moins un caractère spécial",

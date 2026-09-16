@@ -1760,8 +1760,6 @@
     "matchOk": "Passwords match",
     "newLabel": "New password",
     "newPlaceholder": "Enter your new password",
-    "protectDesc": "Your password must contain at least 8 characters with an uppercase letter, a lowercase letter, a digit and a special character.",
-    "protectTitle": "Protect your account",
     "ruleDigit": "At least one digit",
     "ruleLength": "At least 8 characters",
     "ruleSymbol": "At least one special character",
