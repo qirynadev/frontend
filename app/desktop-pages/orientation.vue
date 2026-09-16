@@ -16,7 +16,7 @@ const audiences = [
   {
     id: 'eleve' as const,
     icon: `${ASSET}/path-eleve.svg`,
-    iconBg: 'bg-transparent',
+    iconBg: 'bg-[#fef3f2]',
     titleKey: 'desktop.orientation.audience.studentHighschool',
     descKey: 'desktop.orientation.audience.studentHighschoolDesc',
   },
@@ -37,9 +37,9 @@ const audiences = [
 ] as const
 
 const heroStats = [
-  { icon: `${ASSET}/stat-profiles.svg`, valueKey: 'desktop.orientation.stat1Value', labelKey: 'desktop.orientation.stat1Label', bg: 'bg-[#fee7e7]' },
-  { icon: `${ASSET}/stat-satisfaction.svg`, valueKey: 'desktop.orientation.stat2Value', labelKey: 'desktop.orientation.stat2Label', bg: '' },
-  { icon: `${ASSET}/stat-experts.svg`, valueKey: 'desktop.orientation.stat3Value', labelKey: 'desktop.orientation.stat3Label', bg: 'bg-[#fef0e6]' },
+  { icon: `${ASSET}/stat-profiles.svg`, valueKey: 'desktop.orientation.stat1Value', labelKey: 'desktop.orientation.stat1Label', bg: 'bg-[#fee7e7]', iconSize: 20 },
+  { icon: `${ASSET}/stat-satisfaction.svg`, valueKey: 'desktop.orientation.stat2Value', labelKey: 'desktop.orientation.stat2Label', bg: '', iconSize: 40 },
+  { icon: `${ASSET}/stat-experts.svg`, valueKey: 'desktop.orientation.stat3Value', labelKey: 'desktop.orientation.stat3Label', bg: 'bg-[#fef0e6]', iconSize: 20 },
 ] as const
 
 const trusts = [
@@ -50,15 +50,15 @@ const trusts = [
 
 const VISUALS = [
   {
-    key: 'jordan',
-    icon: `${ASSET}/icon-jordan.svg`,
-    iconBg: 'bg-[#faf5ff]',
-    name: 'text-[#570ef8]',
-    card: 'border-[#f1effd]',
-    price: 'text-[#570ef8]',
-    button: 'border border-[#e9d5ff] bg-white text-[#9333ea]',
-    check: `${ASSET}/check-jordan.svg`,
-    popular: false,
+    key: 'pele',
+    icon: `${ASSET}/icon-pele.svg`,
+    iconBg: 'bg-[#fef2f2]',
+    name: 'text-[#fd0302]',
+    card: 'border-[#febfc6]',
+    price: 'text-[#f50210]',
+    button: 'border-0 bg-[#f50210] text-white',
+    check: `${ASSET}/check-pele.svg`,
+    popular: true,
   },
   {
     key: 'tyson',
@@ -72,15 +72,15 @@ const VISUALS = [
     popular: false,
   },
   {
-    key: 'pele',
-    icon: `${ASSET}/icon-pele.svg`,
-    iconBg: 'bg-[#fef2f2]',
-    name: 'text-[#fd0302]',
-    card: 'border-[#febfc6]',
-    price: 'text-[#f50210]',
-    button: 'border-0 bg-[#f50210] text-white',
-    check: `${ASSET}/check-pele.svg`,
-    popular: true,
+    key: 'jordan',
+    icon: `${ASSET}/icon-jordan.svg`,
+    iconBg: 'bg-[#faf5ff]',
+    name: 'text-[#570ef8]',
+    card: 'border-[#f1effd]',
+    price: 'text-[#570ef8]',
+    button: 'border border-[#e9d5ff] bg-white text-[#9333ea]',
+    check: `${ASSET}/check-jordan.svg`,
+    popular: false,
   },
 ] as const
 
@@ -91,11 +91,15 @@ const { data: offer, apiError, isInitialLoading, refresh } = await usePageData(
 )
 
 const tiers = computed(() => {
-  const list = offer.value?.tiers ?? []
-  return list.map((tier, index) => ({
-    tier,
-    visual: VISUALS[Math.min(index, VISUALS.length - 1)]!,
-  }))
+  const list = [...(offer.value?.tiers ?? [])].reverse()
+  return list.map((tier, index) => {
+    const name = tier.name.toLowerCase()
+    const byName = VISUALS.find(visual => name.includes(visual.key))
+    return {
+      tier,
+      visual: byName ?? VISUALS[Math.min(index, VISUALS.length - 1)]!,
+    }
+  })
 })
 
 const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startCheckout } = useCheckout()
@@ -120,17 +124,23 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
             <p class="m-0 max-w-448 pt-16 text-[length:var(--q-fs-body,16px)] leading-26">
               {{ $t('desktop.orientation.intro') }}
             </p>
-            <div class="flex flex-wrap items-center gap-24 pt-32">
-              <div v-for="stat in heroStats" :key="stat.valueKey" class="flex items-center gap-12">
+            <div class="flex flex-nowrap items-center gap-24 pt-32">
+              <div v-for="stat in heroStats" :key="stat.valueKey" class="flex shrink-0 items-center gap-12">
                 <span
                   class="flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-full"
                   :class="stat.bg || undefined"
                 >
-                  <img :src="stat.icon" alt="" width="20" height="20" class="size-20">
+                  <img
+                    :src="stat.icon"
+                    alt=""
+                    :width="stat.iconSize"
+                    :height="stat.iconSize"
+                    :class="stat.iconSize === 40 ? 'size-40' : 'size-20'"
+                  >
                 </span>
-                <div>
-                  <p class="m-0 text-[14px] leading-[17.5px] font-bold">{{ $t(stat.valueKey) }}</p>
-                  <p class="m-0 text-[12px] leading-[15px] text-[#3e3e3e]">{{ $t(stat.labelKey) }}</p>
+                <div class="shrink-0">
+                  <p class="m-0 whitespace-nowrap text-[14px] leading-[17.5px] font-bold">{{ $t(stat.valueKey) }}</p>
+                  <p class="m-0 whitespace-nowrap text-[12px] leading-[15px] text-[#3e3e3e]">{{ $t(stat.labelKey) }}</p>
                 </div>
               </div>
             </div>
@@ -150,7 +160,7 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
 
           <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
             <template #loading>
-              <div class="grid grid-cols-1 gap-14 pt-24 md:grid-cols-3">
+              <div class="grid grid-cols-3 gap-14 pt-24">
                 <QSkeleton v-for="i in 3" :key="i" variant="rect" :height="420" />
               </div>
             </template>
@@ -163,7 +173,7 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
               :message="$t(checkoutErrorKey)"
             />
 
-            <div v-if="tiers.length > 0" class="grid grid-cols-1 gap-14 pt-24 md:grid-cols-3">
+            <div v-if="tiers.length > 0" class="grid grid-cols-3 gap-14 pt-24">
               <article
                 v-for="entry in tiers"
                 :key="entry.tier.id"
@@ -197,10 +207,9 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
                   </li>
                 </ul>
                 <div class="mt-auto flex flex-col items-center pt-32">
-                  <p class="m-0 text-[28px] leading-42 font-semibold" :class="entry.visual.price">
+                  <p class="m-0 pb-20 text-[28px] leading-42 font-semibold" :class="entry.visual.price">
                     {{ n(entry.tier.price.amount, 'currency') }}
                   </p>
-                  <p class="m-0 pb-20 text-[11px] leading-[16.5px] text-[#181818]">{{ $t('offer.oneOff') }}</p>
                   <button
                     v-if="offer"
                     type="button"
@@ -225,12 +234,12 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
           </PageState>
         </section>
 
-        <div class="grid grid-cols-1 gap-16 rounded-16 border border-[#f0f2f6] bg-white px-32 py-20 shadow-[0_1px_1px_rgba(0,0,0,0.05)] md:grid-cols-3">
+        <div class="grid grid-cols-3 gap-16 rounded-16 border border-[#f0f2f6] bg-white px-32 py-20 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <div
             v-for="(item, index) in trusts"
             :key="item.titleKey"
             class="flex items-center gap-16"
-            :class="index > 0 ? 'md:border-l md:border-[#f0f2f6] md:pl-32' : ''"
+            :class="index > 0 ? 'border-l border-[#f0f2f6] pl-32' : ''"
           >
             <span class="flex size-48 shrink-0 items-center justify-center rounded-full" :class="item.bg">
               <img :src="item.icon" alt="" width="24" height="24" class="size-24">
@@ -259,7 +268,13 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
               @click="audience = item.id"
             >
               <span class="flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-full" :class="item.iconBg">
-                <img :src="item.icon" alt="" width="24" height="24" class="size-24">
+                <img
+                  :src="item.icon"
+                  alt=""
+                  :width="item.id === 'eleve' ? 18 : 24"
+                  :height="item.id === 'eleve' ? 22 : 24"
+                  :class="item.id === 'eleve' ? 'block h-22 w-18' : 'size-24'"
+                >
               </span>
               <span class="min-w-0 flex-1 pr-28">
                 <span class="block text-[15px] leading-[22.5px] font-semibold">{{ $t(item.titleKey) }}</span>

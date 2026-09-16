@@ -15,6 +15,7 @@
  */
 import { courseRepo } from '~/core/repositories'
 import { orderByMaquette } from '~/config/language-badges'
+import DesktopLangues from '~/desktop-pages/langues.vue'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -54,7 +55,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
+  <div class="shell:hidden">
     <AppTopBar back back-to="/" />
 
     <div class="w-full pb-13">
@@ -106,6 +107,25 @@ usePageSeo(() => ({
       </div>
 
       <TrustStrip />
+    </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <PageState
+      :loading="isInitialLoading"
+      :error="apiError"
+      :empty="courses.length === 0"
+      :empty-title="$t('course.list.emptyTitle')"
+      :empty-description="$t('course.list.emptyDescription')"
+      :on-retry="() => refresh()"
+    >
+      <template #loading>
+        <div class="desktop-boxed flex items-start gap-24 pt-11 pb-32">
+          <QSkeleton variant="rect" :height="610" class="w-939 shrink-0" />
+          <QSkeleton variant="rect" :height="610" class="min-w-0 flex-1" />
+        </div>
+      </template>
+      <DesktopLangues :courses="courses" />
     </PageState>
   </div>
 </template>

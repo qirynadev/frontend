@@ -39,6 +39,8 @@ const isAuthLogin = computed(() => props.variant === 'auth')
 const isAuthReset = computed(() => props.variant === 'auth-reset')
 const isAuthScreen = computed(() => isAuthLogin.value || isAuthReset.value)
 
+const { openId } = useDesktopNavMenu()
+
 const navItems = computed(() =>
   desktopNavSections.map((section) => {
     const menuSection = catalog.menu?.[section.id]
@@ -147,9 +149,11 @@ const navItems = computed(() =>
           <template v-for="item in navItems" :key="item.id">
             <AppDesktopNavDropdown
               v-if="item.items.length > 0"
+              :menu-id="item.id"
               :label="item.label"
               :to="item.to"
               :items="item.items"
+              :open="openId === item.id"
             />
             <AppDesktopNavItem v-else :to="item.to">
               {{ item.label }}

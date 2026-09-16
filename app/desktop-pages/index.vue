@@ -1,16 +1,33 @@
 <script setup lang="ts">
+import { useCatalogStore } from '~/core/stores'
+
 /**
  * Accueil desktop ← Figma `Home page` (1004:3493), contenu uniquement.
  * Nav / footer fournis par `layouts/desktop.vue`.
  */
 const localePath = useLocalePath()
+const router = useRouter()
+const catalog = useCatalogStore()
+const { open: openNavMenu } = useDesktopNavMenu()
 const ASSET = '/img/desktop/home'
 
+function exploreLanguages() {
+  if ((catalog.menu?.courses?.entries.length ?? 0) > 0) {
+    openNavMenu('courses')
+    return
+  }
+  void router.push(localePath('/langues'))
+}
+
+function exploreSchools() {
+  openNavMenu('destinations')
+}
+
 const orientationFeats = [
-  { icon: `${ASSET}/feat-test.svg`, key: 'desktop.home.orientation.f1' },
-  { icon: `${ASSET}/feat-bilan.svg`, key: 'desktop.home.orientation.f2' },
-  { icon: `${ASSET}/feat-experts.svg`, key: 'desktop.home.orientation.f3' },
-  { icon: `${ASSET}/feat-mesure.svg`, key: 'desktop.home.orientation.f4' },
+  { icon: `${ASSET}/feat-test.svg`, key: 'desktop.home.orientation.f1', iconBg: 'bg-[#fef2f2]' },
+  { icon: `${ASSET}/feat-bilan.svg`, key: 'desktop.home.orientation.f2', iconBg: 'bg-[#faf5ff]' },
+  { icon: `${ASSET}/feat-experts.svg`, key: 'desktop.home.orientation.f3', iconBg: 'bg-[#f0fdf4]' },
+  { icon: `${ASSET}/feat-mesure.svg`, key: 'desktop.home.orientation.f4', iconBg: 'bg-[#eff6ff]' },
 ] as const
 
 const schoolTypes = [
@@ -70,9 +87,9 @@ const housingChecks = [
 ] as const
 
 const housingTypes = [
-  { icon: `${ASSET}/type-colo.svg`, title: 'desktop.home.housing.type1', desc: 'desktop.home.housing.type1desc', thumb: `${ASSET}/thumb-housing-1.jpg` },
-  { icon: `${ASSET}/type-residence.svg`, title: 'desktop.home.housing.type2', desc: 'desktop.home.housing.type2desc', thumb: `${ASSET}/thumb-housing-1.jpg` },
-  { icon: `${ASSET}/type-appart.svg`, title: 'desktop.home.housing.type3', desc: 'desktop.home.housing.type3desc', thumb: `${ASSET}/thumb-housing-2.jpg` },
+  { icon: `${ASSET}/type-colo.svg`, title: 'desktop.home.housing.type1', desc: 'desktop.home.housing.type1desc', thumb: `${ASSET}/thumb-housing-1.jpg`, iconBg: 'bg-[#fff7ed]' },
+  { icon: `${ASSET}/type-residence.svg`, title: 'desktop.home.housing.type2', desc: 'desktop.home.housing.type2desc', thumb: `${ASSET}/thumb-housing-1.jpg`, iconBg: 'bg-[#faf5ff]' },
+  { icon: `${ASSET}/type-appart.svg`, title: 'desktop.home.housing.type3', desc: 'desktop.home.housing.type3desc', thumb: `${ASSET}/thumb-housing-2.jpg`, iconBg: 'bg-[#eff6ff]' },
 ] as const
 </script>
 
@@ -107,7 +124,7 @@ const housingTypes = [
             </p>
             <div class="grid max-w-[472px] grid-cols-4 gap-16 pt-40">
               <div v-for="item in orientationFeats" :key="item.key" class="flex flex-col items-center text-center">
-                <span class="flex size-40 items-center justify-center rounded-full bg-[#fef6f5]">
+                <span class="flex size-40 items-center justify-center rounded-full" :class="item.iconBg">
                   <img :src="item.icon" alt="" width="16" height="16" class="size-16">
                 </span>
                 <span class="pt-8 text-[10px] leading-[12.5px] font-medium text-[#1a1a1a]">{{ $t(item.key) }}</span>
@@ -126,7 +143,7 @@ const housingTypes = [
 
         <div class="desktop-home-media desktop-home-media--short">
             <img :src="`${ASSET}/orientation-photo.png`" alt="" class="absolute inset-0 size-full object-cover object-[center_20%]">
-            <div class="absolute top-[22%] left-[55%] flex w-[min(280px,58%)] flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
+            <div class="absolute top-[22%] left-[55%] flex w-[min(240px,50%)] flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
               <p class="m-0 text-[14px] leading-20 font-bold text-[#242424]">{{ $t('desktop.home.orientation.resultsTitle') }}</p>
               <ul class="m-0 mt-16 flex list-none flex-col gap-12 p-0">
                 <li v-for="i in 4" :key="i" class="flex items-center gap-8 text-[11px] leading-[16.5px] font-medium text-[#141414]">
@@ -187,23 +204,19 @@ const housingTypes = [
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-16 pt-40">
-              <NuxtLink
-                :to="localePath('/destinations')"
-                class="inline-flex items-center gap-8 rounded-lg bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white no-underline"
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-8 rounded-lg border-0 bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white"
+                @click="exploreSchools"
               >
                 {{ $t('desktop.home.school.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16">
-              </NuxtLink>
+              </button>
             </div>
           </div>
 
         <div class="desktop-home-media desktop-home-media--tall">
             <img :src="`${ASSET}/school-photo.jpg`" alt="" class="size-full object-contain">
-            <img
-              :src="`${ASSET}/school-comparatif.png`"
-              alt=""
-              class="absolute top-[15.7%] left-[50.3%] h-auto w-[61%] rounded-[10px] border border-[#f3f5fb] object-cover"
-            >
           </div>
 
         <div class="desktop-home-card flex flex-col">
@@ -261,13 +274,14 @@ const housingTypes = [
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-16 pt-40">
-              <NuxtLink
-                :to="localePath('/langues')"
-                class="inline-flex items-center gap-8 rounded-lg bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white no-underline"
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-8 rounded-lg border-0 bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white"
+                @click="exploreLanguages"
               >
                 {{ $t('desktop.home.languages.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16">
-              </NuxtLink>
+              </button>
             </div>
           </div>
         <div class="desktop-home-media desktop-home-media--short">
@@ -342,7 +356,7 @@ const housingTypes = [
                 :key="item.title"
                 class="flex items-center gap-12 rounded-xl border border-[#f3f4f6] bg-white p-12"
               >
-                <span class="flex size-40 shrink-0 items-center justify-center rounded-full bg-[#fceff0]">
+                <span class="flex size-40 shrink-0 items-center justify-center rounded-full" :class="item.iconBg">
                   <img :src="item.icon" alt="" width="20" height="20" class="size-20">
                 </span>
                 <div class="min-w-0 flex-1">
@@ -353,7 +367,7 @@ const housingTypes = [
               </div>
             </div>
             <div class="absolute top-[26%] left-[8.5%] flex max-w-160 items-center gap-12 rounded-full bg-white p-12">
-              <span class="flex size-36 shrink-0 items-center justify-center rounded-full bg-[#fceff0]">
+              <span class="flex size-36 shrink-0 items-center justify-center rounded-full bg-[#eff6ff]">
                 <img :src="`${ASSET}/type-appart.svg`" alt="" width="20" height="20" class="size-20">
               </span>
               <p class="m-0 text-[11px] leading-[15px] font-semibold text-[#131b33] whitespace-pre-line">{{ $t('desktop.home.housing.homeLabel') }}</p>
