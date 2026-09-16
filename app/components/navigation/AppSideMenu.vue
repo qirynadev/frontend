@@ -40,7 +40,11 @@ function close() {
  *
  * Proposer « Se connecter » à quelqu'un qui l'est déjà est le genre de détail
  * qui décrédibilise tout le reste. Connecté, le menu salue par le prénom et
- * remplace les deux boutons par l'accès au compte et la déconnexion.
+ * remplace les deux boutons par le seul accès au compte.
+ *
+ * Pas de « Se déconnecter » ici (2026-09-16) : l'action vit dans les réglages
+ * (`settings.logoutTitle`), et la dupliquer dans le menu alourdissait la
+ * colonne pour une action qu'on ne déclenche pas deux fois par jour.
  */
 const greeting = computed(() =>
   session.isAuthenticated
@@ -52,12 +56,6 @@ const greeting = computed(() =>
 const photoUrl = computed(() =>
   session.user?.profile.photo || session.user?.avatar || null,
 )
-
-async function onLogout() {
-  await session.logout()
-  close()
-  await navigateTo(localePath('/'))
-}
 </script>
 
 <template>
@@ -120,13 +118,6 @@ async function onLogout() {
               >
                 {{ $t('menu.account') }}
               </NuxtLink>
-              <button
-                type="button"
-                class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-menu-btn-outline bg-white py-15 text-center text-xl leading-20 font-semibold text-menu-btn-outline"
-                @click="onLogout"
-              >
-                {{ $t('menu.signOut') }}
-              </button>
             </template>
 
             <template v-else>
@@ -159,7 +150,7 @@ async function onLogout() {
                 v-for="entry in section.entries"
                 :key="entry.id"
                 :to="localePath(entry.to)"
-                class="flex w-full items-center justify-between rounded-3xl p-12 text-text no-underline"
+                class="flex w-full items-center justify-between rounded-3xl px-12 py-6 text-text no-underline"
               >
                 <span class="flex items-center gap-12 text-xl leading-21 font-medium">
                   <QIcon :name="entry.icon" :size="40" />
