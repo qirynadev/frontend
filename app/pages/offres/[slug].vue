@@ -105,21 +105,20 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
             :aria-label="$t('offer.levelLabel')"
             class="flex w-full gap-4 rounded-xl bg-surface-2 p-4"
           >
-              <button
-                v-for="option in levelOptions"
-                :key="option.key"
-                type="button"
-                role="tab"
-                :aria-selected="level === option.key"
-                :class="[
-                  'min-w-0 flex-1 cursor-pointer rounded-lg border-0 px-8 py-8 text-lg leading-18 whitespace-nowrap',
-                  level === option.key ? 'bg-white font-semibold text-text shadow-soft' : 'bg-transparent font-medium text-muted',
-                ]"
-                @click="chooseLevel(option.key)"
-              >
-                {{ $t(option.labelKey) }}
-              </button>
-            </div>
+            <button
+              v-for="option in levelOptions"
+              :key="option.key"
+              type="button"
+              role="tab"
+              :aria-selected="level === option.key"
+              :class="[
+                'min-w-0 flex-1 cursor-pointer rounded-lg border-0 px-8 py-8 text-lg leading-18 whitespace-nowrap',
+                level === option.key ? 'bg-white font-semibold text-text shadow-soft' : 'bg-transparent font-medium text-muted',
+              ]"
+              @click="chooseLevel(option.key)"
+            >
+              {{ $t(option.labelKey) }}
+            </button>
           </div>
 
           <QAlert
