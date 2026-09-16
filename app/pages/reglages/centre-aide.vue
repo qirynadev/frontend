@@ -5,6 +5,9 @@
  * | Bloc | Spéc |
  * |---|---|
  * | sections | `gap-22` topbar → intro → bandeau → Contactez-nous |
+ * | bandeau | `px-20 py-9` — padding vertical resserré le 2026-09-16 pour
+ *   rendre ~20 % de hauteur, les deux libellés ayant été raccourcis et
+ *   repassant chacun sur une seule ligne |
  * | options | `gap-12` entre cartes contact |
  * | Envoyer un message | → `/reglages/contact` |
  * | WhatsApp | `wa.me` vers le téléphone des réglages du site — carte masquée sans numéro |
@@ -61,7 +64,7 @@ usePageSeo(() => ({
       </section>
 
       <!-- Bandeau support -->
-      <aside class="box-border flex w-full items-start rounded-[10px] border border-ca-banner-border bg-ca-banner p-20">
+      <aside class="box-border flex w-full items-start rounded-[10px] border border-ca-banner-border bg-ca-banner px-20 py-9">
         <img
           :src="`${ICON}/ic-ca-headset.svg`"
           alt=""
