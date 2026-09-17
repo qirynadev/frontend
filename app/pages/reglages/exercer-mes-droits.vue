@@ -8,6 +8,12 @@
  * - Télécharger / demandes équipe → mailto privacy@
  * - CNIL → site public de l’autorité
  * Sections : `gap-22` entre topbar / intro / cartes.
+ *
+ * Pictos : tous en tracé 24×24 sur une case CSS 48×48 (2026-09-17). Les trois
+ * premiers étaient des exports Figma 52×52 embarquant carré violet et ombre
+ * portée, affichés en 48 : réduits de 8 %, traits entre deux pixels et ombre
+ * rastérisée, ils sortaient flous. Ils reprennent le style des lignes
+ * « Traité par notre équipe ».
  */
 import { NuxtLink } from '#components'
 
@@ -29,7 +35,6 @@ interface RightsRow {
   href?: string
   action?: 'cookies'
   danger?: boolean
-  tile?: boolean
   tileClass?: string
 }
 
@@ -41,7 +46,7 @@ const immediateRows: RightsRow[] = [
     titleKey: 'settingsRights.downloadTitle',
     descKey: 'settingsRights.downloadDesc',
     href: `${PRIVACY_MAIL}?subject=${encodeURIComponent('Télécharger mes données')}`,
-    tile: true,
+    tileClass: 'bg-rml-team-tile',
   },
   {
     id: 'correct',
@@ -50,7 +55,7 @@ const immediateRows: RightsRow[] = [
     titleKey: 'settingsRights.correctTitle',
     descKey: 'settingsRights.correctDesc',
     to: '/reglages/informations-personnelles',
-    tile: true,
+    tileClass: 'bg-rml-team-tile',
   },
   {
     id: 'withdraw',
@@ -59,7 +64,7 @@ const immediateRows: RightsRow[] = [
     titleKey: 'settingsRights.withdrawTitle',
     descKey: 'settingsRights.withdrawDesc',
     action: 'cookies',
-    tile: true,
+    tileClass: 'bg-rml-team-tile',
   },
   {
     id: 'delete',
@@ -159,16 +164,7 @@ usePageSeo(() => ({
             ]"
             @click="row.action === 'cookies' ? resetCookieConsent() : undefined"
           >
-            <span
-              v-if="row.tile"
-              class="mr-16 size-48 shrink-0 overflow-hidden"
-            >
-              <img :src="`${ICON}/${row.icon}.svg`" alt="" width="48" height="48" class="block size-48">
-            </span>
-            <span
-              v-else
-              :class="['mr-16 flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-[12px]', row.tileClass]"
-            >
+            <span :class="['mr-16 flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-[12px]', row.tileClass]">
               <img :src="`${ICON}/${row.icon}.svg`" alt="" width="24" height="24" class="block size-24">
             </span>
             <span class="flex min-w-0 flex-1 flex-col pr-8">
