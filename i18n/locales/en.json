@@ -244,6 +244,10 @@
     "pageFormTitle": "Make your choice",
     "title": "We use cookies 🍪"
   },
+  "countryPicker": {
+    "empty": "No country matches “{query}”.",
+    "searchPlaceholder": "Search a country or dialling code"
+  },
   "course": {
     "badge": {
       "growing": "Fast growing",

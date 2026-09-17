@@ -244,6 +244,10 @@
     "pageFormTitle": "Faites votre choix",
     "title": "Nous utilisons des cookies 🍪"
   },
+  "countryPicker": {
+    "empty": "Aucun pays ne correspond à « {query} ».",
+    "searchPlaceholder": "Rechercher un pays ou un indicatif"
+  },
   "course": {
     "badge": {
       "growing": "En forte croissance",

@@ -6,7 +6,8 @@
  * |---|---|
  * | sections | `gap-22` (norme produit ; Figma 24px) entre topbar / intro / cartes |
  * | cartes | rayon 16, filet `rp-card-border`, ombre `shadow-rp-card`, fond blanc |
- * | champs | tuile 46×46 + label 11px `rp-label` + input h-46 rayon 12 |
+ * | champs | tuile 46×46 + label 11px `rp-label` + input h-46 rayon 12, marge interne 12px (était 12/40 : un long numéro était rogné) |
+ * | pays, indicatif | déclencheurs vers `CountryPickerSheet` : recherche par nom, code ISO ou indicatif |
  * | danger | pastille 48 `rp-delete-bg` · chevron rouge |
  *
  * `POST /user/update-profile` (`authRepo.updateProfile`) : enregistre
@@ -19,9 +20,11 @@
  * Le téléphone passe après le pays, pour que l’indicatif se lise dans la
  * foulée du pays choisi.
  */
+import type { Country } from '~/core/contracts'
 import { ApiError } from '~/core/http/errors'
 import { authRepo, countryRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
+import { drapeauEmoji } from '~/utils/country-search'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -70,19 +73,42 @@ const decoupe = decouper(
 const phone = ref(decoupe.numero)
 const phoneCode = ref(decoupe.code)
 
-/** Les pays dont l'API donne l'indicatif (`international_phone`), par nom. */
-const indicatifs = computed(() =>
-  (countries.value ?? [])
-    .filter((c) => c.phoneCode)
-    .sort((a, b) => a.name.localeCompare(b.name)),
-)
+/** Les pays dont l'API donne l'indicatif (`international_phone`). */
+const indicatifs = computed(() => (countries.value ?? []).filter((c) => c.phoneCode))
 
-/** Drapeau déduit du code ISO (`FR` → 🇫🇷) : une `<option>` n'accepte pas d'image. */
-function drapeau(code: string | null): string {
-  if (!code || code.length !== 2) return ''
-  return [...code.toUpperCase()]
-    .map((lettre) => String.fromCodePoint(127397 + lettre.charCodeAt(0)))
-    .join('')
+const paysChoisi = computed(() => (countries.value ?? []).find((c) => c.id === countryId.value) ?? null)
+
+/**
+ * Pays dont le drapeau précède l'indicatif.
+ *
+ * Plusieurs pays partagent un indicatif (+1 : États-Unis, Canada…) : on garde
+ * celui choisi dans la liste, sinon le pays de résidence s'il a ce même
+ * indicatif, sinon le premier trouvé. Purement affiché : l'API ne stocke que
+ * le numéro.
+ */
+const paysIndicatifId = ref<string | null>(null)
+const paysIndicatif = computed(() => {
+  if (!phoneCode.value) return null
+  const memeCode = indicatifs.value.filter((c) => c.phoneCode === phoneCode.value)
+  return memeCode.find((c) => c.id === paysIndicatifId.value)
+    ?? memeCode.find((c) => c.id === countryId.value)
+    ?? memeCode[0]
+    ?? null
+})
+
+const libelleIndicatif = computed(() =>
+  `${t('settingsPersonal.phoneCodeLabel')} : ${phoneCode.value ? `+${phoneCode.value}` : '—'}`)
+
+const selecteurPaysOuvert = ref(false)
+const selecteurIndicatifOuvert = ref(false)
+
+function choisirPays(pays: Country) {
+  countryId.value = pays.id ?? ''
+}
+
+function choisirIndicatif(pays: Country) {
+  phoneCode.value = pays.phoneCode ?? ''
+  paysIndicatifId.value = pays.id
 }
 
 /**
@@ -96,16 +122,19 @@ function drapeau(code: string | null): string {
  */
 const numeroPreexistant = (profile?.phone ?? '').trim() !== ''
 
-watch(countryId, (id) => {
-  if (numeroPreexistant) return
+function alignerIndicatifSurPays(id: string) {
   const pays = (countries.value ?? []).find((c) => c.id === id)
-  if (pays?.phoneCode) phoneCode.value = pays.phoneCode
+  if (!pays?.phoneCode) return
+  phoneCode.value = pays.phoneCode
+  paysIndicatifId.value = pays.id
+}
+
+watch(countryId, (id) => {
+  if (!numeroPreexistant) alignerIndicatifSurPays(id)
 })
 
 onMounted(() => {
-  if (numeroPreexistant || phoneCode.value) return
-  const pays = (countries.value ?? []).find((c) => c.id === countryId.value)
-  if (pays?.phoneCode) phoneCode.value = pays.phoneCode
+  if (!numeroPreexistant && !phoneCode.value) alignerIndicatifSurPays(countryId.value)
 })
 
 /** Ce qui part réellement à l'API : indicatif + numéro, jamais l'un sans l'autre. */
@@ -178,7 +207,7 @@ usePageSeo(() => ({
             </span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.firstName') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
                 <input
                   id="rp-firstName"
                   v-model="firstName"
@@ -197,7 +226,7 @@ usePageSeo(() => ({
             </span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.lastName') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
                 <input
                   id="rp-lastName"
                   v-model="lastName"
@@ -214,7 +243,7 @@ usePageSeo(() => ({
             <img :src="`${ICON}/ic-rp-email-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.email') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-2 py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-2 px-12">
                 <input
                   id="rp-email"
                   :value="session.user?.email"
@@ -232,7 +261,7 @@ usePageSeo(() => ({
             <img :src="`${ICON}/ic-rp-calendar-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.birthDate') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
                 <input
                   id="rp-birthDate"
                   v-model="birthDate"
@@ -243,22 +272,24 @@ usePageSeo(() => ({
             </span>
           </label>
 
-          <!-- Pays : identifiant réel (lc_country_id), pas un texte libre -->
+          <!-- Pays : identifiant réel (lc_country_id), choisi par recherche -->
           <label class="flex w-full items-end gap-11" for="rp-country">
             <img :src="`${ICON}/ic-rp-pin-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.country') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
-                <select
-                  id="rp-country"
-                  v-model="countryId"
-                  autocomplete="country-name"
-                  class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
-                >
-                  <option value="" disabled>{{ $t('settingsPersonal.countryPlaceholder') }}</option>
-                  <option v-for="c in countries" :key="c.id ?? ''" :value="c.id">{{ c.name }}</option>
-                </select>
-              </span>
+              <button
+                id="rp-country"
+                type="button"
+                aria-haspopup="dialog"
+                class="mt-4 box-border flex h-46 w-full cursor-pointer items-center gap-8 overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12 text-left"
+                @click="selecteurPaysOuvert = true"
+              >
+                <span v-if="paysChoisi" class="shrink-0 text-xl leading-none" aria-hidden="true">{{ drapeauEmoji(paysChoisi.code) }}</span>
+                <span :class="['min-w-0 flex-1 truncate text-lg leading-20 font-medium', paysChoisi ? 'text-rp-input' : 'text-rp-label']">
+                  {{ paysChoisi?.name ?? $t('settingsPersonal.countryPlaceholder') }}
+                </span>
+                <QIcon name="chevron-down" :size="16" class="shrink-0 text-rp-label" />
+              </button>
             </span>
           </label>
 
@@ -267,17 +298,19 @@ usePageSeo(() => ({
             <img :src="`${ICON}/ic-rp-phone-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.phone') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center gap-8 overflow-hidden rounded-[12px] border border-rp-card-border bg-white py-12 pr-40 pl-12">
-                <select
-                  v-model="phoneCode"
-                  :aria-label="$t('settingsPersonal.phoneCodeLabel')"
-                  class="w-96 shrink-0 border-0 bg-transparent p-0 text-lg leading-20 font-medium text-rp-input outline-0"
+              <span class="mt-4 box-border flex h-46 w-full items-center gap-8 overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  :aria-label="libelleIndicatif"
+                  class="flex shrink-0 cursor-pointer items-center gap-4 border-0 bg-transparent p-0 text-lg leading-20 font-medium tabular-nums text-rp-input"
+                  @click="selecteurIndicatifOuvert = true"
                 >
-                  <option value="">—</option>
-                  <option v-for="c in indicatifs" :key="c.id ?? c.name" :value="c.phoneCode">
-                    {{ drapeau(c.code) }} +{{ c.phoneCode }}
-                  </option>
-                </select>
+                  <span v-if="paysIndicatif" class="text-xl leading-none" aria-hidden="true">{{ drapeauEmoji(paysIndicatif.code) }}</span>
+                  <span>{{ phoneCode ? `+${phoneCode}` : '—' }}</span>
+                  <QIcon name="chevron-down" :size="14" class="text-rp-label" />
+                </button>
+                <span class="h-20 w-px shrink-0 bg-rp-card-border" aria-hidden="true" />
                 <input
                   id="rp-phone"
                   v-model="phone"
@@ -290,6 +323,23 @@ usePageSeo(() => ({
           </label>
 
         </div>
+
+        <!-- Recherche par saisie plutôt que 245 pays à dérouler (portail : hors de la carte) -->
+        <CountryPickerSheet
+          v-model:open="selecteurPaysOuvert"
+          :countries="countries ?? []"
+          :title="$t('settingsPersonal.country')"
+          :selected-id="countryId || null"
+          @select="choisirPays"
+        />
+        <CountryPickerSheet
+          v-model:open="selecteurIndicatifOuvert"
+          :countries="indicatifs"
+          :title="$t('settingsPersonal.phoneCodeLabel')"
+          :selected-id="paysIndicatif?.id ?? null"
+          show-dial-code
+          @select="choisirIndicatif"
+        />
       </section>
 
       <QAlert v-if="errorMessage" tone="danger" :message="errorMessage" />
