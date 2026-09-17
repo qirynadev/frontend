@@ -122,7 +122,7 @@ const fields = [
         </p>
       </section>
 
-      <form class="rm-card mt-20 flex w-full flex-col rounded-xl bg-white p-16 shadow-card box-border" @submit.prevent="save">
+      <form class="rm-card mt-10 flex w-full flex-col rounded-xl bg-white p-16 shadow-card box-border" @submit.prevent="save">
         <label
           v-for="(field, index) in fields"
           :key="field.id"
@@ -213,12 +213,12 @@ const fields = [
           >{{ match === null ? '' : match ? $t('settingsPassword.matchOk') : $t('settingsPassword.matchError') }}</span>
         </label>
 
-        <aside class="rm-tip mt-20 flex min-h-61 w-full items-center gap-11 rounded-xl bg-surface-2 px-9 py-8 box-border">
+        <!-- <aside class="rm-tip mt-20 flex min-h-61 w-full items-center gap-11 rounded-xl bg-surface-2 px-9 py-8 box-border">
           <span class="rm-tip-icon size-44 shrink-0 overflow-hidden">
             <QIcon name="ic-rm-tip" :size="44" />
           </span>
           <p class="m-0 min-w-0 flex-1 text-sm leading-16 font-normal text-text">{{ $t('settingsPassword.tipText') }}</p>
-        </aside>
+        </aside> -->
 
         <QAlert v-if="errorMessage" class="mt-20" tone="danger" :message="errorMessage" />
 
