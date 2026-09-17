@@ -13,7 +13,9 @@
  * premiers étaient des exports Figma 52×52 embarquant carré violet et ombre
  * portée, affichés en 48 : réduits de 8 %, traits entre deux pixels et ombre
  * rastérisée, ils sortaient flous. Ils reprennent le style des lignes
- * « Traité par notre équipe ».
+ * « Traité par notre équipe ». Fichiers renommés en `-line` : servis avec un
+ * cache de 10 ans, les anciens noms seraient restés flous chez qui avait
+ * déjà vu la page.
  */
 import { NuxtLink } from '#components'
 
@@ -41,7 +43,7 @@ interface RightsRow {
 const immediateRows: RightsRow[] = [
   {
     id: 'download',
-    icon: 'ic-rrd-download',
+    icon: 'ic-rrd-download-line',
     chevron: 'ic-rrd-chevron',
     titleKey: 'settingsRights.downloadTitle',
     descKey: 'settingsRights.downloadDesc',
@@ -50,7 +52,7 @@ const immediateRows: RightsRow[] = [
   },
   {
     id: 'correct',
-    icon: 'ic-rrd-edit',
+    icon: 'ic-rrd-edit-line',
     chevron: 'ic-rrd-chevron-2',
     titleKey: 'settingsRights.correctTitle',
     descKey: 'settingsRights.correctDesc',
@@ -59,7 +61,7 @@ const immediateRows: RightsRow[] = [
   },
   {
     id: 'withdraw',
-    icon: 'ic-rrd-consent',
+    icon: 'ic-rrd-consent-line',
     chevron: 'ic-rrd-chevron-2',
     titleKey: 'settingsRights.withdrawTitle',
     descKey: 'settingsRights.withdrawDesc',
