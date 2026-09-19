@@ -19,6 +19,14 @@ function exploreLanguages() {
   void router.push(localePath('/langues'))
 }
 
+function exploreHousing() {
+  if ((catalog.menu?.living?.entries.length ?? 0) > 0) {
+    openNavMenu('living')
+    return
+  }
+  void router.push(localePath('/logement'))
+}
+
 function exploreSchools() {
   openNavMenu('destinations')
 }
@@ -110,11 +118,11 @@ const housingTypes = [
       <!-- ── Orientation ── -->
       <section class="desktop-home-band pt-30 pb-20">
         <div class="desktop-home-copy flex flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-orientation.svg`" alt="" width="12" height="12" class="size-12 shrink-0">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#f5f3ff] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#5c3cf3] uppercase">
+              <img src="/img/icons/ic-home-cat-metier.svg" alt="" width="16" height="16" class="size-16 shrink-0">
               {{ $t('desktop.home.orientation.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.orientation.titleBefore') }}
               <span class="text-[#fc0814]">{{ $t('desktop.home.orientation.titleAccent') }}</span>
               {{ $t('desktop.home.orientation.titleAfter') }}
@@ -141,8 +149,8 @@ const housingTypes = [
             </div>
           </div>
 
-        <div class="desktop-home-media desktop-home-media--short">
-            <img :src="`${ASSET}/orientation-photo.png`" alt="" class="absolute inset-0 size-full object-cover object-[center_20%]">
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/orientation-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center">
             <div class="absolute top-[22%] left-[55%] flex w-[min(240px,50%)] flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
               <p class="m-0 text-[14px] leading-20 font-bold text-[#242424]">{{ $t('desktop.home.orientation.resultsTitle') }}</p>
               <ul class="m-0 mt-16 flex list-none flex-col gap-12 p-0">
@@ -186,13 +194,13 @@ const housingTypes = [
       <!-- ── Fiches écoles ── -->
       <section class="desktop-home-band py-20">
         <div class="desktop-home-copy flex flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-school.svg`" alt="" width="12" height="8" class="h-8 w-12 shrink-0">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fff5f6] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#ff2d46] uppercase">
+              <img src="/img/icons/ic-home-cat-school.svg" alt="" width="16" height="16" class="size-16 shrink-0">
               {{ $t('desktop.home.school.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-normal font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.school.titleBefore') }}
-              <span class="block text-[#fc0814]">{{ $t('desktop.home.school.titleAccent') }}</span>
+              <span class="text-[#fc0814]">{{ $t('desktop.home.school.titleAccent') }}</span>
             </h2>
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.school.desc') }}
@@ -215,8 +223,8 @@ const housingTypes = [
             </div>
           </div>
 
-        <div class="desktop-home-media desktop-home-media--tall">
-            <img :src="`${ASSET}/school-photo.jpg`" alt="" class="size-full object-contain">
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/school-photo.jpg`" alt="" class="absolute inset-0 size-full object-contain object-center">
           </div>
 
         <div class="desktop-home-card flex flex-col">
@@ -256,13 +264,13 @@ const housingTypes = [
       <!-- ── Langues ── -->
       <section class="desktop-home-band py-20">
         <div class="desktop-home-copy flex flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-lang.svg`" alt="" width="14" height="14" class="size-14 shrink-0">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fffbeb] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#f59e0b] uppercase">
+              <img src="/img/icons/ic-home-cat-langue.svg" alt="" width="16" height="16" class="size-16 shrink-0">
               {{ $t('desktop.home.languages.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.languages.titleBefore') }}
-              <span class="block text-[#fc0814]">{{ $t('desktop.home.languages.titleAccent') }}</span>
+              <span class="text-[#fc0814]">{{ $t('desktop.home.languages.titleAccent') }}</span>
             </h2>
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.languages.desc') }}
@@ -284,8 +292,8 @@ const housingTypes = [
               </button>
             </div>
           </div>
-        <div class="desktop-home-media desktop-home-media--short">
-            <img :src="`${ASSET}/languages-photo.png`" alt="" class="size-full object-contain">
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/languages-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center">
           </div>
 
         <div class="desktop-home-card flex flex-col">
@@ -317,13 +325,13 @@ const housingTypes = [
       <!-- ── Hébergement ── -->
       <section class="desktop-home-band border-b border-[#f3f4f6] pt-20 pb-50">
         <div class="desktop-home-copy flex min-w-0 flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-housing.svg`" alt="" width="14" height="14" class="size-14 shrink-0">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#f0fdf4] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#4fb756] uppercase">
+              <img src="/img/icons/ic-home-cat-logement.svg" alt="" width="16" height="16" class="size-16 shrink-0">
               {{ $t('desktop.home.housing.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-normal font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.housing.titleBefore') }}
-              <span class="block text-[#fc0814]">{{ $t('desktop.home.housing.titleAccent') }}</span>
+              <span class="text-[#fc0814]">{{ $t('desktop.home.housing.titleAccent') }}</span>
             </h2>
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.housing.desc') }}
@@ -338,18 +346,19 @@ const housingTypes = [
               </li>
             </ul>
             <div class="pt-40">
-              <NuxtLink
-                :to="localePath('/logement')"
-                class="inline-flex items-center gap-8 rounded-lg bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white no-underline"
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-8 rounded-lg border-0 bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white"
+                @click="exploreHousing"
               >
                 {{ $t('desktop.home.housing.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16">
-              </NuxtLink>
+              </button>
             </div>
           </div>
 
-        <div class="desktop-home-media desktop-home-media--tall">
-            <img :src="`${ASSET}/housing-photo.png`" alt="" class="size-full object-contain object-bottom">
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/housing-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center">
             <div class="absolute top-[14.4%] left-[56%] flex w-[min(260px,53%)] flex-col gap-12">
               <div
                 v-for="item in housingTypes"

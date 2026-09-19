@@ -91,7 +91,7 @@ C’est la liste opérationnelle de **ce qu’il reste à intégrer** pour que c
 
 | Route | Figma mobile | Desktop aujourd’hui | Figma desktop à porter |
 |---|---|---|---|
-| `/logement` | [Logement](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1070-26) `1070:26` | Chrome seul | **Aucun** artboard liste pays logement |
+| `/logement` | [Logement](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1070-26) `1070:26` | Chrome + parcours boxed | **Aucun artboard 1728** — `desktop-pages/logement.vue` |
 | `/logement/[slug]/decouverte` | [Logement sûr](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1591-2293) `1591:2293` | Chrome seul | [Langues 2](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=898-2) `898:2` — **mal nommé** : stepper « Choix du type de logement / Préférences et budget » |
 | `/logement/[slug]` (formules Yukon / Comoé / Volga) | [Offres de Logement](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=452-247) `452:247` | Chrome seul | Pas d’artboard 1728 formules logement distinct (le `601:1634` est langues) |
 | `/logement/paiement-reussi` | (maquette HTML `logement-post-paiement.html`, pas d’artboard clairement isolé hors flux) | Chrome seul | Pas d’artboard 1728 |
@@ -115,17 +115,20 @@ C’est la liste opérationnelle de **ce qu’il reste à intégrer** pour que c
 | Route | Figma mobile | Desktop aujourd’hui | Figma desktop |
 |---|---|---|---|
 | `/messages` | [Mes messages](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=497-10) `497:10` | Chrome seul | **Aucun** |
-| `/reglages` | [Réglages](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1188-1041) `1188:1041` (+ variante `816:622`) | Chrome seul | **Aucun** |
-| `/reglages/informations-personnelles` | `1553:1020` | Chrome seul | **Aucun** |
-| `/reglages/mot-de-passe` | [Reglages Mot de passe](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=810-3378) `810:3378` | Chrome seul | **Aucun** |
-| `/reglages/langues` | [Reglages - Langues](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=810-1076) `810:1076` | Chrome seul | **Aucun** |
-| `/reglages/theme` | [Reglages thème](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=810-2999) `810:2999` | Chrome seul | **Aucun** |
-| `/reglages/centre-aide` | [Centre d'aide](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1586-1194) `1586:1194` | Chrome seul | **Aucun** |
-| `/reglages/contact` | [Envoyer un message](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1572-3457) `1572:3457` + confirmation `1572:3044` | Chrome seul | **Aucun** |
-| `/reglages/mentions` | [Informations légales](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1656-1204) `1656:1204` | Chrome seul | **Aucun** |
-| `/reglages/mentions-legales` | [Mentions légales](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1659-1287) `1659:1287` | Chrome seul | **Aucun** |
-| `/reglages/exercer-mes-droits` | [Exercer mes droits](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1588-1722) `1588:1722` | Chrome seul | **Aucun** |
-| `/pages/[slug]` (CGU, cookies, FAQ, privacy) | [Politique de cookies](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1562-1890) `1562:1890` (cookies seulement) | Chrome seul, layout générique | **Aucun** 1728 |
+| `/reglages` | [Réglages](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1188-1041) `1188:1041` (+ variante `816:622`) | Hub mobile ; desktop = **Informations personnelles** + rail | **Aucun artboard 1728** — `desktop-pages/reglages-profil.vue` |
+| `/reglages/informations-personnelles` | `1553:1020` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-profil.vue` |
+| `/reglages/mot-de-passe` | [Reglages Mot de passe](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=810-3378) `810:3378` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-mot-de-passe.vue` |
+| `/reglages/langues` | [Reglages - Langues](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=810-1076) `810:1076` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-langues.vue` |
+| `/reglages/theme` | [Reglages thème](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=810-2999) `810:2999` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-theme.vue` |
+| `/reglages/centre-aide` | [Centre d'aide](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1586-1194) `1586:1194` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-centre-aide.vue` |
+| `/reglages/contact` | [Envoyer un message](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1572-3457) `1572:3457` + confirmation `1572:3044` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-contact.vue` |
+| `/reglages/mentions` | [Informations légales](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1656-1204) `1656:1204` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-mentions.vue` |
+| `/reglages/mentions-legales` | [Mentions légales](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1659-1287) `1659:1287` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-mentions-legales.vue` |
+| `/reglages/exercer-mes-droits` | [Exercer mes droits](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1588-1722) `1588:1722` | Chrome + contenu | **Aucun artboard 1728** — `desktop-pages/reglages-droits.vue` |
+| `/pages/cookies` | [Politique de cookies](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=1562-1890) `1562:1890` | Chrome + cartes CMS + préférences | **Aucun artboard 1728** — `desktop-pages/pages-cookies.vue` |
+| `/pages/privacy` | Pas d’artboard isolé | Chrome + cartes CMS | **Aucun artboard 1728** — `desktop-pages/pages-privacy.vue` |
+| `/pages/cgu` | Pas d’artboard isolé | Chrome + cartes CMS | **Aucun artboard 1728** — `desktop-pages/pages-cgu.vue` |
+| `/pages/[slug]` (FAQ) | — | Chrome + RichText | **Aucun** 1728 |
 | `/paiement-reussi` | [Paiement réussi](https://www.figma.com/design/cp2QlJNiQY7TzAUHQpFDM9/Working_Files_Qiryrna?node-id=516-403) `516:403` | Chrome seul | Proche de `330:2555` (succès **collecte / pay**, pas le même parcours) |
 | `/compte` | — | Redirect → `/reglages` | — |
 

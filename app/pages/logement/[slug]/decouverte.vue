@@ -7,6 +7,8 @@
  *
  * Assets : `public/img/icons/log-sur/*`
  */
+import DesktopLogement from '~/desktop-pages/logement.vue'
+
 const route = useRoute()
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -64,7 +66,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="flex w-full flex-col gap-22 pb-22">
+  <div class="flex w-full flex-col gap-22 pb-22 shell:hidden">
     <AppTopBar back back-to="/logement" :gap="0" />
 
     <!-- Intro -->
@@ -157,5 +159,9 @@ usePageSeo(() => ({
     >
       {{ $t('housing.intro.cta') }}
     </NuxtLink>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopLogement :initial-slug="slug" />
   </div>
 </template>

@@ -18,6 +18,8 @@
  * Accessible sans connexion : c'est une préférence d'affichage (cookie), pas
  * une donnée de compte — aucun appel authentifié ici.
  */
+import DesktopReglagesLangues from '~/desktop-pages/reglages-langues.vue'
+
 const { t, locale, setLocale } = useI18n()
 
 type LocaleCode = 'fr' | 'en'
@@ -42,7 +44,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rl flex flex-1 flex-col">
+  <div class="page-rl flex flex-1 flex-col shell:hidden">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="rl-main flex w-full max-w-full flex-col box-border">
       <AppTopBar :back="true" back-to="/reglages" />
@@ -118,5 +120,14 @@ usePageSeo(() => ({
         {{ $t('settingsLanguage.save') }}
       </button>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesLangues
+      :options="options"
+      :chosen="chosen"
+      @update:chosen="chosen = $event"
+      @save="save"
+    />
   </div>
 </template>

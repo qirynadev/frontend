@@ -74,6 +74,7 @@
       "mba": "MBA",
       "profiling": "Profiling",
       "orientation": "Guidance",
+      "backToTop": "Back to top",
       "language": "Change language",
       "countries": {
         "fr": "France",
@@ -82,6 +83,12 @@
         "ca": "Canada",
         "us": "USA"
       }
+    },
+    "reglages": {
+      "guestHint": "Sign in to manage your account",
+      "guestName": "Guest",
+      "guestProfile": "Sign in to view and edit your personal information.",
+      "navLabel": "Settings sections"
     },
     "footer": {
       "tagline": "Your partner for studying, learning and living abroad. Complete solutions for your international success.",
@@ -140,6 +147,13 @@
       "nextPage": "Next page"
     },
     "ficheEcole": {
+      "badgeAacsb": "AACSB",
+      "badgeAmba": "AMBA",
+      "badgeEquis": "Equis",
+      "badgeGrandeEcole": "Grande école",
+      "badgePrivee": "Private",
+      "badgePublique": "Public",
+      "badgeUniversite": "University",
       "ctaButton": "See our support offers",
       "ctaDesc": "Our advisors support you at every step of your application.",
       "ctaTitle": "Want to join",
@@ -247,6 +261,19 @@
         "step3Desc": "Clarify what you want and\nwhat keeps you moving.",
         "step4Title": "What career suits me?",
         "step4Desc": "Explore the jobs and paths\nthat fit you."
+      },
+      "housing": {
+        "email": "A confirmation email has been sent with a link\nto share your housing preferences.",
+        "nextAccent": "to source your housing.",
+        "nextDesc": "Tell us your dates, budget\nand the type of housing you want\nso we can start sourcing.",
+        "step1Title": "Your needs",
+        "step1Desc": "Share dates, budget\nand housing type.",
+        "step2Title": "Our sourcing",
+        "step2Desc": "We ask our verified\npartners.",
+        "step3Title": "Your options",
+        "step3Desc": "Receive a shortlist\nthat fits your file.",
+        "step4Title": "Your lease",
+        "step4Desc": "We stay with you\nuntil you sign."
       }
     },
     "langues": {
@@ -297,6 +324,14 @@
       "path3Desc": "Pick the hour pack that suits you.",
       "path4Title": "4. Schedule your sessions",
       "path4Desc": "Get an email and book your lessons in the calendar."
+    },
+    "logement": {
+      "formulasFor": "Plans for {country}",
+      "statCountries": "countries covered",
+      "statSecureLabel": "verified contracts",
+      "statSecureValue": "100%",
+      "statSupportLabel": "until you move in",
+      "statSupportValue": "Support"
     },
     "monProjet": {
       "introLine1": "Find all the services you have chosen here.",
@@ -350,7 +385,7 @@
       "howItWorks": "See how it works",
       "school": {
         "badge": "Join a school",
-        "titleBefore": "Compare the best schools,",
+        "titleBefore": "Compare the best schools, ",
         "titleAccent": "choose with confidence",
         "desc": "Find the ideal programme at recognised schools and start your application with personalised support at every step.",
         "type1": "Management",
@@ -413,7 +448,7 @@
         "pt": "Portuguese",
         "more": "And more",
         "testTitle": "Test your level",
-        "testDesc": "Free assessment"
+        "testDesc": "Tailored path"
       },
       "housing": {
         "badge": "Find my housing",
@@ -1257,6 +1292,64 @@
     "unplannedEmptyDesc": "All your hours are already scheduled.",
     "unplannedEmptyTitle": "Nothing to schedule",
     "visio": "Video call"
+  },
+  "legalCookies": {
+    "adsDesc": "Measure our campaigns and adapt the content shown to you.",
+    "adsTitle": "Advertising and social networks",
+    "adsUnused": "not used",
+    "alwaysOn": "always on",
+    "audienceDesc": "Understand which pages are visited, so we can improve the platform.",
+    "audienceTitle": "Audience measurement",
+    "browserBody": "You can also delete cookies from your browser settings. This also clears your session: you will need to sign in again.",
+    "browserTitle": "Your browser settings",
+    "colDuration": "Duration",
+    "colName": "Name",
+    "colPurpose": "Purpose",
+    "durationsBody": "Your choices are kept for 13 months, then the banner is shown again. Audience cookies last 13 months at most, and the data they produce is kept for 25 months at most.",
+    "durationsTitle": "Durations",
+    "functionalDesc": "Playback of videos and content hosted by third parties.",
+    "functionalTitle": "Functional",
+    "functionalUnused": "not used",
+    "hint": "Refusing is as simple as accepting. You can change this at any time.",
+    "intro": "The trackers used on Qiryna and how to stay in control.",
+    "introCard": "A cookie is a small file stored on your device when you visit. Some are required for the platform to work; others are only stored with your consent.",
+    "necessaryDesc": "Sign-in, security, checkout, remembering your cookie choices. Stored without consent.",
+    "necessaryTitle": "Strictly necessary",
+    "prefsTitle": "Your preferences",
+    "questionDesc": "Write to us at",
+    "questionTitle": "A question about cookies?",
+    "rejectAll": "Reject all",
+    "save": "Save",
+    "saved": "Your choices have been saved.",
+    "table": {
+      "consentDuration": "13 months",
+      "consentName": "qiryna_cookie_consent",
+      "consentPurpose": "Remembers your choices",
+      "gaDuration": "2 years",
+      "gaName": "_ga",
+      "gaPurpose": "Visit statistics",
+      "localeDuration": "1 year",
+      "localeName": "qiryna_locale",
+      "localePurpose": "Display language",
+      "sessionDuration": "30 days",
+      "sessionName": "qiryna_session",
+      "sessionPurpose": "Keeps you signed in",
+      "stripeDuration": "1 year",
+      "stripeName": "__stripe_mid",
+      "stripePurpose": "Payment fraud prevention"
+    },
+    "tableTitle": "Cookies we set",
+    "title": "Cookie policy"
+  },
+  "legalPage": {
+    "cguIntro": "The rules for using the Qiryna platform.",
+    "cguLead": "These terms set out what you can expect from Qiryna, and what we expect in return.",
+    "contactEmail": "contact{'@'}qiryna.com",
+    "privacyIntro": "How we collect, use and protect your data.",
+    "privacyLead": "This policy describes processing carried out by Qiryna SAS, the data controller, on the platform.",
+    "rightsCta": "Access, rectify, delete or object — in a few steps.",
+    "rightsTitle": "Exercise my rights",
+    "updatedPrefix": "Updated"
   },
   "logementConfirmation": {
     "accommodationApartment": "Apartment",

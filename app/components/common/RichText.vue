@@ -58,6 +58,28 @@ withDefaults(
 .qiryna-rich-text ul { list-style: disc; }
 .qiryna-rich-text ol { list-style: decimal; }
 
+.qiryna-rich-text .ql-ui { display: none; }
+
+.legal-article-rich {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.legal-article-rich > * + * {
+  margin-top: calc(var(--spacing) * 14);
+}
+
+.legal-article-rich h2,
+.legal-article-rich h3,
+.legal-article-rich h4 {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.legal-article-rich li {
+  padding-left: 2px;
+}
+
 .qiryna-rich-text a {
   color: var(--color-primary-link);
   text-decoration: underline;

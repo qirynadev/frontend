@@ -2,8 +2,8 @@
 /**
  * Liste écoles desktop ← Figma `Domaines d'etudes` (54:488), 1728 px.
  *
- * Onglets : le `?domaine=` de l'URL reste allumé ; sans paramètre
- * (CTA pays), aucun onglet n'est sélectionné.
+ * Onglets : le `?domaine=` de l'URL est placé en premier et reste allumé ;
+ * sans paramètre (CTA pays), aucun onglet n'est sélectionné.
  */
 import type { AreaOfStudySummary, SchoolSummary } from '~/core/contracts'
 import type { ApiError } from '~/core/http/errors'
@@ -35,26 +35,26 @@ const TAB_WINDOW = 4
 
 const tabOffset = ref(0)
 
+const orderedAreas = computed(() => {
+  const selected = props.selectedDomain
+  if (!selected) return props.areas
+  const match = props.areas.find(area => area.slug === selected)
+  if (!match) return props.areas
+  return [match, ...props.areas.filter(area => area.slug !== selected)]
+})
+
 const visibleAreas = computed(() =>
-  props.areas.slice(tabOffset.value, tabOffset.value + TAB_WINDOW),
+  orderedAreas.value.slice(tabOffset.value, tabOffset.value + TAB_WINDOW),
 )
 
 const tabColumns = computed(() => Math.max(1, Math.min(TAB_WINDOW, visibleAreas.value.length)))
 
 watch(
-  () => [props.areas, props.selectedDomain] as const,
-  () => {
-    const idx = props.areas.findIndex(area => area.slug === props.selectedDomain)
-    if (idx < 0) return
-    if (idx < tabOffset.value) tabOffset.value = idx
-    else if (idx >= tabOffset.value + TAB_WINDOW) {
-      tabOffset.value = Math.max(0, idx - TAB_WINDOW + 1)
-    }
-  },
-  { immediate: true },
+  () => props.selectedDomain,
+  () => { tabOffset.value = 0 },
 )
 
-const canShiftTabs = computed(() => props.areas.length > TAB_WINDOW)
+const canShiftTabs = computed(() => orderedAreas.value.length > TAB_WINDOW)
 
 function prevTabs() {
   if (!canShiftTabs.value) return
@@ -63,7 +63,7 @@ function prevTabs() {
 
 function nextTabs() {
   if (!canShiftTabs.value) return
-  const max = Math.max(0, props.areas.length - TAB_WINDOW)
+  const max = Math.max(0, orderedAreas.value.length - TAB_WINDOW)
   tabOffset.value = Math.min(max, tabOffset.value + 1)
 }
 
@@ -146,8 +146,8 @@ const stats = [
             type="button"
             class="flex size-40 shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
             :aria-label="$t('desktop.domaines.nextDomains')"
-            :disabled="!canShiftTabs || tabOffset >= Math.max(0, areas.length - TAB_WINDOW)"
-            :class="!canShiftTabs || tabOffset >= Math.max(0, areas.length - TAB_WINDOW) ? 'opacity-40' : 'cursor-pointer'"
+            :disabled="!canShiftTabs || tabOffset >= Math.max(0, orderedAreas.length - TAB_WINDOW)"
+            :class="!canShiftTabs || tabOffset >= Math.max(0, orderedAreas.length - TAB_WINDOW) ? 'opacity-40' : 'cursor-pointer'"
             @click="nextTabs"
           >
             <span class="size-20 overflow-clip">

@@ -7,6 +7,8 @@
  * celles de la maquette — pas encore de contenu définitif.
  * Sections : `gap-22` entre topbar / intro / cartes.
  */
+import DesktopReglagesMentionsLegales from '~/desktop-pages/reglages-mentions-legales.vue'
+
 const { t } = useI18n()
 
 const ICON = '/img/icons/legal-notice'
@@ -19,7 +21,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rmn flex flex-1 flex-col">
+  <div class="page-rmn flex flex-1 flex-col shell:hidden">
     <div class="flex w-full max-w-full flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/reglages/mentions" :gap="0" />
 
@@ -200,8 +202,12 @@ usePageSeo(() => ({
             </span>
           </span>
         </span>
-        <img :src="`${ICON}/ic-rmn-chevron.svg`" alt="" width="20" height="20" class="ml-8 block size-20 shrink-0">
-      </a>
+      <img :src="`${ICON}/ic-rmn-chevron.svg`" alt="" width="20" height="20" class="ml-8 block size-20 shrink-0">
+    </a>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesMentionsLegales />
   </div>
 </template>

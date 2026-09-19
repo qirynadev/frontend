@@ -20,6 +20,7 @@
  */
 import { NuxtLink } from '#components'
 import { useSessionStore, useThemeStore } from '~/core/stores'
+import DesktopReglagesProfil from '~/desktop-pages/reglages-profil.vue'
 
 // Accessible sans connexion — cet index n'est qu'un sommaire de liens ; seules
 // les pages qui exigent vraiment un compte (informations personnelles, mot de
@@ -28,6 +29,12 @@ const { t } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
 const theme = useThemeStore()
+const {
+  fields: profilFields,
+  displayPhoto,
+  openPhotoPicker,
+  onPhotoSelected,
+} = useReglagesProfil()
 
 /** Reflète le vrai choix (`useThemeStore`) plutôt qu'un « Clair » figé. */
 const themeValueLabel = computed(() => {
@@ -89,7 +96,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rg flex flex-1 flex-col">
+  <div class="page-rg flex flex-1 flex-col shell:hidden">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="rg-main flex w-full max-w-full flex-col gap-15 box-border">
       <AppTopBar :back="true" back-to="/" :gap="0" />
@@ -162,5 +169,39 @@ usePageSeo(() => ({
         </div>
       </section>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <input
+      ref="fileInput"
+      type="file"
+      accept="image/*"
+      class="sr-only"
+      tabindex="-1"
+      @change="onPhotoSelected"
+    >
+    <DesktopReglagesProfil
+      v-if="session.isAuthenticated"
+      :fields="profilFields"
+      :display-photo="displayPhoto"
+      @pick-photo="openPhotoPicker"
+    />
+    <AppDesktopReglagesShell
+      v-else
+      :title="$t('settingsPersonal.title')"
+      :intro="$t('settingsPersonal.intro')"
+    >
+      <div class="flex flex-col items-start gap-16 rounded-[16px] border border-[#f9fafb] bg-white p-32 shadow-[0_0_3px_rgba(0,0,0,0.12)]">
+        <p class="m-0 text-[16px] leading-[22px] text-[#151515]">
+          {{ $t('desktop.reglages.guestProfile') }}
+        </p>
+        <NuxtLink
+          :to="localePath('/connexion')"
+          class="flex items-center justify-center rounded-[12px] bg-[#ff1b40] px-24 py-14 text-[14px] leading-20 font-semibold text-white no-underline"
+        >
+          {{ $t('auth.signIn') }}
+        </NuxtLink>
+      </div>
+    </AppDesktopReglagesShell>
   </div>
 </template>

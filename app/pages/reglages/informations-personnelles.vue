@@ -13,83 +13,19 @@
  * Pas d’API de mise à jour profil : préremplissage session + repli mock.
  * Doc : `docs/reglages-profil-mocks.md`.
  */
-import { reglagesProfilMock } from '~/config/reglages-profil-mock'
-import { useSessionStore } from '~/core/stores'
+import DesktopReglagesProfil from '~/desktop-pages/reglages-profil.vue'
 
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
-const session = useSessionStore()
+const {
+  fields,
+  displayPhoto,
+  openPhotoPicker,
+  onPhotoSelected,
+} = useReglagesProfil()
 
 const ICON = '/img/icons/reglages-profil'
-
-const firstName = ref('')
-const lastName = ref('')
-const email = ref('')
-const phone = ref('')
-const birthDate = ref('')
-const country = ref('')
-const city = ref('')
-
-const photoUrl = computed(() => session.user?.profile.photo ?? session.user?.avatar ?? null)
-
-/** Aperçu local après sélection (pas d’API upload). */
-const localPhoto = ref<string | null>(null)
-const displayPhoto = computed(() => localPhoto.value ?? photoUrl.value)
-
-const fileInput = useTemplateRef<HTMLInputElement>('fileInput')
-
-function openPhotoPicker() {
-  fileInput.value?.click()
-}
-
-function onPhotoSelected(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file || !file.type.startsWith('image/')) return
-  if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
-  localPhoto.value = URL.createObjectURL(file)
-  input.value = ''
-}
-
-onBeforeUnmount(() => {
-  if (localPhoto.value) URL.revokeObjectURL(localPhoto.value)
-})
-
-onMounted(() => {
-  const user = session.user
-  const profile = user?.profile
-  firstName.value = profile?.firstName || reglagesProfilMock.firstName
-  lastName.value = profile?.lastName || reglagesProfilMock.lastName
-  email.value = user?.email || reglagesProfilMock.email
-  phone.value = profile?.phone || reglagesProfilMock.phone
-  birthDate.value = reglagesProfilMock.birthDate
-  country.value = reglagesProfilMock.country
-  city.value = profile?.city || reglagesProfilMock.city
-})
-
-type FieldIcon = 'person' | 'email' | 'phone' | 'calendar' | 'pin' | 'city'
-
-interface Field {
-  id: string
-  labelKey: string
-  model: Ref<string>
-  icon: FieldIcon
-  /** Affiche le drapeau FR dans l’input (téléphone). */
-  flag?: boolean
-  autocomplete?: string
-  inputType?: string
-}
-
-const fields = computed<Field[]>(() => [
-  { id: 'firstName', labelKey: 'settingsPersonal.firstName', model: firstName, icon: 'person', autocomplete: 'given-name' },
-  { id: 'lastName', labelKey: 'settingsPersonal.lastName', model: lastName, icon: 'person', autocomplete: 'family-name' },
-  { id: 'email', labelKey: 'settingsPersonal.email', model: email, icon: 'email', autocomplete: 'email', inputType: 'email' },
-  { id: 'phone', labelKey: 'settingsPersonal.phone', model: phone, icon: 'phone', flag: true, autocomplete: 'tel', inputType: 'tel' },
-  { id: 'birthDate', labelKey: 'settingsPersonal.birthDate', model: birthDate, icon: 'calendar' },
-  { id: 'country', labelKey: 'settingsPersonal.country', model: country, icon: 'pin', autocomplete: 'country-name' },
-  { id: 'city', labelKey: 'settingsPersonal.city', model: city, icon: 'city', autocomplete: 'address-level2' },
-])
 
 usePageSeo(() => ({
   title: t('settingsPersonal.seoTitle'),
@@ -99,7 +35,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rp flex flex-1 flex-col">
+  <div class="page-rp flex flex-1 flex-col shell:hidden">
     <div class="rp-main flex w-full max-w-full flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/reglages" :notifications="3" :gap="0" />
 
@@ -249,5 +185,13 @@ usePageSeo(() => ({
         <img :src="`${ICON}/ic-rp-chevron.svg`" alt="" width="20" height="20" class="ml-8 block size-20 shrink-0">
       </button>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesProfil
+      :fields="fields"
+      :display-photo="displayPhoto"
+      @pick-photo="openPhotoPicker"
+    />
   </div>
 </template>

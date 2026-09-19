@@ -4,7 +4,7 @@
  */
 export const DESKTOP_PAY_ASSET = '/img/desktop/paiement-reussi'
 
-export type DesktopPayVariant = 'default' | 'language' | 'orientation'
+export type DesktopPayVariant = 'default' | 'language' | 'orientation' | 'housing'
 
 export const desktopPaySteps = [
   { icon: 'step-1.svg', iconBg: 'bg-[#fef2f2]', titleKey: 'step1Title', descKey: 'step1Desc' },

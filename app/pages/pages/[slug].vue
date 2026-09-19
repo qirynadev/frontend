@@ -11,9 +11,9 @@
  * portés, titre de la page, et le HTML éditorial du back-office rendu par
  * `RichText` — donc **déjà assaini par l'adapter**, jamais un `v-html` nu.
  *
- * Les quatre slugs administrés en recette : `cgu`, `cookies`, `faq`, `privacy`.
- * Tout autre slug lève un vrai 404 : ces pages sont indexables, une inexistante
- * ne doit pas répondre 200.
+ * Les slugs `cookies`, `privacy` et `cgu` ont leurs propres pages (cartes).
+ * Ici : `faq` et tout autre slug administré.
+ * Un slug inexistant lève un vrai 404 : ces pages sont indexables.
  */
 import { pageRepo } from '~/core/repositories'
 

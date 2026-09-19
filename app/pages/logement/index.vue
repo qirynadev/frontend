@@ -24,6 +24,7 @@
  * éditorial « 350+ villes ». Voir `docs/logement-mocks.md`.
  */
 import { livingRepo } from '~/core/repositories'
+import DesktopLogement from '~/desktop-pages/logement.vue'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -52,7 +53,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
+  <div class="shell:hidden">
     <AppTopBar back back-to="/" />
 
     <div class="w-full pb-22">
@@ -144,5 +145,9 @@ usePageSeo(() => ({
 
       <TrustStrip />
     </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopLogement />
   </div>
 </template>

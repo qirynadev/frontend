@@ -10,6 +10,7 @@
  * Sections : `gap-22` entre topbar / intro / cartes.
  */
 import { NuxtLink } from '#components'
+import DesktopReglagesDroits from '~/desktop-pages/reglages-droits.vue'
 
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -127,7 +128,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rrd flex flex-1 flex-col">
+  <div class="page-rrd flex flex-1 flex-col shell:hidden">
     <div class="flex w-full max-w-full flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/reglages/mentions" :gap="0" />
 
@@ -245,5 +246,9 @@ usePageSeo(() => ({
         </a>
       </section>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesDroits />
   </div>
 </template>

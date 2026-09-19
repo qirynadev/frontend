@@ -8,8 +8,6 @@ import {
   DESKTOP_OFFER_ASSET,
   desktopOfferAccentKey,
   desktopOfferAdvantages,
-  desktopOfferDefaultIncludes,
-  desktopOfferIncludeIcons,
   desktopOfferMbaIncludes,
   desktopOfferSteps,
 } from '~/config/desktop-offres-accompagnement'
@@ -34,22 +32,16 @@ const accent = computed(() => {
   return t('desktop.offer.accent.default', { domain: domainLabel.value })
 })
 
-const includeItems = computed(() => {
-  const api = (tier.value?.features ?? []).filter(Boolean)
-  if (api.length > 0) {
-    const labels = api.slice(0, 7)
-    const icons = desktopOfferIncludeIcons(labels.length)
-    return labels.map((label, index) => ({ icon: icons[index]!, label }))
-  }
-  const defaults = slug.value === 'mba' ? desktopOfferMbaIncludes : desktopOfferDefaultIncludes
-  return defaults.map(item => ({ icon: item.icon, label: t(item.labelKey) }))
-})
+/** Puces Figma `341:4102` — jamais les `features` API (textes longs du back-office). */
+const includeItems = computed(() =>
+  desktopOfferMbaIncludes.map(item => ({ icon: item.icon, label: t(item.labelKey) })),
+)
 
 const showIncludeNote = computed(() => includeItems.value.some(item => item.label.includes('*')))
 </script>
 
 <template>
-  <div class="desktop-boxed flex items-start gap-20 pt-32 pb-32">
+  <div class="desktop-boxed flex items-stretch gap-20 pt-32 pb-32">
     <div class="flex w-1004 shrink-0 flex-col gap-8">
       <div class="flex items-start gap-4">
         <div class="flex w-548 shrink-0 flex-col gap-14 self-stretch pt-2">
@@ -195,7 +187,7 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
         </div>
       </div>
 
-      <div class="flex w-full flex-col items-start pt-90">
+      <div class="mt-auto flex w-full flex-col items-start">
         <div class="flex w-full items-start gap-20 rounded-[6px] border border-[#fef2f2] bg-[#fff5f6] px-21 py-31 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <span class="flex size-48 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
             <img :src="`${ASSET}/human.svg`" alt="" width="20" height="20" class="block size-20">

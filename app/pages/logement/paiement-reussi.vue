@@ -20,6 +20,10 @@
  * mécanisme générique que les autres tunnels, aucun champ propre au logement à
  * ajouter côté adapter.
  *
+ * Desktop : chrome Figma succès + étapes `desktop.paySuccess.housing`
+ * (besoin / sourcing / propositions / bail). En développement, `?preview=1`
+ * affiche l'écran confirmé sans appel Stripe — comme langues / orientation.
+ *
  * Le formulaire de préférences est câblé sur `POST /client-data/store`
  * (`ClientPostPurchaseData`, `service_type: 'living'` — voir
  * `livingPreferencesRepo`). Seuls 4 champs ont une colonne dédiée côté API
@@ -31,8 +35,9 @@
  * la directive de vraies colonnes dédiées, et `LivingPreferencesInput` pour
  * le détail. Préremplissage au chargement via `GET /client-data/show`.
  */
-import type { LivingAccommodationType } from '~/core/contracts'
+import type { LivingAccommodationType, PaymentValidation } from '~/core/contracts'
 import { livingPreferencesRepo, paymentRepo } from '~/core/repositories'
+import DesktopPaiementReussi from '~/desktop-pages/paiement-reussi.vue'
 
 definePageMeta({
   middleware: 'auth',
@@ -49,14 +54,25 @@ const orderId = computed(() => {
   return typeof raw === 'string' ? raw : ''
 })
 
-const { data: validation, apiError, isInitialLoading, refresh } = await usePageData(
-  `logement-payment-validation-${orderId.value}`,
-  () => (orderId.value === '' ? Promise.resolve(null) : paymentRepo.validate(orderId.value, locale.value)),
-  { watch: [orderId, locale] },
+/** Aperçu local uniquement : pas d'appel API, écran traité comme confirmé. */
+const isPreview = computed(() =>
+  import.meta.dev && (route.query.preview === '1' || route.query.preview === 'true'),
 )
 
-const confirmed = computed(() => validation.value?.confirmed === true)
-const failed = computed(() => validation.value?.failed === true)
+const previewValidation: PaymentValidation = { confirmed: true, failed: false, order: null }
+
+const { data: validation, apiError, isInitialLoading, refresh } = await usePageData(
+  `logement-payment-validation-${orderId.value}`,
+  () => {
+    if (isPreview.value) return Promise.resolve(previewValidation)
+    if (orderId.value === '') return Promise.resolve(null)
+    return paymentRepo.validate(orderId.value, locale.value)
+  },
+  { watch: [orderId, locale, isPreview] },
+)
+
+const confirmed = computed(() => isPreview.value || validation.value?.confirmed === true)
+const failed = computed(() => !isPreview.value && validation.value?.failed === true)
 const order = computed(() => validation.value?.order ?? null)
 const offer = computed(() => order.value?.offer ?? null)
 
@@ -186,13 +202,13 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div>
+  <div class="shell:hidden">
     <AppTopBar back :back-to="backTo" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"
       :error="apiError"
-      :empty="orderId === ''"
+      :empty="orderId === '' && !isPreview"
       :on-retry="() => refresh()"
     >
       <template #loading>
@@ -441,6 +457,35 @@ usePageSeo(() => ({
         </form>
       </div>
       </template>
+    </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <PageState
+      :loading="isInitialLoading"
+      :error="apiError"
+      :empty="orderId === '' && !isPreview"
+      :on-retry="() => refresh()"
+    >
+      <template #loading>
+        <div class="desktop-boxed flex gap-48 pt-32">
+          <QSkeleton variant="rect" :height="540" class="flex-1" />
+          <QSkeleton variant="rect" :height="540" class="flex-1" />
+        </div>
+      </template>
+      <template #empty>
+        <div class="desktop-boxed py-32">
+          <QEmptyState
+            :title="$t('confirmation.orderTitle')"
+            :description="$t('confirmation.missingOrder')"
+          >
+            <template #action>
+              <QButton :to="localePath('/mon-projet')">{{ $t('nav.project') }}</QButton>
+            </template>
+          </QEmptyState>
+        </div>
+      </template>
+      <DesktopPaiementReussi :confirmed="confirmed" :failed="failed" variant="housing" />
     </PageState>
   </div>
 </template>

@@ -17,6 +17,7 @@
  *   API au 2026-08-17).
  */
 import { offerPageRepo } from '~/core/repositories'
+import DesktopLogement from '~/desktop-pages/logement.vue'
 
 const route = useRoute()
 const { t, n, locale } = useI18n()
@@ -98,7 +99,7 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
 </script>
 
 <template>
-  <div>
+  <div class="shell:hidden">
     <AppTopBar
       back
       :back-to="`/logement/${slug}/decouverte`"
@@ -213,5 +214,9 @@ useContractSeo(() => offer.value?.seo, t('housing.offers.fallbackTitle'))
         </div>
       </template>
     </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopLogement :initial-slug="slug" />
   </div>
 </template>

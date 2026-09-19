@@ -31,6 +31,7 @@
  *
  * Espacement **22px** entre blocs majeurs.
  */
+import DesktopReglagesContact from '~/desktop-pages/reglages-contact.vue'
 import { contactSuccessMock } from '~/config/contact-success-mock'
 import { ApiError } from '~/core/http/errors'
 import { contactRepo } from '~/core/repositories'
@@ -181,7 +182,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-contact flex flex-1 flex-col">
+  <div class="page-contact flex flex-1 flex-col shell:hidden">
     <div class="flex w-full max-w-full flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/reglages/centre-aide" :gap="0" />
 
@@ -413,5 +414,29 @@ usePageSeo(() => ({
         </form>
       </template>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesContact
+      :submitted="submitted"
+      :submitting="submitting"
+      :submit-error="submitError"
+      :is-authenticated="isAuthenticated"
+      :subject="subject"
+      :name="name"
+      :email="email"
+      :message="message"
+      :consent="consent"
+      :errors="errors"
+      :subjects="subjects"
+      :summary-rows="summaryRows"
+      :message-max="MESSAGE_MAX"
+      @submit="onSubmit"
+      @update:subject="subject = $event"
+      @update:name="name = $event"
+      @update:email="email = $event"
+      @update:message="message = $event"
+      @update:consent="consent = $event"
+    />
   </div>
 </template>

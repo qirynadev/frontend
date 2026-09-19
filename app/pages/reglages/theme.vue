@@ -18,6 +18,7 @@
  * authentifié ici.
  */
 import { useThemeStore } from '~/core/stores'
+import DesktopReglagesTheme from '~/desktop-pages/reglages-theme.vue'
 
 const { t } = useI18n()
 const theme = useThemeStore()
@@ -45,7 +46,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rt flex flex-1 flex-col">
+  <div class="page-rt flex flex-1 flex-col shell:hidden">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="rt-main flex w-full max-w-full flex-col gap-15 box-border">
       <AppTopBar :back="true" back-to="/reglages" :gap="0" />
@@ -117,5 +118,14 @@ usePageSeo(() => ({
         {{ $t('settingsTheme.save') }}
       </button>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesTheme
+      :options="options"
+      :chosen="chosen"
+      @update:chosen="chosen = $event"
+      @save="save"
+    />
   </div>
 </template>
