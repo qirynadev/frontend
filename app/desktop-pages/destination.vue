@@ -7,18 +7,17 @@
  * écran, textes et images écrits en dur ; les autres, dont l'Allemagne,
  * retombaient sur la mise en page mobile dans le cadre desktop.
  *
- * Tout ce que l'API sert est dynamique : nom, accroche, image, statistiques
- * (avec leurs vraies valeurs — celles codées en dur pour la France étaient
- * périmées : « 3 500+ » contre « 97+ » servi), domaines réels, présentation,
- * logos d'écoles. Les replis statiques vivent dans
- * `~/config/desktop-destination` et se limitent aux illustrations et aux
- * quatre arguments rédigés pays par pays.
+ * Tout vient de l'API : nom, accroche, image, statistiques (avec leurs vraies
+ * valeurs — celles codées en dur pour la France étaient périmées : « 3 500+ »
+ * contre « 97+ » servi), domaines réels, arguments éditoriaux
+ * (`SchoolFile.highlights`), présentation, logos d'écoles. Ne restent locales
+ * que les illustrations, absentes de l'API : icônes de statistiques,
+ * d'arguments et de domaines (`~/config/desktop-destination`).
  *
  * Chaque section disparaît si sa donnée manque : aucune case vide.
  */
 import type { AreaOfStudySummary, Destination } from '~/core/contracts'
 import {
-  ARGUMENTS_PAR_DESTINATION,
   DESTINATION_ASSET,
   ICONES_ARGUMENT,
   ICONES_STAT,
@@ -31,7 +30,6 @@ const props = defineProps<{
   areas: AreaOfStudySummary[]
 }>()
 
-const { t, te } = useI18n()
 const localePath = useLocalePath()
 
 const lienEcoles = computed(() => localePath(`/destinations/${props.destination.slug}/ecoles`))
@@ -51,7 +49,6 @@ const domaines = computed(() =>
       icone: visuel?.icon ?? area.icon,
       /** Sans visuel de maquette, l'icône administrée est posée telle quelle. */
       pastille: visuel?.kind === 'circle' ? (visuel.bg ?? 'bg-[#f3f5fe]') : null,
-      contour: visuel !== undefined,
     }
   }),
 )
@@ -69,21 +66,19 @@ const statistiques = computed(() =>
 )
 
 /**
- * Arguments « Pourquoi » : faits propres au pays, sans équivalent API. Rédigés
- * pour les cinq destinations d'origine ; ailleurs la présentation réelle de
- * l'API prend leur place, plutôt qu'un bloc inventé.
+ * Arguments « Pourquoi » : `SchoolFile.highlights`, saisis par pays dans le
+ * back-office et servis par l'API pour les six destinations. Le front les
+ * ignorait et affichait quatre textes écrits en dur, pays par pays — d'où
+ * l'impasse sur l'Allemagne. Seules les icônes restent locales, l'API n'en
+ * fournissant pas.
  */
-const prefixeArguments = computed(() => ARGUMENTS_PAR_DESTINATION[props.destination.slug])
-
-const argumentsPays = computed(() => {
-  const prefixe = prefixeArguments.value
-  if (!prefixe || !te(`${prefixe}.feature1Title`)) return []
-  return [1, 2, 3, 4].map((n, index) => ({
+const argumentsPays = computed(() =>
+  props.destination.highlights.slice(0, 4).map((argument, index) => ({
     icone: ICONES_ARGUMENT[index] ?? ICONES_ARGUMENT[0],
-    titre: t(`${prefixe}.feature${n}Title`),
-    description: t(`${prefixe}.feature${n}Desc`),
-  }))
-})
+    titre: argument.title,
+    description: argument.text,
+  })),
+)
 
 /** Huit logos réels, comme la maquette en aligne huit. */
 const logosEcoles = computed(() =>

@@ -6,10 +6,9 @@
  * (Figma `694:2`). Tout ce que l'API sert est dynamique : nom, accroche,
  * image, statistiques, domaines, présentation, logos d'écoles.
  *
- * Ce fichier ne garde que ce que l'API ne sert PAS encore, en repli :
- * les illustrations (l'API ne fournit pas d'icône de statistique ni de
- * domaine dessinée) et les quatre arguments rédigés pour les cinq pays
- * d'origine. Demandes correspondantes : `docs/directives-backend.md` §29.
+ * Ce fichier ne garde que les illustrations, seule chose que l'API ne sert
+ * pas : icônes de statistiques, d'arguments et de domaines. Tout le texte —
+ * y compris les quatre arguments « Pourquoi » — vient du back-office.
  */
 
 /** Dossier des visuels de la maquette de référence, partagés par toutes les destinations. */
@@ -54,23 +53,6 @@ export const REASSURANCES = [
   { icon: `${DESTINATION_ASSET}/trust-support.svg`, lines: ['desktop.destinationPays.trust3Line1', 'desktop.destinationPays.trust3Line2'] },
   { icon: `${DESTINATION_ASSET}/trust-premium.svg`, lines: ['desktop.destinationPays.trust4Line1', 'desktop.destinationPays.trust4Line2'] },
 ] as const
-
-/**
- * Les quatre arguments « Pourquoi » — faits propres à chaque pays (frais de
- * scolarité, brevets déposés…), donc impossibles à deviner. Rédigés pour les
- * cinq destinations d'origine ; ailleurs, l'écran affiche la présentation
- * réelle de l'API à la place. Un champ `highlights` par destination est
- * demandé côté back-office (§29.3).
- */
-export const ARGUMENTS_PAR_DESTINATION: Record<string, string> = {
-  'france': 'desktop.destination.france',
-  'chine': 'desktop.destination.chine',
-  'canada': 'desktop.destination.canada',
-  'royaume-uni': 'desktop.destination.angleterre',
-  'angleterre': 'desktop.destination.angleterre',
-  'etats-unis': 'desktop.destination.usa',
-  'usa': 'desktop.destination.usa',
-}
 
 /** Icônes des quatre arguments, par position. */
 export const ICONES_ARGUMENT = [

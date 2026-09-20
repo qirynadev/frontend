@@ -1,4 +1,4 @@
-import type { Destination, DestinationStat, DestinationSummary } from '../contracts'
+import type { Destination, DestinationHighlight, DestinationStat, DestinationSummary } from '../contracts'
 import { toCountry, toSeo } from './common.adapter'
 import { toSchoolSummary } from './school.adapter'
 import { asArray, asRecord, dedupeBySlug, html, list, num, str, toUrl, warnDataIssue } from './primitives'
@@ -14,6 +14,16 @@ function toDestinationStats(raw: unknown): DestinationStat[] {
     value: str(entry, 'value'),
     label: str(entry, 'label'),
   }))
+}
+
+/**
+ * Arguments éditoriaux (`SchoolFile.highlights`). Une entrée sans titre ni
+ * texte ne sert à rien à l'écran : elle est écartée plutôt qu'affichée vide.
+ */
+function toDestinationHighlights(raw: unknown): DestinationHighlight[] {
+  return asArray(raw)
+    .map((entry) => ({ title: str(entry, 'title'), text: str(entry, 'text') }))
+    .filter((highlight) => highlight.title !== '' || highlight.text !== '')
 }
 
 /**
@@ -71,6 +81,7 @@ export function toDestination(raw: unknown, flagBase?: string): Destination {
     schools: uniqueSchools,
     schoolCount: uniqueSchools.length,
     stats: toDestinationStats(source.stats),
+    highlights: toDestinationHighlights(source.highlights),
     seo: toSeo(source, summary.title, description),
   }
 }

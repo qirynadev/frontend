@@ -33,6 +33,20 @@ export interface DestinationStat {
   label: string
 }
 
+/**
+ * Argument éditorial d'une destination (« Frais de scolarité très abordables »,
+ * « Innovation & technologie »…) — `SchoolFile.highlights`, saisi par pays dans
+ * le back-office et traduit comme le reste.
+ *
+ * Servi par l'API depuis le 2026-08-14, lu par le front depuis le 2026-09-20 :
+ * l'écran desktop affichait jusque-là quatre arguments écrits en dur, pays par
+ * pays, ce qui excluait toute destination non prévue.
+ */
+export interface DestinationHighlight {
+  title: string
+  text: string
+}
+
 export interface Destination extends DestinationSummary {
   /** HTML. */
   description: string
@@ -40,5 +54,7 @@ export interface Destination extends DestinationSummary {
   schools: SchoolSummary[]
   /** Jusqu'à 4 entrées, parfois moins (voire aucune) — jamais complété artificiellement. */
   stats: DestinationStat[]
+  /** Jusqu'à 4 arguments éditoriaux ; vide tant qu'aucun n'est saisi. */
+  highlights: DestinationHighlight[]
   seo: SeoMeta
 }

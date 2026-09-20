@@ -1221,23 +1221,29 @@ L'image de l'Allemagne est une capture d'écran (`capture-decran-2025-05-25-a-07
 donne rien. **Action : téléverser une photographie large** (2000×800 environ,
 sujet centré), comme pour les cinq pays dessinés.
 
-### 29.3 Arguments illustrés par destination (champ manquant)
+### 29.3 ✅ Aucun manque : le champ existait, le front ne le lisait pas
 
-Les cinq écrans dessinés affichent quatre arguments (« Enseignement
-d'excellence », « Coût de la vie abordable »…), avec titre, description et
-icône. **Aucun champ API n'y correspond** : ils sont écrits en dur dans le
-front, pays par pays, donc impossibles pour l'Allemagne.
+**Erreur de ma part, corrigée le 2026-09-20.** J'avais demandé un champ
+`highlights` par destination pour les quatre arguments illustrés. Il existe
+depuis le 2026-08-14 (`school_file_translations.highlights`, migration
+`2026_08_14_090000`), il est traduit, administrable dans Destination →
+Modifier, exposé par `SchoolFileResource` et **servi pour les six
+destinations**, quatre entrées chacune, titre + texte.
 
-**Demande** : un tableau `highlights` sur la destination, traduit comme le
-reste, avec pour chaque entrée un titre, une description et une icône —
-exactement la forme déjà retenue pour les domaines d'études, dont les icônes
-back-office fonctionnent très bien (vérifié sur l'Allemagne : 5 domaines, 5
-icônes).
+C'est le front qui l'ignorait : l'adaptateur ne le lisait pas et l'écran
+affichait quatre textes écrits en dur, pays par pays — d'où l'impasse sur
+l'Allemagne. Corrigé : `Destination.highlights` traverse désormais contrat,
+adaptateur et écran, et les textes en dur ont été supprimés.
 
-En attendant, l'écran affiche à cet endroit la **présentation réelle** de la
-destination (`description`, 2 987 caractères pour l'Allemagne) plutôt qu'un
-bloc inventé : la place est occupée par du contenu vrai, et les cinq pays déjà
-rédigés gardent leurs quatre arguments.
+Deux autres champs sont servis et toujours ignorés par le front, à voir si on
+les exploite : `subtitle` (sous-titre éditorial de la fiche) et `stats_note`
+(note sous les statistiques). Leur contenu actuel en recette ressemble à du
+remplissage (« c'est lorem, ipsum toujours ...vic » pour l'Allemagne) — à
+arbitrer côté contenu avant de les afficher.
+
+**Rappel de méthode** : relire l'API en entier avant de conclure qu'un champ
+manque. Même erreur que celles listées dans
+`feedback_reread_backend_before_concluding_gap`.
 
 ## Pour mémoire — pas des écarts, aucune action requise
 
