@@ -20,37 +20,36 @@ interface RightsRow {
   href?: string
   action?: 'cookies'
   danger?: boolean
-  tile?: boolean
   tileClass?: string
 }
 
 const immediateRows: RightsRow[] = [
   {
     id: 'download',
-    icon: 'ic-rrd-download',
+    icon: 'ic-rrd-download-line',
     chevron: 'ic-rrd-chevron',
     titleKey: 'settingsRights.downloadTitle',
     descKey: 'settingsRights.downloadDesc',
     href: `${PRIVACY_MAIL}?subject=${encodeURIComponent('Télécharger mes données')}`,
-    tile: true,
+    tileClass: 'bg-[#f3e8ff]',
   },
   {
     id: 'correct',
-    icon: 'ic-rrd-edit',
+    icon: 'ic-rrd-edit-line',
     chevron: 'ic-rrd-chevron-2',
     titleKey: 'settingsRights.correctTitle',
     descKey: 'settingsRights.correctDesc',
     to: '/reglages/informations-personnelles',
-    tile: true,
+    tileClass: 'bg-[#f3e8ff]',
   },
   {
     id: 'withdraw',
-    icon: 'ic-rrd-consent',
+    icon: 'ic-rrd-consent-line',
     chevron: 'ic-rrd-chevron-2',
     titleKey: 'settingsRights.withdrawTitle',
     descKey: 'settingsRights.withdrawDesc',
     action: 'cookies',
-    tile: true,
+    tileClass: 'bg-[#f3e8ff]',
   },
   {
     id: 'delete',
@@ -130,10 +129,7 @@ function rowTag(row: RightsRow) {
           ]"
           @click="row.action === 'cookies' ? resetCookieConsent() : undefined"
         >
-          <span v-if="row.tile" class="mr-16 size-48 shrink-0 overflow-hidden">
-            <img :src="`${ICON}/${row.icon}.svg`" alt="" width="48" height="48" class="block size-48" loading="lazy" decoding="async">
-          </span>
-          <span v-else :class="['mr-16 flex size-48 shrink-0 items-center justify-center rounded-[12px]', row.tileClass]">
+          <span :class="['mr-16 flex size-48 shrink-0 items-center justify-center rounded-[12px]', row.tileClass]">
             <img :src="`${ICON}/${row.icon}.svg`" alt="" width="24" height="24" class="block size-24" loading="lazy" decoding="async">
           </span>
           <span class="flex min-w-0 flex-1 flex-col pr-8">

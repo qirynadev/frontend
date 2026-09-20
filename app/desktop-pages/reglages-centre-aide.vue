@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
  * Centre d’aide desktop — mêmes actions que le mobile, cartes en rangée de 3.
- */
-/**
+ *
  * Le lien WhatsApp vient du vrai numéro des réglages du site, fourni par la
  * page mobile qui interroge déjà le catalogue (2026-09-20) — plus de numéro
  * fictif. Sans numéro exploitable, la carte disparaît, comme sur mobile.
@@ -78,7 +77,7 @@ const ICON = '/img/icons/centre-aide'
         <p class="m-0 text-[14px] leading-20 font-bold text-[#040c3d]">{{ $t('settingsHelp.secureTitle') }}</p>
         <p class="m-0 mt-4 text-[13px] leading-18 text-[#6b7280]">{{ $t('settingsHelp.secureDesc') }}</p>
       </div>
-      <img :src="`${ICON}/illu-lock.png`" alt="" width="52" height="38" class="block h-38 w-52 shrink-0 object-contain" loading="lazy" decoding="async">
+      <img :src="`${ICON}/illu-lock.webp`" alt="" width="52" height="38" class="block h-38 w-52 shrink-0 object-contain" loading="lazy" decoding="async">
     </aside>
   </AppDesktopReglagesShell>
 </template>
