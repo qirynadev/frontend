@@ -248,7 +248,10 @@ function toggleShown(id: string) {
       :score="score"
       :level="level"
       :match="match"
+      :saving="saving"
+      :error-message="errorMessage"
       @toggle="toggleShown"
+      @save="save"
     />
   </div>
 </template>

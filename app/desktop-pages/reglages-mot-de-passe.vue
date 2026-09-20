@@ -1,6 +1,13 @@
 <script setup lang="ts">
 /**
  * Mot de passe desktop — jauge et règles du mobile, CTA brand desktop.
+ *
+ * L'encart « Protégez votre compte » a été retiré ici aussi (2026-09-20) : il
+ * répétait les quatre règles affichées sous le champ, et ses textes ont été
+ * supprimés des locales le 2026-09-16 — il n'affichait plus que ses clés.
+ *
+ * Le bouton n'enregistrait rien (formulaire sans gestionnaire) : il remonte
+ * désormais `save` à la page, qui appelle `POST /user/update-password`.
  */
 defineProps<{
   current: string
@@ -11,6 +18,8 @@ defineProps<{
   score: number
   level: 'weak' | 'medium' | 'strong'
   match: boolean | null
+  saving?: boolean
+  errorMessage?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -18,6 +27,7 @@ const emit = defineEmits<{
   'update:current': [value: string]
   'update:next': [value: string]
   'update:confirm': [value: string]
+  save: []
 }>()
 
 const levelClass = { weak: 'text-[#e71816]', medium: 'text-[#d97706]', strong: 'text-[#279848]' }
@@ -31,14 +41,6 @@ const levelKey = {
 
 <template>
   <AppDesktopReglagesShell :title="$t('settingsPassword.title')" :intro="$t('settingsPassword.intro')">
-    <aside class="flex items-start gap-16 rounded-[16px] border border-[#eef2ff] bg-[#f8f8fc] px-24 py-20">
-      <QIcon name="ic-rm-shield" :size="44" class="shrink-0" />
-      <div class="min-w-0 flex-1">
-        <p class="m-0 text-[14px] leading-20 font-bold text-[#151515]">{{ $t('settingsPassword.protectTitle') }}</p>
-        <p class="m-0 mt-4 text-[13px] leading-18 text-[#6b7280]">{{ $t('settingsPassword.protectDesc') }}</p>
-      </div>
-    </aside>
-
     <form class="flex w-full flex-col gap-20 rounded-[16px] border border-[#f9fafb] bg-white p-32 shadow-[0_0_3px_rgba(0,0,0,0.12)]" @submit.prevent>
       <label class="flex w-full flex-col">
         <span class="text-[14px] leading-20 font-medium text-[#040c3d]">{{ $t('settingsPassword.currentLabel') }}</span>
@@ -149,11 +151,15 @@ const levelKey = {
         <p class="m-0 text-[12px] leading-16 text-[#151515]">{{ $t('settingsPassword.tipText') }}</p>
       </aside>
 
+      <QAlert v-if="errorMessage" tone="danger" :message="errorMessage" />
+
       <button
         type="submit"
-        class="flex w-full cursor-pointer items-center justify-center rounded-[12px] border-0 bg-[#ff1b40] py-14 text-[14px] leading-20 font-semibold text-white"
+        :disabled="saving"
+        class="flex w-full cursor-pointer items-center justify-center rounded-[12px] border-0 bg-[#ff1b40] py-14 text-[14px] leading-20 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+        @click="emit('save')"
       >
-        {{ $t('settingsPassword.save') }}
+        {{ saving ? $t('settingsPassword.saving') : $t('settingsPassword.save') }}
       </button>
     </form>
   </AppDesktopReglagesShell>
