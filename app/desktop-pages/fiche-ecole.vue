@@ -38,10 +38,18 @@ const locationLabel = computed(() =>
 const titleBadges = computed(() => schoolTitleBadges(props.school))
 
 /**
- * Même convention que le mobile : `School.details[]` dont le titre
- * saisi en admin vaut « Points Forts » — pas un champ API dédié.
+ * Onglet « Points forts », même logique que le mobile.
+ *
+ * `School.pointsForts` (champ dédié, directives-backend §19, livré le
+ * 2026-09-05) d'abord ; à défaut l'ancienne convention `School.details[]`,
+ * une entrée dont le titre saisi en admin vaut « points forts ». Sans rien,
+ * l'onglet reste vide — jamais rempli avec autre chose.
+ *
+ * Le desktop ignorait le champ dédié (2026-09-20) : il n'affichait donc que
+ * les écoles restées sur l'ancienne convention, et rien pour celles migrées.
  */
 const strengthsHtml = computed(() => {
+  if (props.school.pointsForts) return props.school.pointsForts
   const match = props.school.details.find(item => item.title.trim().toLowerCase() === 'points forts')
   return match?.description ?? ''
 })
