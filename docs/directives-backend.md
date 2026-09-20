@@ -1199,21 +1199,20 @@ absentes de l'API) et les quatre arguments rédigés pour les cinq pays d'origin
 Trois choses manquent pour que cet écran rende aussi bien que les cinq écrans
 dessinés. Aucune ne bloque : l'écran s'adapte et masque ce qui est vide.
 
-### 29.1 Statistiques incomplètes (contenu)
+### 29.1 ✅ Réglé côté contenu : statistiques complétées
 
 `SchoolFile.stats` accepte jusqu'à quatre paires valeur + libellé, sans
 imposer ni l'une ni l'autre. L'Allemagne en a quatre, dont deux inutilisables :
 
-| valeur | libellé |
-|---|---|
-| `""` | `""` |
-| `380 000` | Étudiants internationaux |
-| `""` | destination d'études dans le monde |
-| `1 500` | programmes de Bachelor/Master |
+Constaté le 2026-09-20 : l'Allemagne avait quatre entrées dont deux vides
+(valeur sans libellé, et l'inverse). **Complété depuis côté back-office** — les
+quatre paires sont servies (« 2800+ universités et collèges accrédités »,
+« 380 000 étudiants internationaux », « 21e destination d'études dans le
+monde », « 1 500 programmes de Bachelor/Master »), et l'écran les affiche
+toutes.
 
-Le front n'affiche que les paires complètes — deux sur quatre ici. **Action :
-compléter les paires côté back-office**, ou n'en saisir que des complètes. Rien
-à changer dans le code.
+Le garde-fou reste en place : le front n'affiche que les paires complètes,
+`SchoolFile.stats` n'imposant ni valeur ni libellé. Rien à faire de plus.
 
 ### 29.2 Image de destination inexploitable en bandeau (contenu)
 

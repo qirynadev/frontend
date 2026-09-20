@@ -106,18 +106,6 @@ const logosEcoles = computed(() =>
         decoding="async"
       >
 
-      <!--
-        Voile blanc sur la moitié gauche : la maquette France s'appuie sur une
-        photo claire de ce côté, mais l'image est administrée et rien ne le
-        garantit (celle de l'Allemagne est sombre). Le titre reste lisible quelle
-        que soit la photo téléversée.
-      -->
-      <div
-        v-if="destination.image"
-        class="pointer-events-none absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent"
-        aria-hidden="true"
-      />
-
       <div class="desktop-boxed desktop-split relative h-full justify-between">
         <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start pt-93 pr-64">
           <div class="flex w-full max-w-504 flex-col gap-12">
@@ -154,7 +142,7 @@ const logosEcoles = computed(() =>
             {{ $t('desktop.destinationPays.domainsTitle') }}
           </h2>
           <p class="m-0 w-full text-[14px] leading-21 font-medium tracking-[-0.154px] text-black">
-            {{ $t('desktop.destinationPays.domainsDesc', { pays: destination.title }) }}
+            {{ $t('desktop.destinationPays.domainsDesc') }}
           </p>
 
           <div class="mt-8 grid w-full grid-cols-2 gap-8">
