@@ -1184,12 +1184,17 @@ langue) — l'un comme l'autre s'ajouterait à `formula_levels` sans rien casser
 
 ## 29. 🔴 Page destination desktop : trois manques de contenu côté back-office
 
-Depuis le 2026-09-20, **tout pays** a un écran desktop, alimenté uniquement par
-l'API (`GET /destinations/{slug}` + domaines) : nom, accroche, image,
-statistiques, domaines et leurs icônes, présentation HTML, logos d'écoles.
-Avant, seuls cinq pays en avaient un (France, Chine, Canada, Angleterre, USA),
-écrits à la main dans le front ; les autres, dont l'Allemagne, retombaient sur
-la mise en page mobile affichée dans le cadre desktop.
+Depuis le 2026-09-20, **un seul écran desktop sert toutes les destinations**
+(`desktop-pages/destination.vue`, design de `/destinations/france`). Il est
+alimenté par l'API : nom, accroche, image, statistiques, domaines, présentation
+HTML, logos d'écoles. Les cinq écrans écrits pays par pays (France, Chine,
+Canada, Angleterre, USA) ont été supprimés — ils affichaient d'ailleurs des
+chiffres périmés (« 3 500+ établissements » côté front contre « 97+ » servi par
+l'API pour la France, « 5e destination » contre « 7ème »). Les autres pays,
+dont l'Allemagne, retombaient jusque-là sur la mise en page mobile.
+
+Ne restent en dur que les illustrations (icônes de statistiques et de domaines,
+absentes de l'API) et les quatre arguments rédigés pour les cinq pays d'origine.
 
 Trois choses manquent pour que cet écran rende aussi bien que les cinq écrans
 dessinés. Aucune ne bloque : l'écran s'adapte et masque ce qui est vide.
@@ -1228,7 +1233,12 @@ front, pays par pays, donc impossibles pour l'Allemagne.
 reste, avec pour chaque entrée un titre, une description et une icône —
 exactement la forme déjà retenue pour les domaines d'études, dont les icônes
 back-office fonctionnent très bien (vérifié sur l'Allemagne : 5 domaines, 5
-icônes). Tant qu'il n'existe pas, la section n'apparaît simplement pas.
+icônes).
+
+En attendant, l'écran affiche à cet endroit la **présentation réelle** de la
+destination (`description`, 2 987 caractères pour l'Allemagne) plutôt qu'un
+bloc inventé : la place est occupée par du contenu vrai, et les cinq pays déjà
+rédigés gardent leurs quatre arguments.
 
 ## Pour mémoire — pas des écarts, aucune action requise
 

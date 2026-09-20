@@ -35,15 +35,8 @@
  */
 import { domainAreaVisual, domainCardIconWrapClass } from '~/config/domain-area-visual'
 import { destinationRepo } from '~/core/repositories'
-import DesktopDestinationFrance from '~/desktop-pages/destination-france.vue'
-import DesktopDestinationChine from '~/desktop-pages/destination-chine.vue'
-import DesktopDestinationCountry from '~/desktop-pages/destination-country.vue'
-import DesktopDestinationPays from '~/desktop-pages/destination-pays.vue'
-import {
-  desktopCountryFromRoute,
-  resolveDestinationApiSlug,
-  type DesktopCountrySlug,
-} from '~/config/desktop-destination-country'
+import DesktopDestination from '~/desktop-pages/destination.vue'
+import { resolveDestinationApiSlug } from '~/config/destination-slugs'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -89,15 +82,6 @@ const stats = computed(() => {
     label: real[index]?.label || '-',
   }))
 })
-
-const isFranceDesktop = computed(() => apiSlug.value === 'france')
-const isChineDesktop = computed(() => apiSlug.value === 'chine')
-const desktopCountry = computed<DesktopCountrySlug | null>(() =>
-  desktopCountryFromRoute(slug.value),
-)
-const isDesktopDestination = computed(() =>
-  isFranceDesktop.value || isChineDesktop.value || desktopCountry.value !== null,
-)
 
 if (data.value && !data.value.destination) {
   throw createError({ statusCode: 404, message: t('destination.detail.notFound'), fatal: true })
@@ -205,44 +189,10 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
   </PageState>
   </div>
 
-  <!-- Desktop France ← Figma `Etudier France` (694:2) -->
-  <div v-if="isFranceDesktop" class="hidden shell:block">
+  <!-- Desktop : un seul écran pour toutes les destinations, alimenté par l'API -->
+  <div class="hidden shell:block">
     <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
-      <DesktopDestinationFrance
-        v-if="destination"
-        :destination="destination"
-        :areas="areas"
-      />
-    </PageState>
-  </div>
-
-  <!-- Desktop Chine ← Figma `Etudier Chine` (631:2) -->
-  <div v-if="isChineDesktop" class="hidden shell:block">
-    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
-      <DesktopDestinationChine
-        v-if="destination"
-        :destination="destination"
-        :areas="areas"
-      />
-    </PageState>
-  </div>
-
-  <!-- Desktop Canada / Angleterre / USA ← Figma 282:20 · 290:396 · 292:1289 -->
-  <div v-if="desktopCountry" class="hidden shell:block">
-    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
-      <DesktopDestinationCountry
-        v-if="destination"
-        :country="desktopCountry"
-        :destination="destination"
-        :areas="areas"
-      />
-    </PageState>
-  </div>
-
-  <!-- Desktop générique : tout pays sans artboard dédié (Allemagne, Espagne…) -->
-  <div v-if="!isDesktopDestination" class="hidden shell:block">
-    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
-      <DesktopDestinationPays
+      <DesktopDestination
         v-if="destination"
         :destination="destination"
         :areas="areas"

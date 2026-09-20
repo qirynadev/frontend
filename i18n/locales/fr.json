@@ -555,14 +555,26 @@
       }
     },
     "destinationPays": {
-      "badge": "Destination",
+      "badge": "DESTINATION",
       "ctaAllSchools": "Voir toutes les écoles",
+      "ctaButton": "Commencer",
+      "ctaDesc": "Commencez par choisir votre domaine d’étude.",
       "ctaExplore": "Explorer les programmes",
+      "ctaTitle": "Prêt à trouver l’école qui vous correspond ?",
       "domainSchools": "{count} écoles",
-      "domainsTitle": "Domaines d’études",
+      "domainsDesc": "Les domaines proposés en {pays} par nos écoles partenaires.",
+      "domainsTitle": "Choisissez un domaine d’étude",
       "presentationTitle": "Étudier en {pays}",
       "schoolCount": "{count} écoles partenaires",
-      "schoolsTitle": "Écoles et universités en {pays}"
+      "schoolsTitle": "Écoles reconnues en {pays}",
+      "titleBefore": "Étudier en",
+      "trust1": "Informations vérifiées et mises à jour",
+      "trust2": "Comparaison objective des écoles",
+      "trust3Line1": "Accompagnement",
+      "trust3Line2": "personnalisé",
+      "trust4Line1": "Service premium à",
+      "trust4Line2": "chaque étape",
+      "whyTitle": "Pourquoi étudier en {pays} ?"
     },
     "domaines": {
       "helpCta": "Être accompagné",

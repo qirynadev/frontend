@@ -22,7 +22,7 @@
 import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { schoolRepo } from '~/core/repositories'
 import type { SchoolFormation } from '~/core/contracts'
-import { resolveDestinationApiSlug } from '~/config/desktop-destination-country'
+import { resolveDestinationApiSlug } from '~/config/destination-slugs'
 import DesktopFicheEcole from '~/desktop-pages/fiche-ecole.vue'
 
 const route = useRoute()

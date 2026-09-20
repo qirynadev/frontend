@@ -555,14 +555,26 @@
       }
     },
     "destinationPays": {
-      "badge": "Destination",
+      "badge": "DESTINATION",
       "ctaAllSchools": "See all schools",
+      "ctaButton": "Get started",
+      "ctaDesc": "Start by choosing your field of study.",
       "ctaExplore": "Explore programmes",
+      "ctaTitle": "Ready to find the school that fits you?",
       "domainSchools": "{count} schools",
-      "domainsTitle": "Fields of study",
+      "domainsDesc": "The fields offered in {pays} by our partner schools.",
+      "domainsTitle": "Choose a field of study",
       "presentationTitle": "Studying in {pays}",
       "schoolCount": "{count} partner schools",
-      "schoolsTitle": "Schools and universities in {pays}"
+      "schoolsTitle": "Recognised schools in {pays}",
+      "titleBefore": "Study in",
+      "trust1": "Verified, up-to-date information",
+      "trust2": "Objective school comparison",
+      "trust3Line1": "Personalised",
+      "trust3Line2": "guidance",
+      "trust4Line1": "Premium service at",
+      "trust4Line2": "every step",
+      "whyTitle": "Why study in {pays}?"
     },
     "domaines": {
       "helpCta": "Get support",

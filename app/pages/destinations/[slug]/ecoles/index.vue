@@ -46,7 +46,7 @@
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
-import { resolveDestinationApiSlug } from '~/config/desktop-destination-country'
+import { resolveDestinationApiSlug } from '~/config/destination-slugs'
 import DesktopDomainesEtudes from '~/desktop-pages/domaines-etudes.vue'
 
 const route = useRoute()
