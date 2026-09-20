@@ -130,11 +130,12 @@ describe('toSiteSettings', () => {
     expect(settings.socials).toEqual([])
     expect(settings.stripePublicKey).toBeNull()
     expect(settings.logoLight).toBeNull()
+    expect(settings.logoDark).toBeNull()
     expect(settings.favicon).toBeNull()
   })
 
-  // directives-backend §25 : logo clair et favicon téléversés dans les réglages.
-  it('expose le logo clair et le favicon administrés', () => {
+  // directives-backend §25 : logos et favicon téléversés dans les réglages.
+  it('expose les deux logos et le favicon administrés', () => {
     const settings = toSiteSettings({
       site: {
         logo_light: 'https://admin.stage.qiryna.com/storage/photos/settings/logo.webp',
@@ -144,6 +145,8 @@ describe('toSiteSettings', () => {
     })
 
     expect(settings.logoLight).toBe('https://admin.stage.qiryna.com/storage/photos/settings/logo.webp')
+    // Fond sombre : pied de page desktop (2026-09-20).
+    expect(settings.logoDark).toBe('https://admin.stage.qiryna.com/storage/photos/settings/logo-fond-dark.webp')
     expect(settings.favicon).toBe('https://admin.stage.qiryna.com/storage/photos/settings/ic-orientation-logo.webp')
   })
 

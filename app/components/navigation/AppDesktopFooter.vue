@@ -4,14 +4,27 @@
  * colonnes mentions / contact / newsletter, stores et réseaux.
  * Pas de `lg:` / `flex-wrap` : le zoom 1728 du shell conserve la composition.
  */
+import type { Branding } from '~/core/contracts'
 import { useCatalogStore } from '~/core/stores'
 
 const ASSET = '/img/desktop/legacy'
+const LOGO_LOCAL = '/img/desktop/logo-nav.png'
 const VISIBLE = 6
 const localePath = useLocalePath()
 const catalog = useCatalogStore()
 
 if (!catalog.isReady) await catalog.load()
+
+/**
+ * Le pied de page est sombre : on y sert le logo administré pour fond sombre
+ * (`site.logo_dark`, réglages du back-office), pas le logo foncé par défaut
+ * qui s'y perdait (2026-09-20). Sans logo téléversé, ou s'il ne charge pas,
+ * retour au fichier local.
+ */
+const { data: branding } = useNuxtData<Branding>('branding')
+const logoDarkEnEchec = ref(false)
+const logoFooter = computed(() =>
+  (logoDarkEnEchec.value ? null : branding.value?.logoDark) || LOGO_LOCAL)
 
 const email = ref('')
 const carouselIndex = ref(0)
@@ -142,13 +155,14 @@ function onNewsletterSubmit(event: Event) {
             <div class="w-1/4 shrink-0">
               <NuxtLink :to="localePath('/')" class="inline-flex items-start no-underline" :aria-label="$t('nav.home')">
                 <img
-                  src="/img/desktop/logo-nav.png"
+                  :src="logoFooter"
                   alt="Qiryna"
                   width="174"
                   height="65"
                   loading="lazy"
                   decoding="async"
                   class="mt-15 h-65 w-174 object-contain object-left"
+                  @error="logoDarkEnEchec = true"
                 >
               </NuxtLink>
             </div>

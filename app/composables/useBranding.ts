@@ -1,10 +1,13 @@
 import type { Branding } from '~/core/contracts'
 import { catalogRepo } from '~/core/repositories'
 
-const EMPTY: Branding = { logoLight: null, favicon: null }
+const EMPTY: Branding = { logoLight: null, logoDark: null, favicon: null }
 
 /**
- * Logo clair et favicon administrés (directives-backend §25).
+ * Logos et favicon administrés (directives-backend §25).
+ *
+ * Deux logos : le clair pour les fonds blancs (`AppLogo`), le sombre pour le
+ * pied de page desktop (`AppDesktopFooter`), depuis le 2026-09-20.
  *
  * Résolu une fois par `app.vue`, avant le rendu : la clé `branding` est
  * ensuite relue par `AppLogo` (`useNuxtData`) sans nouvel appel. Une panne

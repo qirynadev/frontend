@@ -151,6 +151,7 @@ export function toSiteSettings(raw: unknown): SiteSettings {
       })
       .filter((locale) => locale.code !== ''),
     logoLight: toUrl(dig(source, 'site.logo_light')),
+    logoDark: toUrl(dig(source, 'site.logo_dark')),
     favicon: toUrl(dig(source, 'site.favicon')),
   }
 }

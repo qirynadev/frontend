@@ -100,6 +100,12 @@ export interface SiteSettings {
    * sombre de Kader et n'est pas encore lu.
    */
   logoLight: string | null
+  /**
+   * Logo administré pour fond sombre (`site.logo_dark`), lu depuis le
+   * 2026-09-20 : le pied de page desktop est sombre, le logo foncé y
+   * disparaissait. `null` : repli sur le fichier local.
+   */
+  logoDark: string | null
   /** Favicon administré (§25). `null` : les icônes statiques de `public/` restent. */
   favicon: string | null
 }
@@ -110,5 +116,7 @@ export interface SiteSettings {
  */
 export interface Branding {
   logoLight: string | null
+  /** Variante pour fond sombre — pied de page desktop. */
+  logoDark: string | null
   favicon: string | null
 }
