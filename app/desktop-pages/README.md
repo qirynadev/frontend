@@ -64,6 +64,27 @@ MBA 0 % du donut Figma omis (pas de type API). CTA bas → accueil (`/`).
 Branchement : `pages/mon-projet/admission.vue` (mobile) et `desktop-pages/mon-projet-admission.vue`.
 Onglet **Suivi & échanges** retiré (comme le mobile). Aperçu = étapes checklist API, pas les 4 services illustratifs du Figma. Documents = même liste d’essai que le mobile (pas d’endpoint par pièce). Prochaines étapes = documents non validés. CTA conseiller → `/messages`. Hero = `order.offer` + % réel des étapes.
 
+## Logement
+
+Pas d’artboard Figma 1728. Cadre boxed + rail pays (`desktop-pages/logement.vue`),
+même chrome que langues / orientation. Données = `livings` + formules
+`offerPageRepo`. Post-paiement : variante `housing` de `paiement-reussi.vue`.
+
+## Réglages
+
+Pas d’artboard Figma 1728. Cadre boxed + rail 334 (`AppDesktopReglagesShell`),
+même chrome que domaines / fiche école. L’atterrissage `/reglages` ouvre
+**Informations personnelles** à droite ; la sidebar est la seule navigation.
+Pages : `desktop-pages/reglages-*.vue`, branchées depuis `pages/reglages/*`.
+
+## Pages légales (cookies / privacy / CGU)
+
+Pas d’artboard 1728. Cadre boxed, **sans** rail réglages (pages publiques,
+footer + mentions). Cookies : préférences Figma `1562:1890` + texte CMS en
+cartes. Privacy / CGU : même chrome, sections CMS. Fichiers :
+`desktop-pages/pages-cookies.vue`, `desktop-pages/pages-privacy.vue`,
+`desktop-pages/pages-cgu.vue`.
+
 ## Règles
 
 | | Mobile | Desktop |

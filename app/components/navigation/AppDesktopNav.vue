@@ -39,6 +39,8 @@ const isAuthLogin = computed(() => props.variant === 'auth')
 const isAuthReset = computed(() => props.variant === 'auth-reset')
 const isAuthScreen = computed(() => isAuthLogin.value || isAuthReset.value)
 
+const { openId } = useDesktopNavMenu()
+
 const navItems = computed(() =>
   desktopNavSections.map((section) => {
     const menuSection = catalog.menu?.[section.id]
@@ -125,8 +127,8 @@ const navItems = computed(() =>
       </div>
     </div>
 
-    <!-- App : logo / actions sur les gutters des pages, menu centré -->
-    <div v-else class="desktop-boxed relative flex h-full items-center">
+    <!-- App : menu centré dans l’espace entre le logo et le CTA Orientation. -->
+    <div v-else class="desktop-boxed flex h-full items-center">
       <NuxtLink
         :to="localePath('/')"
         class="relative z-1 flex shrink-0 items-center no-underline"
@@ -144,16 +146,18 @@ const navItems = computed(() =>
       </NuxtLink>
 
       <nav
-        class="pointer-events-none absolute inset-0 hidden items-center justify-center shell:flex"
+        class="relative z-1 hidden min-w-0 flex-1 items-center justify-center self-stretch shell:flex"
         :aria-label="$t('desktop.nav.label')"
       >
-        <div class="pointer-events-auto flex h-full items-center gap-18">
+        <div class="flex h-full items-center gap-18">
           <template v-for="item in navItems" :key="item.id">
             <AppDesktopNavDropdown
               v-if="item.items.length > 0"
+              :menu-id="item.id"
               :label="item.label"
               :to="item.to"
               :items="item.items"
+              :open="openId === item.id"
             />
             <AppDesktopNavItem v-else :to="item.to">
               {{ item.label }}

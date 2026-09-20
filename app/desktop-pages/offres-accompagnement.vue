@@ -8,8 +8,6 @@ import {
   DESKTOP_OFFER_ASSET,
   desktopOfferAccentKey,
   desktopOfferAdvantages,
-  desktopOfferDefaultIncludes,
-  desktopOfferIncludeIcons,
   desktopOfferMbaIncludes,
   desktopOfferSteps,
 } from '~/config/desktop-offres-accompagnement'
@@ -34,22 +32,16 @@ const accent = computed(() => {
   return t('desktop.offer.accent.default', { domain: domainLabel.value })
 })
 
-const includeItems = computed(() => {
-  const api = (tier.value?.features ?? []).filter(Boolean)
-  if (api.length > 0) {
-    const labels = api.slice(0, 7)
-    const icons = desktopOfferIncludeIcons(labels.length)
-    return labels.map((label, index) => ({ icon: icons[index]!, label }))
-  }
-  const defaults = slug.value === 'mba' ? desktopOfferMbaIncludes : desktopOfferDefaultIncludes
-  return defaults.map(item => ({ icon: item.icon, label: t(item.labelKey) }))
-})
+/** Puces Figma `341:4102` — jamais les `features` API (textes longs du back-office). */
+const includeItems = computed(() =>
+  desktopOfferMbaIncludes.map(item => ({ icon: item.icon, label: t(item.labelKey) })),
+)
 
 const showIncludeNote = computed(() => includeItems.value.some(item => item.label.includes('*')))
 </script>
 
 <template>
-  <div class="desktop-boxed flex items-start gap-20 pt-32 pb-32">
+  <div class="desktop-boxed flex items-stretch gap-20 pt-32 pb-32">
     <div class="flex w-1004 shrink-0 flex-col gap-8">
       <div class="flex items-start gap-4">
         <div class="flex w-548 shrink-0 flex-col gap-14 self-stretch pt-2">
@@ -70,7 +62,7 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
               :key="item.titleKey"
               class="flex flex-col items-center gap-10"
             >
-              <img :src="`${ASSET}/${item.icon}`" alt="" width="45" height="45" class="block size-45 shrink-0">
+              <img :src="`${ASSET}/${item.icon}`" alt="" width="45" height="45" class="block size-45 shrink-0" loading="lazy" decoding="async">
               <div class="flex w-full flex-col items-start">
                 <p class="m-0 text-[11px] leading-[13.75px] font-semibold tracking-[0.066px] text-[#111827]">
                   {{ $t(item.titleKey) }}
@@ -89,6 +81,8 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
             width="475"
             height="412"
             class="block h-412 w-475 shrink-0 object-cover"
+            loading="lazy"
+            decoding="async"
           >
         </div>
       </div>
@@ -107,7 +101,7 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
             class="flex h-60 min-h-60 items-center gap-8 rounded-[12px] border border-[#f3f4f6] bg-white p-11 shadow-[0_2px_4px_rgba(0,0,0,0.02)]"
           >
             <span class="flex shrink-0 rounded-[6px] bg-[#fef2f2] p-6">
-              <img :src="`${ASSET}/${item.icon}`" alt="" width="16" height="16" class="block size-16">
+              <img :src="`${ASSET}/${item.icon}`" alt="" width="16" height="16" class="block size-16" loading="lazy" decoding="async">
             </span>
             <p class="m-0 min-w-0 text-[9px] leading-[10.8px] font-semibold tracking-[0.171px] whitespace-pre-line text-[#1f2937]">
               {{ item.label }}
@@ -133,7 +127,7 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
             :key="step.titleKey"
             class="relative z-1 flex w-[142px] shrink-0 flex-col items-center"
           >
-            <img :src="`${ASSET}/${step.icon}`" alt="" width="54" height="54" class="block size-54 shrink-0">
+            <img :src="`${ASSET}/${step.icon}`" alt="" width="54" height="54" class="block size-54 shrink-0" loading="lazy" decoding="async">
             <p class="m-0 pt-10 pb-5 text-center text-[12px] leading-18 font-bold text-[#151515]">
               {{ $t(step.titleKey) }}
             </p>
@@ -155,7 +149,7 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
       <div class="flex w-full flex-col overflow-clip rounded-[24px] border border-[#f9fafb] bg-white p-px shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
         <div class="flex w-full items-center justify-center gap-7 bg-[#1a2035] px-24 py-13">
           <span class="flex size-32 shrink-0 items-center justify-center overflow-clip">
-            <img :src="`${ASSET}/trophy.svg`" alt="" width="32" height="32" class="block size-32">
+            <img :src="`${ASSET}/trophy.svg`" alt="" width="32" height="32" class="block size-32" loading="lazy" decoding="async">
           </span>
           <h2 class="m-0 text-[22px] leading-33 font-semibold tracking-[0.55px] text-white">
             {{ domainLabel }}
@@ -164,7 +158,7 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
         <ul v-if="includeItems.length" class="m-0 flex list-none flex-col gap-10 p-0 px-32 pt-32 pb-16">
           <li v-for="item in includeItems" :key="`card-${item.label}`" class="flex items-center gap-12">
             <span class="flex size-16 shrink-0 items-center justify-center rounded-full bg-[#ff1b40]">
-              <img :src="`${ASSET}/check.svg`" alt="" width="12" height="12" class="block size-12">
+              <img :src="`${ASSET}/check.svg`" alt="" width="12" height="12" class="block size-12" loading="lazy" decoding="async">
             </span>
             <span class="text-[14px] leading-[19.5px] font-semibold tracking-[-0.078px] whitespace-pre-line text-[#151515]">
               {{ item.label.replace(/\n/g, ' ') }}
@@ -189,16 +183,16 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
             <span v-else>{{ $t('desktop.offer.cta') }}</span>
           </button>
           <p class="m-0 flex items-center gap-8 text-[11px] leading-[16.5px] font-medium tracking-[0.066px] text-[#6b7280]">
-            <img :src="`${ASSET}/lock.svg`" alt="" width="14" height="14" class="block size-14 shrink-0">
+            <img :src="`${ASSET}/lock.svg`" alt="" width="14" height="14" class="block size-14 shrink-0" loading="lazy" decoding="async">
             {{ $t('desktop.offer.secure') }}
           </p>
         </div>
       </div>
 
-      <div class="flex w-full flex-col items-start pt-90">
+      <div class="mt-auto flex w-full flex-col items-start">
         <div class="flex w-full items-start gap-20 rounded-[6px] border border-[#fef2f2] bg-[#fff5f6] px-21 py-31 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <span class="flex size-48 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-            <img :src="`${ASSET}/human.svg`" alt="" width="20" height="20" class="block size-20">
+            <img :src="`${ASSET}/human.svg`" alt="" width="20" height="20" class="block size-20" loading="lazy" decoding="async">
           </span>
           <div class="flex min-w-0 flex-col gap-[7.375px]">
             <p class="m-0 text-[13px] leading-[16.25px] font-bold tracking-[-0.078px] whitespace-pre-line text-[#151515]">

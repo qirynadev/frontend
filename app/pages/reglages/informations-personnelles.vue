@@ -20,156 +20,39 @@
  * Le téléphone passe après le pays, pour que l’indicatif se lise dans la
  * foulée du pays choisi.
  */
-import type { Country } from '~/core/contracts'
-import { ApiError } from '~/core/http/errors'
-import { authRepo, countryRepo } from '~/core/repositories'
-import { useSessionStore } from '~/core/stores'
+import DesktopReglagesProfil from '~/desktop-pages/reglages-profil.vue'
 import { drapeauEmoji } from '~/utils/country-search'
 
 definePageMeta({ middleware: 'auth' })
 
-const { t, locale } = useI18n()
-const localePath = useLocalePath()
-const session = useSessionStore()
+const { t } = useI18n()
 
 const ICON = '/img/icons/reglages-profil'
 
-const profile = session.user?.profile
-const firstName = ref(profile?.firstName ?? '')
-const lastName = ref(profile?.lastName ?? '')
-const birthDate = ref(profile?.birthday ?? '')
-const countryId = ref(profile?.country?.id ?? '')
-
-const { data: countries } = await useAsyncData('countries', () => countryRepo.list(locale.value), { watch: [locale] })
-
-/**
- * Indicatif et numéro vivent séparément à l'écran, mais l'API ne connaît
- * qu'un seul champ `phone` (texte libre). On les recompose à l'envoi et on les
- * redécoupe à la relecture — sans quoi un numéro déjà préfixé repartirait avec
- * deux indicatifs.
- *
- * La longueur d'un indicatif ne se devine pas : `+33612345678` se découpe en
- * `33` + `612345678`, pas en `3361` + `2345678`. On la reconnaît donc dans la
- * liste réelle des pays, le plus long candidat l'emportant (`1242` avant `1`).
- * D'où le découpage ici, après le chargement des pays, et non plus avant.
- */
-function decouper(brut: string, codes: string[]): { code: string, numero: string } {
-  const valeur = brut.trim()
-  if (!valeur.startsWith('+')) return { code: '', numero: valeur }
-
-  const chiffres = valeur.slice(1)
-  const trouve = [...codes]
-    .sort((a, b) => b.length - a.length)
-    .find((c) => chiffres.startsWith(c))
-
-  if (!trouve) return { code: '', numero: valeur }
-  return { code: trouve, numero: chiffres.slice(trouve.length).replace(/^[\s.-]+/, '') }
-}
-
-const decoupe = decouper(
-  profile?.phone ?? '',
-  (countries.value ?? []).map((c) => c.phoneCode).filter((c): c is string => !!c),
-)
-const phone = ref(decoupe.numero)
-const phoneCode = ref(decoupe.code)
-
-/** Les pays dont l'API donne l'indicatif (`international_phone`). */
-const indicatifs = computed(() => (countries.value ?? []).filter((c) => c.phoneCode))
-
-const paysChoisi = computed(() => (countries.value ?? []).find((c) => c.id === countryId.value) ?? null)
-
-/**
- * Pays dont le drapeau précède l'indicatif.
- *
- * Plusieurs pays partagent un indicatif (+1 : États-Unis, Canada…) : on garde
- * celui choisi dans la liste, sinon le pays de résidence s'il a ce même
- * indicatif, sinon le premier trouvé. Purement affiché : l'API ne stocke que
- * le numéro.
- */
-const paysIndicatifId = ref<string | null>(null)
-const paysIndicatif = computed(() => {
-  if (!phoneCode.value) return null
-  const memeCode = indicatifs.value.filter((c) => c.phoneCode === phoneCode.value)
-  return memeCode.find((c) => c.id === paysIndicatifId.value)
-    ?? memeCode.find((c) => c.id === countryId.value)
-    ?? memeCode[0]
-    ?? null
-})
-
-const libelleIndicatif = computed(() =>
-  `${t('settingsPersonal.phoneCodeLabel')} : ${phoneCode.value ? `+${phoneCode.value}` : '—'}`)
+// Tout l’état vient du composable partagé avec le desktop : un seul câblage
+// aux vraies données pour les deux écrans.
+const {
+  firstName,
+  lastName,
+  email,
+  birthDate,
+  countryId,
+  phone,
+  phoneCode,
+  countries,
+  indicatifs,
+  paysChoisi,
+  paysIndicatif,
+  libelleIndicatif,
+  choisirPays,
+  choisirIndicatif,
+  saving,
+  errorMessage,
+  save,
+} = await useReglagesProfil()
 
 const selecteurPaysOuvert = ref(false)
 const selecteurIndicatifOuvert = ref(false)
-
-function choisirPays(pays: Country) {
-  countryId.value = pays.id ?? ''
-}
-
-function choisirIndicatif(pays: Country) {
-  phoneCode.value = pays.phoneCode ?? ''
-  paysIndicatifId.value = pays.id
-}
-
-/**
- * Un numéro déjà enregistré ne suit jamais le pays.
- *
- * On vit à un endroit et on garde le numéro d'un autre : réaligner
- * l'indicatif sur le pays de résidence corromprait un numéro valide, sans
- * que le client s'en aperçoive. L'indicatif ne se déduit donc du pays que
- * pour un profil qui n'avait pas encore de téléphone — et il reste
- * modifiable à la main dans tous les cas.
- */
-const numeroPreexistant = (profile?.phone ?? '').trim() !== ''
-
-function alignerIndicatifSurPays(id: string) {
-  const pays = (countries.value ?? []).find((c) => c.id === id)
-  if (!pays?.phoneCode) return
-  phoneCode.value = pays.phoneCode
-  paysIndicatifId.value = pays.id
-}
-
-watch(countryId, (id) => {
-  if (!numeroPreexistant) alignerIndicatifSurPays(id)
-})
-
-onMounted(() => {
-  if (!numeroPreexistant && !phoneCode.value) alignerIndicatifSurPays(countryId.value)
-})
-
-/** Ce qui part réellement à l'API : indicatif + numéro, jamais l'un sans l'autre. */
-const numeroComplet = computed(() => {
-  const numero = phone.value.trim()
-  if (!numero) return ''
-  if (numero.startsWith('+')) return numero
-  return phoneCode.value ? `+${phoneCode.value} ${numero}` : numero
-})
-
-const saving = ref(false)
-const errorMessage = ref<string | null>(null)
-
-async function save() {
-  if (saving.value) return
-  errorMessage.value = null
-  saving.value = true
-  try {
-    const updated = await authRepo.updateProfile({
-      firstName: firstName.value,
-      lastName: lastName.value,
-      phone: numeroComplet.value,
-      countryId: countryId.value,
-      birthday: birthDate.value || null,
-    }, locale.value)
-    session.apply({ user: updated, pendingPayment: session.pendingPayment })
-    await navigateTo(localePath('/'))
-  }
-  catch (error) {
-    errorMessage.value = error instanceof ApiError ? error.message : t('settingsPersonal.saveError')
-  }
-  finally {
-    saving.value = false
-  }
-}
 
 usePageSeo(() => ({
   title: t('settingsPersonal.seoTitle'),
@@ -179,7 +62,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rp flex flex-1 flex-col">
+  <div class="page-rp flex flex-1 flex-col shell:hidden">
     <div class="rp-main flex w-full max-w-full flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/reglages" :notifications="3" :gap="0" />
 
@@ -246,7 +129,7 @@ usePageSeo(() => ({
               <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-2 px-12">
                 <input
                   id="rp-email"
-                  :value="session.user?.email"
+                  :value="email"
                   type="email"
                   disabled
                   class="min-w-0 flex-1 cursor-not-allowed border-0 bg-transparent p-0 text-lg leading-20 font-medium text-muted-2 outline-0"
@@ -372,5 +255,9 @@ usePageSeo(() => ({
         <img :src="`${ICON}/ic-rp-chevron.svg`" alt="" width="20" height="20" class="ml-8 block size-20 shrink-0">
       </button>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesProfil />
   </div>
 </template>

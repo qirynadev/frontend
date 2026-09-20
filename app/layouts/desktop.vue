@@ -42,5 +42,6 @@ const shellAuthColumn = computed(() =>
       <slot />
     </main>
     <AppDesktopFooter v-if="showFooter" />
+    <AppDesktopBackToTop />
   </div>
 </template>

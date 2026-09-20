@@ -2,11 +2,13 @@
 /**
  * Paiement réussi — **tunnel orientation**.
  *
- * Layout aligné sur `/paiement-reussi` (tunnel domaines) : illustration,
- * bienvenue, frise horizontale, aide. Les titres d’étapes restent ceux du
- * parcours orientation (4 étapes éditoriales).
+ * Les étapes desktop reprennent « Notre méthode en 4 étapes » de
+ * l'écran mobile Orientation. En développement, `?preview=1` affiche
+ * l'écran confirmé sans appel Stripe.
  */
+import type { PaymentValidation } from '~/core/contracts'
 import { paymentRepo } from '~/core/repositories'
+import DesktopPaiementReussi from '~/desktop-pages/paiement-reussi.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -22,14 +24,25 @@ const orderId = computed(() => {
   return typeof raw === 'string' ? raw : ''
 })
 
-const { data: validation, apiError, isInitialLoading, refresh } = await usePageData(
-  `payment-validation-orientation-${orderId.value}`,
-  () => (orderId.value === '' ? Promise.resolve(null) : paymentRepo.validate(orderId.value, locale.value)),
-  { watch: [orderId, locale] },
+/** Aperçu local uniquement : pas d'appel API, écran traité comme confirmé. */
+const isPreview = computed(() =>
+  import.meta.dev && (route.query.preview === '1' || route.query.preview === 'true'),
 )
 
-const confirmed = computed(() => validation.value?.confirmed === true)
-const failed = computed(() => validation.value?.failed === true)
+const previewValidation: PaymentValidation = { confirmed: true, failed: false, order: null }
+
+const { data: validation, apiError, isInitialLoading, refresh } = await usePageData(
+  `payment-validation-orientation-${orderId.value}`,
+  () => {
+    if (isPreview.value) return Promise.resolve(previewValidation)
+    if (orderId.value === '') return Promise.resolve(null)
+    return paymentRepo.validate(orderId.value, locale.value)
+  },
+  { watch: [orderId, locale, isPreview] },
+)
+
+const confirmed = computed(() => isPreview.value || validation.value?.confirmed === true)
+const failed = computed(() => !isPreview.value && validation.value?.failed === true)
 
 const steps = [
   { icon: 'ic-paiement-step1', tone: 'bg-paiement-step-1', titleKey: 'orientation.confirmation.step1Title' },
@@ -46,13 +59,13 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="flex flex-col gap-22">
+  <div class="shell:hidden flex flex-col gap-22">
     <AppTopBar back :back-to="`/orientation/formules?path=${path}`" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"
       :error="apiError"
-      :empty="orderId === ''"
+      :empty="orderId === '' && !isPreview"
       :on-retry="() => refresh()"
     >
       <template #loading>
@@ -182,6 +195,35 @@ usePageSeo(() => ({
           </SupportLink>
         </div>
       </div>
+    </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <PageState
+      :loading="isInitialLoading"
+      :error="apiError"
+      :empty="orderId === '' && !isPreview"
+      :on-retry="() => refresh()"
+    >
+      <template #loading>
+        <div class="desktop-boxed flex gap-48 pt-32">
+          <QSkeleton variant="rect" :height="540" class="flex-1" />
+          <QSkeleton variant="rect" :height="540" class="flex-1" />
+        </div>
+      </template>
+      <template #empty>
+        <div class="desktop-boxed py-32">
+          <QEmptyState
+            :title="$t('checkout.success.orderTitle')"
+            :description="$t('confirmation.missingOrder')"
+          >
+            <template #action>
+              <QButton :to="localePath('/mon-projet')">{{ $t('nav.project') }}</QButton>
+            </template>
+          </QEmptyState>
+        </div>
+      </template>
+      <DesktopPaiementReussi :confirmed="confirmed" :failed="failed" variant="orientation" />
     </PageState>
   </div>
 </template>

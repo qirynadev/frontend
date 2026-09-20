@@ -153,3 +153,6 @@ definePageMeta({
 | Connexion | `app/desktop-pages/connexion.vue` |
 | Mot de passe oublié | `app/desktop-pages/mot-de-passe.vue` |
 | Inscription | `app/desktop-pages/inscription.vue` |
+| Réglages (pas d’artboard 1728) | `AppDesktopReglagesShell` + `desktop-pages/reglages-*.vue` — atterrissage `/reglages` = infos perso |
+| Cookies / privacy / CGU (pas d’artboard 1728) | `desktop-pages/pages-*.vue` — boxed, sans rail |
+| Logement (pas d’artboard 1728) | `desktop-pages/logement.vue` — boxed + rail pays, formules API |

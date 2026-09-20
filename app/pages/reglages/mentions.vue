@@ -14,6 +14,7 @@
  * Sections : `gap-22` (norme produit) entre topbar / intro / bandeau / cartes.
  */
 import { NuxtLink } from '#components'
+import DesktopReglagesMentions from '~/desktop-pages/reglages-mentions.vue'
 
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -68,7 +69,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-rml flex flex-1 flex-col">
+  <div class="page-rml flex flex-1 flex-col shell:hidden">
     <div class="rml-main flex w-full max-w-full flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/reglages" :gap="0" />
 
@@ -155,5 +156,9 @@ usePageSeo(() => ({
         <img :src="`${ICON}/ic-ril-mail-chevron.svg`" alt="" width="20" height="20" class="ml-8 block size-20 shrink-0">
       </a>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesMentions />
   </div>
 </template>

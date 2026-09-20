@@ -3,6 +3,7 @@
  * Fiche école desktop ← Figma `Fiche ecole` (8:562), 1728 px.
  */
 import type { School, SchoolFormation, SchoolSummary } from '~/core/contracts'
+import { schoolTitleBadges } from '~/config/school-title-badges'
 
 const props = defineProps<{
   school: School
@@ -22,17 +23,28 @@ const localePath = useLocalePath()
 
 const ASSET = '/img/desktop/fiche-ecole'
 
-const activeTab = ref<'presentation' | 'formations' | 'admissions'>('presentation')
+const activeTab = ref<'presentation' | 'formations' | 'points'>('presentation')
 
 const tabs = computed(() => [
-  { value: 'presentation' as const, label: t('school.detail.tabPresentation') },
-  { value: 'formations' as const, label: t('school.detail.tabFormations') },
-  { value: 'admissions' as const, label: t('school.detail.tabAdmissions') },
+  { value: 'presentation' as const, label: t('school.detail.tabPresentation'), icon: 'ed-tab-presentation' },
+  { value: 'formations' as const, label: t('school.detail.tabFormations'), icon: 'ed-tab-formations' },
+  { value: 'points' as const, label: t('school.detail.tabStrengths'), icon: 'ed-tab-points' },
 ])
 
 const locationLabel = computed(() =>
   [props.school.city, props.school.country.name].filter(Boolean).join(' • '),
 )
+
+const titleBadges = computed(() => schoolTitleBadges(props.school))
+
+/**
+ * Même convention que le mobile : `School.details[]` dont le titre
+ * saisi en admin vaut « Points Forts » — pas un champ API dédié.
+ */
+const strengthsHtml = computed(() => {
+  const match = props.school.details.find(item => item.title.trim().toLowerCase() === 'points forts')
+  return match?.description ?? ''
+})
 
 const ctaTo = computed(() => {
   if (props.domaine) return localePath(`/offres/${props.domaine}`)
@@ -77,7 +89,7 @@ function similarLocation(item: SchoolSummary) {
             @click="emit('share')"
           >
             <span class="size-16 overflow-clip">
-              <img :src="`${ASSET}/share.svg`" alt="" width="16" height="16" class="block size-full">
+              <img :src="`${ASSET}/share.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
             </span>
           </button>
         </div>
@@ -106,10 +118,24 @@ function similarLocation(item: SchoolSummary) {
               class="m-0 flex items-center gap-8 text-[16px] leading-20 font-medium tracking-[-0.154px] text-white/90"
             >
               <span class="size-16 shrink-0 overflow-clip">
-                <img :src="`${ASSET}/pin.svg`" alt="" width="16" height="16" class="block size-full">
+                <img :src="`${ASSET}/pin.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
               </span>
               {{ locationLabel }}
             </p>
+            <div
+              v-if="titleBadges.length"
+              class="flex items-center gap-8 pt-8"
+            >
+              <span
+                v-for="badge in titleBadges"
+                :key="badge.labelKey"
+                class="rounded-[6px] px-12 py-6 text-[12px] leading-[16.5px] font-medium tracking-[0.275px] text-white"
+                :class="badge.uppercase ? 'uppercase' : ''"
+                :style="{ backgroundColor: badge.bg }"
+              >
+                {{ $t(badge.labelKey) }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -127,13 +153,14 @@ function similarLocation(item: SchoolSummary) {
             type="button"
             role="tab"
             :aria-selected="activeTab === tab.value"
-            class="cursor-pointer border-0 bg-transparent pb-16 text-[20px] leading-20 font-semibold tracking-[-0.154px]"
+            class="flex cursor-pointer items-center justify-center gap-6 border-0 bg-transparent pb-16 text-[20px] leading-20 font-semibold tracking-[-0.154px]"
             :class="activeTab === tab.value
               ? 'border-b-2 border-[#ff1b40] pb-[18px] text-[#121212]'
               : 'text-[#6b7280]'"
             @click="activeTab = tab.value"
           >
-            {{ tab.label }}
+            <QIcon :name="tab.icon" :size="20" class="shrink-0" />
+            <span>{{ tab.label }}</span>
           </button>
         </div>
 
@@ -176,20 +203,12 @@ function similarLocation(item: SchoolSummary) {
           </button>
         </div>
 
-        <div v-show="activeTab === 'admissions'" class="w-full">
-          <ul v-if="school.details.length > 0" class="m-0 flex list-none flex-col gap-16 p-0">
-            <li v-for="item in school.details" :key="item.title" class="flex flex-col gap-6">
-              <h3 class="m-0 text-[16px] leading-20 font-semibold text-[#040c3d]">{{ item.title }}</h3>
-              <RichText
-                v-if="item.description"
-                :content="item.description"
-                class="text-[16px] leading-[22.75px] text-[#252525] [&_p]:text-[16px] [&_p]:leading-[22.75px]"
-              />
-            </li>
-          </ul>
-          <p v-else class="m-0 text-[16px] leading-[22.75px] text-[#252525]">
-            {{ $t('school.detail.emptyDescription') }}
-          </p>
+        <div v-show="activeTab === 'points'" class="w-full">
+          <RichText
+            v-if="strengthsHtml"
+            :content="strengthsHtml"
+            class="text-[16px] leading-[22.75px] tracking-[-0.154px] text-[#252525] [&_p]:text-[16px] [&_p]:leading-[22.75px] [&_p]:text-[#252525]"
+          />
         </div>
       </div>
     </div>
@@ -239,11 +258,11 @@ function similarLocation(item: SchoolSummary) {
         </div>
       </div>
 
-      <div class="flex w-full flex-col items-center gap-26 rounded-[16px] border border-[#fee2e2] bg-[#fff0f2] px-33 pt-33 pb-41">
+      <div class="flex w-full flex-col items-center gap-8 rounded-[16px] border border-[#fee2e2] bg-[#fff0f2] px-33 pt-33 pb-33">
         <div class="flex w-full items-start gap-16">
           <span class="flex size-56 shrink-0 items-center justify-center overflow-clip rounded-full bg-[#fbe7e9] shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
             <span class="size-24 overflow-clip">
-              <img :src="`${ASSET}/cta-headset.svg`" alt="" width="24" height="24" class="block size-full">
+              <img :src="`${ASSET}/cta-headset.svg`" alt="" width="24" height="24" class="block size-full" loading="lazy" decoding="async">
             </span>
           </span>
           <div class="flex min-w-0 flex-1 flex-col gap-8 pt-8">
@@ -262,7 +281,7 @@ function similarLocation(item: SchoolSummary) {
         >
           {{ $t('desktop.ficheEcole.ctaButton') }}
           <span class="size-16 shrink-0 overflow-clip">
-            <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="block size-full">
+            <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
           </span>
         </NuxtLink>
       </div>

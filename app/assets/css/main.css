@@ -888,17 +888,11 @@
 
   .desktop-home-media {
     position: relative;
+    align-self: center;
     width: 495px;
     max-width: 495px;
     min-width: 0;
-  }
-
-  .desktop-home-media--short {
     aspect-ratio: 495 / 469;
-  }
-
-  .desktop-home-media--tall {
-    aspect-ratio: 495 / 555;
   }
 
   .desktop-home-card {

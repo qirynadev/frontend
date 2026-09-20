@@ -1,16 +1,41 @@
 <script setup lang="ts">
+import { useCatalogStore } from '~/core/stores'
+
 /**
  * Accueil desktop ← Figma `Home page` (1004:3493), contenu uniquement.
  * Nav / footer fournis par `layouts/desktop.vue`.
  */
 const localePath = useLocalePath()
+const router = useRouter()
+const catalog = useCatalogStore()
+const { open: openNavMenu } = useDesktopNavMenu()
 const ASSET = '/img/desktop/home'
 
+function exploreLanguages() {
+  if ((catalog.menu?.courses?.entries.length ?? 0) > 0) {
+    openNavMenu('courses')
+    return
+  }
+  void router.push(localePath('/langues'))
+}
+
+function exploreHousing() {
+  if ((catalog.menu?.living?.entries.length ?? 0) > 0) {
+    openNavMenu('living')
+    return
+  }
+  void router.push(localePath('/logement'))
+}
+
+function exploreSchools() {
+  openNavMenu('destinations')
+}
+
 const orientationFeats = [
-  { icon: `${ASSET}/feat-test.svg`, key: 'desktop.home.orientation.f1' },
-  { icon: `${ASSET}/feat-bilan.svg`, key: 'desktop.home.orientation.f2' },
-  { icon: `${ASSET}/feat-experts.svg`, key: 'desktop.home.orientation.f3' },
-  { icon: `${ASSET}/feat-mesure.svg`, key: 'desktop.home.orientation.f4' },
+  { icon: `${ASSET}/feat-test.svg`, key: 'desktop.home.orientation.f1', iconBg: 'bg-[#fef2f2]' },
+  { icon: `${ASSET}/feat-bilan.svg`, key: 'desktop.home.orientation.f2', iconBg: 'bg-[#faf5ff]' },
+  { icon: `${ASSET}/feat-experts.svg`, key: 'desktop.home.orientation.f3', iconBg: 'bg-[#f0fdf4]' },
+  { icon: `${ASSET}/feat-mesure.svg`, key: 'desktop.home.orientation.f4', iconBg: 'bg-[#eff6ff]' },
 ] as const
 
 const schoolTypes = [
@@ -70,9 +95,9 @@ const housingChecks = [
 ] as const
 
 const housingTypes = [
-  { icon: `${ASSET}/type-colo.svg`, title: 'desktop.home.housing.type1', desc: 'desktop.home.housing.type1desc', thumb: `${ASSET}/thumb-housing-1.jpg` },
-  { icon: `${ASSET}/type-residence.svg`, title: 'desktop.home.housing.type2', desc: 'desktop.home.housing.type2desc', thumb: `${ASSET}/thumb-housing-1.jpg` },
-  { icon: `${ASSET}/type-appart.svg`, title: 'desktop.home.housing.type3', desc: 'desktop.home.housing.type3desc', thumb: `${ASSET}/thumb-housing-2.jpg` },
+  { icon: `${ASSET}/type-colo.svg`, title: 'desktop.home.housing.type1', desc: 'desktop.home.housing.type1desc', thumb: `${ASSET}/thumb-housing-1.jpg`, iconBg: 'bg-[#fff7ed]' },
+  { icon: `${ASSET}/type-residence.svg`, title: 'desktop.home.housing.type2', desc: 'desktop.home.housing.type2desc', thumb: `${ASSET}/thumb-housing-1.jpg`, iconBg: 'bg-[#faf5ff]' },
+  { icon: `${ASSET}/type-appart.svg`, title: 'desktop.home.housing.type3', desc: 'desktop.home.housing.type3desc', thumb: `${ASSET}/thumb-housing-2.jpg`, iconBg: 'bg-[#eff6ff]' },
 ] as const
 </script>
 
@@ -95,11 +120,11 @@ const housingTypes = [
       <!-- ── Orientation ── -->
       <section class="desktop-home-band pt-30 pb-20">
         <div class="desktop-home-copy flex flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-orientation.svg`" alt="" width="12" height="12" class="size-12 shrink-0" loading="lazy" decoding="async">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#f5f3ff] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#5c3cf3] uppercase">
+              <img src="/img/icons/ic-home-cat-metier.svg" alt="" width="16" height="16" class="size-16 shrink-0" loading="lazy" decoding="async">
               {{ $t('desktop.home.orientation.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.orientation.titleBefore') }}
               <span class="text-[#fc0814]">{{ $t('desktop.home.orientation.titleAccent') }}</span>
               {{ $t('desktop.home.orientation.titleAfter') }}
@@ -109,7 +134,7 @@ const housingTypes = [
             </p>
             <div class="grid max-w-[472px] grid-cols-4 gap-16 pt-40">
               <div v-for="item in orientationFeats" :key="item.key" class="flex flex-col items-center text-center">
-                <span class="flex size-40 items-center justify-center rounded-full bg-[#fef6f5]">
+                <span class="flex size-40 items-center justify-center rounded-full" :class="item.iconBg">
                   <img :src="item.icon" alt="" width="16" height="16" class="size-16" loading="lazy" decoding="async">
                 </span>
                 <span class="pt-8 text-[10px] leading-[12.5px] font-medium text-[#1a1a1a]">{{ $t(item.key) }}</span>
@@ -126,9 +151,9 @@ const housingTypes = [
             </div>
           </div>
 
-        <div class="desktop-home-media desktop-home-media--short">
-            <img :src="`${ASSET}/orientation-photo.png`" alt="" class="absolute inset-0 size-full object-cover object-[center_20%]" loading="lazy" decoding="async">
-            <div class="absolute top-[22%] left-[55%] flex w-[min(280px,58%)] flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/orientation-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
+            <div class="absolute top-[22%] left-[55%] flex w-[min(240px,50%)] flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
               <p class="m-0 text-[14px] leading-20 font-bold text-[#242424]">{{ $t('desktop.home.orientation.resultsTitle') }}</p>
               <ul class="m-0 mt-16 flex list-none flex-col gap-12 p-0">
                 <li v-for="i in 4" :key="i" class="flex items-center gap-8 text-[11px] leading-[16.5px] font-medium text-[#141414]">
@@ -171,13 +196,13 @@ const housingTypes = [
       <!-- ── Fiches écoles ── -->
       <section class="desktop-home-band py-20">
         <div class="desktop-home-copy flex flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-school.svg`" alt="" width="12" height="8" class="h-8 w-12 shrink-0" loading="lazy" decoding="async">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fff5f6] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#ff2d46] uppercase">
+              <img src="/img/icons/ic-home-cat-school.svg" alt="" width="16" height="16" class="size-16 shrink-0" loading="lazy" decoding="async">
               {{ $t('desktop.home.school.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-normal font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.school.titleBefore') }}
-              <span class="block text-[#fc0814]">{{ $t('desktop.home.school.titleAccent') }}</span>
+              <span class="text-[#fc0814]">{{ $t('desktop.home.school.titleAccent') }}</span>
             </h2>
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.school.desc') }}
@@ -189,25 +214,19 @@ const housingTypes = [
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-16 pt-40">
-              <NuxtLink
-                :to="localePath('/destinations')"
-                class="inline-flex items-center gap-8 rounded-lg bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white no-underline"
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-8 rounded-lg border-0 bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white"
+                @click="exploreSchools"
               >
                 {{ $t('desktop.home.school.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16" loading="lazy" decoding="async">
-              </NuxtLink>
+              </button>
             </div>
           </div>
 
-        <div class="desktop-home-media desktop-home-media--tall">
-            <img :src="`${ASSET}/school-photo.jpg`" alt="" class="size-full object-contain" loading="lazy" decoding="async">
-            <img
-              :src="`${ASSET}/school-comparatif.png`"
-              alt=""
-              class="absolute top-[15.7%] left-[50.3%] h-auto w-[61%] rounded-[10px] border border-[#f3f5fb] object-cover"
-              loading="lazy"
-              decoding="async"
-            >
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/school-photo.jpg`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
           </div>
 
         <div class="desktop-home-card flex flex-col">
@@ -247,13 +266,13 @@ const housingTypes = [
       <!-- ── Langues ── -->
       <section class="desktop-home-band py-20">
         <div class="desktop-home-copy flex flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-lang.svg`" alt="" width="14" height="14" class="size-14 shrink-0" loading="lazy" decoding="async">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fffbeb] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#f59e0b] uppercase">
+              <img src="/img/icons/ic-home-cat-langue.svg" alt="" width="16" height="16" class="size-16 shrink-0" loading="lazy" decoding="async">
               {{ $t('desktop.home.languages.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.languages.titleBefore') }}
-              <span class="block text-[#fc0814]">{{ $t('desktop.home.languages.titleAccent') }}</span>
+              <span class="text-[#fc0814]">{{ $t('desktop.home.languages.titleAccent') }}</span>
             </h2>
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.languages.desc') }}
@@ -265,17 +284,18 @@ const housingTypes = [
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-16 pt-40">
-              <NuxtLink
-                :to="localePath('/langues')"
-                class="inline-flex items-center gap-8 rounded-lg bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white no-underline"
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-8 rounded-lg border-0 bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white"
+                @click="exploreLanguages"
               >
                 {{ $t('desktop.home.languages.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16" loading="lazy" decoding="async">
-              </NuxtLink>
+              </button>
             </div>
           </div>
-        <div class="desktop-home-media desktop-home-media--short">
-            <img :src="`${ASSET}/languages-photo.png`" alt="" class="size-full object-contain" loading="lazy" decoding="async">
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/languages-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
           </div>
 
         <div class="desktop-home-card flex flex-col">
@@ -307,13 +327,13 @@ const housingTypes = [
       <!-- ── Hébergement ── -->
       <section class="desktop-home-band border-b border-[#f3f4f6] pt-20 pb-50">
         <div class="desktop-home-copy flex min-w-0 flex-col justify-center">
-            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#fef2f1] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#fd1027] uppercase">
-              <img :src="`${ASSET}/badge-housing.svg`" alt="" width="14" height="14" class="size-14 shrink-0" loading="lazy" decoding="async">
+            <span class="inline-flex w-fit items-center gap-8 rounded-full bg-[#f0fdf4] px-12 py-6 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#4fb756] uppercase">
+              <img src="/img/icons/ic-home-cat-logement.svg" alt="" width="16" height="16" class="size-16 shrink-0" loading="lazy" decoding="async">
               {{ $t('desktop.home.housing.badge') }}
             </span>
-            <h2 class="m-0 max-w-419 pt-24 text-[27px] leading-normal font-bold">
+            <h2 class="m-0 w-full max-w-419 pt-24 text-[27px] leading-[39.6px] font-bold">
               {{ $t('desktop.home.housing.titleBefore') }}
-              <span class="block text-[#fc0814]">{{ $t('desktop.home.housing.titleAccent') }}</span>
+              <span class="text-[#fc0814]">{{ $t('desktop.home.housing.titleAccent') }}</span>
             </h2>
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.housing.desc') }}
@@ -328,25 +348,26 @@ const housingTypes = [
               </li>
             </ul>
             <div class="pt-40">
-              <NuxtLink
-                :to="localePath('/logement')"
-                class="inline-flex items-center gap-8 rounded-lg bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white no-underline"
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-8 rounded-lg border-0 bg-[#f9172d] px-24 py-12 text-[14px] leading-20 font-semibold text-white"
+                @click="exploreHousing"
               >
                 {{ $t('desktop.home.housing.cta') }}
                 <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="size-16" loading="lazy" decoding="async">
-              </NuxtLink>
+              </button>
             </div>
           </div>
 
-        <div class="desktop-home-media desktop-home-media--tall">
-            <img :src="`${ASSET}/housing-photo.png`" alt="" class="size-full object-contain object-bottom" loading="lazy" decoding="async">
+        <div class="desktop-home-media">
+            <img :src="`${ASSET}/housing-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
             <div class="absolute top-[14.4%] left-[56%] flex w-[min(260px,53%)] flex-col gap-12">
               <div
                 v-for="item in housingTypes"
                 :key="item.title"
                 class="flex items-center gap-12 rounded-xl border border-[#f3f4f6] bg-white p-12"
               >
-                <span class="flex size-40 shrink-0 items-center justify-center rounded-full bg-[#fceff0]">
+                <span class="flex size-40 shrink-0 items-center justify-center rounded-full" :class="item.iconBg">
                   <img :src="item.icon" alt="" width="20" height="20" class="size-20" loading="lazy" decoding="async">
                 </span>
                 <div class="min-w-0 flex-1">
@@ -357,7 +378,7 @@ const housingTypes = [
               </div>
             </div>
             <div class="absolute top-[26%] left-[8.5%] flex max-w-160 items-center gap-12 rounded-full bg-white p-12">
-              <span class="flex size-36 shrink-0 items-center justify-center rounded-full bg-[#fceff0]">
+              <span class="flex size-36 shrink-0 items-center justify-center rounded-full bg-[#eff6ff]">
                 <img :src="`${ASSET}/type-appart.svg`" alt="" width="20" height="20" class="size-20" loading="lazy" decoding="async">
               </span>
               <p class="m-0 text-[11px] leading-[15px] font-semibold text-[#131b33] whitespace-pre-line">{{ $t('desktop.home.housing.homeLabel') }}</p>

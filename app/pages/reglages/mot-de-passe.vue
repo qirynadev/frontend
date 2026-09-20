@@ -23,6 +23,7 @@
  */
 import { ApiError } from '~/core/http/errors'
 import { authRepo } from '~/core/repositories'
+import DesktopReglagesMotDePasse from '~/desktop-pages/reglages-mot-de-passe.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -105,10 +106,14 @@ const fields = [
   { id: 'current', model: current, labelKey: 'settingsPassword.currentLabel', placeholderKey: 'settingsPassword.currentPlaceholder', autocomplete: 'current-password' },
   { id: 'next', model: next, labelKey: 'settingsPassword.newLabel', placeholderKey: 'settingsPassword.newPlaceholder', autocomplete: 'new-password' },
 ]
+
+function toggleShown(id: string) {
+  shown.value[id] = !shown.value[id]
+}
 </script>
 
 <template>
-  <div class="page-rm flex flex-1 flex-col">
+  <div class="page-rm flex flex-1 flex-col shell:hidden">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="rm-main flex w-full max-w-full flex-col box-border">
       <AppTopBar :back="true" back-to="/reglages" :gap="0" />
@@ -231,5 +236,19 @@ const fields = [
         </button>
       </form>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesMotDePasse
+      v-model:current="current"
+      v-model:next="next"
+      v-model:confirm="confirm"
+      :shown="shown"
+      :rules="rules"
+      :score="score"
+      :level="level"
+      :match="match"
+      @toggle="toggleShown"
+    />
   </div>
 </template>

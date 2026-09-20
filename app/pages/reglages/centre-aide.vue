@@ -16,6 +16,7 @@
  * Doc : `docs/reglages-contact-mocks.md`.
  */
 import { useCatalogStore } from '~/core/stores'
+import DesktopReglagesCentreAide from '~/desktop-pages/reglages-centre-aide.vue'
 
 // Accessible sans connexion (sur demande explicite) : contenu statique
 // (FAQ/contact), rien qui dépende de la session.
@@ -50,7 +51,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-ca flex flex-1 flex-col">
+  <div class="page-ca flex flex-1 flex-col shell:hidden">
     <div class="ca-main flex w-full max-w-full flex-col gap-22 box-border">
       <AppTopBar :back="true" back-to="/reglages" :notifications="3" :gap="0" />
 
@@ -158,5 +159,9 @@ usePageSeo(() => ({
         >
       </aside>
     </div>
+  </div>
+
+  <div class="hidden shell:block">
+    <DesktopReglagesCentreAide :whatsapp-href="whatsappHref" />
   </div>
 </template>

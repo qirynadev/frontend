@@ -1,6 +1,7 @@
 /**
  * Écran desktop « Offres d'accompagnement » ← Figma `341:3720`.
  * Copy MBA de la maquette ; les autres domaines interpolent le titre d’offre.
+ * Les 7 puces « inclus » restent celles de la maquette (pas les features API).
  */
 export const DESKTOP_OFFER_ASSET = '/img/desktop/offres'
 
@@ -9,16 +10,6 @@ export const desktopOfferAdvantages = [
   { icon: 'advantage-2.svg', titleKey: 'desktop.offer.adv2Title', descKey: 'desktop.offer.adv2Desc' },
   { icon: 'advantage-3.svg', titleKey: 'desktop.offer.adv3Title', descKey: 'desktop.offer.adv3Desc' },
   { icon: 'advantage-4.svg', titleKey: 'desktop.offer.adv4Title', descKey: 'desktop.offer.adv4Desc' },
-] as const
-
-export const desktopOfferDefaultIncludes = [
-  { icon: 'include-1.svg', labelKey: 'desktop.offer.inc1' },
-  { icon: 'include-2.svg', labelKey: 'desktop.offer.inc2' },
-  { icon: 'include-3.svg', labelKey: 'desktop.offer.inc3' },
-  { icon: 'include-4.svg', labelKey: 'desktop.offer.inc4' },
-  { icon: 'include-5.svg', labelKey: 'desktop.offer.inc5' },
-  { icon: 'include-6.svg', labelKey: 'desktop.offer.inc6' },
-  { icon: 'include-7.svg', labelKey: 'desktop.offer.inc7' },
 ] as const
 
 export const desktopOfferMbaIncludes = [
@@ -39,12 +30,6 @@ export const desktopOfferSteps = [
   { icon: 'step-5.svg', titleKey: 'desktop.offer.step5Title', descKey: 'desktop.offer.step5Desc' },
   { icon: 'step-6.svg', titleKey: 'desktop.offer.step6Title', descKey: 'desktop.offer.step6Desc' },
 ] as const
-
-const INCLUDE_ICONS = desktopOfferDefaultIncludes.map(item => item.icon)
-
-export function desktopOfferIncludeIcons(count: number): string[] {
-  return Array.from({ length: count }, (_, i) => INCLUDE_ICONS[i % INCLUDE_ICONS.length]!)
-}
 
 export function desktopOfferAccentKey(slug: string): string {
   const known = [

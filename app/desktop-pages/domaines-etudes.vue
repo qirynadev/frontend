@@ -2,8 +2,8 @@
 /**
  * Liste écoles desktop ← Figma `Domaines d'etudes` (54:488), 1728 px.
  *
- * Onglets : le `?domaine=` de l'URL reste allumé ; sans paramètre
- * (CTA pays), aucun onglet n'est sélectionné.
+ * Onglets : le `?domaine=` de l'URL est placé en premier et reste allumé ;
+ * sans paramètre (CTA pays), aucun onglet n'est sélectionné.
  */
 import type { AreaOfStudySummary, SchoolSummary } from '~/core/contracts'
 import type { ApiError } from '~/core/http/errors'
@@ -35,26 +35,26 @@ const TAB_WINDOW = 4
 
 const tabOffset = ref(0)
 
+const orderedAreas = computed(() => {
+  const selected = props.selectedDomain
+  if (!selected) return props.areas
+  const match = props.areas.find(area => area.slug === selected)
+  if (!match) return props.areas
+  return [match, ...props.areas.filter(area => area.slug !== selected)]
+})
+
 const visibleAreas = computed(() =>
-  props.areas.slice(tabOffset.value, tabOffset.value + TAB_WINDOW),
+  orderedAreas.value.slice(tabOffset.value, tabOffset.value + TAB_WINDOW),
 )
 
 const tabColumns = computed(() => Math.max(1, Math.min(TAB_WINDOW, visibleAreas.value.length)))
 
 watch(
-  () => [props.areas, props.selectedDomain] as const,
-  () => {
-    const idx = props.areas.findIndex(area => area.slug === props.selectedDomain)
-    if (idx < 0) return
-    if (idx < tabOffset.value) tabOffset.value = idx
-    else if (idx >= tabOffset.value + TAB_WINDOW) {
-      tabOffset.value = Math.max(0, idx - TAB_WINDOW + 1)
-    }
-  },
-  { immediate: true },
+  () => props.selectedDomain,
+  () => { tabOffset.value = 0 },
 )
 
-const canShiftTabs = computed(() => props.areas.length > TAB_WINDOW)
+const canShiftTabs = computed(() => orderedAreas.value.length > TAB_WINDOW)
 
 function prevTabs() {
   if (!canShiftTabs.value) return
@@ -63,7 +63,7 @@ function prevTabs() {
 
 function nextTabs() {
   if (!canShiftTabs.value) return
-  const max = Math.max(0, props.areas.length - TAB_WINDOW)
+  const max = Math.max(0, orderedAreas.value.length - TAB_WINDOW)
   tabOffset.value = Math.min(max, tabOffset.value + 1)
 }
 
@@ -118,7 +118,7 @@ const stats = [
       <div class="flex w-full items-start justify-between">
         <div class="flex items-center gap-16">
           <span class="flex size-56 shrink-0 items-center justify-center overflow-clip rounded-[16px] bg-[#eef2ff]">
-            <img :src="`${ASSET}/header-icon.svg`" alt="" width="28" height="28" class="block size-28">
+            <img :src="`${ASSET}/header-icon.svg`" alt="" width="28" height="28" class="block size-28" loading="lazy" decoding="async">
           </span>
           <div class="flex flex-col gap-4">
             <h1 class="m-0 text-[25px] leading-32 font-bold tracking-[-0.6px] text-black">
@@ -139,19 +139,19 @@ const stats = [
             @click="prevTabs"
           >
             <span class="size-20 overflow-clip">
-              <img :src="`${ASSET}/nav-prev.svg`" alt="" width="20" height="20" class="block size-full">
+              <img :src="`${ASSET}/nav-prev.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
             </span>
           </button>
           <button
             type="button"
             class="flex size-40 shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
             :aria-label="$t('desktop.domaines.nextDomains')"
-            :disabled="!canShiftTabs || tabOffset >= Math.max(0, areas.length - TAB_WINDOW)"
-            :class="!canShiftTabs || tabOffset >= Math.max(0, areas.length - TAB_WINDOW) ? 'opacity-40' : 'cursor-pointer'"
+            :disabled="!canShiftTabs || tabOffset >= Math.max(0, orderedAreas.length - TAB_WINDOW)"
+            :class="!canShiftTabs || tabOffset >= Math.max(0, orderedAreas.length - TAB_WINDOW) ? 'opacity-40' : 'cursor-pointer'"
             @click="nextTabs"
           >
             <span class="size-20 overflow-clip">
-              <img :src="`${ASSET}/nav-next.svg`" alt="" width="20" height="20" class="block size-full">
+              <img :src="`${ASSET}/nav-next.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
             </span>
           </button>
         </div>
@@ -180,6 +180,8 @@ const stats = [
               height="16"
               class="block size-full"
               :class="invertTabIcon(area) ? 'brightness-0 invert' : ''"
+              loading="lazy"
+              decoding="async"
             >
           </span>
           <span class="truncate">{{ area.title }}</span>
@@ -235,7 +237,7 @@ const stats = [
               <div class="flex flex-wrap items-center gap-24 pt-8">
                 <span v-if="locationLabel(school)" class="flex items-center gap-6 text-[12px] leading-18 font-medium text-[#65738f]">
                   <span class="size-14 shrink-0 overflow-clip">
-                    <img :src="`${ASSET}/pin.svg`" alt="" width="14" height="14" class="block size-full">
+                    <img :src="`${ASSET}/pin.svg`" alt="" width="14" height="14" class="block size-full" loading="lazy" decoding="async">
                   </span>
                   {{ locationLabel(school) }}
                 </span>
@@ -246,7 +248,7 @@ const stats = [
               class="flex size-40 shrink-0 items-center justify-center overflow-clip"
               :aria-label="$t('desktop.domaines.openSchool')"
             >
-              <img :src="`${ASSET}/card-arrow.svg`" alt="" width="40" height="40" class="block size-full">
+              <img :src="`${ASSET}/card-arrow.svg`" alt="" width="40" height="40" class="block size-full" loading="lazy" decoding="async">
             </span>
           </NuxtLink>
         </div>
@@ -277,7 +279,7 @@ const stats = [
             @click="goPage(page + 1)"
           >
             <span class="size-20 overflow-clip">
-              <img :src="`${ASSET}/pager-next.svg`" alt="" width="20" height="20" class="block size-full">
+              <img :src="`${ASSET}/pager-next.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
             </span>
           </button>
         </nav>
@@ -299,7 +301,7 @@ const stats = [
             <div class="flex items-start gap-16 px-16">
               <span :class="['flex size-40 shrink-0 items-center justify-center overflow-clip rounded-full', item.bg]">
                 <span class="size-20 overflow-clip">
-                  <img :src="item.icon" alt="" width="20" height="20" class="block size-full">
+                  <img :src="item.icon" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
                 </span>
               </span>
               <div class="flex min-w-0 flex-1 flex-col gap-4">
@@ -319,7 +321,7 @@ const stats = [
         <div class="flex w-full items-start gap-16">
           <span class="flex size-56 shrink-0 items-center justify-center overflow-clip rounded-full bg-[#fbe7e9] shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
             <span class="size-24 overflow-clip">
-              <img :src="`${ASSET}/cta-headset.svg`" alt="" width="24" height="24" class="block size-full">
+              <img :src="`${ASSET}/cta-headset.svg`" alt="" width="24" height="24" class="block size-full" loading="lazy" decoding="async">
             </span>
           </span>
           <div class="flex min-w-0 flex-1 flex-col gap-8 pt-8">
@@ -337,7 +339,7 @@ const stats = [
         >
           {{ $t('desktop.domaines.helpCta') }}
           <span class="size-16 shrink-0 overflow-clip">
-            <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="block size-full">
+            <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
           </span>
         </NuxtLink>
       </div>
@@ -355,7 +357,7 @@ const stats = [
           >
             <span :class="['mb-8 flex size-40 items-center justify-center overflow-clip rounded-full', stat.bg]">
               <span class="size-20 overflow-clip">
-                <img :src="stat.icon" alt="" width="20" height="20" class="block size-full">
+                <img :src="stat.icon" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
               </span>
             </span>
             <p class="m-0 text-[18px] leading-28 font-semibold tracking-[-0.45px] text-[#040c3d]">

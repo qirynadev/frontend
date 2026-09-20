@@ -69,7 +69,7 @@ export function desktopNavEntryHref(sectionId: DesktopNavSectionId, slug: string
     case 'destinations':
       return `/destinations/${slug}`
     case 'courses':
-      return `/langues/${slug}/objectifs`
+      return `/langues?langue=${slug}`
     case 'living':
       return `/logement/${slug}/decouverte`
     case 'mba':

@@ -28,7 +28,9 @@
  * de succès mensongère · **nominal**, et ses deux variantes : refusé, en
  * attente.
  */
+import type { PaymentValidation } from '~/core/contracts'
 import { paymentRepo } from '~/core/repositories'
+import DesktopPaiementReussi from '~/desktop-pages/paiement-reussi.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -42,10 +44,21 @@ const orderId = computed(() => {
   return typeof raw === 'string' ? raw : ''
 })
 
+/** Aperçu local uniquement : pas d'appel API, écran traité comme confirmé. */
+const isPreview = computed(() =>
+  import.meta.dev && (route.query.preview === '1' || route.query.preview === 'true'),
+)
+
+const previewValidation: PaymentValidation = { confirmed: true, failed: false, order: null }
+
 const { data: validation, apiError, isInitialLoading, refresh } = await usePageData(
   `payment-success-${orderId.value}`,
-  () => (orderId.value === '' ? Promise.resolve(null) : paymentRepo.validate(orderId.value, locale.value)),
-  { watch: [orderId, locale] },
+  () => {
+    if (isPreview.value) return Promise.resolve(previewValidation)
+    if (orderId.value === '') return Promise.resolve(null)
+    return paymentRepo.validate(orderId.value, locale.value)
+  },
+  { watch: [orderId, locale, isPreview] },
 )
 
 /**
@@ -67,12 +80,12 @@ const redirectPath = computed(() => {
   return null
 })
 
-if (redirectPath.value) {
+if (redirectPath.value && !isPreview.value) {
   await navigateTo({ path: redirectPath.value, query: { order_id: orderId.value } }, { replace: true })
 }
 
-const confirmed = computed(() => validation.value?.confirmed === true)
-const failed = computed(() => validation.value?.failed === true)
+const confirmed = computed(() => isPreview.value || validation.value?.confirmed === true)
+const failed = computed(() => !isPreview.value && validation.value?.failed === true)
 
 /**
  * Les quatre étapes — éditoriales.
@@ -96,15 +109,13 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <!-- Rythme vertical porté par le conteneur (`gap: var(--pr-block-gap)` = 22px
-       dans la maquette) : les blocs ne portent aucun retrait propre. -->
-  <div class="flex flex-col gap-22">
+  <div class="shell:hidden flex flex-col gap-22">
     <AppTopBar back back-to="/" :gap="0" />
 
     <PageState
       :loading="isInitialLoading"
       :error="apiError"
-      :empty="orderId === ''"
+      :empty="orderId === '' && !isPreview"
       :on-retry="() => refresh()"
     >
       <template #loading>
@@ -248,6 +259,35 @@ usePageSeo(() => ({
           </SupportLink>
         </div>
       </div>
+    </PageState>
+  </div>
+
+  <div class="hidden shell:block">
+    <PageState
+      :loading="isInitialLoading"
+      :error="apiError"
+      :empty="orderId === '' && !isPreview"
+      :on-retry="() => refresh()"
+    >
+      <template #loading>
+        <div class="desktop-boxed flex gap-48 pt-32">
+          <QSkeleton variant="rect" :height="540" class="flex-1" />
+          <QSkeleton variant="rect" :height="540" class="flex-1" />
+        </div>
+      </template>
+      <template #empty>
+        <div class="desktop-boxed py-32">
+          <QEmptyState
+            :title="$t('checkout.success.orderTitle')"
+            :description="$t('confirmation.missingOrder')"
+          >
+            <template #action>
+              <QButton :to="localePath('/mon-projet')">{{ $t('nav.project') }}</QButton>
+            </template>
+          </QEmptyState>
+        </div>
+      </template>
+      <DesktopPaiementReussi :confirmed="confirmed" :failed="failed" />
     </PageState>
   </div>
 </template>
