@@ -1182,6 +1182,54 @@ les maquettes, et la décision sur la source du prix est en attente) ; référen
 E-Testing par niveau (le catalogue du prestataire n'a pas encore de test de
 langue) — l'un comme l'autre s'ajouterait à `formula_levels` sans rien casser.
 
+## 29. 🔴 Page destination desktop : trois manques de contenu côté back-office
+
+Depuis le 2026-09-20, **tout pays** a un écran desktop, alimenté uniquement par
+l'API (`GET /destinations/{slug}` + domaines) : nom, accroche, image,
+statistiques, domaines et leurs icônes, présentation HTML, logos d'écoles.
+Avant, seuls cinq pays en avaient un (France, Chine, Canada, Angleterre, USA),
+écrits à la main dans le front ; les autres, dont l'Allemagne, retombaient sur
+la mise en page mobile affichée dans le cadre desktop.
+
+Trois choses manquent pour que cet écran rende aussi bien que les cinq écrans
+dessinés. Aucune ne bloque : l'écran s'adapte et masque ce qui est vide.
+
+### 29.1 Statistiques incomplètes (contenu)
+
+`SchoolFile.stats` accepte jusqu'à quatre paires valeur + libellé, sans
+imposer ni l'une ni l'autre. L'Allemagne en a quatre, dont deux inutilisables :
+
+| valeur | libellé |
+|---|---|
+| `""` | `""` |
+| `380 000` | Étudiants internationaux |
+| `""` | destination d'études dans le monde |
+| `1 500` | programmes de Bachelor/Master |
+
+Le front n'affiche que les paires complètes — deux sur quatre ici. **Action :
+compléter les paires côté back-office**, ou n'en saisir que des complètes. Rien
+à changer dans le code.
+
+### 29.2 Image de destination inexploitable en bandeau (contenu)
+
+L'image de l'Allemagne est une capture d'écran (`capture-decran-2025-05-25-a-072957.png`,
+1900×1640, à dominante blanche). Affichée en bandeau large (1728×480), elle ne
+donne rien. **Action : téléverser une photographie large** (2000×800 environ,
+sujet centré), comme pour les cinq pays dessinés.
+
+### 29.3 Arguments illustrés par destination (champ manquant)
+
+Les cinq écrans dessinés affichent quatre arguments (« Enseignement
+d'excellence », « Coût de la vie abordable »…), avec titre, description et
+icône. **Aucun champ API n'y correspond** : ils sont écrits en dur dans le
+front, pays par pays, donc impossibles pour l'Allemagne.
+
+**Demande** : un tableau `highlights` sur la destination, traduit comme le
+reste, avec pour chaque entrée un titre, une description et une icône —
+exactement la forme déjà retenue pour les domaines d'études, dont les icônes
+back-office fonctionnent très bien (vérifié sur l'Allemagne : 5 domaines, 5
+icônes). Tant qu'il n'existe pas, la section n'apparaît simplement pas.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

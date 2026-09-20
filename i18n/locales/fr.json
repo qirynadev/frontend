@@ -554,6 +554,16 @@
         "whyTitle": "Pourquoi choisir les USA ?"
       }
     },
+    "destinationPays": {
+      "badge": "Destination",
+      "ctaAllSchools": "Voir toutes les écoles",
+      "ctaExplore": "Explorer les programmes",
+      "domainSchools": "{count} écoles",
+      "domainsTitle": "Domaines d’études",
+      "presentationTitle": "Étudier en {pays}",
+      "schoolCount": "{count} écoles partenaires",
+      "schoolsTitle": "Écoles et universités en {pays}"
+    },
     "domaines": {
       "helpCta": "Être accompagné",
       "helpDesc": "Nos conseillers vous accompagnent gratuitement dans votre orientation.",

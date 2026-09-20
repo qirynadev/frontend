@@ -554,6 +554,16 @@
         "whyTitle": "Why choose the USA?"
       }
     },
+    "destinationPays": {
+      "badge": "Destination",
+      "ctaAllSchools": "See all schools",
+      "ctaExplore": "Explore programmes",
+      "domainSchools": "{count} schools",
+      "domainsTitle": "Fields of study",
+      "presentationTitle": "Studying in {pays}",
+      "schoolCount": "{count} partner schools",
+      "schoolsTitle": "Schools and universities in {pays}"
+    },
     "domaines": {
       "helpCta": "Get support",
       "helpDesc": "Our advisors support you free of charge with your orientation.",

@@ -38,6 +38,7 @@ import { destinationRepo } from '~/core/repositories'
 import DesktopDestinationFrance from '~/desktop-pages/destination-france.vue'
 import DesktopDestinationChine from '~/desktop-pages/destination-chine.vue'
 import DesktopDestinationCountry from '~/desktop-pages/destination-country.vue'
+import DesktopDestinationPays from '~/desktop-pages/destination-pays.vue'
 import {
   desktopCountryFromRoute,
   resolveDestinationApiSlug,
@@ -106,7 +107,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
 </script>
 
 <template>
-  <div :class="isDesktopDestination ? 'shell:hidden' : ''">
+  <div class="shell:hidden">
   <AppTopBar back back-to="/destinations" :gap="22" />
 
   <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
@@ -232,6 +233,17 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
       <DesktopDestinationCountry
         v-if="destination"
         :country="desktopCountry"
+        :destination="destination"
+        :areas="areas"
+      />
+    </PageState>
+  </div>
+
+  <!-- Desktop générique : tout pays sans artboard dédié (Allemagne, Espagne…) -->
+  <div v-if="!isDesktopDestination" class="hidden shell:block">
+    <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
+      <DesktopDestinationPays
+        v-if="destination"
         :destination="destination"
         :areas="areas"
       />
