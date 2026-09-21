@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { AdmissionDocument, AdmissionDocumentField } from '~/core/contracts/admission'
-import { admissionDocumentsRepo } from '~/core/repositories'
+import type { AdmissionDocument } from '~/core/contracts/admission'
 
 const props = defineProps<{
   documents: AdmissionDocument[]
@@ -14,55 +13,11 @@ const props = defineProps<{
 /** Émis après un envoi ou une finalisation réussis — le parent recharge `admissionDocumentsRepo.show`. */
 const emit = defineEmits<{ changed: [] }>()
 
-const { locale } = useI18n()
-
-const uploading = ref<Partial<Record<AdmissionDocumentField, boolean>>>({})
-const uploadError = ref<Partial<Record<AdmissionDocumentField, boolean>>>({})
-
-async function onPick(field: AdmissionDocumentField, event: Event): Promise<void> {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
-
-  uploading.value = { ...uploading.value, [field]: true }
-  uploadError.value = { ...uploadError.value, [field]: false }
-  try {
-    await admissionDocumentsRepo.uploadDocument(props.orderId, field, file, locale.value)
-    emit('changed')
-  }
-  catch {
-    uploadError.value = { ...uploadError.value, [field]: true }
-  }
-  finally {
-    uploading.value = { ...uploading.value, [field]: false }
-    // Permet de resélectionner le même fichier (ex. après un échec) — sans ça,
-    // le navigateur ne redéclenche pas `change` pour une valeur inchangée.
-    input.value = ''
-  }
-}
-
-/** Les pièces requises doivent toutes être envoyées avant de pouvoir finaliser. */
-const missingRequired = computed(() => props.documents.some((doc) => doc.required && doc.status === 'upload'))
-
-const finalizing = ref(false)
-const finalizeError = ref(false)
-
-async function onFinalize(): Promise<void> {
-  if (finalizing.value || missingRequired.value) return
-
-  finalizing.value = true
-  finalizeError.value = false
-  try {
-    await admissionDocumentsRepo.finalize(props.orderId, locale.value)
-    emit('changed')
-  }
-  catch {
-    finalizeError.value = true
-  }
-  finally {
-    finalizing.value = false
-  }
-}
+const { uploading, uploadError, onPick, missingRequired, finalizing, finalizeError, onFinalize } = useAdmissionDocumentActions({
+  orderId: () => props.orderId,
+  documents: () => props.documents,
+  onChanged: () => emit('changed'),
+})
 </script>
 
 <template>

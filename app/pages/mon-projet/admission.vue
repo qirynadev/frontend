@@ -145,11 +145,14 @@ usePageSeo(() => ({
       :order="admission?.order ?? null"
       :steps="admission?.steps ?? []"
       :documents="admission?.documents ?? []"
+      :documents-locked="admission?.documentsLocked ?? false"
+      :documents-finalized-at="admission?.documentsFinalizedAt ?? null"
       :active-tab="activeTab"
       :loading="!!isInitialLoading"
       :error="apiError"
       :on-retry="() => refresh()"
       @tab="setTab"
+      @changed="refresh()"
     />
   </div>
 </template>

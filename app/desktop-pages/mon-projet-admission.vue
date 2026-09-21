@@ -5,7 +5,11 @@
  *
  * Onglet « Suivi & échanges » volontairement absent (comme le mobile).
  * Aperçu = étapes checklist API, pas les 4 services mock du Figma.
- * Documents = DEMO_DOCUMENTS (aucun endpoint par pièce).
+ * Documents = état réel du dossier (`client-data`) : envoi pièce par pièce,
+ * téléchargement, finalisation — même logique que le mobile
+ * (`useAdmissionDocumentActions`).
+ * Hero = école / domaine / pays / conseillère de la commande ; la « rentrée »
+ * du Figma n'existe pas côté API : ligne omise, comme tout champ absent.
  */
 import type { AdmissionDocument, AdmissionStep } from '~/core/contracts/admission'
 import type { Order } from '~/core/contracts'
@@ -15,6 +19,10 @@ const props = defineProps<{
   order: Order | null
   steps: AdmissionStep[]
   documents: AdmissionDocument[]
+  /** Dossier finalisé : plus aucun envoi possible. */
+  documentsLocked?: boolean
+  /** Date de finalisation (`JJ/MM/AAAA`), `null` tant que le dossier est ouvert. */
+  documentsFinalizedAt?: string | null
   activeTab: 'apercu' | 'document'
   loading: boolean
   error?: ApiError | null
@@ -23,7 +31,15 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   tab: [tab: 'apercu' | 'document']
+  /** Après un envoi ou une finalisation réussis — le parent recharge le dossier. */
+  changed: []
 }>()
+
+const { uploading, uploadError, onPick, missingRequired, finalizing, finalizeError, onFinalize } = useAdmissionDocumentActions({
+  orderId: () => props.order?.id ?? '',
+  documents: () => props.documents,
+  onChanged: () => emit('changed'),
+})
 
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -45,11 +61,15 @@ const NEXT_STEPS: { id: string; titleKey: string; descKey: string; icon: string;
   { id: 'recommendation', titleKey: 'desktop.admission.nextRecoTitle', descKey: 'desktop.admission.nextRecoDesc', icon: `${ASSET}/next-reco.svg`, iconKind: 'badge' },
 ]
 
-const heroAdvisor = computed(() => props.order?.advisorName?.trim() || t('desktop.admission.heroAdvisor'))
-const heroUpdated = computed(() => {
-  if (props.order?.updatedAt) return updatedLabel(props.order.updatedAt)
-  return t('myProject.updatedDaysAgo', 1)
+/** École choisie ; à défaut, le domaine d'étude de la formule (même repli que le hub). */
+const heroTitle = computed(() => props.order?.schoolName?.trim() || props.order?.offer?.title?.trim() || '')
+/** Domaine · pays — le domaine n'est répété que si l'école occupe déjà le titre. */
+const heroSubtitle = computed(() => {
+  const domain = props.order?.schoolName?.trim() ? props.order.offer?.title?.trim() : ''
+  return [domain, props.order?.destinationCountry?.trim()].filter(Boolean).join(' · ')
 })
+const heroAdvisor = computed(() => props.order?.advisorName?.trim() || '')
+const heroUpdated = computed(() => updatedLabel(props.order?.updatedAt))
 
 const progressPercent = computed(() => {
   if (props.steps.length === 0) return 0
@@ -104,8 +124,8 @@ function docIcon(doc: AdmissionDocument) {
               </span>
               <div class="flex min-w-0 flex-1 flex-col">
                 <div class="flex items-center gap-12">
-                  <h1 class="m-0 text-[30px] leading-36 font-bold whitespace-nowrap text-[#1a1d2b]">
-                    {{ $t('desktop.admission.heroSchool') }}
+                  <h1 class="m-0 min-w-0 text-[30px] leading-36 font-bold text-[#1a1d2b]">
+                    {{ heroTitle || $t('desktop.admission.fallbackTitle') }}
                   </h1>
                   <span
                     v-if="isDone"
@@ -120,23 +140,17 @@ function docIcon(doc: AdmissionDocument) {
                     {{ $t('admission.statusCurrent') }}
                   </span>
                 </div>
-                <p class="m-0 mt-4 text-[18px] leading-28 font-normal whitespace-nowrap text-[#1a1d2b]">
-                  {{ $t('desktop.admission.heroProgram') }}
+                <p v-if="heroSubtitle" class="m-0 mt-4 text-[18px] leading-28 font-normal text-[#1a1d2b]">
+                  {{ heroSubtitle }}
                 </p>
-                <div class="mt-0 flex h-32 items-center gap-8">
-                  <span class="h-13 w-12 shrink-0 overflow-clip">
-                    <img :src="`${ASSET}/icon-calendar.svg`" alt="" width="12" height="13" class="block size-full">
-                  </span>
-                  <span class="text-[14px] leading-20 text-[#343434]">{{ $t('desktop.admission.heroIntake') }}</span>
-                </div>
-                <div class="flex items-center gap-16">
+                <div class="mt-16 flex items-center gap-16">
                   <span class="h-8 min-w-0 flex-1 overflow-hidden rounded-full bg-[#f3f4f6]">
                     <span class="block h-8 rounded-full bg-[#4f46e5]" :style="{ width: `${progressPercent}%` }" />
                   </span>
                   <span class="shrink-0 text-[16px] leading-24 font-bold text-[#1a1d2b]">{{ progressPercent }}%</span>
                 </div>
-                <div class="flex items-center gap-16 pt-16 text-[14px] leading-20">
-                  <span class="flex items-center gap-8">
+                <div v-if="heroAdvisor || heroUpdated" class="flex items-center gap-16 pt-16 text-[14px] leading-20">
+                  <span v-if="heroAdvisor" class="flex items-center gap-8">
                     <span class="size-16 overflow-clip">
                       <img :src="`${ASSET}/icon-advisor.svg`" alt="" width="16" height="16" class="block size-full">
                     </span>
@@ -269,7 +283,8 @@ function docIcon(doc: AdmissionDocument) {
                       <span v-if="doc.required" class="text-[#ed1c24]"> *</span>
                     </h3>
                     <p class="m-0 text-[12px] leading-16 text-[#111]">
-                      <template v-if="doc.fileCount && doc.fileCount > 1">{{ $t('admission.fileTypePdfs', { count: doc.fileCount }) }}</template>
+                      <span v-if="uploadError[doc.formField]" class="text-[#dc2626]">{{ $t('admission.docUploadError') }}</span>
+                      <template v-else-if="doc.fileCount && doc.fileCount > 1">{{ $t('admission.fileTypePdfs', { count: doc.fileCount }) }}</template>
                       <template v-else>{{ $t('admission.fileTypePdf') }}</template>
                     </p>
                   </div>
@@ -301,24 +316,57 @@ function docIcon(doc: AdmissionDocument) {
                         <img :src="`${ASSET}/badge-upload.svg`" alt="" width="16" height="16" class="block size-full">
                       </span>
                     </span>
-                    <button
-                      v-if="doc.status === 'validated'"
-                      type="button"
+                    <a
+                      v-if="doc.downloadUrl"
+                      :href="doc.downloadUrl"
+                      target="_blank"
+                      rel="noopener"
                       class="flex size-38 cursor-pointer items-center justify-center rounded-[8px] border border-solid border-[#e8e8f1] bg-white p-8"
                       :aria-label="$t('admission.downloadDoc')"
                     >
                       <span class="size-20 overflow-clip">
                         <img :src="`${ASSET}/icon-download.svg`" alt="" width="20" height="20" class="block size-full">
                       </span>
-                    </button>
-                    <span v-else class="flex size-38 items-center justify-center rounded-[8px] border border-solid border-[#e8e8f1]" aria-hidden="true">
-                      <span class="size-20 overflow-clip">
+                    </a>
+                    <label
+                      v-if="!documentsLocked"
+                      class="flex size-38 cursor-pointer items-center justify-center rounded-[8px] border border-solid border-[#e8e8f1] bg-white p-8"
+                      :aria-label="doc.downloadUrl ? $t('admission.replaceDoc') : $t('admission.statusUpload')"
+                    >
+                      <QSpinner v-if="uploading[doc.formField]" size="sm" />
+                      <span v-else class="size-20 overflow-clip">
                         <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="20" height="20" class="block size-full">
                       </span>
-                    </span>
+                      <input
+                        type="file"
+                        accept="application/pdf,image/jpeg,image/png"
+                        class="sr-only"
+                        :disabled="uploading[doc.formField]"
+                        @change="onPick(doc.formField, $event)"
+                      >
+                    </label>
                   </div>
                 </li>
               </ul>
+
+              <div class="mt-24 flex flex-col gap-12">
+                <p v-if="documentsLocked" class="m-0 text-[14px] leading-20 font-medium text-[#16a34a]">
+                  {{ documentsFinalizedAt ? $t('admission.docsFinalizedNote', { date: documentsFinalizedAt }) : $t('admission.docsFinalizedNoteNoDate') }}
+                </p>
+                <template v-else>
+                  <p class="m-0 text-[13px] leading-[19.5px] text-[#64748b]">{{ $t('admission.docsSubmitHint') }}</p>
+                  <QAlert v-if="finalizeError" tone="danger" :message="$t('admission.docsSubmitError')" />
+                  <button
+                    type="button"
+                    class="flex w-full cursor-pointer items-center justify-center gap-10 rounded-[8px] border border-solid border-[#450ff2] bg-[#450ffd] px-24 py-12 text-[16px] leading-24 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+                    :disabled="finalizing || missingRequired"
+                    @click="onFinalize"
+                  >
+                    <QSpinner v-if="finalizing" size="sm" class="text-white" />
+                    <span v-else>{{ $t('admission.docsSubmitCta') }}</span>
+                  </button>
+                </template>
+              </div>
             </section>
 
             <aside class="flex items-center justify-between gap-24 rounded-[16px] border border-[#f3f4f6] bg-[#f9f8fd] p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
