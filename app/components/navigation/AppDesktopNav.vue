@@ -8,11 +8,11 @@
  */
 import {
   desktopNavEntryHref,
-  desktopNavFlag,
   desktopNavSections,
   desktopSchoolCountries,
   type DesktopNavSectionId,
 } from '~/config/desktop-navigation'
+import { flagNameFor } from '~/config/language-badges'
 import { useCatalogStore, useSessionStore } from '~/core/stores'
 
 const props = withDefaults(
@@ -41,19 +41,36 @@ const isAuthScreen = computed(() => isAuthLogin.value || isAuthReset.value)
 
 const { openId } = useDesktopNavMenu()
 
+/**
+ * Drapeau d'une entrée de menu, à partir du **vrai catalogue** — jamais d'une
+ * liste figée : une langue ou une destination ajoutée en back-office doit
+ * s'afficher avec son drapeau sans toucher au front. `flagNameFor` (déjà
+ * utilisé par `LanguageCard`) fait le travail : dessin de la maquette pour
+ * les langues qu'elle couvre, sinon le drapeau réel de l'API (`country_flag`),
+ * dans le même style rond (`/img/icons/flags/flag-<code>.svg`).
+ */
+function flagForEntry(sectionId: DesktopNavSectionId, slug: string): string | null {
+  const apiFlagUrl = sectionId === 'courses'
+    ? (catalog.courses.find(course => course.slug === slug)?.flag ?? null)
+    : (catalog.destinations.find(destination => destination.slug === slug)?.country.flag ?? null)
+  // Nom d'icône (`flag-es`), pas un chemin : `QIcon` sait déjà que ce
+  // drapeau-là est le seul livré en raster (`.webp`) plutôt qu'en `.svg`.
+  return flagNameFor(slug, apiFlagUrl)
+}
+
 const navItems = computed(() =>
   desktopNavSections.map((section) => {
     const menuSection = catalog.menu?.[section.id]
     const catalogEntries = (menuSection?.entries ?? []).map(entry => ({
       title: entry.title,
       href: desktopNavEntryHref(section.id as DesktopNavSectionId, entry.slug),
-      flag: desktopNavFlag(entry.slug),
+      flag: flagForEntry(section.id, entry.slug),
     }))
     const fallbackEntries = section.id === 'destinations'
       ? desktopSchoolCountries.map(country => ({
           title: t(country.labelKey),
           href: `/destinations/${country.slug}`,
-          flag: country.flagSrc,
+          flag: country.flag,
         }))
       : []
     const items = catalogEntries.length > 0 ? catalogEntries : fallbackEntries

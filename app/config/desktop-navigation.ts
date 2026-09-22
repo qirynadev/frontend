@@ -5,7 +5,8 @@ export interface DesktopNavCountry {
   id: string
   labelKey: string
   slug: string
-  flagSrc: string
+  /** Nom d'icône `QIcon` (`flag-fr`…), pas un chemin. */
+  flag: string
 }
 
 export interface DesktopNavLink {
@@ -17,11 +18,11 @@ export interface DesktopNavLink {
 
 /** Pays listés sous « Fiche école » (Figma · menu destinations). */
 export const desktopSchoolCountries: DesktopNavCountry[] = [
-  { id: 'fr', labelKey: 'desktop.nav.countries.fr', slug: 'france', flagSrc: '/img/icons/flags/flag-fr.svg' },
-  { id: 'cn', labelKey: 'desktop.nav.countries.cn', slug: 'chine', flagSrc: '/img/icons/flags/flag-cn.svg' },
-  { id: 'uk', labelKey: 'desktop.nav.countries.uk', slug: 'royaume-uni', flagSrc: '/img/icons/flags/flag-uk.svg' },
-  { id: 'ca', labelKey: 'desktop.nav.countries.ca', slug: 'canada', flagSrc: '/img/icons/flags/flag-ca.svg' },
-  { id: 'us', labelKey: 'desktop.nav.countries.us', slug: 'etats-unis', flagSrc: '/img/icons/flags/flag-us.svg' },
+  { id: 'fr', labelKey: 'desktop.nav.countries.fr', slug: 'france', flag: 'flag-fr' },
+  { id: 'cn', labelKey: 'desktop.nav.countries.cn', slug: 'chine', flag: 'flag-cn' },
+  { id: 'uk', labelKey: 'desktop.nav.countries.uk', slug: 'royaume-uni', flag: 'flag-uk' },
+  { id: 'ca', labelKey: 'desktop.nav.countries.ca', slug: 'canada', flag: 'flag-ca' },
+  { id: 'us', labelKey: 'desktop.nav.countries.us', slug: 'etats-unis', flag: 'flag-us' },
 ]
 
 export const desktopNavLinks: DesktopNavLink[] = [
@@ -40,29 +41,6 @@ export const desktopNavSections: { id: DesktopNavSectionId, fallbackLabelKey: st
   { id: 'living', fallbackLabelKey: 'desktop.nav.housing', to: '/logement' },
   { id: 'mba', fallbackLabelKey: 'desktop.nav.mba', to: '/destinations' },
 ]
-
-const FLAG_BY_SLUG: Record<string, string> = {
-  france: '/img/icons/flags/flag-fr.svg',
-  chine: '/img/icons/flags/flag-cn.svg',
-  'royaume-uni': '/img/icons/flags/flag-uk.svg',
-  angleterre: '/img/icons/flags/flag-uk.svg',
-  canada: '/img/icons/flags/flag-ca.svg',
-  'etats-unis': '/img/icons/flags/flag-us.svg',
-  usa: '/img/icons/flags/flag-us.svg',
-  allemagne: '/img/icons/flags/flag-de.svg',
-  francais: '/img/icons/flags/flag-fr.svg',
-  french: '/img/icons/flags/flag-fr.svg',
-  anglais: '/img/icons/flags/flag-uk.svg',
-  english: '/img/icons/flags/flag-uk.svg',
-  allemand: '/img/icons/flags/flag-de.svg',
-  german: '/img/icons/flags/flag-de.svg',
-  chinois: '/img/icons/flags/flag-cn.svg',
-  chinese: '/img/icons/flags/flag-cn.svg',
-}
-
-export function desktopNavFlag(slug: string): string | null {
-  return FLAG_BY_SLUG[slug.toLowerCase()] ?? null
-}
 
 export function desktopNavEntryHref(sectionId: DesktopNavSectionId, slug: string): string {
   switch (sectionId) {
