@@ -44,33 +44,43 @@ const { openId } = useDesktopNavMenu()
 /**
  * Drapeau d'une entrée de menu, à partir du **vrai catalogue** — jamais d'une
  * liste figée : une langue ou une destination ajoutée en back-office doit
- * s'afficher avec son drapeau sans toucher au front. `flagNameFor` (déjà
- * utilisé par `LanguageCard`) fait le travail : dessin de la maquette pour
- * les langues qu'elle couvre, sinon le drapeau réel de l'API (`country_flag`),
- * dans le même style rond (`/img/icons/flags/flag-<code>.svg`).
+ * s'afficher avec son drapeau sans toucher au front, quel que soit le pays.
+ *
+ * Deux niveaux, jamais rien :
+ * 1. `flagNameFor` (déjà utilisé par `LanguageCard`) — dessin rond de la
+ *    maquette pour les langues qu'elle couvre, sinon déduit du code ISO de
+ *    l'API (`flag-<code>.svg`) **si cet asset existe déjà** localement.
+ * 2. Sinon l'URL réelle de l'API (`country_flag`) — rectangulaire, mais
+ *    couvre n'importe quel pays admis en back-office (`blade-flags`), y
+ *    compris un pays sans asset rond dédié pour l'instant.
  */
-function flagForEntry(sectionId: DesktopNavSectionId, slug: string): string | null {
+function flagForEntry(sectionId: DesktopNavSectionId, slug: string) {
   const apiFlagUrl = sectionId === 'courses'
     ? (catalog.courses.find(course => course.slug === slug)?.flag ?? null)
     : (catalog.destinations.find(destination => destination.slug === slug)?.country.flag ?? null)
   // Nom d'icône (`flag-es`), pas un chemin : `QIcon` sait déjà que ce
   // drapeau-là est le seul livré en raster (`.webp`) plutôt qu'en `.svg`.
-  return flagNameFor(slug, apiFlagUrl)
+  return { icon: flagNameFor(slug, apiFlagUrl), url: apiFlagUrl }
 }
 
 const navItems = computed(() =>
   desktopNavSections.map((section) => {
     const menuSection = catalog.menu?.[section.id]
-    const catalogEntries = (menuSection?.entries ?? []).map(entry => ({
-      title: entry.title,
-      href: desktopNavEntryHref(section.id as DesktopNavSectionId, entry.slug),
-      flag: flagForEntry(section.id, entry.slug),
-    }))
+    const catalogEntries = (menuSection?.entries ?? []).map((entry) => {
+      const flag = flagForEntry(section.id, entry.slug)
+      return {
+        title: entry.title,
+        href: desktopNavEntryHref(section.id as DesktopNavSectionId, entry.slug),
+        flagIcon: flag.icon,
+        flagUrl: flag.url,
+      }
+    })
     const fallbackEntries = section.id === 'destinations'
       ? desktopSchoolCountries.map(country => ({
           title: t(country.labelKey),
           href: `/destinations/${country.slug}`,
-          flag: country.flag,
+          flagIcon: country.flag,
+          flagUrl: null,
         }))
       : []
     const items = catalogEntries.length > 0 ? catalogEntries : fallbackEntries

@@ -7,8 +7,10 @@ import type { DesktopNavSectionId } from '~/config/desktop-navigation'
 export interface DesktopNavDropdownItem {
   title: string
   href: string
-  /** Nom d'icône `QIcon` (`flag-fr`…), pas un chemin. */
-  flag?: string | null
+  /** Nom d'icône `QIcon` (`flag-fr`…), pas un chemin. Prioritaire sur `flagUrl`. */
+  flagIcon?: string | null
+  /** Drapeau réel de l'API (rectangulaire), utilisé si `flagIcon` est absent. */
+  flagUrl?: string | null
 }
 
 const props = defineProps<{
@@ -94,11 +96,21 @@ watch(() => props.open, (isOpen, _wasOpen, onCleanup) => {
           class="flex w-full items-center gap-10 px-20 py-9 text-[14px] font-normal tracking-normal text-[#0a1330] no-underline transition-all duration-500 hover:bg-[#f8f9fa] hover:font-bold"
         >
           <QIcon
-            v-if="item.flag"
-            :name="item.flag"
+            v-if="item.flagIcon"
+            :name="item.flagIcon"
             :size="20"
             class="shrink-0 rounded-full object-cover shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]"
           />
+          <img
+            v-else-if="item.flagUrl"
+            :src="item.flagUrl"
+            alt=""
+            width="20"
+            height="20"
+            class="size-20 shrink-0 rounded-full object-cover shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]"
+            loading="lazy"
+            decoding="async"
+          >
           {{ item.title }}
         </NuxtLink>
       </li>

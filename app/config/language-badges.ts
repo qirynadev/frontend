@@ -79,33 +79,34 @@ export const languageFlags: LanguageFlag[] = [
 const FLAG_BY_SLUG = new Map(languageFlags.map((entry) => [entry.slug, entry.flag]))
 
 /**
- * Repli par code pays, quand le slug de l'API ne figure pas dans la liste.
- *
- * L'API expose le pays dans l'URL du drapeau (`…/country-gb.svg`). Le nom du
- * fichier de la maquette ne suit pas toujours le code ISO — `gb` s'y appelle
- * `uk` — d'où cette table plutôt qu'une simple concaténation.
- */
-/**
  * Seules les exceptions : la maquette nomme ses fichiers par code ISO
  * (`flag-fr.svg`, `flag-us.svg`, `flag-ca.svg`…), sauf le Royaume-Uni, dessiné
  * sous `flag-uk.svg` alors que son code ISO est `gb`. `flagNameFor` part donc
- * du code lui-même, cette table ne sert qu'à corriger ce genre d'écart —
- * jamais à lister par avance tous les pays possibles, sans quoi un pays admis
- * plus tard (destination, logement…) resterait sans drapeau tant que
- * personne n'aurait pensé à l'y ajouter.
+ * du code lui-même — jamais d'une liste de tous les pays possibles, qui
+ * laisserait sans drapeau tout pays admis plus tard sans y avoir pensé.
  */
 const FLAG_BY_COUNTRY: Record<string, string> = {
   gb: 'uk',
 }
 
 /**
+ * Codes dont l'asset existe réellement sous `public/img/icons/flags/`
+ * (`ls` fait foi, pas une supposition) : neuf pays, pas le monde entier. Un
+ * pays hors de cette liste (n'importe quel pays admis en back-office, y
+ * compris de test) n'a pas de dessin rond — `flagNameFor` renvoie alors
+ * `null` plutôt qu'un chemin qui 404 en silence, et l'appelant retombe sur
+ * le drapeau rectangulaire réel de l'API (`country_flag`), qui couvre
+ * n'importe quel pays.
+ */
+const FLAG_ASSET_CODES = new Set(['ae', 'ca', 'cn', 'de', 'es', 'fr', 'jp', 'kr', 'uk', 'us'])
+
+/**
  * Nom du drapeau de la maquette pour une langue ou un pays, ou `null`.
  *
- * `null` signifie qu'aucun code pays n'a pu être déduit (URL absente ou de
- * forme inattendue) : l'appelant retombe alors sur l'API, rectangulaire mais
- * exacte. Un code déduit avec succès suppose en revanche que l'asset
- * `flag-<code>.svg` existe déjà sous `public/img/icons/flags/` — à ajouter
- * là si un nouveau pays venait à manquer.
+ * `null` : soit aucun code pays n'a pu être déduit (URL absente ou de forme
+ * inattendue), soit ce pays n'a simplement pas de dessin rond dans la
+ * maquette. Dans les deux cas l'appelant retombe sur l'API, rectangulaire
+ * mais exacte et universelle.
  */
 export function flagNameFor(slug: string, apiFlagUrl: string | null): string | null {
   const known = FLAG_BY_SLUG.get(slug)
@@ -113,7 +114,8 @@ export function flagNameFor(slug: string, apiFlagUrl: string | null): string | n
 
   const code = /country-([a-z]{2})\.svg/i.exec(apiFlagUrl ?? '')?.[1]?.toLowerCase()
   if (!code) return null
-  return `flag-${FLAG_BY_COUNTRY[code] ?? code}`
+  const mapped = FLAG_BY_COUNTRY[code] ?? code
+  return FLAG_ASSET_CODES.has(mapped) ? `flag-${mapped}` : null
 }
 
 /** Trie les langues dans l'ordre de la maquette ; les inconnues finissent à la fin. */
