@@ -23,6 +23,22 @@ const localePath = useLocalePath()
 const { data, apiError, isInitialLoading, refresh } = await useProjetData(locale)
 
 /**
+ * Revalidation silencieuse à chaque entrée sur l'écran.
+ *
+ * `useAsyncData` (sous `usePageData`) met en cache par clé : revenir sur
+ * `/mon-projet` en navigation interne (sans rechargement complet) réutilisait
+ * les commandes chargées à la toute première visite, sans jamais les
+ * rafraîchir — une commande modifiée ou supprimée depuis le back-office
+ * pendant ce temps (ex. suppression manuelle d'une commande de test)
+ * continuait d'apparaître, avec son ancien statut, jusqu'au prochain F5.
+ * `isInitialLoading` reste `false` ici (des données existent déjà) : pas de
+ * flash de squelette, juste des chiffres qui se corrigent silencieusement.
+ */
+onMounted(() => {
+  refresh()
+})
+
+/**
  * Toujours exactement 4 cartes (Admission, Logement, Cours de langues,
  * Orientation) — une par rubrique, jamais une par commande/langue/bilan
  * (consigne du responsable, 2026-08-23). Une rubrique sans commande réelle
