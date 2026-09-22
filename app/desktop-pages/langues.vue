@@ -2,8 +2,13 @@
 /**
  * Landing langues desktop ← Figma `1003:1436`, artboard 1728.
  * Titre / badge / description et formules ← Figma `601:1634` (Choix de la formule).
+ *
+ * Niveau choisi → paliers affichés : les trois boutons de niveau restaient
+ * décoratifs (texte du hero seulement), les trois mêmes formules et prix
+ * s'affichaient quel que soit le niveau. Filtrage et objectif par niveau
+ * repris de mobile (`visibleTiers`/`goalFor`, `app/pages/offres/[slug].vue`).
  */
-import type { CourseSummary, OfferTier } from '~/core/contracts'
+import type { CourseSummary, LanguageLevelKey, OfferTier } from '~/core/contracts'
 import { offerPageRepo } from '~/core/repositories'
 import {
   DESKTOP_LANGUES_ASSET,
@@ -14,6 +19,7 @@ import {
   desktopLanguePath,
   ofLanguage,
 } from '~/config/desktop-langues'
+import { isLanguageLevel } from '~/config/language-levels'
 import { orderByMaquette } from '~/config/language-badges'
 
 const props = defineProps<{
@@ -21,6 +27,7 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
+const router = useRouter()
 const { t, n, locale } = useI18n()
 const ASSET = DESKTOP_LANGUES_ASSET
 const FORMULES = DESKTOP_LANGUES_FORMULES_ASSET
@@ -42,7 +49,22 @@ const levels = desktopLangueDefaultLevels.map(level => ({
   visual: level.visual,
 }))
 
-const selectedLevel = ref<(typeof levels)[number]['id']>('beginner')
+/**
+ * Niveau choisi — vit dans l'URL (`?niveau=`), comme sur mobile
+ * (`/offres/[slug]`) : `useCheckout.toIntent()` le lit à cet endroit pour
+ * l'envoyer à la commande, et un lien partagé rouvre sur le bon niveau.
+ * Les trois boutons restent toujours affichés (maquette desktop), même si
+ * aucun palier n'est décliné pour l'un d'eux.
+ */
+const selectedLevel = computed<LanguageLevelKey>({
+  get: () => {
+    const requested = route.query.niveau
+    return isLanguageLevel(requested) ? requested : 'beginner'
+  },
+  set: (value) => {
+    router.replace({ query: { ...route.query, niveau: value } })
+  },
+})
 
 const selectedLevelMeta = computed(() => levels.find(level => level.id === selectedLevel.value) ?? levels[0]!)
 
@@ -95,14 +117,26 @@ function formulaFeatures(tier: OfferTier, visualKey: string): string[] {
   return features
 }
 
+/**
+ * Paliers proposés au niveau choisi — un palier sans déclinaison
+ * (`levels: []`) reste affiché à tous les niveaux, même logique que mobile
+ * (`visibleTiers`, `app/pages/offres/[slug].vue`).
+ */
+const visibleTiers = computed(() =>
+  (offer.value?.tiers ?? []).filter(tier =>
+    tier.levels.length === 0 || tier.levels.some(entry => entry.key === selectedLevel.value),
+  ),
+)
+
 const formulaCards = computed(() => {
-  const reversed = [...(offer.value?.tiers ?? [])].reverse()
+  const reversed = [...visibleTiers.value].reverse()
   return reversed.map((tier, index) => {
     const visual = desktopLangueFormulaVisual(tier.name, index)
+    const goal = tier.levels.find(entry => entry.key === selectedLevel.value)?.goal
     return {
       tier,
       visual,
-      tagline: tier.tagline || t(taglineKey(visual.key)),
+      tagline: goal || tier.tagline || t(taglineKey(visual.key)),
       features: formulaFeatures(tier, visual.key),
     }
   })

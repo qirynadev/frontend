@@ -8,6 +8,7 @@
  */
 import type { ProjetAccompagnement } from '~/core/contracts/projet'
 import type { ApiError } from '~/core/http/errors'
+import { NuxtLink } from '#components'
 import {
   desktopMonProjetStyle,
   sortDesktopMonProjet,
@@ -54,7 +55,7 @@ const globalPercent = computed(() => {
 })
 
 const nextActions = computed(() =>
-  cards.value.filter(item => (item.progressPercent ?? 0) < 100 && item.statusKey !== DONE_STATUS),
+  cards.value.filter(item => item.hasOrder && (item.progressPercent ?? 0) < 100 && item.statusKey !== DONE_STATUS),
 )
 
 function chrome(item: ProjetAccompagnement) {
@@ -209,15 +210,17 @@ function actionWhen(iso: string | null): string | null {
                 </div>
 
                 <div class="flex shrink-0 flex-col items-end">
-                  <NuxtLink
-                    :to="localePath(item.to)"
-                    class="inline-flex items-center justify-center gap-8 rounded-[10px] border border-solid border-[#fc8994] px-20 py-10 text-[14px] leading-20 font-semibold text-[#fd001a] no-underline"
+                  <component
+                    :is="item.hasOrder ? NuxtLink : 'span'"
+                    :to="item.hasOrder ? localePath(item.to) : undefined"
+                    class="inline-flex items-center justify-center gap-8 rounded-[10px] border border-solid px-20 py-10 text-[14px] leading-20 font-semibold no-underline"
+                    :class="item.hasOrder ? 'border-[#fc8994] text-[#fd001a]' : 'cursor-default border-[#e5e7eb] text-[#9ca3af]'"
                   >
                     {{ $t('desktop.monProjet.seeDetails') }}
-                    <span class="size-16 shrink-0 overflow-clip">
+                    <span v-if="item.hasOrder" class="size-16 shrink-0 overflow-clip">
                       <img :src="`${ASSET}/icon-arrow.svg`" alt="" width="16" height="16" class="block size-full">
                     </span>
-                  </NuxtLink>
+                  </component>
                   <p v-if="item.updatedAt" class="m-0 mt-8 text-[12px] leading-18 font-medium text-[#303030]">
                     {{ $t('myProject.updatedDaysAgo', daysSince(item.updatedAt)) }}
                   </p>
