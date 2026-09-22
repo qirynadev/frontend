@@ -55,7 +55,7 @@ const globalPercent = computed(() => {
 })
 
 const nextActions = computed(() =>
-  cards.value.filter(item => item.hasOrder && (item.progressPercent ?? 0) < 100 && item.statusKey !== DONE_STATUS),
+  cards.value.filter(item => (item.progressPercent ?? 0) < 100 && item.statusKey !== DONE_STATUS),
 )
 
 function chrome(item: ProjetAccompagnement) {
@@ -284,9 +284,11 @@ function actionWhen(iso: string | null): string | null {
                 class="border-[#eaeaf5]"
                 :class="index > 0 ? 'mt-10 border-t border-solid pt-16' : ''"
               >
-                <NuxtLink
-                  :to="localePath(item.to)"
+                <component
+                  :is="item.hasOrder ? NuxtLink : 'div'"
+                  :to="item.hasOrder ? localePath(item.to) : undefined"
                   class="flex items-center gap-14 rounded-[12px] p-8 text-inherit no-underline"
+                  :class="item.hasOrder ? '' : 'cursor-default'"
                 >
                   <span
                     class="flex size-40 shrink-0 items-center justify-center overflow-clip rounded-full"
@@ -317,11 +319,11 @@ function actionWhen(iso: string | null): string | null {
                       </span>
                       {{ actionWhen(item.updatedAt) }}
                     </span>
-                    <span class="size-16 overflow-clip">
+                    <span v-if="item.hasOrder" class="size-16 overflow-clip">
                       <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="16" height="16" class="block size-full">
                     </span>
                   </span>
-                </NuxtLink>
+                </component>
               </li>
             </ul>
           </section>
