@@ -85,24 +85,35 @@ const FLAG_BY_SLUG = new Map(languageFlags.map((entry) => [entry.slug, entry.fla
  * fichier de la maquette ne suit pas toujours le code ISO — `gb` s'y appelle
  * `uk` — d'où cette table plutôt qu'une simple concaténation.
  */
+/**
+ * Seules les exceptions : la maquette nomme ses fichiers par code ISO
+ * (`flag-fr.svg`, `flag-us.svg`, `flag-ca.svg`…), sauf le Royaume-Uni, dessiné
+ * sous `flag-uk.svg` alors que son code ISO est `gb`. `flagNameFor` part donc
+ * du code lui-même, cette table ne sert qu'à corriger ce genre d'écart —
+ * jamais à lister par avance tous les pays possibles, sans quoi un pays admis
+ * plus tard (destination, logement…) resterait sans drapeau tant que
+ * personne n'aurait pensé à l'y ajouter.
+ */
 const FLAG_BY_COUNTRY: Record<string, string> = {
-  gb: 'uk', uk: 'uk', fr: 'fr', de: 'de', es: 'es',
-  ae: 'ae', cn: 'cn', jp: 'jp', kr: 'kr',
+  gb: 'uk',
 }
 
 /**
- * Nom du drapeau de la maquette pour une langue, ou `null`.
+ * Nom du drapeau de la maquette pour une langue ou un pays, ou `null`.
  *
- * `null` signifie « la maquette ne dessine pas ce drapeau » : l'appelant
- * retombe alors sur celui de l'API, rectangulaire mais exact.
+ * `null` signifie qu'aucun code pays n'a pu être déduit (URL absente ou de
+ * forme inattendue) : l'appelant retombe alors sur l'API, rectangulaire mais
+ * exacte. Un code déduit avec succès suppose en revanche que l'asset
+ * `flag-<code>.svg` existe déjà sous `public/img/icons/flags/` — à ajouter
+ * là si un nouveau pays venait à manquer.
  */
 export function flagNameFor(slug: string, apiFlagUrl: string | null): string | null {
   const known = FLAG_BY_SLUG.get(slug)
   if (known) return `flag-${known}`
 
   const code = /country-([a-z]{2})\.svg/i.exec(apiFlagUrl ?? '')?.[1]?.toLowerCase()
-  const mapped = code ? FLAG_BY_COUNTRY[code] : undefined
-  return mapped ? `flag-${mapped}` : null
+  if (!code) return null
+  return `flag-${FLAG_BY_COUNTRY[code] ?? code}`
 }
 
 /** Trie les langues dans l'ordre de la maquette ; les inconnues finissent à la fin. */
