@@ -16,6 +16,13 @@ import {
 
 const props = defineProps<{
   accompagnements: ProjetAccompagnement[]
+  /**
+   * Progression globale — calculée par commande (`globalJourneyProgress`,
+   * `pages/mon-projet/index.vue`), pas ici : moyenner les 4 rubriques
+   * fixes comptait à 0 % celles jamais achetées (un seul achat à 40 %
+   * donnait 10 % à l'anneau au lieu de 40 %).
+   */
+  globalPercent: number
   usingMockOnly: boolean
   loading: boolean
   error?: ApiError | null
@@ -46,12 +53,6 @@ const legend = computed(() => {
       percent: count > 0 ? Math.round(sum / count) : 0,
     }
   })
-})
-
-const globalPercent = computed(() => {
-  if (legend.value.length === 0) return 0
-  const sum = legend.value.reduce((acc, row) => acc + row.percent, 0)
-  return Math.round(sum / legend.value.length)
 })
 
 const nextActions = computed(() =>
@@ -239,12 +240,12 @@ function actionWhen(iso: string | null): string | null {
             <div class="mt-24 flex items-center gap-24">
               <div
                 class="relative size-[110px] shrink-0 rounded-full"
-                :style="{ background: `conic-gradient(#ef4444 ${globalPercent}%, #f3f4f6 0)` }"
+                :style="{ background: `conic-gradient(#ef4444 ${props.globalPercent}%, #f3f4f6 0)` }"
                 role="img"
-                :aria-label="`${globalPercent}%`"
+                :aria-label="`${props.globalPercent}%`"
               >
                 <div class="absolute inset-[12px] flex flex-col items-center justify-center rounded-full bg-white">
-                  <span class="text-[20px] leading-32 font-semibold text-[#1a1d2b]">{{ globalPercent }}%</span>
+                  <span class="text-[20px] leading-32 font-semibold text-[#1a1d2b]">{{ props.globalPercent }}%</span>
                   <span class="max-w-59 text-center text-[8px] leading-[13.75px] font-medium text-[#9ca3af]">
                     {{ $t('desktop.monProjet.globalProgress') }}
                   </span>

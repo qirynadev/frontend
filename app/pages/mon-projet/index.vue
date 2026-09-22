@@ -50,6 +50,19 @@ const accompagnements = computed(() => toAccompagnements(
   data.value?.evaluations ?? [],
 ))
 
+/**
+ * Progression globale — même calcul que l'anneau de l'accueil et de l'aperçu
+ * (`globalJourneyProgress`, voir `mon-projet/apercu.vue`) : somme des
+ * progressions par COMMANDE, divisée par le nombre de commandes, pas par les
+ * quatre rubriques fixes. Un seul achat à 40 % donnait (40+0+0+0)/4 = 10 % à
+ * l'anneau desktop, un chiffre différent des deux écrans mobiles qui montrent
+ * pourtant la même progression.
+ */
+const globalPercent = computed(() => globalJourneyProgress(
+  data.value?.orders ?? [],
+  data.value?.evaluations ?? [],
+))
+
 const usingMockOnly = computed(() => {
   const orders = data.value?.orders ?? []
   const languages = data.value?.languages ?? []
@@ -200,6 +213,7 @@ usePageSeo(() => ({
   <div class="hidden shell:block">
     <DesktopMonProjet
       :accompagnements="accompagnements"
+      :global-percent="globalPercent"
       :using-mock-only="usingMockOnly"
       :loading="!!isInitialLoading"
       :error="apiError"
