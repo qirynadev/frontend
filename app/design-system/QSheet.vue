@@ -11,7 +11,14 @@ withDefaults(
   defineProps<{
     title: string
     description?: string
-    side?: 'left' | 'right' | 'bottom'
+    /**
+     * `bottom-modal` : panneau bas sur mobile, **modale centrée** à partir de
+     * `shell:` (768px) — même instance, seul le positionnement change en CSS
+     * (pas de détection de viewport en JS, voir la double monte mobile/desktop
+     * de `layouts/default.vue`). Pensé pour un consentement (cookies) qui doit
+     * se voir immédiatement sur un grand écran plutôt que se cacher tout en bas.
+     */
+    side?: 'left' | 'right' | 'bottom' | 'bottom-modal'
     /** Masque le titre visuellement tout en le laissant aux lecteurs d'écran. */
     hideTitle?: boolean
     closeLabel?: string
@@ -31,6 +38,8 @@ const sideClass = {
   left: 'inset-y-0 left-0 h-full w-[86%] max-w-320',
   right: 'inset-y-0 right-0 h-full w-[86%] max-w-320',
   bottom: 'inset-x-0 bottom-0 max-h-[85dvh] w-full rounded-t-3xl',
+  'bottom-modal': 'inset-x-0 bottom-0 max-h-[85dvh] w-full rounded-t-3xl '
+    + 'shell:inset-0 shell:m-auto shell:h-max shell:max-h-[85dvh] shell:w-[420px] shell:rounded-3xl',
 }
 </script>
 

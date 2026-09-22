@@ -3,13 +3,16 @@
  * Bannière de consentement cookies — montée une fois dans `app.vue`.
  *
  * Inspirée de l'ancienne implémentation (`legacy/src/components/atoms/
- * CookieBanner.vue`), avec deux différences volontaires :
+ * CookieBanner.vue`), avec trois différences volontaires :
  * - le choix est stocké dans un cookie (`useCookieConsent`), pas
  *   `localStorage` — seul stockage client interdit par ce projet, voir
  *   `core/http/session.ts` ;
  * - `QSheet` en mode `persistent` : ni `Échap` ni clic hors panneau ne la
  *   ferme, seul un choix explicite le fait — une fermeture implicite n'a pas
- *   de valeur de consentement.
+ *   de valeur de consentement ;
+ * - `side="bottom-modal"` (2026-09-22, demande du responsable) : panneau bas
+ *   sur mobile, modale centrée sur desktop — un bandeau tout en bas d'un
+ *   écran 1728px passait facilement inaperçu.
  *
  * Binaire (accepter/refuser), pas de personnalisation par catégorie : le
  * seul cookie non essentiel du site aujourd'hui est Google Analytics (voir
@@ -40,7 +43,7 @@ const open = computed({
 <template>
   <QSheet
     v-model:open="open"
-    side="bottom"
+    side="bottom-modal"
     persistent
     hide-title
     :title="$t('cookieBanner.title')"
