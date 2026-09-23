@@ -1,4 +1,4 @@
-import type { Banner, HomeBlock, HomeContent, HomeSlide, HomeStep, Partner } from '../contracts'
+import type { Banner, HomeBlock, HomeContent, HomeSectionImages, HomeSlide, HomeStep, Partner } from '../contracts'
 import { toSeo } from './common.adapter'
 import { asRecord, list, str, toUrl } from './primitives'
 
@@ -34,6 +34,20 @@ function toStep(raw: unknown): HomeStep {
   }
 }
 
+/**
+ * `section_images` du back-office. Chaque entrée est une URL absolue ou
+ * `null` : l'écran retombe alors sur le visuel de la maquette.
+ */
+function toSectionImages(raw: unknown): HomeSectionImages {
+  const source = asRecord(raw)
+  return {
+    orientation: toUrl(source.orientation),
+    schools: toUrl(source.schools),
+    languages: toUrl(source.languages),
+    housing: toUrl(source.housing),
+  }
+}
+
 export function toHomeContent(raw: unknown): HomeContent | null {
   const source = asRecord(raw)
   const id = str(source, 'id')
@@ -52,6 +66,7 @@ export function toHomeContent(raw: unknown): HomeContent | null {
     steps: list(source, 'steps')
       .map(toStep)
       .filter((step) => step.title !== ''),
+    sectionImages: toSectionImages(source.section_images),
     blocks: {
       schools: toBlock(source.schools),
       coaches: toBlock(source.coaches),

@@ -177,6 +177,41 @@ describe('toHomeContent', () => {
     expect(toHomeContent(null)).toBeNull()
     expect(toHomeContent({})).toBeNull()
   })
+
+  // Images des sections de l'accueil bureau (2026-09-23) : administrées
+  // dans /cms/home, non traduites, servies sous `section_images`.
+  it('expose les illustrations de section administrées', () => {
+    const home = toHomeContent({
+      ...(rawHome as Record<string, unknown>),
+      section_images: {
+        orientation: 'https://admin.stage.qiryna.com/storage/photos/home_page/sections/o.webp',
+        schools: 'https://admin.stage.qiryna.com/storage/photos/home_page/sections/e.webp',
+        languages: null,
+        housing: '',
+      },
+    })!
+
+    expect(home.sectionImages.orientation).toBe(
+      'https://admin.stage.qiryna.com/storage/photos/home_page/sections/o.webp',
+    )
+    expect(home.sectionImages.schools).toBe(
+      'https://admin.stage.qiryna.com/storage/photos/home_page/sections/e.webp',
+    )
+    // Rien de téléversé : l'écran garde le visuel de la maquette.
+    expect(home.sectionImages.languages).toBeNull()
+    expect(home.sectionImages.housing).toBeNull()
+  })
+
+  it('renvoie quatre illustrations nulles quand le back-office n’en sert pas', () => {
+    const home = toHomeContent(rawHome)!
+
+    expect(home.sectionImages).toEqual({
+      orientation: null,
+      schools: null,
+      languages: null,
+      housing: null,
+    })
+  })
 })
 
 describe('bandeaux et partenaires', () => {

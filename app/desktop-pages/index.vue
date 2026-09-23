@@ -11,6 +11,33 @@ const catalog = useCatalogStore()
 const { open: openNavMenu } = useDesktopNavMenu()
 const ASSET = '/img/desktop/home'
 
+/**
+ * Bandeau administré (`HomeContent.slides[0]`, saisi dans /cms/home sous
+ * « Image du Hero »), comme le fait déjà l'accueil mobile. Le desktop servait
+ * un fichier local (2026-09-23) : changer l'image en back-office n'avait
+ * aucun effet ici. Repli sur le visuel de la maquette si aucune diapositive.
+ */
+const bandeau = computed(() => catalog.home?.slides[0]?.image || `${ASSET}/hero.png`)
+
+/**
+ * Illustrations des quatre sections, administrées dans /cms/home sous
+ * « Images des sections de l'accueil » (`HomeContent.sectionImages`). Elles ne
+ * sont pas traduites : la même image sert à toutes les langues. Tant qu'aucune
+ * image n'est téléversée, on garde le visuel de la maquette.
+ */
+const photoOrientation = computed(
+  () => catalog.home?.sectionImages.orientation || `${ASSET}/orientation-photo.png`,
+)
+const photoEcoles = computed(
+  () => catalog.home?.sectionImages.schools || `${ASSET}/school-photo.jpg`,
+)
+const photoLangues = computed(
+  () => catalog.home?.sectionImages.languages || `${ASSET}/languages-photo.png`,
+)
+const photoLogement = computed(
+  () => catalog.home?.sectionImages.housing || `${ASSET}/housing-photo.png`,
+)
+
 function exploreLanguages() {
   if ((catalog.menu?.courses?.entries.length ?? 0) > 0) {
     openNavMenu('courses')
@@ -106,7 +133,7 @@ const housingTypes = [
     <!-- Hero pleine largeur — citation Mandela dans l’export Figma -->
     <section class="relative w-full overflow-hidden">
       <img
-        :src="`${ASSET}/hero.png`"
+        :src="bandeau"
         alt=""
         width="1728"
         height="516"
@@ -152,7 +179,7 @@ const housingTypes = [
           </div>
 
         <div class="desktop-home-media">
-            <img :src="`${ASSET}/orientation-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
+            <img :src="photoOrientation" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
             <div class="absolute top-[22%] left-[55%] flex w-[min(240px,50%)] flex-col rounded-16 border border-[#f3f5fb] bg-white p-20">
               <p class="m-0 text-[14px] leading-20 font-bold text-[#242424]">{{ $t('desktop.home.orientation.resultsTitle') }}</p>
               <ul class="m-0 mt-16 flex list-none flex-col gap-12 p-0">
@@ -226,7 +253,7 @@ const housingTypes = [
           </div>
 
         <div class="desktop-home-media">
-            <img :src="`${ASSET}/school-photo.jpg`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
+            <img :src="photoEcoles" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
           </div>
 
         <div class="desktop-home-card flex flex-col">
@@ -295,7 +322,7 @@ const housingTypes = [
             </div>
           </div>
         <div class="desktop-home-media">
-            <img :src="`${ASSET}/languages-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
+            <img :src="photoLangues" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
           </div>
 
         <div class="desktop-home-card flex flex-col">
@@ -360,7 +387,7 @@ const housingTypes = [
           </div>
 
         <div class="desktop-home-media">
-            <img :src="`${ASSET}/housing-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
+            <img :src="photoLogement" alt="" class="absolute inset-0 size-full object-contain object-center" loading="lazy" decoding="async">
             <div class="absolute top-[14.4%] left-[56%] flex w-[min(260px,53%)] flex-col gap-12">
               <div
                 v-for="item in housingTypes"

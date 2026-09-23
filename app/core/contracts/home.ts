@@ -20,12 +20,26 @@ export interface HomeBlock {
   mobileTitle: string
 }
 
+/**
+ * Illustrations des quatre sections de l'accueil bureau, administrées depuis
+ * `/cms/home`. Non traduites côté back-office : la même image sert à toutes
+ * les langues. `null` tant qu'aucune image n'a été téléversée, auquel cas
+ * l'écran garde le visuel de la maquette.
+ */
+export interface HomeSectionImages {
+  orientation: string | null
+  schools: string | null
+  languages: string | null
+  housing: string | null
+}
+
 export interface HomeContent {
   id: string
   title: string
   description: string
   slides: HomeSlide[]
   steps: HomeStep[]
+  sectionImages: HomeSectionImages
   blocks: {
     schools: HomeBlock
     coaches: HomeBlock

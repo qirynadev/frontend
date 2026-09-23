@@ -1245,6 +1245,43 @@ arbitrer côté contenu avant de les afficher.
 manque. Même erreur que celles listées dans
 `feedback_reread_backend_before_concluding_gap`.
 
+## 30. ✅ Codé (back-office, `staging`, `1a0db5f`) : images des sections de l'accueil bureau
+
+L'accueil bureau illustre quatre sections — orientation, fiches écoles,
+langues, hébergement — avec des fichiers livrés en dur dans le front
+(`public/img/desktop/home/*-photo.*`) : les changer demandait un déploiement,
+alors que le bandeau du hero, lui, était déjà administré.
+
+Quatre colonnes ajoutées sur `home_pages` — `orientation_image`,
+`schools_image`, `languages_image`, `housing_image` — **hors traduction** :
+une photographie ne dépend pas de la langue, et un champ traduit obligerait
+à la téléverser une fois par locale, au risque d'un écran vide en anglais.
+
+`/api/home` et `/api/all-data` les exposent sous `homeData.section_images`,
+URL absolue ou `null` :
+
+```json
+"section_images": {
+  "orientation": "https://admin.stage.qiryna.com/storage/photos/home_page/sections/x.webp",
+  "schools": null,
+  "languages": null,
+  "housing": null
+}
+```
+
+Le formulaire `/cms/home` reçoit les quatre vignettes juste après
+« Image du Hero ». Tant qu'aucune image n'est téléversée, le front garde le
+visuel de la maquette : rien ne casse, l'écran change dès le premier envoi.
+
+**À faire côté contenu** : téléverser les quatre visuels depuis `/cms/home`.
+
+Deux correctifs au passage dans `SettingController::homeUpdate` :
+`$homePage->save()` manquait, ce qui laissait l'observateur de cache jamais
+déclenché sur une simple mise à jour de l'accueil ; et le remplacement d'une
+image passe désormais par le disque `public` — `Storage::delete()` sans disque
+vise `local` et n'effaçait donc jamais l'ancien fichier (même biais sur les
+diapositives, les étapes et l'image Open Graph, non touchées ici).
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

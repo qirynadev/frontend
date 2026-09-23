@@ -55,6 +55,8 @@ export const useCatalogStore = defineStore('catalog', () => {
   const pages = computed(() => catalog.value?.pages ?? [])
   const partners = computed(() => catalog.value?.partners ?? [])
   const courses = computed(() => catalog.value?.courses ?? [])
+  /** Contenu éditorial de l'accueil (`homeData`) — bandeau, étapes, blocs de sections. */
+  const home = computed(() => catalog.value?.home ?? null)
 
-  return { catalog, status, error, isReady, menu, settings, destinations, offers, pages, partners, courses, load }
+  return { catalog, status, error, isReady, menu, settings, destinations, offers, pages, partners, courses, home, load }
 })
