@@ -2102,9 +2102,9 @@
     "tooEarlyDesc": "Come back 2 minutes before your session starts to join it.",
     "tooEarlyTitle": "Not time yet",
     "whiteboard": "Whiteboard",
-    "whiteboardClear": "Clear all",
     "whiteboardClose": "Close",
-    "whiteboardEraser": "Eraser",
-    "whiteboardPen": "Pen"
+    "whiteboardError": "The whiteboard could not be opened.",
+    "whiteboardOf": "{name}'s whiteboard",
+    "whiteboardUnviewable": "Your teacher is sharing a whiteboard, viewable from a computer."
   }
 }

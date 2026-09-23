@@ -102,114 +102,119 @@ async function sendChatMessage() {
   }
 }
 
-// ── Tableau blanc ────────────────────────────────────────────────────────
-const showWhiteboard = ref(false)
-const whiteboardCanvas = ref<HTMLCanvasElement | null>(null)
-const isDrawing = ref(false)
-const lastPos = ref({ x: 0, y: 0 })
-const drawColor = ref('#000000')
-const drawSize = ref(3)
-const drawMode = ref<'pen' | 'eraser'>('pen')
-
-function getCanvasPos(e: MouseEvent | Touch, canvas: HTMLCanvasElement) {
-  const rect = canvas.getBoundingClientRect()
-  return {
-    x: (e.clientX - rect.left) * (canvas.width / rect.width),
-    y: (e.clientY - rect.top) * (canvas.height / rect.height),
-  }
-}
-
-function drawLine(x1: number, y1: number, x2: number, y2: number, color: string, size: number, eraser: boolean) {
-  const ctx = whiteboardCanvas.value?.getContext('2d')
-  if (!ctx) return
-  ctx.globalCompositeOperation = eraser ? 'destination-out' : 'source-over'
-  ctx.strokeStyle = color
-  ctx.lineWidth = size
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
-  ctx.beginPath()
-  ctx.moveTo(x1, y1)
-  ctx.lineTo(x2, y2)
-  ctx.stroke()
-}
-
-function clearCanvas() {
-  const canvas = whiteboardCanvas.value
-  if (!canvas) return
-  canvas.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height)
-}
-
 function sendCommand(payload: Record<string, unknown>) {
   cmdClient?.send(JSON.stringify(payload))?.catch(() => {
-    // Canal de commande indisponible — le dessin/la réaction reste local, pas bloquant.
+    // Canal de commande indisponible — la réaction reste locale, pas bloquant.
   })
 }
 
-function onWbMouseDown(e: MouseEvent) {
-  const canvas = whiteboardCanvas.value
-  if (!canvas) return
-  isDrawing.value = true
-  lastPos.value = getCanvasPos(e, canvas)
+// ── Tableau blanc ────────────────────────────────────────────────────────
+/**
+ * Tableau blanc **natif** de Zoom (`getWhiteboardClient`), le même que celui
+ * de l'UI Toolkit côté professeur (back-office). L'ancien canevas maison,
+ * synchronisé par le canal de commande, ne pouvait ni afficher le tableau du
+ * professeur ni lui montrer le sien : deux mécanismes qui ne se parlaient pas.
+ *
+ * - `presenting` : l'apprenant a ouvert son propre tableau ;
+ * - `viewing` : il regarde (et peut annoter, selon les droits Zoom) celui
+ *   d'un autre participant — ouvert automatiquement quand le professeur en
+ *   lance un.
+ *
+ * `isWhiteboardEnabled()` est faux si l'option n'est pas activée sur le
+ * compte Zoom, ou sur navigateur mobile : le bouton disparaît alors, et un
+ * bandeau signale que le professeur partage un tableau non affichable ici.
+ */
+const whiteboardContainer = ref<HTMLElement | null>(null)
+const whiteboardAvailable = ref(false)
+const canStartWhiteboard = ref(false)
+/** Un autre participant présente un tableau : le bouton permet de le rejoindre. */
+const otherPresenterActive = ref(false)
+const whiteboardMode = ref<'none' | 'presenting' | 'viewing'>('none')
+const whiteboardPresenterName = ref('')
+const whiteboardError = ref(false)
+/** Tableau partagé par un autre participant alors qu'on ne peut pas l'afficher ici. */
+const whiteboardUnviewable = ref(false)
+
+let wbClient: any = null
+
+function refreshWhiteboardPermissions() {
+  if (!wbClient || !client) return
+  whiteboardAvailable.value = Boolean(wbClient.isWhiteboardEnabled?.())
+  canStartWhiteboard.value = whiteboardAvailable.value && Boolean(wbClient.canStartWhiteboard?.())
+  const presenter = wbClient.getWhiteboardPresenter?.()
+  otherPresenterActive.value = Boolean(presenter && presenter.userId !== client.getCurrentUserInfo().userId)
 }
 
-function onWbMouseMove(e: MouseEvent) {
-  if (!isDrawing.value) return
-  const canvas = whiteboardCanvas.value
-  if (!canvas) return
-  const pos = getCanvasPos(e, canvas)
-  const { x: x1, y: y1 } = lastPos.value
-  const { x: x2, y: y2 } = pos
-  const eraser = drawMode.value === 'eraser'
-  const size = eraser ? drawSize.value * 5 : drawSize.value
-  drawLine(x1, y1, x2, y2, drawColor.value, size, eraser)
-  sendCommand({ type: 'draw', x1, y1, x2, y2, color: drawColor.value, size, eraser })
-  lastPos.value = pos
-}
-
-function onWbMouseUp() {
-  isDrawing.value = false
-}
-
-function onWbTouchStart(e: TouchEvent) {
-  e.preventDefault()
-  const canvas = whiteboardCanvas.value
-  if (!canvas || !e.touches[0]) return
-  isDrawing.value = true
-  lastPos.value = getCanvasPos(e.touches[0], canvas)
-}
-
-function onWbTouchMove(e: TouchEvent) {
-  e.preventDefault()
-  if (!isDrawing.value) return
-  const canvas = whiteboardCanvas.value
-  if (!canvas || !e.touches[0]) return
-  const pos = getCanvasPos(e.touches[0], canvas)
-  const { x: x1, y: y1 } = lastPos.value
-  const { x: x2, y: y2 } = pos
-  const eraser = drawMode.value === 'eraser'
-  const size = eraser ? drawSize.value * 5 : drawSize.value
-  drawLine(x1, y1, x2, y2, drawColor.value, size, eraser)
-  sendCommand({ type: 'draw', x1, y1, x2, y2, color: drawColor.value, size, eraser })
-  lastPos.value = pos
-}
-
-function onWbTouchEnd() {
-  isDrawing.value = false
-}
-
-function onWbClear() {
-  clearCanvas()
-  sendCommand({ type: 'clear' })
-}
-
-async function openWhiteboard() {
-  showWhiteboard.value = true
-  await nextTick()
-  const canvas = whiteboardCanvas.value
-  if (canvas) {
-    canvas.width = canvas.offsetWidth
-    canvas.height = canvas.offsetHeight
+async function viewWhiteboard(presenterId: number) {
+  if (!wbClient || !client || presenterId === client.getCurrentUserInfo().userId) return
+  if (!whiteboardAvailable.value) {
+    whiteboardUnviewable.value = true
+    return
   }
+  whiteboardPresenterName.value = client.getUser?.(presenterId)?.displayName ?? ''
+  whiteboardMode.value = 'viewing'
+  whiteboardError.value = false
+  await nextTick()
+  try {
+    await wbClient.startWhiteboardView(whiteboardContainer.value, presenterId)
+  }
+  catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[VisioCallRoom] affichage du tableau blanc impossible', error)
+    whiteboardError.value = true
+  }
+}
+
+async function onPeerWhiteboardChange(payload: { action: string; userId: number }) {
+  if (payload.action === 'Start') {
+    await viewWhiteboard(payload.userId)
+  }
+  else if (payload.action === 'Stop') {
+    whiteboardUnviewable.value = false
+    if (whiteboardMode.value === 'viewing') {
+      try { await wbClient?.stopWhiteboardView() }
+      catch { /* déjà fermé par le départ du présentateur */ }
+      whiteboardMode.value = 'none'
+    }
+  }
+  refreshWhiteboardPermissions()
+}
+
+/** Bouton de la barre : rejoint le tableau en cours d'un autre participant, sinon ouvre le sien. */
+async function openWhiteboard() {
+  if (!wbClient || !client || whiteboardMode.value !== 'none') return
+  const presenter = wbClient.getWhiteboardPresenter?.()
+  if (presenter && presenter.userId !== client.getCurrentUserInfo().userId) {
+    await viewWhiteboard(presenter.userId)
+    return
+  }
+  if (!canStartWhiteboard.value) return
+  whiteboardPresenterName.value = ''
+  whiteboardMode.value = 'presenting'
+  whiteboardError.value = false
+  await nextTick()
+  try {
+    await wbClient.startWhiteboardScreen(whiteboardContainer.value)
+  }
+  catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[VisioCallRoom] ouverture du tableau blanc impossible', error)
+    whiteboardError.value = true
+  }
+}
+
+async function closeWhiteboard() {
+  const mode = whiteboardMode.value
+  whiteboardMode.value = 'none'
+  whiteboardError.value = false
+  try {
+    if (mode === 'presenting') await wbClient?.stopWhiteboardScreen()
+    else if (mode === 'viewing') await wbClient?.stopWhiteboardView()
+  }
+  catch {
+    // Session déjà close côté Zoom — rien à arrêter.
+  }
+  refreshWhiteboardPermissions()
 }
 
 // ── Réactions ────────────────────────────────────────────────────────────
@@ -393,16 +398,19 @@ async function start() {
     audioMuted.value = mediaStream.isAudioMuted()
     videoMuted.value = !mediaStream.isCapturingVideo()
 
-    // Canal de commande — tableau blanc et réactions partagent le même canal, distingués par `type`.
+    // Canal de commande — réactions seulement (le tableau blanc est natif, voir plus haut).
     // Évènement de réception sur le client principal (confirmé dans les types installés :
     // `event_command_channel_message`), pas sur `cmdClient` — legacy visait une version de SDK antérieure.
     try {
       cmdClient = client.getCommandClient()
       client.on('command-channel-message', (payload: { text: string }) => {
-        const data = JSON.parse(payload.text)
-        if (data.type === 'draw') drawLine(data.x1, data.y1, data.x2, data.y2, data.color, data.size, data.eraser)
-        else if (data.type === 'clear') clearCanvas()
-        else if (data.type === 'reaction') spawnReaction(data.emoji)
+        try {
+          const data = JSON.parse(payload.text)
+          if (data.type === 'reaction') spawnReaction(data.emoji)
+        }
+        catch {
+          // Message d'un autre format (ancienne version, autre client) — ignoré.
+        }
       })
     }
     catch (error) {
@@ -424,6 +432,22 @@ async function start() {
     catch (error) {
       // eslint-disable-next-line no-console
       console.error('[VisioCallRoom] client de chat indisponible', error)
+    }
+
+    try {
+      wbClient = client.getWhiteboardClient()
+      refreshWhiteboardPermissions()
+      client.on('peer-whiteboard-state-change', (payload: { action: string; userId: number }) => {
+        void onPeerWhiteboardChange(payload)
+      })
+      client.on('whiteboard-status-change', () => refreshWhiteboardPermissions())
+      // Tableau déjà ouvert par le professeur avant notre arrivée — aucun évènement ne le signale.
+      const presenter = wbClient.getWhiteboardPresenter?.()
+      if (presenter) await viewWhiteboard(presenter.userId)
+    }
+    catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[VisioCallRoom] tableau blanc indisponible', error)
     }
 
     durationTimer = setInterval(() => { sessionSeconds.value++ }, 1000)
@@ -458,6 +482,7 @@ async function start() {
 async function leave() {
   if (autoEndTimer) { clearTimeout(autoEndTimer); autoEndTimer = null }
   if (durationTimer) { clearInterval(durationTimer); durationTimer = null }
+  if (whiteboardMode.value !== 'none') await closeWhiteboard()
   if (client) {
     try {
       const mediaStream = client.getMediaStream()
@@ -563,46 +588,25 @@ onBeforeUnmount(() => {
 
     <video-player-container ref="localContainer" class="absolute bottom-80 right-8 z-30 h-80 w-112 overflow-hidden rounded-lg border-2 border-white shadow-lg md:h-128 md:w-192" />
 
-    <!-- Tableau blanc -->
-    <div v-if="showWhiteboard" class="fixed inset-0 z-[60] flex flex-col bg-white">
+    <!-- Tableau blanc natif Zoom : le SDK dessine tout (outils compris) dans le conteneur. -->
+    <div v-show="whiteboardMode !== 'none'" class="fixed inset-0 z-[60] flex flex-col bg-white">
       <div class="flex shrink-0 items-center gap-12 border-b bg-[#f3f4f6] px-16 py-8">
-        <button
-          type="button"
-          :class="['rounded-full p-8 shadow', drawMode === 'pen' ? 'bg-blue-500 text-white' : 'bg-white text-black']"
-          :title="t('videoCall.whiteboardPen')"
-          @click="drawMode = 'pen'"
-        >
-          ✏️
-        </button>
-        <button
-          type="button"
-          :class="['rounded-full p-8 shadow', drawMode === 'eraser' ? 'bg-blue-500 text-white' : 'bg-white text-black']"
-          :title="t('videoCall.whiteboardEraser')"
-          @click="drawMode = 'eraser'"
-        >
-          🧽
-        </button>
-        <input v-model="drawColor" type="color" class="size-36 cursor-pointer rounded border" :title="t('videoCall.whiteboardPen')">
-        <input v-model.number="drawSize" type="range" min="1" max="20" class="w-96">
-        <button type="button" class="rounded-full bg-white p-8 text-red-500 shadow" :title="t('videoCall.whiteboardClear')" @click="onWbClear">
-          🗑️
-        </button>
-        <button type="button" class="ml-auto rounded-lg bg-gray-700 px-16 py-6 text-sm text-white" @click="showWhiteboard = false">
+        <span class="text-sm font-medium text-[#1f2937]">
+          {{ whiteboardPresenterName ? t('videoCall.whiteboardOf', { name: whiteboardPresenterName }) : t('videoCall.whiteboard') }}
+        </span>
+        <span v-if="whiteboardError" class="text-sm text-red-600">{{ t('videoCall.whiteboardError') }}</span>
+        <button type="button" class="ml-auto rounded-lg bg-gray-700 px-16 py-6 text-sm text-white" @click="closeWhiteboard">
           {{ t('videoCall.whiteboardClose') }}
         </button>
       </div>
-      <canvas
-        ref="whiteboardCanvas"
-        class="min-h-0 w-full flex-1"
-        :style="{ cursor: drawMode === 'eraser' ? 'cell' : 'crosshair' }"
-        @mousedown="onWbMouseDown"
-        @mousemove="onWbMouseMove"
-        @mouseup="onWbMouseUp"
-        @mouseleave="onWbMouseUp"
-        @touchstart="onWbTouchStart"
-        @touchmove="onWbTouchMove"
-        @touchend="onWbTouchEnd"
-      />
+      <div ref="whiteboardContainer" class="relative min-h-0 w-full flex-1" />
+    </div>
+
+    <div
+      v-if="whiteboardUnviewable && whiteboardMode === 'none'"
+      class="pointer-events-none absolute inset-x-0 top-56 z-40 mx-auto w-fit max-w-[90%] rounded-full bg-black/70 px-16 py-8 text-center text-xs text-white"
+    >
+      {{ t('videoCall.whiteboardUnviewable') }}
     </div>
 
     <!-- Chat -->
@@ -681,9 +685,11 @@ onBeforeUnmount(() => {
           <QIcon name="smile" :size="20" />
         </button>
         <button
+          v-if="whiteboardAvailable"
           type="button"
-          class="flex size-44 items-center justify-center rounded-full bg-white text-black shadow"
+          class="flex size-44 items-center justify-center rounded-full bg-white text-black shadow disabled:cursor-not-allowed disabled:opacity-50"
           :aria-label="t('videoCall.whiteboard')"
+          :disabled="!canStartWhiteboard && !otherPresenterActive"
           @click="openWhiteboard"
         >
           <QIcon name="pencil" :size="20" />

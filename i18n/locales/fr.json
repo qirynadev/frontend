@@ -2102,9 +2102,9 @@
     "tooEarlyDesc": "Revenez 2 minutes avant le début de votre séance pour la rejoindre.",
     "tooEarlyTitle": "Pas encore l'heure",
     "whiteboard": "Tableau blanc",
-    "whiteboardClear": "Effacer tout",
     "whiteboardClose": "Fermer",
-    "whiteboardEraser": "Gomme",
-    "whiteboardPen": "Crayon"
+    "whiteboardError": "Le tableau blanc n'a pas pu s'ouvrir.",
+    "whiteboardOf": "Tableau blanc de {name}",
+    "whiteboardUnviewable": "Votre professeur partage un tableau blanc, visible depuis un ordinateur."
   }
 }
