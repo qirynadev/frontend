@@ -11,6 +11,16 @@
  * Le SDK n'est importé qu'ici, jamais au niveau racine de la page qui monte
  * ce composant, et seulement dans `onMounted` : il touche `window`/WebRTC,
  * incompatible avec le rendu serveur.
+ *
+ * Écran noir côté apprenant (2026-09-23 : il se voyait, entendait le
+ * professeur, mais ne le voyait pas) — deux oublis du portage depuis
+ * `legacy`, qui avait les deux :
+ * - les conteneurs doivent être des `<video-player-container>` : le SDK y
+ *   dessine la vidéo **distante** décodée (la sienne passe par un chemin
+ *   local qui marchait même dans un simple `<div>`, d'où l'illusion) ;
+ * - `peer-video-state-change` ne signale qu'un changement **après** notre
+ *   arrivée. Le professeur ouvre la salle avant l'apprenant, caméra déjà
+ *   allumée : sa vidéo doit être rendue à la jointure (`renderExistingVideos`).
  */
 import { planningRepo } from '~/core/repositories'
 
@@ -256,19 +266,69 @@ async function resolveVideoQuality(): Promise<any> {
   return mod.VideoQuality ?? mod.default?.VideoQuality ?? {}
 }
 
+/** Utilisateurs dont la vidéo est attachée — évite d'empiler deux lecteurs pour la même personne. */
+const renderedUsers = new Set<number>()
+
+/** `detachVideo` renvoie un élément, une liste, ou un objet d'échec sans `remove`. */
+function removeElements(result: unknown) {
+  ;(Array.isArray(result) ? result : [result]).forEach((el) => {
+    if (el && typeof (el as HTMLElement).remove === 'function') (el as HTMLElement).remove()
+  })
+}
+
+async function detachUser(mediaStream: any, userId: number) {
+  renderedUsers.delete(userId)
+  try {
+    removeElements(await mediaStream.detachVideo(userId))
+  }
+  catch {
+    // Déjà détaché (ou participant parti) — rien à retirer.
+  }
+}
+
 async function renderVideo(mediaStream: any, event: { action: string; userId: number }) {
   if (!client) return
   const uid = client.getCurrentUserInfo().userId
   if (event.action === 'Stop') {
-    const element = await mediaStream.detachVideo(event.userId)
-    ;(Array.isArray(element) ? element : [element]).forEach((el) => el?.remove())
+    await detachUser(mediaStream, event.userId)
     return
   }
+  if (renderedUsers.has(event.userId)) return
+  renderedUsers.add(event.userId)
   const VideoQuality = await resolveVideoQuality()
   const isMobile = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 768
   const userVideo = await mediaStream.attachVideo(event.userId, isMobile ? VideoQuality.Video_360P : VideoQuality.Video_720P)
+  if (!(userVideo instanceof HTMLElement)) {
+    renderedUsers.delete(event.userId)
+    return
+  }
   const container = event.userId === uid ? localContainer.value : remoteContainer.value
   container?.appendChild(userVideo)
+}
+
+/** Vidéos déjà allumées à notre arrivée (le professeur, en pratique) — aucun évènement ne les signale. */
+async function renderExistingVideos(mediaStream: any) {
+  if (!client) return
+  const uid = client.getCurrentUserInfo().userId
+  for (const user of client.getAllUser()) {
+    if (user.userId === uid || !user.bVideoOn) continue
+    await renderVideo(mediaStream, { action: 'Start', userId: user.userId })
+  }
+}
+
+/**
+ * Onglet repassé au premier plan : le navigateur a pu suspendre le rendu
+ * (même contournement que `legacy` et que l'écran professeur du back-office).
+ */
+async function onVisibilityChange() {
+  if (document.visibilityState !== 'visible' || !inSession.value || !client) return
+  await new Promise((resolve) => setTimeout(resolve, 600))
+  const mediaStream = client.getMediaStream()
+  for (const user of client.getAllUser()) {
+    if (!user.bVideoOn) continue
+    await detachUser(mediaStream, user.userId)
+    await renderVideo(mediaStream, { action: 'Start', userId: user.userId })
+  }
 }
 
 async function start() {
@@ -287,12 +347,20 @@ async function start() {
       void renderVideo(mediaStream, event)
     })
 
+    // Participant parti (professeur qui ferme la salle…) : retirer son lecteur, sinon
+    // la dernière image reste figée à l'écran.
+    client.on('user-removed', (users: { userId: number }[]) => {
+      const mediaStream = client.getMediaStream()
+      for (const user of users ?? []) void detachUser(mediaStream, user.userId)
+    })
+
     client.on('connection-change', (payload: { state: string }) => {
       if (payload.state === 'Reconnecting') {
         reconnecting.value = true
       }
       else if (payload.state === 'Connected') {
         reconnecting.value = false
+        if (inSession.value) void renderExistingVideos(client.getMediaStream())
       }
       else if (payload.state === 'Closed') {
         inSession.value = false
@@ -320,6 +388,7 @@ async function start() {
     await mediaStream.startVideo({ hd: !isMobile && mediaStream.isSupportHDVideo() })
 
     await renderVideo(mediaStream, { action: 'Start', userId: client.getCurrentUserInfo().userId })
+    await renderExistingVideos(mediaStream)
     inSession.value = true
     audioMuted.value = mediaStream.isAudioMuted()
     videoMuted.value = !mediaStream.isCapturingVideo()
@@ -392,10 +461,7 @@ async function leave() {
   if (client) {
     try {
       const mediaStream = client.getMediaStream()
-      for (const u of client.getAllUser()) {
-        const element = await mediaStream.detachVideo(u.userId)
-        ;(Array.isArray(element) ? element : [element]).forEach((el: HTMLElement) => el?.remove())
-      }
+      for (const u of client.getAllUser()) await detachUser(mediaStream, u.userId)
       await client.leave()
     }
     catch {
@@ -443,9 +509,11 @@ function toggleFullscreen() {
 
 onMounted(() => {
   void start()
+  document.addEventListener('visibilitychange', onVisibilityChange)
 })
 
 onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', onVisibilityChange)
   if (durationTimer) clearInterval(durationTimer)
   if (autoEndTimer) clearTimeout(autoEndTimer)
 })
@@ -491,9 +559,9 @@ onBeforeUnmount(() => {
       </TransitionGroup>
     </div>
 
-    <div ref="remoteContainer" class="flex h-full w-full items-center justify-center" @dblclick="toggleFullscreen" />
+    <video-player-container ref="remoteContainer" class="flex h-full w-full items-center justify-center" @dblclick="toggleFullscreen" />
 
-    <div ref="localContainer" class="absolute bottom-80 right-8 z-30 h-80 w-112 overflow-hidden rounded-lg border-2 border-white shadow-lg md:h-128 md:w-192" />
+    <video-player-container ref="localContainer" class="absolute bottom-80 right-8 z-30 h-80 w-112 overflow-hidden rounded-lg border-2 border-white shadow-lg md:h-128 md:w-192" />
 
     <!-- Tableau blanc -->
     <div v-if="showWhiteboard" class="fixed inset-0 z-[60] flex flex-col bg-white">
@@ -653,6 +721,14 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* Les `<video-player>` sont insérés par le SDK, hors gabarit : `:deep` pour les atteindre. */
+video-player-container :deep(video-player) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
 .reaction-float-enter-active {
   transition: transform 2s ease-out, opacity 2s ease-out;
 }

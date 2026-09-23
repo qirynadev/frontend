@@ -139,6 +139,15 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // `<video-player-container>`/`<video-player>` sont des éléments natifs
+  // enregistrés par `@zoom/videosdk` (voir `VisioCallRoom.vue`), pas des
+  // composants Vue : sans ça Vue tente de les résoudre et avertit.
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.startsWith('video-player'),
+    },
+  },
+
   // Auto-import sans préfixe de dossier : `design-system/QButton.vue` → `QButton`,
   // `components/navigation/AppBottomNav.vue` → `AppBottomNav`. Les dossiers
   // servent au rangement, pas au nommage — un composant se nomme donc de façon
