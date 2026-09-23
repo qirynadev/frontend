@@ -82,9 +82,12 @@ usePageSeo(() => ({
     <ClientOnly v-if="gate === 'joinable' && session">
       <VisioCallRoom
         :session-name="session.meetingSessionName!"
-        :end-date="session.endDate!"
+        :get-signature="() => planningRepo.zoomSignature(session!.meetingSessionName!, locale)"
+        :end-date="session.endDate"
         :locale="locale"
         :user-name="sessionStore.user?.name ?? ''"
+        role="participant"
+        auto-leave-at-end
         @left="backToSchedule"
       />
       <template #fallback>
