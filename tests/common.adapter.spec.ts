@@ -244,6 +244,25 @@ describe('pages éditoriales', () => {
     expect(page.seo.description).toBe('1. Présentation de la plateforme Qiryna est une plateforme EdTech…')
   })
 
+  it('rend la FAQ stockée en JSON questions/réponses en titres et paragraphes', () => {
+    const content = JSON.stringify([
+      { question: '1. Qu\'est-ce que Qiryna ?', answer: '<p>Une plateforme dédiée.</p>' },
+      { question: 'Balise <b> & co ?', answer: '<p>Oui.</p><script>alert(1)</script>' },
+    ])
+    const page = toPage({ ...rawPage, slug: 'faq', title: 'FAQ', content })
+
+    expect(page.content).toBe(
+      '<h2>1. Qu\'est-ce que Qiryna ?</h2><p>Une plateforme dédiée.</p><h2>Balise &lt;b&gt; &amp; co ?</h2><p>Oui.</p>',
+    )
+    expect(page.content).not.toContain('"question"')
+    expect(page.seo.description).toBe('1. Qu\'est-ce que Qiryna ? Une plateforme dédiée. Balise <b> & co ? Oui.')
+  })
+
+  it('laisse intact un contenu HTML qui commence par un crochet sans être une FAQ', () => {
+    const page = toPage({ ...rawPage, content: '[Note] <p>Texte.</p>' })
+    expect(page.content).toBe('[Note] <p>Texte.</p>')
+  })
+
   it('écarte les pages sans slug et déduplique', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const pages = toPageList([rawPage, { ...rawPage, id: 'aaa' }, { ...rawPage, id: 'x', slug: '' }])
