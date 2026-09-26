@@ -23,10 +23,7 @@
 import type { LanguageProgress, PlannedSession } from '~/core/contracts'
 import { paymentRepo, planningRepo } from '~/core/repositories'
 import type { LangueProgressStepStatus } from '~/config/projet-langue-mock'
-import {
-  langueNextCourseMock,
-  langueProgressSteps,
-} from '~/config/projet-langue-mock'
+import { langueProgressSteps } from '~/config/projet-langue-mock'
 import { NuxtLink } from '#components'
 
 /** Cartes par page, sur les deux onglets (planifiés / à planifier). */
@@ -210,44 +207,33 @@ function usePagedList<T>(list: Ref<T[]>) {
 const { page: plannedPage, totalPages: plannedTotalPages, paged: pagedPlannedCards } = usePagedList(plannedCards)
 const { page: unplannedPage, totalPages: unplannedTotalPages, paged: pagedUnplannedCards } = usePagedList(unplannedCards)
 
-const countdownTarget = computed(() => {
-  const upcoming = (sessions.value ?? [])
-    .map(s => s.startDate)
-    .filter((d): d is string => Boolean(d))
-    .map(d => new Date(d).getTime())
-    .filter(t => t > Date.now())
-    .sort((a, b) => a - b)[0]
-
-  if (upcoming) return upcoming
-  return Date.now() + (22 * 3600 + 18 * 60 + 35) * 1000
-})
-
-const countdownParts = computed(() => {
-  const diff = Math.max(0, countdownTarget.value - nowTick.value)
-  const totalSec = Math.floor(diff / 1000)
-  const h = Math.floor(totalSec / 3600)
-  const m = Math.floor((totalSec % 3600) / 60)
-  const s = totalSec % 60
-  return { h, m, s }
-})
-
-/** Prochaine séance réelle (déjà planifiée), pas encore terminée — `null` si aucune. */
+/**
+ * Prochaine séance réelle (déjà planifiée), à venir ou en cours - `null` si
+ * aucune. La carte « Prochain cours » n'existe que dans ce cas : elle
+ * retombait avant sur une date de maquette (« Mercredi 21 mai 2024 ») et un
+ * compte à rebours fictif de 22 h quand rien n'était planifié.
+ */
 const nextSession = computed(() => (sessions.value ?? [])
   .filter(s => s.endDate && new Date(s.endDate).getTime() > nowTick.value)
   .sort((a, b) => new Date(a.startDate ?? 0).getTime() - new Date(b.startDate ?? 0).getTime())[0] ?? null)
 
 const nextCourseLabels = computed(() => {
-  const apiNext = nextSession.value
-  if (apiNext) {
-    return {
-      dateLabel: formatSessionDate(apiNext.startDate),
-      timeLabel: formatSessionTime(apiNext),
-    }
-  }
+  const session = nextSession.value
+  if (!session) return null
   return {
-    dateLabel: langueNextCourseMock.dateLabel,
-    timeLabel: langueNextCourseMock.timeLabel,
+    dateLabel: formatSessionDate(session.startDate),
+    timeLabel: formatSessionTime(session),
   }
+})
+
+/** Temps restant avant le début de cette même séance (0 une fois commencée). */
+const countdownParts = computed(() => {
+  const start = nextSession.value?.startDate ? new Date(nextSession.value.startDate).getTime() : nowTick.value
+  const totalSec = Math.floor(Math.max(0, start - nowTick.value) / 1000)
+  const h = Math.floor(totalSec / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+  const s = totalSec % 60
+  return { h, m, s }
 })
 
 const canJoinNext = computed(() => {
@@ -396,7 +382,7 @@ usePageSeo(() => ({
 
         <!-- Prochain cours : hauteur au contenu ; compteur responsive (s → m masqués) -->
         <aside
-          v-if="mockEtape === 2"
+          v-if="mockEtape === 2 && nextCourseLabels"
           class="box-border flex w-full flex-col rounded-2xl p-16 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
           style="background-image: linear-gradient(157.8deg, #4f46e5 0%, #ff0055 100%)"
         >

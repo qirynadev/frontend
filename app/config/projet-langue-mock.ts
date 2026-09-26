@@ -14,14 +14,6 @@ export interface LangueProgressStep {
   to?: string
 }
 
-export interface LangueNextCourseMock {
-  dateLabel: string
-  timeLabel: string
-  modeLabelKey: string
-  /** Instant cible du countdown (mock Figma ~22h18m35s). */
-  startsAt: string
-}
-
 /** 3 étapes : Test de niveau → Cours en cours → Test final (statuts gérés dans la page mock). */
 export const langueProgressSteps: Omit<LangueProgressStep, 'status'>[] = [
   { id: '1', labelKey: 'languageProject.step1' },
@@ -194,12 +186,3 @@ export const LANGUE_TEACHERS_PER_PAGE = 4
 
 /** Étapes toutes validées — Figma `863:1956` Mon Projet - Langues 4 (test final). */
 export const langueCertificationPct = 100
-
-/** Bandeau « Prochain cours » — Figma (countdown 22h / 18min / 35s). */
-export const langueNextCourseMock: LangueNextCourseMock = {
-  dateLabel: 'Mercredi 21 mai 2024',
-  timeLabel: '18:00 – 19:00 (1h)',
-  modeLabelKey: 'languageProject.visio',
-  /** Relatif : ~22h18m35s après chargement de la page (affichage Figma). */
-  startsAt: '',
-}
