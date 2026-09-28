@@ -1282,7 +1282,15 @@ image passe désormais par le disque `public` — `Storage::delete()` sans disqu
 vise `local` et n'effaçait donc jamais l'ancien fichier (même biais sur les
 diapositives, les étapes et l'image Open Graph, non touchées ici).
 
-## 31. 🔴 Newsletter : e-mail de confirmation fragile et uniquement en français
+## 31. ✅ Codé (back-office, `staging`, `59c1c00`) : newsletter, e-mail de confirmation fragile et uniquement en français
+
+> Mise en œuvre le 2026-09-28 conformément aux points ci-dessous, avec 8 tests
+> Pest (`tests/Feature/Api/NewsletterSubscriptionTest.php`). Écart : le
+> paramètre de la notification s'appelle `lang` et non `locale`, car
+> `Notification::$locale` existe déjà dans Laravel. En plus : `lang/fr.json`
+> traduit le bas de message du gabarit de mail Laravel (« Si le bouton ne
+> fonctionne pas... », « Cordialement »), ce qui profite aussi aux autres
+> e-mails rendus en français. Reste à faire : `FRONT_URL` (31.3).
 
 Le champ newsletter du pied de page desktop est branché depuis le 2026-09-28
 (front `535a47b`) sur `POST /api/newsletter`. Le lien de l'e-mail revient sur
@@ -1354,7 +1362,7 @@ front envoie à chaque appel (`LanguageMiddleware`). Le site est en `fr` ou `en`
 **À faire :**
 
 - Passer la langue à la notification :
-  `new NewsletterConfirmationNotification(email: $email, token: $token, locale: $saved->lang)`
+  `new NewsletterConfirmationNotification(email: $email, token: $token, lang: $saved->lang)`
   (même principe que `PostPurchaseDataCollectionNotification::$userLocale`).
   `sendNewsletterConfirmation()` reçoit donc la locale en plus.
 - Dans `toMail()`, suivre le modèle déjà en place dans le projet
