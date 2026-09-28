@@ -1,6 +1,11 @@
 <script setup lang="ts">
 /**
- * Lien nav + sous-menu — effet legacy (fade 0,5s, barre rouge, drapeaux).
+ * Section de nav + sous-menu, effet legacy (fade 0,5s, barre rouge, drapeaux).
+ *
+ * L'intitulé n'est pas un lien : les pages de section n'ont pas encore d'écran
+ * desktop (voir `desktopNavSections`), seules les entrées du sous-menu mènent
+ * quelque part. C'est un bouton : le survol ouvre le sous-menu, le clic (ou
+ * Entrée au clavier, ou un appui tactile) l'ouvre et le referme.
  */
 import type { DesktopNavSectionId } from '~/config/desktop-navigation'
 
@@ -16,7 +21,6 @@ export interface DesktopNavDropdownItem {
 const props = defineProps<{
   menuId: DesktopNavSectionId
   label: string
-  to: string
   items: DesktopNavDropdownItem[]
   open?: boolean
 }>()
@@ -31,6 +35,10 @@ function onEnter() {
 
 function onLeave() {
   if (props.open) close()
+}
+
+function toggle() {
+  openId.value = props.open ? null : props.menuId
 }
 
 watch(() => props.open, (isOpen, _wasOpen, onCleanup) => {
@@ -61,15 +69,16 @@ watch(() => props.open, (isOpen, _wasOpen, onCleanup) => {
     @mouseenter="onEnter"
     @mouseleave="onLeave"
   >
-    <NuxtLink
-      :to="localePath(to)"
-      class="relative flex h-full items-center whitespace-nowrap px-10 pt-30 pb-26 text-[15px] font-medium text-[#3f4254] no-underline transition-colors duration-150 group-hover:text-[#fc1e3d]"
+    <button
+      type="button"
+      class="relative flex h-full cursor-default items-center whitespace-nowrap border-0 bg-transparent px-10 pt-30 pb-26 text-[15px] font-medium text-[#3f4254] transition-colors duration-150 group-hover:text-[#fc1e3d]"
       :class="open && 'text-[#fc1e3d]'"
-      :aria-expanded="open ? 'true' : undefined"
-      :aria-haspopup="items.length > 0 ? 'menu' : undefined"
+      :aria-expanded="open ? 'true' : 'false'"
+      aria-haspopup="menu"
+      @click="toggle"
     >
       {{ label }}
-    </NuxtLink>
+    </button>
     <span
       aria-hidden="true"
       class="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-4 origin-center rounded-[5px] bg-[#ff3942] transition-transform duration-500"

@@ -35,11 +35,19 @@ export const desktopNavLinks: DesktopNavLink[] = [
 /** Sections topbar legacy (`legacy/src/components/molecules/Menu.vue`). */
 export type DesktopNavSectionId = 'destinations' | 'courses' | 'living' | 'mba'
 
-export const desktopNavSections: { id: DesktopNavSectionId, fallbackLabelKey: string, to: string }[] = [
-  { id: 'destinations', fallbackLabelKey: 'desktop.nav.school', to: '/destinations' },
-  { id: 'courses', fallbackLabelKey: 'desktop.nav.languages', to: '/langues' },
-  { id: 'living', fallbackLabelKey: 'desktop.nav.housing', to: '/logement' },
-  { id: 'mba', fallbackLabelKey: 'desktop.nav.mba', to: '/destinations' },
+/**
+ * Pas de `to` : sur desktop, l'intitulé d'une section n'est pas un lien, seul
+ * son sous-menu l'est (2026-09-28). Les pages d'accueil de section
+ * (`/destinations`, `/langues`, `/logement`, MBA) n'ont pas encore d'écran
+ * desktop : `/destinations` affichait l'écran mobile étiré, `/langues` et
+ * `/logement` la fiche d'une langue ou d'un pays par défaut. À rétablir quand
+ * Kader livrera ces écrans.
+ */
+export const desktopNavSections: { id: DesktopNavSectionId, fallbackLabelKey: string }[] = [
+  { id: 'destinations', fallbackLabelKey: 'desktop.nav.school' },
+  { id: 'courses', fallbackLabelKey: 'desktop.nav.languages' },
+  { id: 'living', fallbackLabelKey: 'desktop.nav.housing' },
+  { id: 'mba', fallbackLabelKey: 'desktop.nav.mba' },
 ]
 
 export function desktopNavEntryHref(sectionId: DesktopNavSectionId, slug: string): string {

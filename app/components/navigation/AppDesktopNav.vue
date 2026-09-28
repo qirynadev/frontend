@@ -87,7 +87,6 @@ const navItems = computed(() =>
     return {
       id: section.id,
       label: menuSection?.label || t(section.fallbackLabelKey),
-      to: section.to,
       items,
     }
   }),
@@ -182,11 +181,10 @@ const navItems = computed(() =>
               v-if="item.items.length > 0"
               :menu-id="item.id"
               :label="item.label"
-              :to="item.to"
               :items="item.items"
               :open="openId === item.id"
             />
-            <AppDesktopNavItem v-else :to="item.to">
+            <AppDesktopNavItem v-else>
               {{ item.label }}
             </AppDesktopNavItem>
           </template>
