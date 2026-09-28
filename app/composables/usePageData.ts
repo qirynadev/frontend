@@ -1,3 +1,4 @@
+import type { MaybeRefOrGetter } from 'vue'
 import { ApiError } from '~/core/http/errors'
 
 /**
@@ -20,8 +21,16 @@ export interface PageDataOptions {
   keepPrevious?: boolean
 }
 
+/**
+ * `key` peut être réactive (getter) : une page qui sert plusieurs adresses
+ * (`/destinations/europe/ecoles` puis `/destinations/asie/ecoles`) doit avoir
+ * une clé par adresse. Avec une clé fixe, une navigation entre deux de ces
+ * adresses reprenait les données de la première : la charge utile de la route
+ * (`_payload.json`, routes `swr`) arrivait bien, mais l'entrée `useAsyncData`
+ * déjà remplie sous la même clé l'emportait (2026-09-28).
+ */
 export async function usePageData<T>(
-  key: string,
+  key: MaybeRefOrGetter<string>,
   handler: () => Promise<T>,
   options: PageDataOptions = {},
 ) {

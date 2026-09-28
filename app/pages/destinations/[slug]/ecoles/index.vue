@@ -75,7 +75,8 @@ const domaineParam = computed(() => String(route.query.domaine ?? ''))
 const chipsRef = ref<HTMLDivElement | null>(null)
 
 const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
-  'school-list',
+  // Une clé par destination ou zone : voir `usePageData`.
+  () => `school-list-${apiSlug.value}`,
   async () => {
     const catalog = await catalogRepo.load(locale.value)
     const zone = (catalog.menu?.mba?.entries ?? []).find(entry => entry.slug === apiSlug.value) ?? null
