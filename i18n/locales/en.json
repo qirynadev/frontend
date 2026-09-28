@@ -633,7 +633,9 @@
       "mention": "Legals",
       "newsletter": "Newsletter",
       "newsletterDesc": "Get our tips and deals every week.",
+      "newsletterError": "Subscription is unavailable right now. Please try again later.",
       "newsletterLegal": "By signing up, you accept our privacy policy.",
+      "newsletterSent": "Thank you! Confirm your subscription from the email we just sent you.",
       "privacy": "Privacy policy",
       "profiling": "Career profiling",
       "school": "School profile",
@@ -1530,6 +1532,13 @@
     "orientation": "Guidance",
     "project": "My project",
     "signedIn": "signed in"
+  },
+  "newsletterNotice": {
+    "confirmedMessage": "You will now receive our tips and deals.",
+    "confirmedTitle": "Newsletter subscription confirmed",
+    "dismiss": "Close",
+    "invalidMessage": "This link has already been used or is no longer valid. Subscribe again from the page footer if needed.",
+    "invalidTitle": "Invalid confirmation link"
   },
   "offer": {
     "choose": "Choose this plan",

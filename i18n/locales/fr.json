@@ -633,7 +633,9 @@
       "mention": "Mentions légales",
       "newsletter": "Newsletter",
       "newsletterDesc": "Recevez nos conseils et bons plans chaque semaine.",
+      "newsletterError": "Inscription impossible pour le moment. Réessayez plus tard.",
       "newsletterLegal": "En vous inscrivant, vous acceptez notre politique de confidentialité.",
+      "newsletterSent": "Merci ! Confirmez votre inscription depuis l’e-mail que nous venons de vous envoyer.",
       "privacy": "Politique de confidentialité",
       "profiling": "Profilage d'orientation",
       "school": "Fiche école",
@@ -1530,6 +1532,13 @@
     "orientation": "Orientation",
     "project": "Mon projet",
     "signedIn": "connecté"
+  },
+  "newsletterNotice": {
+    "confirmedMessage": "Vous recevrez désormais nos conseils et bons plans.",
+    "confirmedTitle": "Inscription à la newsletter confirmée",
+    "dismiss": "Fermer",
+    "invalidMessage": "Ce lien a déjà servi ou n’est plus valide. Réinscrivez-vous depuis le bas de page si besoin.",
+    "invalidTitle": "Lien de confirmation invalide"
   },
   "offer": {
     "choose": "Choisir cette formule",

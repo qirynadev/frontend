@@ -5,6 +5,8 @@
  * Pas de `lg:` / `flex-wrap` : le zoom 1728 du shell conserve la composition.
  */
 import type { Branding } from '~/core/contracts'
+import { ApiError } from '~/core/http/errors'
+import { newsletterRepo } from '~/core/repositories'
 import { useCatalogStore } from '~/core/stores'
 
 const ASSET = '/img/desktop/legacy'
@@ -26,7 +28,10 @@ const logoDarkEnEchec = ref(false)
 const logoFooter = computed(() =>
   (logoDarkEnEchec.value ? null : branding.value?.logoDark) || LOGO_LOCAL)
 
+const { t, locale } = useI18n()
 const email = ref('')
+const newsletterState = ref<'idle' | 'sending' | 'sent'>('idle')
+const newsletterError = ref('')
 const carouselIndex = ref(0)
 const paused = ref(false)
 
@@ -71,8 +76,28 @@ function socialIcon(name: string): string | null {
   return `${ASSET}/social/${file}-outline.svg`
 }
 
-function onNewsletterSubmit(event: Event) {
-  event.preventDefault()
+/**
+ * Double opt-in : le back-office enregistre l'adresse et envoie un e-mail de
+ * confirmation (`server/api/bff/newsletter.post.ts`). Un refus 422 (adresse
+ * invalide, déjà inscrite) arrive avec un message déjà traduit, affiché tel
+ * quel ; toute autre erreur reçoit un message générique.
+ */
+async function onNewsletterSubmit() {
+  const value = email.value.trim()
+  if (value === '' || newsletterState.value === 'sending') return
+  newsletterState.value = 'sending'
+  newsletterError.value = ''
+  try {
+    await newsletterRepo.subscribe(value, locale.value)
+    newsletterState.value = 'sent'
+    email.value = ''
+  }
+  catch (error) {
+    newsletterState.value = 'idle'
+    newsletterError.value = error instanceof ApiError && error.kind === 'validation'
+      ? error.message
+      : t('desktop.footer.newsletterError')
+  }
 }
 </script>
 
@@ -223,9 +248,14 @@ function onNewsletterSubmit(event: Event) {
 
             <div class="mt-[-10px] w-1/4 shrink-0 ps-10">
               <h3 class="my-10 text-[20px] font-medium text-white">{{ $t('desktop.footer.newsletter') }}</h3>
+              <p v-if="newsletterState === 'sent'" class="mt-20 mr-10 text-[14px] text-white" role="status">
+                {{ $t('desktop.footer.newsletterSent') }}
+              </p>
               <form
+                v-else
                 class="mt-20 mr-10 flex items-center justify-between rounded-full bg-white py-2 pr-2 pl-5"
-                @submit="onNewsletterSubmit"
+                :aria-busy="newsletterState === 'sending'"
+                @submit.prevent="onNewsletterSubmit"
               >
                 <label class="sr-only" for="desktop-newsletter-email">{{ $t('desktop.footer.emailPlaceholderLegacy') }}</label>
                 <input
@@ -233,17 +263,24 @@ function onNewsletterSubmit(event: Event) {
                   v-model="email"
                   type="email"
                   required
+                  autocomplete="email"
+                  :aria-invalid="newsletterError !== ''"
+                  :aria-describedby="newsletterError !== '' ? 'desktop-newsletter-error' : undefined"
                   :placeholder="$t('desktop.footer.emailPlaceholderLegacy')"
                   class="min-w-0 flex-1 border-0 bg-transparent py-8 pl-10 text-[13px] text-[#273c66] outline-none placeholder:text-[#757575]"
                 >
                 <button
                   type="submit"
-                  class="flex size-38 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-[#ff3942] p-0 transition-colors hover:bg-[#273c66]"
+                  :disabled="newsletterState === 'sending'"
+                  class="flex size-38 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-[#ff3942] p-0 transition-colors hover:bg-[#273c66] disabled:cursor-wait disabled:opacity-60"
                   :aria-label="$t('desktop.footer.subscribe')"
                 >
                   <NuxtImg :src="`${ASSET}/mail.png`" alt="" width="20" height="20" format="webp" loading="lazy" decoding="async" class="size-20 object-contain" />
                 </button>
               </form>
+              <p v-if="newsletterError" id="desktop-newsletter-error" class="mt-8 mr-10 text-[13px] text-[#ffb3b6]" role="alert">
+                {{ newsletterError }}
+              </p>
             </div>
           </div>
 
