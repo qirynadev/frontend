@@ -1282,6 +1282,116 @@ image passe désormais par le disque `public` — `Storage::delete()` sans disqu
 vise `local` et n'effaçait donc jamais l'ancien fichier (même biais sur les
 diapositives, les étapes et l'image Open Graph, non touchées ici).
 
+## 31. 🔴 Newsletter : e-mail de confirmation fragile et uniquement en français
+
+Le champ newsletter du pied de page desktop est branché depuis le 2026-09-28
+(front `535a47b`) sur `POST /api/newsletter`. Le lien de l'e-mail revient sur
+`FRONT_URL/newsletter-confirmation?token=...`, que le front traite
+(`server/routes/newsletter-confirmation.get.ts` : validation du jeton via
+`GET /api/newsletter-confirmation`, puis retour à l'accueil avec un avis).
+Deux défauts restent côté back-office.
+
+### 31.1 L'envoi n'est pas en file d'attente, et un échec bloque l'adresse
+
+Aujourd'hui, dans `FrontendDataController::newsletter()` :
+
+1. la validation `unique:newletters` refuse toute adresse déjà présente en
+   base, **confirmée ou non** ;
+2. la ligne est créée (`status = false`, `token` aléatoire) ;
+3. `MessageAction::sendNewsletterConfirmation()` envoie l'e-mail **de façon
+   synchrone** : `NewsletterConfirmationNotification` importe `ShouldQueue`
+   mais ne l'implémente pas.
+
+Si le SMTP échoue à l'étape 3, la requête part en 500 alors que la ligne existe
+déjà. L'utilisateur voit une erreur, réessaie, reçoit « Cet email est déjà
+utilisé », et ne reçoit jamais le lien : l'adresse est bloquée sans recours.
+
+**À faire :**
+
+- **Mettre l'envoi en file d'attente** :
+  `class NewsletterConfirmationNotification extends Notification implements ShouldQueue`.
+  Le worker existe déjà (`routes/console.php` : `queue:work --stop-when-empty
+  --tries=3` chaque minute via `schedule:run`, `QUEUE_CONNECTION=database`).
+  Un SMTP momentanément indisponible ne fait alors plus échouer la requête,
+  et l'envoi est retenté 3 fois.
+- **Ne refuser que les adresses confirmées.** Remplacer `unique:newletters`
+  par une règle en deux temps :
+  - adresse absente : création, comme aujourd'hui ;
+  - adresse présente avec `status = false` (jamais confirmée) : **nouveau
+    `token`**, mise à jour de `lang` avec la locale courante, **renvoi** de
+    l'e-mail, réponse `201` identique à une première inscription ;
+  - adresse présente avec `status = true` : `422` avec
+    `responses.newsletter.taken`, comme aujourd'hui.
+
+  Ainsi, un e-mail perdu (échec d'envoi, spam, lien expiré) se rattrape en se
+  réinscrivant depuis le pied de page.
+- **Ajouter la clé manquante** `responses.newsletter.unsaved`, utilisée par le
+  contrôleur mais absente de `lang/fr/responses.php` et `lang/en/responses.php`
+  (le client reçoit la clé brute).
+- **Tests Pest** (avec `Notification::fake()`) :
+  - première inscription → `201`, notification envoyée à l'adresse
+    (`assertSentOnDemand`) ;
+  - réinscription d'une adresse non confirmée → `201`, jeton changé,
+    notification renvoyée ;
+  - réinscription d'une adresse confirmée → `422` ;
+  - la notification implémente `ShouldQueue`.
+
+**Contrat inchangé pour le front** : `201` en cas de succès, `422` avec un
+`message` traduit sinon. Aucune modification front nécessaire.
+
+### 31.2 L'e-mail est rédigé en français seulement
+
+`NewsletterConfirmationNotification::toMail()` écrit ses lignes en dur en
+français, sans `->subject()` : l'objet affiché est alors celui que Laravel
+déduit du nom de classe (« Newsletter Confirmation Notification »), en
+anglais, quelle que soit la langue.
+
+La langue de l'inscrit est pourtant connue : la colonne `newletters.lang` est
+remplie avec `app()->getLocale()`, lui-même tiré de l'en-tête `lang` que le
+front envoie à chaque appel (`LanguageMiddleware`). Le site est en `fr` ou `en`
+(en-tête `lang: en` sur `/en/...`).
+
+**À faire :**
+
+- Passer la langue à la notification :
+  `new NewsletterConfirmationNotification(email: $email, token: $token, locale: $saved->lang)`
+  (même principe que `PostPurchaseDataCollectionNotification::$userLocale`).
+  `sendNewsletterConfirmation()` reçoit donc la locale en plus.
+- Dans `toMail()`, suivre le modèle déjà en place dans le projet
+  (`PlanningReminderNotification`, `OrderVerificationStatusNotification`) :
+  `$this->locale === 'fr' ? $this->toMailFrench() : $this->toMailEnglish()`,
+  chacun avec **son `->subject()`**, sa salutation, son texte et le libellé
+  de son bouton. Toute locale inconnue retombe sur le français.
+  Proposition de textes :
+  - FR : objet « Confirmez votre inscription à la newsletter Qiryna » ;
+    « Bonjour, », « Merci de vous être inscrit à la newsletter Qiryna.
+    Confirmez votre adresse pour recevoir nos conseils et bons plans. »,
+    bouton « Confirmer mon inscription », puis « Si vous n'êtes pas à
+    l'origine de cette demande, ignorez simplement cet e-mail. »
+  - EN : subject "Confirm your Qiryna newsletter subscription" ; "Hello,",
+    "Thank you for subscribing to the Qiryna newsletter. Confirm your address
+    to receive our tips and deals.", button "Confirm my subscription", then
+    "If you did not request this, you can simply ignore this email."
+- **Lien** : garder le chemin **sans préfixe de langue** et porter la langue
+  en paramètre, **seulement pour une locale autre que le français** :
+  - FR : `FRONT_URL/newsletter-confirmation?token=XXX`
+  - EN : `FRONT_URL/newsletter-confirmation?token=XXX&lang=en`
+
+  Le front traite déjà `lang` (front, 2026-09-28) : après validation, il
+  renvoie sur `/` ou `/en` avec l'avis dans la bonne langue. Ne **pas**
+  utiliser `localizedPath()` ici : `/en/newsletter-confirmation` n'existe pas
+  côté front.
+- Test Pest : une inscription avec l'en-tête `lang: en` produit un e-mail dont
+  l'objet est en anglais et dont le lien contient `&lang=en`.
+
+### 31.3 Prérequis d'environnement
+
+`FRONT_URL` doit être renseigné en recette et en production avec l'hôte du
+front (`https://my.qiryna.com` ou `https://danube.qiryna.com` selon
+l'environnement, puis `https://qiryna.com` à la mise en ligne). Sans cela, la
+valeur par défaut `https://qiryna.com` s'applique, et le lien de confirmation
+mène à un site qui n'est pas encore en ligne.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

@@ -2,13 +2,19 @@
  * Lien de l'e-mail de double opt-in de la newsletter.
  *
  * Le back-office l'écrit en dur (`NewsletterConfirmationNotification` :
- * `FRONT_URL/newsletter-confirmation?token=…`). Aucune page ici : la route
- * valide le jeton auprès de l'API puis renvoie à l'accueil avec
- * `?newsletter=confirmed|invalid`, que `NewsletterNotice` affiche sur les deux
- * shells.
+ * `FRONT_URL/newsletter-confirmation?token=…[&lang=en]`). Aucune page ici : la
+ * route valide le jeton auprès de l'API puis renvoie à l'accueil, dans la
+ * langue de l'inscription, avec `?newsletter=confirmed|invalid`, que
+ * `NewsletterNotice` affiche sur les deux shells.
+ *
+ * Le chemin reste sans préfixe de langue quelle que soit la locale : c'est
+ * `lang` qui la porte (directives-backend §31).
  */
+const LOCALES = new Set(['fr', 'en'])
+
 export default defineEventHandler(async (event) => {
-  const token = getQuery(event).token
+  const { token, lang } = getQuery(event)
+  const locale = typeof lang === 'string' && LOCALES.has(lang) ? lang : 'fr'
   let status: 'confirmed' | 'invalid' = 'invalid'
 
   if (typeof token === 'string' && token !== '') {
@@ -21,5 +27,6 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  return sendRedirect(event, `/?newsletter=${status}`, 302)
+  const home = locale === 'fr' ? '/' : `/${locale}`
+  return sendRedirect(event, `${home}?newsletter=${status}`, 302)
 })
