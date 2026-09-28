@@ -1,3 +1,4 @@
+import type { AreaOfStudySummary } from './area'
 import type { Country, SeoMeta } from './common'
 
 /**
@@ -72,4 +73,18 @@ export interface School extends SchoolSummary {
    */
   pointsForts: string
   seo: SeoMeta
+}
+
+/**
+ * Écoles MBA d'une zone (`GET /api/bff/mba/{region}`), page par page.
+ * `area` est le domaine MBA, `null` si le back-office ne l'a pas renvoyé.
+ */
+export interface MbaRegionSchools {
+  region: { slug: string, title: string }
+  area: AreaOfStudySummary | null
+  items: SchoolSummary[]
+  page: number
+  perPage: number
+  total: number
+  totalPages: number
 }

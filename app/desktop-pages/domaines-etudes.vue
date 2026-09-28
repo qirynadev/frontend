@@ -75,8 +75,12 @@ function invertTabIcon(area: AreaOfStudySummary) {
   return props.selectedDomain === area.slug && area.slug !== 'management'
 }
 
+/**
+ * Sous le pays de l'école quand elle le porte (liste MBA par zone : une zone
+ * n'est pas une destination), sous la destination de la page sinon.
+ */
 function schoolHref(school: SchoolSummary) {
-  const base = `/destinations/${props.destinationSlug}/ecoles/${school.slug}`
+  const base = `/destinations/${school.destinationSlug || props.destinationSlug}/ecoles/${school.slug}`
   return localePath(props.selectedDomain ? `${base}?domaine=${props.selectedDomain}` : base)
 }
 

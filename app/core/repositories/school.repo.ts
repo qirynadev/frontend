@@ -1,4 +1,4 @@
-import type { School, SchoolFormation, SchoolSummary } from '../contracts'
+import type { MbaRegionSchools, School, SchoolFormation, SchoolSummary } from '../contracts'
 import { ApiError } from '../http/errors'
 import { bffFetch } from '../http/client'
 
@@ -34,6 +34,11 @@ export interface SchoolPage {
  * pas.
  */
 export const schoolRepo = {
+  /** Écoles MBA d'une zone du menu (`afrique`, `europe`...), domaine MBA inclus. */
+  mbaByRegion(region: string, page = 1, locale?: string): Promise<MbaRegionSchools> {
+    return bffFetch<MbaRegionSchools>(`/mba/${encodeURIComponent(region)}`, { locale, query: { page } })
+  },
+
   list(query: SchoolQuery = {}, locale?: string): Promise<SchoolPage> {
     return bffFetch<SchoolPage>('/schools', {
       locale,

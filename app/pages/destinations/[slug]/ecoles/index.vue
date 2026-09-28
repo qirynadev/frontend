@@ -43,6 +43,14 @@
  * `useState`/cookie/fenêtre de 30 min → pages qui se recouvraient) sont
  * abandonnées. Contrepartie assumée : l'ordre ne tourne pas d'une visite à
  * l'autre.
+ *
+ * **Mode « zone MBA »** (2026-09-28) : MBA est un domaine d'études dont les
+ * écoles se présentent par zone (sous-menu desktop « MBA » : Afrique,
+ * Amériques, Asie, Europe) plutôt que par pays. Quand le slug est une zone de
+ * ce menu (`catalog.menu.mba`), la même liste affiche les écoles MBA de la
+ * zone (`schoolRepo.mbaByRegion`, 4 par page), puce MBA seule et allumée ;
+ * chaque école s'ouvre sous le pays qui est le sien (`school.destinationSlug`),
+ * pas sous la zone.
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
@@ -64,10 +72,21 @@ const chipsRef = ref<HTMLDivElement | null>(null)
 const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
   'school-list',
   async () => {
-    const [areas, catalog] = await Promise.all([
-      destinationRepo.areas(apiSlug.value, locale.value),
-      catalogRepo.load(locale.value),
-    ])
+    const catalog = await catalogRepo.load(locale.value)
+    const zone = (catalog.menu?.mba?.entries ?? []).find(entry => entry.slug === apiSlug.value) ?? null
+
+    if (zone) {
+      const mba = await schoolRepo.mbaByRegion(zone.slug, page.value, locale.value)
+      return {
+        result: { items: mba.items, page: mba.page, perPage: mba.perPage, total: mba.total, totalPages: mba.totalPages },
+        areas: mba.area ? [mba.area] : [],
+        selectedSlug: mba.area?.slug ?? '',
+        destination: null,
+        zone,
+      }
+    }
+
+    const areas = await destinationRepo.areas(apiSlug.value, locale.value)
     // Sans `?domaine=`, aucun onglet n'est préselectionné (CTA pays).
     const selected = domaineParam.value
       ? areas.find(area => area.slug === domaineParam.value) ?? null
@@ -85,6 +104,7 @@ const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
       areas,
       selectedSlug: selected?.slug ?? '',
       destination: catalog.destinations.find(item => item.slug === apiSlug.value) ?? null,
+      zone: null,
     }
   },
   { watch: [apiSlug, page, domaineParam, locale] },
@@ -94,7 +114,14 @@ const result = computed(() => data.value?.result ?? null)
 const schools = computed(() => result.value?.items ?? [])
 const areas = computed(() => data.value?.areas ?? [])
 const selectedDomain = computed(() => data.value?.selectedSlug ?? '')
-const destinationName = computed(() => data.value?.destination?.title ?? slug.value)
+const zone = computed(() => data.value?.zone ?? null)
+const destinationName = computed(() => zone.value?.title ?? data.value?.destination?.title ?? slug.value)
+
+/** Fiche d'une école : sous son propre pays en mode zone, sous la destination sinon. */
+function schoolPath(school: { slug: string, destinationSlug: string }) {
+  const base = `/destinations/${(zone.value && school.destinationSlug) || apiSlug.value}/ecoles/${school.slug}`
+  return localePath(selectedDomain.value ? `${base}?domaine=${selectedDomain.value}` : base)
+}
 
 function setDomain(areaSlug: string) {
   router.replace({ query: { ...route.query, domaine: areaSlug, page: undefined } })
@@ -128,7 +155,7 @@ usePageSeo(() => ({
 
 <template>
   <div class="shell:hidden">
-  <AppTopBar back :back-to="`/destinations/${apiSlug}`" :gap="22" />
+  <AppTopBar back :back-to="zone ? '/destinations' : `/destinations/${apiSlug}`" :gap="22" />
 
   <!-- Carrousel de domaines (.le-domains) -->
   <div class="box-border flex w-full flex-col items-stretch gap-22">
@@ -214,9 +241,7 @@ usePageSeo(() => ({
         <NuxtLink
           v-for="school in schools"
           :key="school.id"
-          :to="localePath(selectedDomain
-            ? `/destinations/${apiSlug}/ecoles/${school.slug}?domaine=${selectedDomain}`
-            : `/destinations/${apiSlug}/ecoles/${school.slug}`)"
+          :to="schoolPath(school)"
           class="box-border flex w-full items-center rounded-xl bg-white p-10 text-inherit no-underline shadow-card"
         >
           <!-- Logo 64×64 -->

@@ -59,6 +59,8 @@ export function desktopNavEntryHref(sectionId: DesktopNavSectionId, slug: string
     case 'living':
       return `/logement/${slug}/decouverte`
     case 'mba':
-      return '/destinations'
+      // Zone (afrique, europe...) : liste des écoles MBA de la zone, MBA
+      // traité comme un domaine d'études (voir `destinations/[slug]/ecoles`).
+      return `/destinations/${slug}/ecoles?domaine=mba`
   }
 }
