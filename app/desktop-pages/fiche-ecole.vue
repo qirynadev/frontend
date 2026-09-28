@@ -104,16 +104,22 @@ function similarLocation(item: SchoolSummary) {
 
         <div class="absolute inset-x-0 bottom-0 z-1 flex items-end gap-36 px-32 pb-24">
           <div class="flex h-198 w-189 shrink-0 items-center justify-center rounded-[16px] bg-white px-16 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]">
+            <!--
+              Tout le cadre (189 × 198, moins `px-16`) : l'ancien plafond 150 × 52
+              réduisait un logo carré (la plupart) à 52 px de haut, perdu au milieu
+              du blanc. Un logo large garde toute la largeur, un logo carré ou haut
+              occupe la hauteur.
+            -->
             <NuxtImg
               v-if="school.logo"
               :src="school.logo"
               :alt="school.title"
-              width="150"
-              height="52"
+              width="157"
+              height="166"
               format="webp"
               fit="contain"
               background="white"
-              class="max-h-52 max-w-150 object-contain"
+              class="max-h-166 max-w-157 object-contain"
             />
             <QIcon v-else name="building" :size="40" class="text-muted" />
           </div>
