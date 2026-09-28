@@ -48,14 +48,19 @@
  * écoles se présentent par zone (sous-menu desktop « MBA » : Afrique,
  * Amériques, Asie, Europe) plutôt que par pays. Quand le slug est une zone de
  * ce menu (`catalog.menu.mba`), la même liste affiche les écoles MBA de la
- * zone (`schoolRepo.mbaByRegion`, 4 par page), puce MBA seule et allumée ;
- * chaque école s'ouvre sous le pays qui est le sien (`school.destinationSlug`),
- * pas sous la zone.
+ * zone (`schoolRepo.mbaByRegion`, 4 par page). Les onglets deviennent les
+ * zones qui ont des écoles (zone courante allumée, un clic ouvre la zone), le
+ * titre desktop le libellé de la rubrique MBA, le sous-titre « par zone »
+ * (demande du 2026-09-28). Chaque école s'ouvre sous le pays qui est le sien
+ * (`school.destinationSlug`), pas sous la zone, avec `?domaine=mba`.
  */
 import { domainAreaVisual } from '~/config/domain-area-visual'
 import { catalogRepo, destinationRepo, schoolRepo } from '~/core/repositories'
 import { resolveDestinationApiSlug } from '~/config/destination-slugs'
 import DesktopDomainesEtudes from '~/desktop-pages/domaines-etudes.vue'
+import type { AreaOfStudySummary } from '~/core/contracts'
+
+const ZONE_TAB_ICON = '/img/desktop/domaines/globe.svg'
 
 const route = useRoute()
 const router = useRouter()
@@ -77,12 +82,21 @@ const { data, status, apiError, isInitialLoading, refresh } = await usePageData(
 
     if (zone) {
       const mba = await schoolRepo.mbaByRegion(zone.slug, page.value, locale.value)
+      // Les zones prennent la place des domaines dans les onglets : même forme
+      // (`AreaOfStudySummary`), icône globe commune.
+      const zoneTabs: AreaOfStudySummary[] = mba.zones.map(item => ({
+        id: item.slug,
+        slug: item.slug,
+        title: item.title,
+        icon: ZONE_TAB_ICON,
+        schoolCount: item.schoolCount,
+      }))
       return {
         result: { items: mba.items, page: mba.page, perPage: mba.perPage, total: mba.total, totalPages: mba.totalPages },
-        areas: mba.area ? [mba.area] : [],
-        selectedSlug: mba.area?.slug ?? '',
+        areas: zoneTabs,
+        selectedSlug: zone.slug,
         destination: null,
-        zone,
+        zone: { slug: zone.slug, title: zone.title, sectionLabel: mba.sectionLabel },
       }
     }
 
@@ -116,14 +130,21 @@ const areas = computed(() => data.value?.areas ?? [])
 const selectedDomain = computed(() => data.value?.selectedSlug ?? '')
 const zone = computed(() => data.value?.zone ?? null)
 const destinationName = computed(() => zone.value?.title ?? data.value?.destination?.title ?? slug.value)
+/** Domaine transmis à la fiche école : MBA en mode zone (l'onglet y est une zone). */
+const schoolDomain = computed(() => (zone.value ? 'mba' : selectedDomain.value))
 
 /** Fiche d'une école : sous son propre pays en mode zone, sous la destination sinon. */
 function schoolPath(school: { slug: string, destinationSlug: string }) {
   const base = `/destinations/${(zone.value && school.destinationSlug) || apiSlug.value}/ecoles/${school.slug}`
-  return localePath(selectedDomain.value ? `${base}?domaine=${selectedDomain.value}` : base)
+  return localePath(schoolDomain.value ? `${base}?domaine=${schoolDomain.value}` : base)
 }
 
 function setDomain(areaSlug: string) {
+  // Mode zone : l'onglet est une autre zone, donc une autre adresse.
+  if (zone.value) {
+    if (areaSlug !== zone.value.slug) router.push(localePath(`/destinations/${areaSlug}/ecoles?domaine=mba`))
+    return
+  }
   router.replace({ query: { ...route.query, domaine: areaSlug, page: undefined } })
   nextTick(() => {
     const chips = chipsRef.value
@@ -322,6 +343,10 @@ usePageSeo(() => ({
       :areas="areas"
       :schools="schools"
       :selected-domain="selectedDomain"
+      :school-domain="schoolDomain"
+      :title="zone?.sectionLabel"
+      :keep-order="!!zone"
+      :subtitle="zone ? $t('desktop.domaines.zoneSubtitle') : undefined"
       :destination-slug="apiSlug"
       :loading="!!isInitialLoading"
       :error="apiError"

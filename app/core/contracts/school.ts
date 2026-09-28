@@ -81,6 +81,13 @@ export interface School extends SchoolSummary {
  */
 export interface MbaRegionSchools {
   region: { slug: string, title: string }
+  /** Libellé de la rubrique MBA tel qu'administré (menu), titre de la liste. */
+  sectionLabel: string
+  /**
+   * Zones du menu MBA qui ont au moins une école, dans l'ordre du menu ; la
+   * zone demandée y figure toujours, même vide.
+   */
+  zones: { slug: string, title: string, schoolCount: number }[]
   area: AreaOfStudySummary | null
   items: SchoolSummary[]
   page: number

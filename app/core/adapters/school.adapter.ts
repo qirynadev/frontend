@@ -113,7 +113,7 @@ export function toMbaRegionSchools(
   destinations: { slug: string, country: { id: string | null } }[],
   requestedPage: number,
   flagBase?: string,
-): MbaRegionSchools {
+): Omit<MbaRegionSchools, 'sectionLabel' | 'zones'> {
   const source = asRecord(raw)
   const items = asArray(source.data).map((school) => {
     const summary = toSchoolSummary(school, '', flagBase)
@@ -132,4 +132,22 @@ export function toMbaRegionSchools(
     total: optionalNum(source, 'total') ?? items.length,
     totalPages: optionalNum(source, 'last_page') ?? 1,
   }
+}
+
+/**
+ * Onglets de la liste MBA par zone : les zones du menu qui ont au moins une
+ * école (comme les domaines d'une destination, 2026-09-12), dans l'ordre du
+ * menu. La zone affichée reste présente même vide, pour que son onglet soit
+ * allumé ; un total inconnu (`null`, appel en échec) garde la zone plutôt que
+ * de la faire disparaître sur une panne ponctuelle.
+ */
+export function toMbaZones(
+  entries: { slug: string, title: string }[],
+  totals: (number | null)[],
+  currentSlug: string,
+): MbaRegionSchools['zones'] {
+  return entries
+    .map((entry, index) => ({ slug: entry.slug, title: entry.title, schoolCount: totals[index] ?? -1 }))
+    .filter(zone => zone.slug === currentSlug || zone.schoolCount !== 0)
+    .map(zone => ({ ...zone, schoolCount: Math.max(0, zone.schoolCount) }))
 }

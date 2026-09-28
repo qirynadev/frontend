@@ -13,6 +13,13 @@ const props = defineProps<{
   areas: AreaOfStudySummary[]
   schools: SchoolSummary[]
   selectedDomain: string
+  /** Domaine transmis aux fiches école ; `selectedDomain` par défaut (liste MBA par zone : `mba`). */
+  schoolDomain?: string
+  /** Titre et sous-titre de l'en-tête ; ceux des domaines d'études par défaut. */
+  title?: string
+  subtitle?: string
+  /** Garde l'ordre reçu au lieu de placer l'onglet allumé en tête (zones MBA). */
+  keepOrder?: boolean
   destinationSlug: string
   loading: boolean
   error?: ApiError | null
@@ -37,7 +44,7 @@ const tabOffset = ref(0)
 
 const orderedAreas = computed(() => {
   const selected = props.selectedDomain
-  if (!selected) return props.areas
+  if (!selected || props.keepOrder) return props.areas
   const match = props.areas.find(area => area.slug === selected)
   if (!match) return props.areas
   return [match, ...props.areas.filter(area => area.slug !== selected)]
@@ -81,7 +88,8 @@ function invertTabIcon(area: AreaOfStudySummary) {
  */
 function schoolHref(school: SchoolSummary) {
   const base = `/destinations/${school.destinationSlug || props.destinationSlug}/ecoles/${school.slug}`
-  return localePath(props.selectedDomain ? `${base}?domaine=${props.selectedDomain}` : base)
+  const domain = props.schoolDomain ?? props.selectedDomain
+  return localePath(domain ? `${base}?domaine=${domain}` : base)
 }
 
 function locationLabel(school: SchoolSummary) {
@@ -126,10 +134,10 @@ const stats = [
           </span>
           <div class="flex flex-col gap-4">
             <h1 class="m-0 text-[25px] leading-32 font-bold tracking-[-0.6px] text-black">
-              {{ $t('desktop.domaines.title') }}
+              {{ title || $t('desktop.domaines.title') }}
             </h1>
             <p class="m-0 text-[16px] leading-20 font-medium tracking-[-0.154px] text-[#6b7280]">
-              {{ $t('desktop.domaines.subtitle') }}
+              {{ subtitle || $t('desktop.domaines.subtitle') }}
             </p>
           </div>
         </div>

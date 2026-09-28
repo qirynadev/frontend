@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toMbaRegionSchools } from '~/core/adapters'
+import { toMbaRegionSchools, toMbaZones } from '~/core/adapters'
 
 /**
  * Forme réelle de `GET /mba/schools?region=europe` (back-office local,
@@ -53,5 +53,29 @@ describe('toMbaRegionSchools', () => {
     const empty = { current_page: 1, per_page: 4, total: 0, last_page: 1, data: [] }
     expect(toMbaRegionSchools(empty, mba, { slug: 'afrique', title: 'Afrique' }, destinations, 1))
       .toMatchObject({ items: [], total: 0, totalPages: 1 })
+  })
+})
+
+describe('toMbaZones', () => {
+  const entries = [
+    { slug: 'afrique', title: 'Afrique' },
+    { slug: 'ameriques', title: 'Amériques' },
+    { slug: 'asie', title: 'Asie' },
+    { slug: 'europe', title: 'Europe' },
+  ]
+
+  it('ne garde que les zones qui ont des écoles, dans l\'ordre du menu', () => {
+    expect(toMbaZones(entries, [0, 1, 14, 17], 'europe').map(zone => zone.slug)).toEqual(['ameriques', 'asie', 'europe'])
+  })
+
+  it('garde la zone affichée même vide', () => {
+    expect(toMbaZones(entries, [0, 1, 14, 17], 'afrique').map(zone => zone.slug)).toEqual(['afrique', 'ameriques', 'asie', 'europe'])
+  })
+
+  it('garde une zone dont le total est inconnu, avec 0 école annoncée', () => {
+    expect(toMbaZones(entries, [null, 0, 0, 3], 'europe')).toEqual([
+      { slug: 'afrique', title: 'Afrique', schoolCount: 0 },
+      { slug: 'europe', title: 'Europe', schoolCount: 3 },
+    ])
   })
 })

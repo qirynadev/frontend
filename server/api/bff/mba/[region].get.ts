@@ -1,5 +1,5 @@
 import type { MbaRegionSchools } from '~~/app/core/contracts'
-import { toMbaRegionSchools } from '~~/app/core/adapters'
+import { asRecord, optionalNum, toMbaRegionSchools, toMbaZones } from '~~/app/core/adapters'
 
 /**
  * Écoles MBA d'une zone (sous-menu « MBA » du desktop : Afrique, Amériques,
@@ -13,8 +13,10 @@ import { toMbaRegionSchools } from '~~/app/core/adapters'
  * - `GET /mba/schools?region=` : écoles actives ayant le domaine MBA, dont le
  *   pays appartient à la zone ; 4 par page, ordre MD5 fixe comme
  *   `GET /schools/{countryId}/{areaId}`.
- * - `GET /mba/area` : le domaine MBA, pour la puce sélectionnée. Son échec ne
- *   bloque pas la liste, qui s'affiche alors sans puce.
+ * - `GET /mba/area` : le domaine MBA. Son échec ne bloque pas la liste.
+ * - Un `GET /mba/schools?region=` par zone du menu, pour n'en proposer en
+ *   onglets que les zones qui ont des écoles (`toMbaZones`). Ces appels ne
+ *   lisent que le total de la première page.
  *
  * Une zone absente du menu MBA administré répond 404.
  */
@@ -23,7 +25,8 @@ export default defineEventHandler(async (event): Promise<MbaRegionSchools> => {
   const page = Math.max(1, Number(getQuery(event).page ?? 1) || 1)
 
   const { catalog, destinations } = await getSnapshot(event)
-  const entry = catalog.menu.mba.entries.find((item) => item.slug === region)
+  const entries = catalog.menu.mba.entries
+  const entry = entries.find((item) => item.slug === region)
   if (!entry) {
     throw createError({ statusCode: 404, statusMessage: 'Zone MBA inconnue' })
   }
@@ -31,20 +34,30 @@ export default defineEventHandler(async (event): Promise<MbaRegionSchools> => {
   const client = publicClient(event)
 
   try {
-    const [raw, rawArea] = await Promise.all([
+    const [raw, rawArea, totals] = await Promise.all([
       client.request('/mba/schools', { query: { region, page } }),
       client.request('/mba/area').catch(() => null),
+      Promise.all(entries.map((item) =>
+        client
+          .request('/mba/schools', { query: { region: item.slug } })
+          .then((zonePage) => optionalNum(asRecord(zonePage), 'total'))
+          .catch(() => null),
+      )),
     ])
 
     setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
-    return toMbaRegionSchools(
-      raw,
-      rawArea,
-      { slug: entry.slug, title: entry.title },
-      destinations,
-      page,
-      useRuntimeConfig(event).apiBaseUrl,
-    )
+    return {
+      ...toMbaRegionSchools(
+        raw,
+        rawArea,
+        { slug: entry.slug, title: entry.title },
+        destinations,
+        page,
+        useRuntimeConfig(event).apiBaseUrl,
+      ),
+      sectionLabel: catalog.menu.mba.label || 'MBA',
+      zones: toMbaZones(entries, totals, entry.slug),
+    }
   }
   catch (error) {
     rethrowApiError(error)
