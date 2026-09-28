@@ -192,7 +192,7 @@ La correction est faite une fois, dans l'adapter.
 
 ## 6. Session et 401
 
-- Le jeton vit dans un cookie **`httpOnly`** (`qiryna_session`). Aucun `localStorage`.
+- Le jeton vit dans un cookie **`httpOnly`** (`qiryna_front_session`). Aucun `localStorage`.
 - Le rendu serveur lit la session : une page protégée se rend dès le premier octet.
 - Le JavaScript du navigateur **ne peut pas** lire le jeton — c'est le but. Les appels
   authentifiés partent du BFF, qui rattache `Authorization` côté serveur. Le cookie ne

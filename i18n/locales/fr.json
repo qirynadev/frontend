@@ -1360,7 +1360,7 @@
       "localeName": "qiryna_locale",
       "localePurpose": "Langue d’affichage",
       "sessionDuration": "30 jours",
-      "sessionName": "qiryna_session",
+      "sessionName": "qiryna_front_session",
       "sessionPurpose": "Maintien de la connexion",
       "stripeDuration": "1 an",
       "stripeName": "__stripe_mid",

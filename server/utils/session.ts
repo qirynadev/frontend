@@ -1,7 +1,12 @@
 import type { H3Event } from 'h3'
 import type { ApiClient } from '~~/app/core/http/api-client'
 import { createApiClient } from '~~/app/core/http/api-client'
-import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from '~~/app/core/http/session.constants'
+import {
+  LEGACY_SESSION_COOKIE,
+  pickSessionToken,
+  SESSION_COOKIE,
+  SESSION_COOKIE_OPTIONS,
+} from '~~/app/core/http/session.constants'
 
 /**
  * Session côté serveur.
@@ -17,10 +22,20 @@ import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from '~~/app/core/http/session
  * pu choisir sans contrôle.
  */
 
-/** Jeton de la requête courante, ou `null`. */
+/**
+ * Jeton de la requête courante, ou `null`.
+ *
+ * Lu dans l'en-tête brut, pas via `getCookie` : celui-ci ne garde que la
+ * première valeur d'un nom en double (voir `pickSessionToken`). Une session
+ * ouverte sous l'ancien nom est reprise sous le nouveau au passage.
+ */
 export function readSessionToken(event: H3Event): string | null {
-  const token = getCookie(event, SESSION_COOKIE)
-  return token && token !== '' ? token : null
+  const token = pickSessionToken(getRequestHeader(event, 'cookie'))
+  if (token !== null && getCookie(event, SESSION_COOKIE) !== token) {
+    setSessionCookie(event, token)
+    deleteLegacySessionCookie(event)
+  }
+  return token
 }
 
 export function setSessionCookie(event: H3Event, token: string): void {
@@ -30,8 +45,18 @@ export function setSessionCookie(event: H3Event, token: string): void {
   })
 }
 
+/**
+ * Supprime l'ancien cookie **du site** (hôte seul). Celui du back-office,
+ * posé sur `.qiryna.com`, n'est pas touché : un `deleteCookie` sans domaine
+ * ne vise que le cookie de l'hôte courant.
+ */
+function deleteLegacySessionCookie(event: H3Event): void {
+  deleteCookie(event, LEGACY_SESSION_COOKIE, { path: '/', sameSite: 'lax', secure: !import.meta.dev })
+}
+
 export function clearSessionCookie(event: H3Event): void {
   deleteCookie(event, SESSION_COOKIE, { path: '/', sameSite: 'lax', secure: !import.meta.dev })
+  deleteLegacySessionCookie(event)
 }
 
 /**
