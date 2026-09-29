@@ -233,6 +233,37 @@ const visibleDays = computed(() =>
 )
 
 const selectedDay = computed(() => days.value.find(d => d.key === selectedDayKey.value) ?? null)
+
+/**
+ * Créneaux du jour groupés par moment (2026-09-29, affichage mobile allégé) :
+ * une vingtaine d'heures d'affilée faisait un bloc touffu. Chaque bouton ne
+ * montre que l'heure de début, la durée (1 h) est rappelée en tête d'écran et
+ * la plage complète dans la confirmation.
+ */
+const slotPeriods = computed(() => {
+  const periods = [
+    { key: 'morning', labelKey: 'languagePlanning.periodMorning', slots: [] as HourSlot[] },
+    { key: 'afternoon', labelKey: 'languagePlanning.periodAfternoon', slots: [] as HourSlot[] },
+    { key: 'evening', labelKey: 'languagePlanning.periodEvening', slots: [] as HourSlot[] },
+  ]
+  for (const slot of selectedDay.value?.slots ?? []) {
+    const hour = slot.start.getHours()
+    periods[hour < 12 ? 0 : hour < 18 ? 1 : 2]!.slots.push(slot)
+  }
+  return periods.filter(period => period.slots.length > 0)
+})
+
+const hasGroupSlot = computed(() => (selectedDay.value?.slots ?? []).some(slot => slot.seatsLeft !== null))
+
+function slotTime(slot: HourSlot): string {
+  return new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' }).format(slot.start)
+}
+
+function slotAriaLabel(slot: HourSlot): string {
+  return slot.seatsLeft === null
+    ? slot.label
+    : `${slot.label}, ${t('languagePlanning.groupSession')}, ${t('languagePlanning.seatsLeft', slot.seatsLeft)}`
+}
 const selectedSlot = computed(() =>
   selectedDay.value?.slots.find(s => `${s.blockId}-${s.start.getTime()}` === selectedSlotKey.value) ?? null,
 )
@@ -472,25 +503,40 @@ usePageSeo(() => ({
               <span>{{ $t('languagePlanning.teacherLocalTime') }}</span>
             </p>
           </div>
-          <div class="grid grid-cols-4 gap-8 pt-12">
-            <button
-              v-for="slot in selectedDay?.slots ?? []"
-              :key="`${slot.blockId}-${slot.start.getTime()}`"
-              type="button"
-              :class="[
-                'cursor-pointer rounded-[8px] border bg-white px-4 py-10 text-[11px] leading-16 font-medium whitespace-nowrap',
-                selectedSlotKey === `${slot.blockId}-${slot.start.getTime()}`
-                  ? 'border-[#3709fc] text-[#4f18f6]'
-                  : 'border-[#e9e9f3] text-[#0d153e]',
-              ]"
-              @click="selectSlot(slot)"
-            >
-              {{ slot.label }}
-              <span v-if="slot.seatsLeft !== null" class="block pt-2 text-[10px] leading-14 font-normal text-[#64748b]">
-                {{ $t('languagePlanning.seatsLeft', slot.seatsLeft) }}
-              </span>
-            </button>
+          <div v-for="period in slotPeriods" :key="period.key" class="pt-12">
+            <h3 class="m-0 pb-6 text-[11px] leading-16 font-medium text-[#64748b]">{{ $t(period.labelKey) }}</h3>
+            <div class="grid grid-cols-4 gap-8">
+              <button
+                v-for="slot in period.slots"
+                :key="`${slot.blockId}-${slot.start.getTime()}`"
+                type="button"
+                :aria-label="slotAriaLabel(slot)"
+                :aria-pressed="selectedSlotKey === `${slot.blockId}-${slot.start.getTime()}`"
+                :class="[
+                  'relative flex h-36 cursor-pointer items-center justify-center gap-4 rounded-[8px] border px-4 text-[12px] leading-16 font-medium whitespace-nowrap',
+                  selectedSlotKey === `${slot.blockId}-${slot.start.getTime()}`
+                    ? 'border-[#3709fc] bg-[#f5f3ff] text-[#4f18f6]'
+                    : 'border-[#e9e9f3] bg-white text-[#0d153e]',
+                ]"
+                @click="selectSlot(slot)"
+              >
+                {{ slotTime(slot) }}
+                <span
+                  v-if="slot.seatsLeft !== null"
+                  aria-hidden="true"
+                  class="flex items-center gap-2 rounded-full bg-[#eef2ff] px-4 text-[10px] leading-14 font-semibold text-[#4f46e5]"
+                >
+                  <QIcon name="ic-le-users" :size="9" :height="8" class="shrink-0" />{{ slot.seatsLeft }}
+                </span>
+              </button>
+            </div>
           </div>
+          <p v-if="hasGroupSlot" class="m-0 flex items-center gap-6 pt-10 text-[11px] leading-16 font-normal text-[#64748b]">
+            <span class="flex items-center gap-2 rounded-full bg-[#eef2ff] px-4 text-[10px] leading-14 font-semibold text-[#4f46e5]">
+              <QIcon name="ic-le-users" :size="9" :height="8" class="shrink-0" />
+            </span>
+            <span>{{ $t('languagePlanning.groupLegend') }}</span>
+          </p>
         </section>
 
         <!-- 3. Confirmation -->
