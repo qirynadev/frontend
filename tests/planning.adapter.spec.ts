@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toTeacher } from '~/core/adapters/planning.adapter'
+import { toCalendarSlotList, toTeacher } from '~/core/adapters/planning.adapter'
 
 /**
  * Badge « vérifié » d'un professeur (directives-backend §4).
@@ -22,5 +22,29 @@ describe('toTeacher — badge vérifié', () => {
 
   it('ignore la confirmation d’e-mail : sans contrôle admin, pas de badge', () => {
     expect(toTeacher(base)?.verified).toBe(false)
+  })
+})
+
+/**
+ * `GET /user/plannings/events` depuis les séances de groupe (back-office,
+ * 2026-09-29) : une séance réservée apparaît une fois, avec ses places
+ * restantes et `joinable` pour la commande passée en `order_id`.
+ */
+describe('toCalendarSlotList — séances de groupe', () => {
+  const base = { start: '2026-10-02T09:00Z', end: '2026-10-02T10:00Z', future: true }
+
+  it('créneau libre : ni rejoignable ni places', () => {
+    expect(toCalendarSlotList([{ ...base, id: 'a', status: 'free' }])[0]).toEqual({
+      id: 'a', startDate: base.start, endDate: base.end, free: true, joinable: false, seatsLeft: null,
+    })
+  })
+
+  it('séance de groupe rejoignable, avec ses places restantes', () => {
+    expect(toCalendarSlotList([{ ...base, id: 'b', status: 'used', joinable: true, seats_left: 3 }])[0])
+      .toMatchObject({ free: false, joinable: true, seatsLeft: 3 })
+  })
+
+  it('une séance passée n\'est jamais rejoignable', () => {
+    expect(toCalendarSlotList([{ ...base, id: 'c', status: 'used', joinable: true, future: false }])[0]!.joinable).toBe(false)
   })
 })

@@ -67,6 +67,15 @@ export interface CalendarSlot {
   startDate: string
   endDate: string
   free: boolean
+  /**
+   * Séance de groupe déjà réservée par d'autres, que l'apprenant peut
+   * rejoindre (même langue, même niveau, place libre ; back-office,
+   * 2026-09-29). Elle se réserve telle quelle : horaire imposé, `id` passé à
+   * `planningRepo.book`.
+   */
+  joinable: boolean
+  /** Places restantes d'une séance de groupe ; `null` pour un créneau libre. */
+  seatsLeft: number | null
 }
 
 /** Une séance déjà casée dans un créneau. */

@@ -25,8 +25,13 @@ export const planningRepo = {
   },
 
   /** Calendrier d'un professeur — créneaux libres et déjà pris. */
-  events(teacherId: string, locale?: string): Promise<CalendarSlot[]> {
-    return bffFetch<CalendarSlot[]>('/plannings/events', { query: { teacherId }, locale })
+  /**
+   * Calendrier d'un professeur. Avec `orderId` (commande à planifier), les
+   * séances de groupe que cette commande peut rejoindre sont marquées
+   * `joinable`.
+   */
+  events(teacherId: string, locale?: string, orderId?: string): Promise<CalendarSlot[]> {
+    return bffFetch<CalendarSlot[]>('/plannings/events', { query: { teacherId, orderId: orderId || undefined }, locale })
   },
 
   /** Assigne (ou change) le professeur d'une commande. */

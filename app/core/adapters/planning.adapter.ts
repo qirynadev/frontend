@@ -141,6 +141,8 @@ function toCalendarSlot(raw: unknown): CalendarSlot | null {
     startDate: start,
     endDate: end,
     free: str(source, 'status') === 'free' && bool(source, 'future', false),
+    joinable: bool(source, 'joinable', false) && bool(source, 'future', false),
+    seatsLeft: optionalNum(source, 'seats_left'),
   }
 }
 

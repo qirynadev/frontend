@@ -278,8 +278,22 @@ async function videoQuality(): Promise<number> {
 /** Utilisateurs dont la vidéo est attachée — évite d'empiler deux lecteurs pour la même personne. */
 const renderedUsers = new Set<number>()
 
+/**
+ * Vidéos distantes affichées. Séances de groupe (plusieurs apprenants, 2026-09-29) :
+ * elles se partagent la scène en grille, une colonne de plus par palier.
+ */
+const remoteVideoIds = ref<number[]>([])
+const remoteColumns = computed(() => {
+  const count = remoteVideoIds.value.length
+  if (count <= 1) return 1
+  if (count <= 4) return 2
+  if (count <= 9) return 3
+  return 4
+})
+
 async function detachUser(userId: number) {
   renderedUsers.delete(userId)
+  remoteVideoIds.value = remoteVideoIds.value.filter((id) => id !== userId)
   try {
     removeElements(await client.getMediaStream().detachVideo(userId))
   }
@@ -301,8 +315,10 @@ async function renderVideo(event: { action: string; userId: number }) {
     renderedUsers.delete(event.userId)
     return
   }
-  const container = event.userId === myUserId.value ? localContainer.value : remoteContainer.value
+  const isLocal = event.userId === myUserId.value
+  const container = isLocal ? localContainer.value : remoteContainer.value
   container?.appendChild(player)
+  if (!isLocal) remoteVideoIds.value = [...remoteVideoIds.value, event.userId]
 }
 
 /** Vidéos déjà allumées à notre arrivée — aucun évènement ne les signale. */
@@ -978,7 +994,7 @@ onBeforeUnmount(() => {
         <video-player-container ref="shareContainer" class="vcr-vpc" />
       </div>
       <div class="vcr-remote" @dblclick="toggleFullscreen">
-        <video-player-container ref="remoteContainer" class="vcr-vpc" />
+        <video-player-container ref="remoteContainer" class="vcr-vpc vcr-grid" :style="{ '--vcr-cols': remoteColumns }" />
       </div>
       <div class="vcr-local">
         <video-player-container ref="localContainer" class="vcr-vpc" />
@@ -1235,6 +1251,13 @@ onBeforeUnmount(() => {
   .vcr-stage--share .vcr-remote { width: 192px; height: 128px; bottom: 236px; right: 16px; }
 }
 .vcr-vpc { width: 100%; height: 100%; }
+/* Plusieurs participants distants (séance de groupe) : grille, une vidéo par case. */
+.vcr-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--vcr-cols, 1), minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 4px;
+}
 /* Les `<video-player>` sont insérés par le SDK, hors gabarit : `:deep` pour les atteindre. */
 .vcr-vpc :deep(video-player) { display: block; width: 100%; height: 100%; }
 

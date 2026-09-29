@@ -7,6 +7,10 @@
  * porte aucune notion de durée de créneau, c'est ici qu'elle se fixe —
  * régression à 2h introduite par erreur dans un commit `main` sans rapport
  * (`534911c`), propagée par la fusion du 2026-09-02, corrigée le 2026-09-03).
+ * Séances de groupe (2026-09-29) : une séance déjà réservée par d'autres
+ * apprenants que cette commande peut rejoindre (même langue, même niveau,
+ * place libre, décidé par le back-office : `joinable`) s'ajoute aux créneaux
+ * libres, à son horaire exact, avec ses places restantes.
  * Mock (demo / API vide) : dates + heures Figma (`langueCreneauHoursMock`).
  * « Confirmer le créneau » → `/mon-projet/langues?tab=planned`.
  * Voir `docs/mon-projet-professeur-mocks.md`.
@@ -42,12 +46,12 @@ const backToProfesseur = computed(() =>
 )
 
 const { data: events, apiError, isInitialLoading, refresh } = await usePageData(
-  `langue-events-${teacherId.value}`,
+  `langue-events-${teacherId.value}-${orderId.value}`,
   async () => {
     if (isDemo.value) return [] as CalendarSlot[]
-    return planningRepo.events(teacherId.value, locale.value)
+    return planningRepo.events(teacherId.value, locale.value, orderId.value)
   },
-  { watch: [teacherId, locale] },
+  { watch: [teacherId, orderId, locale] },
 )
 
 const { data: teachers } = await usePageData(
@@ -84,7 +88,14 @@ const teacherCard = computed(() => {
   return langueTeachersMock[1]!
 })
 
-interface HourSlot { blockId: string; start: Date; end: Date; label: string }
+interface HourSlot {
+  blockId: string
+  start: Date
+  end: Date
+  label: string
+  /** Séance de groupe à rejoindre : places restantes ; `null` pour un créneau libre. */
+  seatsLeft: number | null
+}
 
 const MIN_LEAD_MS = 2 * 60 * 60 * 1000
 /** Durée d'une séance réelle : 1 h (`languagePlanning.sessionDuration`), pas une donnée API. */
@@ -106,11 +117,27 @@ function sessionSlots(block: CalendarSlot): HourSlot[] {
         start: cursor,
         end: next,
         label: `${tf.format(cursor)} – ${tf.format(next)}`,
+        seatsLeft: null,
       })
     }
     cursor = next
   }
   return slots
+}
+
+/** Séance de groupe rejoignable : un seul créneau, à son horaire exact. */
+function joinSlot(session: CalendarSlot): HourSlot[] {
+  const start = new Date(session.startDate)
+  const end = new Date(session.endDate)
+  if (start.getTime() < Date.now() + MIN_LEAD_MS) return []
+  const tf = new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit' })
+  return [{
+    blockId: session.id,
+    start,
+    end,
+    label: `${tf.format(start)} – ${tf.format(end)}`,
+    seatsLeft: session.seatsLeft,
+  }]
 }
 
 function dayKey(date: Date): string {
@@ -136,6 +163,7 @@ function buildMockSlots(): HourSlot[] {
         start,
         end,
         label: `${tf.format(start)} – ${tf.format(end)}`,
+        seatsLeft: null,
       })
     }
   }
@@ -144,8 +172,7 @@ function buildMockSlots(): HourSlot[] {
 
 const availableSlots = computed<HourSlot[]>(() => {
   const apiSlots = (events.value ?? [])
-    .filter(event => event.free)
-    .flatMap(sessionSlots)
+    .flatMap(event => (event.free ? sessionSlots(event) : event.joinable ? joinSlot(event) : []))
     .sort((a, b) => a.start.getTime() - b.start.getTime())
   if (apiSlots.length > 0) return apiSlots
   return buildMockSlots()
@@ -459,6 +486,9 @@ usePageSeo(() => ({
               @click="selectSlot(slot)"
             >
               {{ slot.label }}
+              <span v-if="slot.seatsLeft !== null" class="block pt-2 text-[10px] leading-14 font-normal text-[#64748b]">
+                {{ $t('languagePlanning.seatsLeft', slot.seatsLeft) }}
+              </span>
             </button>
           </div>
         </section>
@@ -478,6 +508,9 @@ usePageSeo(() => ({
               <p v-if="selectedSlot" class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-18 font-medium text-[#0d153e]">
                 <img src="/img/icons/mpl-creneau/clock.svg" alt="" width="12" height="12" class="block size-12 shrink-0">
                 <span>{{ selectedSlot.label }}</span>
+              </p>
+              <p v-if="selectedSlot && selectedSlot.seatsLeft !== null" class="m-0 pt-4 text-[11px] leading-16 font-normal text-[#64748b]">
+                {{ $t('languagePlanning.groupSession') }} · {{ $t('languagePlanning.seatsLeft', selectedSlot.seatsLeft) }}
               </p>
               <p v-else class="m-0 pt-8 text-[11px] leading-16 text-[#94a3b8]">{{ $t('languagePlanning.selectSlotHint') }}</p>
             </div>
