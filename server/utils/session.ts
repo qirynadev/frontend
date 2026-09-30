@@ -7,6 +7,7 @@ import {
   SESSION_COOKIE,
   SESSION_COOKIE_OPTIONS,
 } from '~~/app/core/http/session.constants'
+import { clientIp } from './client-ip'
 
 /**
  * Session côté serveur.
@@ -71,6 +72,8 @@ export function publicClient(event: H3Event): ApiClient {
     baseUrl: config.apiBaseUrl,
     timeoutMs: config.apiTimeout,
     locale: readLocale(event),
+    clientIp: clientIp(event),
+    bffKey: String(config.bffSharedKey ?? ''),
   })
 }
 
@@ -93,6 +96,8 @@ export function authClient(event: H3Event): ApiClient {
     timeoutMs: config.apiTimeout,
     locale: readLocale(event),
     token,
+    clientIp: clientIp(event),
+    bffKey: String(config.bffSharedKey ?? ''),
   })
 }
 

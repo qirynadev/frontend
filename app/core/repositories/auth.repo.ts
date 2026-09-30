@@ -1,4 +1,4 @@
-import type { AuthOutcome, SocialAuthOutcome, SocialProvider, User } from '../contracts'
+import type { AuthOutcome, BotGuardFields, SocialAuthOutcome, SocialProvider, User } from '../contracts'
 import { bffFetch } from '../http/client'
 
 /** `reglages/informations-personnelles.vue` — champs de `POST /user/update-profile`. */
@@ -77,8 +77,10 @@ export const authRepo = {
       phone?: string
     },
     locale?: string,
+    /** Indices anti-robots (`useBotGuard().fields()`), vérifiés par le serveur du site. */
+    guard?: BotGuardFields,
   ): Promise<{ ok: boolean; email: string }> {
-    return bffFetch('/account', { method: 'POST', body: input, locale })
+    return bffFetch('/account', { method: 'POST', body: { ...input, ...guard }, locale })
   },
 
   /** Saisie du code reçu par e-mail. C'est cet appel qui ouvre la session. */
@@ -90,8 +92,8 @@ export const authRepo = {
     return bffFetch('/account/resend-code', { method: 'POST', body: { email }, locale })
   },
 
-  forgotPassword(email: string, locale?: string): Promise<{ ok: boolean }> {
-    return bffFetch('/account/forgot-password', { method: 'POST', body: { email }, locale })
+  forgotPassword(email: string, locale?: string, guard?: BotGuardFields): Promise<{ ok: boolean }> {
+    return bffFetch('/account/forgot-password', { method: 'POST', body: { email, ...guard }, locale })
   },
 
   /** `null` quand le back-office ne connecte pas automatiquement. */

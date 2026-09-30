@@ -1,7 +1,9 @@
 import { asRecord, str } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
 
 /** Renvoi du code de confirmation. */
 export default defineEventHandler(async (event) => {
+  enforceRateLimit(event, RATE_LIMITS.resendCode)
   const body = asRecord(await readBody(event))
   const email = str(body, 'email').toLowerCase()
 

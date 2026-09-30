@@ -169,6 +169,7 @@ const trustItems = [
             </div>
 
             <form class="w-full" novalidate @submit.prevent="emit('submit')">
+              <BotTrap />
               <div class="flex flex-col gap-24">
                 <div class="flex flex-col gap-14">
                   <p class="m-0 text-xl leading-15 font-semibold tracking-[0.5px] text-black">

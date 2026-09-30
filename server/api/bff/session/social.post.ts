@@ -1,5 +1,6 @@
 import type { SocialAuthOutcome, SocialProvider } from '~~/app/core/contracts'
 import { asRecord, str, toSocialAuthResult } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
 
 const PROVIDERS: SocialProvider[] = ['google', 'facebook', 'linkedin']
 
@@ -37,6 +38,7 @@ const PROVIDERS: SocialProvider[] = ['google', 'facebook', 'linkedin']
  * ⚠️ Quotas du back-office : 10 requêtes/minute sur `login`, 5 sur `register`.
  */
 export default defineEventHandler(async (event): Promise<SocialAuthOutcome> => {
+  enforceRateLimit(event, RATE_LIMITS.social)
   const body = asRecord(await readBody(event))
   const provider = str(body, 'provider') as SocialProvider
   const token = str(body, 'token')

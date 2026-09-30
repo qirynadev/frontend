@@ -19,6 +19,14 @@ export interface ApiClientOptions {
   locale?: string
   /** Jeton de session, lu par l'appelant là où il est disponible. */
   token?: string | null
+  /**
+   * IP du visiteur, transmise à l'API avec la clé partagée `bffKey` pour que
+   * ses limites de fréquence visent le visiteur et non le serveur du site
+   * (`ResolveBffClientIp` côté back-office). Jamais dans `X-Forwarded-For` :
+   * la restriction d'accès par IP de l'API s'appliquerait alors au visiteur.
+   */
+  clientIp?: string | null
+  bffKey?: string
   /** Injectable pour les tests ; `$fetch` par défaut. */
   fetcher?: typeof globalThis.$fetch
 }
@@ -83,6 +91,10 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       ...requestOptions.headers,
     }
     if (options.token) headers.Authorization = `Bearer ${options.token}`
+    if (options.clientIp && options.bffKey) {
+      headers['X-Qiryna-Client-Ip'] = options.clientIp
+      headers['X-Qiryna-Bff-Key'] = options.bffKey
+    }
 
     let lastError: ApiError | null = null
 

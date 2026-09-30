@@ -1,5 +1,6 @@
 import type { AuthOutcome } from '~~/app/core/contracts'
 import { asRecord, str, toSession } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
 
 /**
  * Nouveau mot de passe.
@@ -10,6 +11,7 @@ import { asRecord, str, toSession } from '~~/app/core/adapters'
  * selon la version du back-office ; les deux sont traités.
  */
 export default defineEventHandler(async (event): Promise<AuthOutcome | null> => {
+  enforceRateLimit(event, RATE_LIMITS.resetPassword)
   const body = asRecord(await readBody(event))
   const email = str(body, 'email').toLowerCase()
   const token = str(body, 'token')

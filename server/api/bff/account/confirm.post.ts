@@ -1,5 +1,6 @@
 import type { AuthOutcome } from '~~/app/core/contracts'
 import { asRecord, str, toSession } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
 
 /**
  * Confirmation du compte par le code reçu par e-mail.
@@ -10,6 +11,7 @@ import { asRecord, str, toSession } from '~~/app/core/adapters'
  * possible.
  */
 export default defineEventHandler(async (event): Promise<AuthOutcome> => {
+  enforceRateLimit(event, RATE_LIMITS.confirm)
   const body = asRecord(await readBody(event))
   const email = str(body, 'email').toLowerCase()
   const code = str(body, 'code')

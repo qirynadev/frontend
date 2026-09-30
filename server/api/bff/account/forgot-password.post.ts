@@ -1,4 +1,6 @@
 import { asRecord, str } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
+import { passBotGuard } from '~~/server/utils/bot-guard'
 
 /**
  * Demande de réinitialisation du mot de passe.
@@ -9,7 +11,10 @@ import { asRecord, str } from '~~/app/core/adapters'
  * comptes.
  */
 export default defineEventHandler(async (event) => {
+  enforceRateLimit(event, RATE_LIMITS.forgotPassword)
   const body = asRecord(await readBody(event))
+  // Robot pris au piège : même réponse qu'un envoi réel (voir ci-dessus).
+  if (!passBotGuard(body)) return { ok: true }
   const email = str(body, 'email').toLowerCase()
 
   if (email === '') {

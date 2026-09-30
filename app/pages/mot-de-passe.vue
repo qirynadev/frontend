@@ -28,6 +28,7 @@ import { ApiError } from '~/core/http/errors'
 import { authRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 import DesktopMotDePasse from '~/desktop-pages/mot-de-passe.vue'
+import { useBotGuard } from '~/composables/useBotGuard'
 
 definePageMeta({
   bottomNav: false,
@@ -39,6 +40,8 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
 const { resume } = useAuthFlow()
+// Anti-robots invisible (champ piège + délai minimum), voir `useBotGuard`.
+const botGuard = useBotGuard()
 
 const route = useRoute()
 const router = useRouter()
@@ -139,7 +142,7 @@ async function onRequest(): Promise<void> {
 
   submitting.value = true
   try {
-    await authRepo.forgotPassword(value, locale.value)
+    await authRepo.forgotPassword(value, locale.value, botGuard.fields())
     // Formulé sans confirmer que le compte existe : ce serait offrir un moyen
     // d'énumérer les comptes. Le back-office répond 200 dans les deux cas.
     notice.value = t('auth.reset.sent', { email: value })
@@ -255,6 +258,7 @@ usePageSeo(() => ({
 
         <!-- Étape 1 — la demande, telle que la maquette la dessine. -->
         <form v-if="step === 'request'" novalidate @submit.prevent="onRequest">
+          <BotTrap />
           <div class="pb-20">
             <QInput
               v-model="email"

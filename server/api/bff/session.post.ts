@@ -1,5 +1,6 @@
 import type { AuthOutcome } from '~~/app/core/contracts'
 import { asRecord, str, toSession } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
 
 /**
  * Connexion par e-mail et mot de passe.
@@ -12,6 +13,7 @@ import { asRecord, str, toSession } from '~~/app/core/adapters'
  * s'il faut reprendre un paiement ou suivre le `redirect`, sans second appel.
  */
 export default defineEventHandler(async (event): Promise<AuthOutcome> => {
+  enforceRateLimit(event, RATE_LIMITS.login)
   const body = asRecord(await readBody(event))
   const email = str(body, 'email').toLowerCase()
   const password = str(body, 'password')

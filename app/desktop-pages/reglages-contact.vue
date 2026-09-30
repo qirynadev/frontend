@@ -80,6 +80,7 @@ const SUCCESS_ICON = '/img/icons/contact-success'
       />
 
       <form class="flex w-full flex-col gap-16 rounded-[16px] border border-[#f9fafb] bg-white p-32 shadow-[0_0_3px_rgba(0,0,0,0.12)]" @submit.prevent="emit('submit')">
+        <BotTrap />
         <div class="grid grid-cols-2 gap-16">
           <div class="flex flex-col">
             <label for="desk-contact-subject" class="text-[14px] leading-20 font-medium text-[#040c3d]">

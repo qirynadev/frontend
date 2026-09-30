@@ -32,6 +32,7 @@ import { authRepo, paymentRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 import type { PaymentIntent, SocialProvider } from '~/core/contracts'
 import DesktopInscription from '~/desktop-pages/inscription.vue'
+import { useBotGuard } from '~/composables/useBotGuard'
 
 definePageMeta({
   bottomNav: false,
@@ -43,6 +44,8 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
 const { resume, redirectIfAuthenticated } = useAuthFlow()
+// Anti-robots invisible (champ piège + délai minimum), voir `useBotGuard`.
+const botGuard = useBotGuard()
 
 const {
   configured: socialConfigured,
@@ -170,6 +173,7 @@ async function onSubmit(): Promise<void> {
         lastName: lastName.value.trim(),
       },
       locale.value,
+      botGuard.fields(),
     )
     step.value = 'code'
     notice.value = t('auth.register.codeSent', { email: email.value.trim() })
@@ -347,6 +351,7 @@ usePageSeo(() => ({
         </template>
 
         <form v-if="step === 'form'" novalidate @submit.prevent="onSubmit">
+          <BotTrap />
           <div class="flex flex-col">
             <div class="pb-20">
               <QInput

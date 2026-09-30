@@ -1,4 +1,6 @@
 import { asRecord, str } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
+import { passBotGuard } from '~~/server/utils/bot-guard'
 
 /**
  * Envoie un message de support (`/reglages/contact`) — visiteur **non
@@ -13,7 +15,10 @@ import { asRecord, str } from '~~/app/core/adapters'
  * retiré le 2026-09-14.
  */
 export default defineEventHandler(async (event): Promise<{ ok: boolean }> => {
+  enforceRateLimit(event, RATE_LIMITS.contact)
   const body = asRecord(await readBody(event).catch(() => ({})))
+  // Robot pris au piège : faux succès, rien n'est envoyé (`server/utils/bot-guard.ts`).
+  if (!passBotGuard(body)) return { ok: true }
 
   const firstName = str(body, 'firstName')
   const lastName = str(body, 'lastName')

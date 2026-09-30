@@ -8,6 +8,7 @@ import type { Branding } from '~/core/contracts'
 import { ApiError } from '~/core/http/errors'
 import { newsletterRepo } from '~/core/repositories'
 import { useCatalogStore } from '~/core/stores'
+import { useBotGuard } from '~/composables/useBotGuard'
 
 const ASSET = '/img/desktop/legacy'
 const LOGO_LOCAL = '/img/desktop/logo-nav.png'
@@ -29,6 +30,8 @@ const logoFooter = computed(() =>
   (logoDarkEnEchec.value ? null : branding.value?.logoDark) || LOGO_LOCAL)
 
 const { t, locale } = useI18n()
+// Anti-robots invisible (champ piège + délai minimum), voir `useBotGuard`.
+const botGuard = useBotGuard()
 const email = ref('')
 const newsletterState = ref<'idle' | 'sending' | 'sent'>('idle')
 const newsletterError = ref('')
@@ -88,13 +91,15 @@ async function onNewsletterSubmit() {
   newsletterState.value = 'sending'
   newsletterError.value = ''
   try {
-    await newsletterRepo.subscribe(value, locale.value)
+    await newsletterRepo.subscribe(value, locale.value, botGuard.fields())
     newsletterState.value = 'sent'
     email.value = ''
   }
   catch (error) {
     newsletterState.value = 'idle'
-    newsletterError.value = error instanceof ApiError && error.kind === 'validation'
+    // 422 (adresse invalide, déjà inscrite) et 429 (confirmation déjà envoyée,
+    // trop de tentatives) arrivent avec un message traduit, affiché tel quel.
+    newsletterError.value = error instanceof ApiError && (error.kind === 'validation' || error.kind === 'rateLimited')
       ? error.message
       : t('desktop.footer.newsletterError')
   }
@@ -257,6 +262,7 @@ async function onNewsletterSubmit() {
                 :aria-busy="newsletterState === 'sending'"
                 @submit.prevent="onNewsletterSubmit"
               >
+                <BotTrap />
                 <label class="sr-only" for="desktop-newsletter-email">{{ $t('desktop.footer.emailPlaceholderLegacy') }}</label>
                 <input
                   id="desktop-newsletter-email"

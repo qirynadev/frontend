@@ -18,6 +18,8 @@ export type ApiErrorKind =
   | 'notFound'
   /** 422 — validation refusée par Laravel. */
   | 'validation'
+  /** 429 — trop de tentatives, ou envoi jugé trop rapide (anti-robots). */
+  | 'rateLimited'
   /** 5xx. */
   | 'server'
   /** Tout le reste. */
@@ -56,6 +58,7 @@ function kindFromStatus(status: number): ApiErrorKind {
   if (status === 403) return 'forbidden'
   if (status === 404) return 'notFound'
   if (status === 422) return 'validation'
+  if (status === 429) return 'rateLimited'
   if (status >= 500) return 'server'
   if (status === 0) return 'network'
   return 'unknown'

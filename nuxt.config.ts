@@ -52,6 +52,12 @@ export default defineNuxtConfig({
     catalogCacheTtl: Number(process.env.NUXT_CATALOG_CACHE_TTL ?? 300),
     /** Délai maximal d'un appel à l'API, en millisecondes. */
     apiTimeout: Number(process.env.NUXT_API_TIMEOUT ?? 15_000),
+    /**
+     * Clé partagée avec le back-office (`BFF_SHARED_KEY`) : accompagne l'IP du
+     * visiteur transmise à l'API (`X-Qiryna-Client-Ip`). Vide : l'IP n'est pas
+     * transmise, l'API voit celle du serveur du site comme avant.
+     */
+    bffSharedKey: process.env.NUXT_BFF_SHARED_KEY ?? '',
 
     public: {
       /**

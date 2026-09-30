@@ -89,6 +89,7 @@ const trustItems = [
         <!-- Étape 1 — demande du lien -->
         <div v-if="step === 'request'" class="flex w-full flex-col gap-22">
           <form class="flex w-full flex-col gap-18" novalidate @submit.prevent="emit('request')">
+            <BotTrap />
             <div class="flex flex-col gap-10 pb-10">
               <p class="m-0 text-xl leading-15 font-semibold tracking-[0.5px] text-black">
                 {{ $t('desktop.reset.emailTitle') }}

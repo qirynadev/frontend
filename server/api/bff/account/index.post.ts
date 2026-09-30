@@ -1,4 +1,6 @@
 import { asRecord, str } from '~~/app/core/adapters'
+import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
+import { passBotGuard } from '~~/server/utils/bot-guard'
 
 /**
  * Création de compte.
@@ -17,7 +19,9 @@ import { asRecord, str } from '~~/app/core/adapters'
  * retiré le 2026-09-14.
  */
 export default defineEventHandler(async (event) => {
+  enforceRateLimit(event, RATE_LIMITS.register)
   const body = asRecord(await readBody(event))
+  if (!passBotGuard(body)) return { ok: true, email: str(body, 'email').toLowerCase() }
   const email = str(body, 'email').toLowerCase()
   const password = str(body, 'password')
   const firstName = str(body, 'firstName')

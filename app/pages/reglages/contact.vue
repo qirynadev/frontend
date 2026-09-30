@@ -36,11 +36,14 @@ import { contactSuccessMock } from '~/config/contact-success-mock'
 import { ApiError } from '~/core/http/errors'
 import { contactRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
+import { useBotGuard } from '~/composables/useBotGuard'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
 const isAuthenticated = computed(() => session.isAuthenticated)
+// Anti-robots invisible (champ piège + délai minimum), voir `useBotGuard`.
+const botGuard = useBotGuard()
 
 const MESSAGE_MAX = 1000
 const FORM_ICON = '/img/icons/contact-form'
@@ -129,6 +132,7 @@ async function onSubmit(): Promise<void> {
       await contactRepo.sendPublic(
         { firstName, lastName, email: email.value.trim(), subject: subjectLabel.value, message: message.value.trim() },
         locale.value,
+        botGuard.fields(),
       )
     }
     submitted.value = true
@@ -268,6 +272,7 @@ usePageSeo(() => ({
         />
 
         <form class="flex w-full flex-col gap-12" @submit.prevent="onSubmit">
+          <BotTrap v-if="!isAuthenticated" />
           <div class="flex w-full flex-col">
             <label for="contact-subject" class="text-xl leading-21 font-medium text-cf-label">
               {{ $t('settingsContact.subjectLabel') }}

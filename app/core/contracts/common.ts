@@ -120,3 +120,14 @@ export interface Branding {
   logoDark: string | null
   favicon: string | null
 }
+
+/**
+ * Indices anti-robots joints aux formulaires publics (`useBotGuard`), vérifiés
+ * par le serveur du site (`server/utils/bot-guard.ts`).
+ */
+export interface BotGuardFields {
+  /** Champ piège : vide pour un humain. */
+  _hp: string
+  /** Millisecondes écoulées depuis l'affichage du formulaire. */
+  _elapsed: number
+}

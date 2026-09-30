@@ -295,6 +295,15 @@ personnalisées** :
 | `NUXT_API_BASE_URL` | `https://admin.stage.qiryna.com/api` |
 | `NUXT_CATALOG_CACHE_TTL` | `300` |
 | `NUXT_API_TIMEOUT` | `15000` |
+| `NUXT_BFF_SHARED_KEY` | clé secrète, **la même** que `BFF_SHARED_KEY` du back-office appelé |
+
+`NUXT_BFF_SHARED_KEY` (2026-09-30) : le site transmet l'IP du visiteur à l'API
+avec cette clé, pour que les limites de fréquence (connexion, inscription,
+newsletter, contact) visent chaque visiteur et non le serveur du site. Une clé
+par couple site / back-office (my ↔ recette, danube ↔ production), générée par
+exemple avec `openssl rand -hex 32`, et ajoutée à l'identique dans le `.env`
+du back-office (`BFF_SHARED_KEY`, puis `php artisan config:cache`). Sans elle,
+rien ne casse : les limites restent communes à tous les visiteurs, comme avant.
 
 Les trois `NUXT_PUBLIC_OAUTH_*` restent vides tant que les identifiants ne sont
 pas fournis (LOT-5.md § 7).
