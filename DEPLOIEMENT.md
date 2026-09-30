@@ -428,6 +428,7 @@ des plages entières — ce qui n'est pas souhaitable.
 | Déclarer les URL de retour OAuth : `https://<domaine>/connexion` et `https://<domaine>/inscription` | sinon LinkedIn refuse la redirection | 🟠 seulement pour OAuth |
 | Fournir les trois identifiants clients OAuth | boutons grisés sans eux | 🟠 |
 | **Remplacer `pk_live_…` par une clé de test en recette** | une clé *live* en recette autorise des paiements réels | 🔴 avant toute recette du paiement |
+| **Nouvelle clé partagée pour qiryna.com** (`NUXT_BFF_SHARED_KEY` côté site = `BFF_SHARED_KEY` côté back-office), générée à la mise en ligne, jamais réutilisée depuis my ou danube | les limites de fréquence par visiteur en dépendent ; une clé propre à chaque couple site / back-office | 🟠 à la mise en production |
 | Confirmer ce que renvoie `redirectUrl` de `/payment/init` | libellé de l'écran de retour | 🟡 |
 
 ---
