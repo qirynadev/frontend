@@ -103,14 +103,14 @@ const housingTypes = [
 
 <template>
   <div class="w-full bg-white pb-80 text-[#1a1d2b]">
-    <!-- Hero pleine largeur — citation Mandela dans l’export Figma -->
+    <!-- Hero pleine largeur, ratio 1728×516 — pas de recadrage de la citation. -->
     <section class="relative w-full overflow-hidden">
       <img
         :src="`${ASSET}/hero.png`"
         alt=""
         width="1728"
         height="516"
-        class="block h-[516px] w-full object-cover"
+        class="block h-auto w-full max-w-none"
       >
     </section>
 
