@@ -130,12 +130,12 @@ const housingTypes = [
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.orientation.desc') }}
             </p>
-            <div class="grid max-w-[472px] grid-cols-4 gap-16 pt-40">
+            <div class="flex w-full items-start justify-start gap-14 pt-32">
               <div v-for="item in orientationFeats" :key="item.key" class="flex flex-col items-center text-center">
                 <span class="flex size-40 items-center justify-center rounded-full" :class="item.iconBg">
                   <img :src="item.icon" alt="" width="16" height="16" class="size-16">
                 </span>
-                <span class="pt-8 text-[10px] leading-[12.5px] font-medium text-[#1a1a1a]">{{ $t(item.key) }}</span>
+                <span class="pt-8 text-[10px] leading-[12.5px] font-medium whitespace-nowrap text-[#1a1a1a]">{{ $t(item.key) }}</span>
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-16 pt-40">
@@ -205,10 +205,10 @@ const housingTypes = [
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.school.desc') }}
             </p>
-            <div class="grid max-w-[400px] grid-cols-5 gap-8 pt-40">
+            <div class="flex w-full items-start justify-start gap-30 pt-32">
               <div v-for="item in schoolTypes" :key="item.key" class="flex flex-col items-center text-center">
                 <img :src="item.icon" alt="" width="40" height="40" class="size-40">
-                <span class="pt-8 text-[9px] leading-[11.25px] font-semibold text-[#1a1a1a]">{{ $t(item.key) }}</span>
+                <span class="pt-8 text-[10px] leading-[12.5px] font-medium whitespace-nowrap text-[#1a1a1a]">{{ $t(item.key) }}</span>
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-16 pt-40">
@@ -275,10 +275,10 @@ const housingTypes = [
             <p class="m-0 max-w-403 pt-16 pr-16 text-exact-16 leading-24 text-[#292929]">
               {{ $t('desktop.home.languages.desc') }}
             </p>
-            <div class="grid max-w-[400px] grid-cols-5 gap-8 pt-40">
+            <div class="flex w-full items-start justify-start gap-14 pt-32">
               <div v-for="item in languageFeats" :key="item.key" class="flex flex-col items-center text-center">
                 <img :src="item.icon" alt="" width="40" height="40" class="size-40">
-                <span class="pt-8 text-[9px] leading-[11.25px] font-semibold text-[#1a1a1a]">{{ $t(item.key) }}</span>
+                <span class="pt-8 text-[10px] leading-[12.5px] font-medium whitespace-nowrap text-[#1a1a1a]">{{ $t(item.key) }}</span>
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-16 pt-40">
@@ -339,10 +339,7 @@ const housingTypes = [
             <ul class="m-0 flex max-w-[419px] list-none flex-col gap-18 p-0 pt-40">
               <li v-for="item in housingChecks" :key="item.title" class="flex items-center gap-12">
                 <img :src="item.icon" alt="" width="32" height="32" class="size-32 shrink-0">
-                <div>
-                  <p class="m-0 text-[14px] leading-21 font-medium">{{ $t(item.title) }}</p>
-                  <p class="m-0 text-[14px] leading-[12.5px] text-[#6b7280]">{{ $t(item.desc) }}</p>
-                </div>
+                <p class="m-0 text-[14px] leading-21 font-medium">{{ $t(item.title) }}</p>
               </li>
             </ul>
             <div class="pt-40">
@@ -358,7 +355,7 @@ const housingTypes = [
           </div>
 
         <div class="desktop-home-media">
-            <img :src="`${ASSET}/housing-photo.png`" alt="" class="absolute inset-0 size-full object-contain object-center">
+            <img :src="`${ASSET}/housing-photo.jpg`" alt="" width="1024" height="906" class="absolute inset-0 size-full -translate-x-32 object-contain object-left">
             <div class="absolute top-[14.4%] left-[56%] flex w-[min(260px,53%)] flex-col gap-12">
               <div
                 v-for="item in housingTypes"
@@ -375,7 +372,7 @@ const housingTypes = [
                 <img :src="item.thumb" alt="" width="48" height="40" class="h-40 w-48 shrink-0 rounded-[4px] object-cover shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
               </div>
             </div>
-            <div class="absolute top-[26%] left-[8.5%] flex max-w-160 items-center gap-12 rounded-full bg-white p-12">
+            <div class="absolute top-[26%] left-[-32px] flex max-w-160 items-center gap-12 rounded-full bg-white p-12">
               <span class="flex size-36 shrink-0 items-center justify-center rounded-full bg-[#eff6ff]">
                 <img :src="`${ASSET}/type-appart.svg`" alt="" width="20" height="20" class="size-20">
               </span>

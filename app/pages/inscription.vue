@@ -35,7 +35,7 @@ import DesktopInscription from '~/desktop-pages/inscription.vue'
 
 definePageMeta({
   bottomNav: false,
-  desktopNav: 'auth-card',
+  desktopNav: 'auth-reset',
   desktopFooter: false,
 })
 

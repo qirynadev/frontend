@@ -97,9 +97,21 @@ function domainHref(domain: FigmaDomain) {
   return localePath(`/destinations/${props.destination.slug}/ecoles?domaine=${slug}`)
 }
 
-const schoolsCtaLink = computed(() =>
-  localePath(`/destinations/${props.destination.slug}/ecoles`),
-)
+const schoolsCtaLink = computed(() => {
+  const preferred = figmaDomains[0]
+  const match = preferred
+    ? props.areas.find(area => preferred.slugs.includes(area.slug))
+    : undefined
+  const slug = match?.slug ?? props.areas[0]?.slug ?? preferred?.slugs[0]
+  if (!slug) return localePath(`/destinations/${props.destination.slug}/ecoles`)
+  return localePath(`/destinations/${props.destination.slug}/ecoles?domaine=${slug}`)
+})
+
+const reassurance = [
+  { icon: 'ic-trust-shield', labelKey: 'trust.payment' },
+  { icon: 'ic-trust-laurel', labelKey: 'trust.support', circled: true },
+  { icon: 'ic-trust-smile', labelKey: 'trust.satisfaction' },
+] as const
 
 const stats = computed(() => [
   {
@@ -164,18 +176,12 @@ const schools = [
   { src: `${assetBase}/schools/school-7.png`, w: 62, h: 62 },
 ] as const
 
-const trustItems = [
-  { icon: `${assetBase}/trust-verified.svg`, lines: ['desktop.destination.france.trust1'] },
-  { icon: `${assetBase}/trust-compare.svg`, lines: ['desktop.destination.france.trust2'] },
-  { icon: `${assetBase}/trust-support.svg`, lines: ['desktop.destination.france.trust3Line1', 'desktop.destination.france.trust3Line2'] },
-  { icon: `${assetBase}/trust-premium.svg`, lines: ['desktop.destination.france.trust4Line1', 'desktop.destination.france.trust4Line2'] },
-] as const
 </script>
 
 <template>
   <div class="flex w-full flex-col items-center bg-white pb-30 text-[#1a1d2b]">
     <!-- Hero 503 · chevauche le bloc suivant de 36 px -->
-    <section class="relative mb-[-36px] min-h-[503px] w-full overflow-hidden bg-white">
+    <section class="relative mb-[-36px] h-[503px] w-full overflow-hidden bg-white">
       <img
         :src="`${assetBase}/hero-france.jpg`"
         alt=""
@@ -185,19 +191,15 @@ const trustItems = [
       >
 
       <!-- Gutters boxed (pas d'absolu left/right : ignore le padding) -->
-      <div class="desktop-boxed desktop-split relative h-full justify-between">
-        <!-- Copy hero : top 93 · badge + titre gap 19 · puis gap 12 · sous-titre + CTA gap 19 -->
-        <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start pt-93 pr-64">
+      <div class="desktop-boxed desktop-split relative h-full items-center justify-between">
+        <!-- Copy hero : titre une ligne · sous-titre + CTA, aligné au milieu du rail -->
+        <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start justify-center pr-64">
           <div class="flex w-full max-w-504 flex-col gap-12">
-            <div class="flex w-full flex-col items-start gap-19">
-              <span class="rounded-[6px] bg-[#fef2f2] px-12 py-4 text-[16px] leading-18 font-semibold tracking-[0.6px] text-[#ff1b40]">
-                {{ $t('desktop.destination.france.badge') }}
-              </span>
-              <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
-                <span class="block text-[#1a1a1a]">{{ $t('desktop.destination.france.titleBefore') }}</span>
-                <span class="block text-[#ff1b40]">{{ $t('desktop.destination.france.titleAccent') }}</span>
-              </h1>
-            </div>
+            <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
+              <span class="text-[#1a1a1a]">{{ $t('desktop.destination.france.titleBefore') }}</span>
+              {{ ' ' }}
+              <span class="text-[#ff1b40]">{{ $t('desktop.destination.france.titleAccent') }}</span>
+            </h1>
 
             <div class="flex w-full flex-col items-start gap-19">
               <p class="m-0 w-full max-w-504 text-[18px] leading-26 font-medium tracking-[-0.32px] text-black">
@@ -223,11 +225,11 @@ const trustItems = [
         </div>
 
         <!-- Panneau domaines 476 · top 19 · gap 8 -->
-        <aside class="mt-19 flex desktop-rail flex-col items-start gap-8 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <h2 class="m-0 w-full text-[20px] leading-28 font-semibold tracking-[-0.46px] text-[#040c3d]">
+        <aside class="flex desktop-rail flex-col items-center gap-8 rounded-[9px] border border-[#d1d5db] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+          <h2 class="m-0 w-full text-center text-[20px] leading-28 font-semibold tracking-[-0.46px] text-[#040c3d]">
             {{ $t('desktop.destination.france.domainsTitle') }}
           </h2>
-          <p class="m-0 w-full text-[14px] leading-21 font-medium tracking-[-0.154px] text-black">
+          <p class="m-0 w-full text-center text-[14px] leading-21 font-medium tracking-[-0.154px] text-black">
             {{ $t('desktop.destination.france.domainsDesc1') }}<br>
             {{ $t('desktop.destination.france.domainsDesc2') }}
           </p>
@@ -238,7 +240,7 @@ const trustItems = [
                 v-for="domain in gridDomains"
                 :key="domain.id"
                 :to="domainHref(domain)"
-                class="flex h-66 items-center justify-between self-start rounded-[8px] border border-[#f3f4f6] bg-white p-13 text-[#040c3d] no-underline"
+                class="flex h-66 items-center justify-between self-start rounded-[8px] border border-[#d1d5db] bg-white p-13 text-[#040c3d] no-underline"
               >
                 <span class="flex min-w-0 items-center gap-12">
                   <span
@@ -279,7 +281,7 @@ const trustItems = [
               v-for="domain in wideDomains"
               :key="domain.id"
               :to="domainHref(domain)"
-              class="flex h-66 w-full items-center justify-between rounded-[8px] border border-[#f3f4f6] bg-white p-13 text-[#040c3d] no-underline"
+              class="flex h-66 w-full items-center justify-between rounded-[8px] border border-[#d1d5db] bg-white p-13 text-[#040c3d] no-underline"
             >
               <span class="flex items-center gap-12">
                 <span
@@ -314,18 +316,18 @@ const trustItems = [
     <!-- Stats + pourquoi + confiance | écoles + CTA — une seule rangée, même gouttière -->
     <div class="desktop-boxed desktop-split relative z-10 w-full items-stretch">
       <div class="flex min-w-0 flex-1 flex-col gap-25">
-        <div class="flex w-full items-start justify-center gap-15 rounded-[9px] border border-[#f9fafb] bg-white px-21 py-18 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+        <div class="flex w-full items-center justify-center gap-15 rounded-[9px] border border-[#d1d5db] bg-white px-21 py-18 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <template v-for="(stat, index) in stats" :key="stat.labelKey">
             <div
               v-if="index > 0"
-              class="h-64 w-px shrink-0 bg-[#f3f4f6]"
+              class="h-64 w-px shrink-0 bg-[#d1d5db]"
               aria-hidden="true"
             />
             <div class="flex min-w-0 flex-1 items-start justify-center gap-10">
               <span class="size-45 shrink-0 overflow-clip">
                 <img :src="stat.icon" alt="" width="45" height="45" class="block size-full">
               </span>
-              <div class="flex min-w-0 flex-1 flex-col gap-2">
+              <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
                 <p
                   class="m-0 text-[16px] leading-26 tracking-[0.208px] text-[#040c3d]"
                   :class="stat.bold ? 'font-bold' : 'font-semibold'"
@@ -348,7 +350,7 @@ const trustItems = [
             <article
               v-for="feature in features"
               :key="feature.titleKey"
-              class="flex flex-col gap-8 rounded-[16px] border border-[#f3f4f6] bg-white p-16 first:rounded-[9px]"
+              class="flex flex-col gap-8 rounded-[16px] border border-[#d1d5db] bg-white p-16 first:rounded-[9px]"
             >
               <div class="flex items-center gap-6">
                 <span class="size-36 shrink-0 overflow-clip">
@@ -365,24 +367,26 @@ const trustItems = [
           </div>
         </div>
 
-        <div class="flex min-h-108 min-w-0 items-center rounded-[9px] border border-[#f3f4f6] bg-white px-21 py-18">
-          <div class="flex min-w-0 flex-1 items-center gap-15">
-            <template v-for="(item, index) in trustItems" :key="index">
+        <div
+          class="flex min-h-108 min-w-0 w-full items-center rounded-[9px] border border-[#d1d5db] bg-white px-21 py-18"
+          :aria-label="$t('trust.label')"
+        >
+          <div class="flex min-w-0 w-full items-center">
+            <template v-for="(item, index) in reassurance" :key="item.labelKey">
               <div
                 v-if="index > 0"
-                class="h-49 w-px shrink-0 bg-[#f3f4f6]"
+                class="h-49 w-px shrink-0 bg-[#d1d5db]"
                 aria-hidden="true"
               />
-              <div class="flex min-w-0 flex-1 items-center gap-8">
-                <span class="flex shrink-0 rounded-full bg-[#fef2f2] p-10">
-                  <span class="size-20 overflow-clip">
-                    <img :src="item.icon" alt="" width="20" height="20" class="block size-full">
-                  </span>
+              <div class="flex min-w-0 flex-1 items-center justify-center gap-12">
+                <span
+                  class="flex size-40 shrink-0 items-center justify-center"
+                  :class="item.circled ? 'rounded-full bg-[#def5e3]' : ''"
+                >
+                  <QIcon :name="item.icon" :size="item.circled ? 24 : 40" />
                 </span>
-                <p class="m-0 text-[13px] leading-16 font-medium text-black">
-                  <template v-for="(line, lineIndex) in item.lines" :key="line">
-                    <br v-if="lineIndex > 0">{{ $t(line) }}
-                  </template>
+                <p class="m-0 text-[14px] leading-[18px] font-semibold text-[#040c3d]">
+                  {{ $t(item.labelKey) }}
                 </p>
               </div>
             </template>
@@ -391,15 +395,15 @@ const trustItems = [
       </div>
 
       <div class="flex desktop-rail flex-col justify-between gap-25">
-        <aside class="flex flex-1 flex-col gap-32 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-26 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <h2 class="m-0 text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
+        <aside class="flex flex-1 flex-col gap-32 rounded-[9px] border border-[#d1d5db] bg-white px-16 pt-26 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+          <h2 class="m-0 text-center text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
             {{ $t('desktop.destination.france.schoolsTitle') }}
           </h2>
           <div class="grid grid-cols-4 gap-12">
             <div
               v-for="(school, index) in schools"
               :key="index"
-              class="flex h-95 items-center justify-center rounded-[12px] border border-[#f3f4f6] bg-white px-5 py-6"
+              class="flex h-95 items-center justify-center rounded-[12px] border border-[#d1d5db] bg-white px-5 py-6"
             >
               <span
                 class="relative shrink-0 overflow-hidden"

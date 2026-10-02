@@ -25,8 +25,8 @@ declare module '#app' {
      * Variante de la topbar desktop.
      * - `default` : liens + Profilage + compte
      * - `auth` : navbar shell connexion (oubli + S'inscrire)
-     * - `auth-reset` : navbar shell mot de passe oublié (Déjà un compte + Se connecter)
-     * - `auth-card` : navbar intégrée à la carte (inscription-V2)
+     * - `auth-reset` : navbar shell inscription / mot de passe (Déjà un compte + Se connecter)
+     * - `auth-card` : ancienne carte inscription (inutilisée)
      */
     desktopNav?: 'default' | 'auth' | 'auth-reset' | 'auth-card'
     /**

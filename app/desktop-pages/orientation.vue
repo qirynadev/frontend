@@ -145,8 +145,8 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
               </div>
             </div>
           </div>
-          <div class="relative hidden h-331 w-full max-w-496 shrink-0 overflow-hidden rounded-[24px] xl:block">
-            <img :src="`${ASSET}/hero.png`" alt="" width="496" height="331" class="size-full object-cover">
+          <div class="relative w-full max-w-496 shrink-0">
+            <img :src="`${ASSET}/hero.jpg`" alt="" width="1024" height="682" class="block h-auto w-full">
           </div>
         </section>
 

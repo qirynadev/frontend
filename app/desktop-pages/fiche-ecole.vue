@@ -141,7 +141,7 @@ function similarLocation(item: SchoolSummary) {
       <!-- Onglets + contenu -->
       <div class="flex w-full flex-col gap-31 rounded-[16px] border border-[#f9fafb] bg-white p-33 shadow-[0_0_3px_rgba(0,0,0,0.12)]">
         <div
-          class="flex gap-32 border-b border-[#efeff1]"
+          class="flex w-full rounded-[14px] border border-[#f8f8fc] bg-[#fdfdfd] p-1 box-border"
           role="tablist"
           :aria-label="$t('school.detail.tabsLabel')"
         >
@@ -151,13 +151,13 @@ function similarLocation(item: SchoolSummary) {
             type="button"
             role="tab"
             :aria-selected="activeTab === tab.value"
-            class="flex cursor-pointer items-center justify-center gap-6 border-0 bg-transparent pb-16 text-[20px] leading-20 font-semibold tracking-[-0.154px]"
+            class="flex flex-1 cursor-pointer items-center justify-center gap-8 rounded-xl border px-12 py-12 text-[20px] leading-20 font-semibold tracking-[-0.154px] whitespace-nowrap box-border transition-colors duration-150"
             :class="activeTab === tab.value
-              ? 'border-b-2 border-[#ff1b40] pb-[18px] text-[#121212]'
-              : 'text-[#6b7280]'"
+              ? 'border-[#e2dff5] bg-[#f8f7ff] text-[#2d00fc]'
+              : 'border-transparent bg-transparent text-black'"
             @click="activeTab = tab.value"
           >
-            <QIcon :name="tab.icon" :size="20" class="shrink-0" />
+            <QIcon :name="tab.icon" :size="16" class="shrink-0" />
             <span>{{ tab.label }}</span>
           </button>
         </div>
@@ -184,19 +184,22 @@ function similarLocation(item: SchoolSummary) {
             class="flex w-full cursor-pointer items-start gap-16 rounded-[12px] border border-[#f3f4f6] bg-white p-20 text-left shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
             @click="emit('select-formation', formation)"
           >
+            <span class="size-44 shrink-0 overflow-clip">
+              <QIcon name="ic-ed-form-1" :size="44" />
+            </span>
             <div class="min-w-0 flex-1">
               <h3 class="m-0 text-[16px] leading-20 font-semibold text-[#040c3d]">{{ formation.title }}</h3>
               <div class="flex flex-wrap items-center gap-12 pt-6 text-[13px] leading-[16.5px] font-medium text-[#65738f]">
-                <span>{{ formation.grade }}</span>
+                <span class="flex items-center gap-6 whitespace-nowrap">
+                  <QIcon name="ic-ed-grad" :size="12" :height="9" />
+                  <span>{{ formation.grade }}</span>
+                </span>
                 <span aria-hidden="true">|</span>
-                <span>{{ formation.duration }}</span>
+                <span class="flex items-center gap-6 whitespace-nowrap">
+                  <QIcon name="ic-ed-clock" :size="9" />
+                  <span>{{ formation.duration }}</span>
+                </span>
               </div>
-              <p
-                v-if="formation.summary"
-                class="m-0 mt-6 line-clamp-3 text-[14px] leading-[19.5px] text-[#252525]"
-              >
-                {{ formation.summary }}
-              </p>
             </div>
           </button>
         </div>

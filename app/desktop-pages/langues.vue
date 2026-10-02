@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Landing langues desktop ← Figma `1003:1436`, artboard 1728.
- * Titre / badge / description et formules ← Figma `601:1634` (Choix de la formule).
+ * Formules ← Figma `601:1634` (Choix de la formule).
  */
 import type { CourseSummary, OfferTier } from '~/core/contracts'
 import { offerPageRepo } from '~/core/repositories'
@@ -12,7 +12,8 @@ import {
   desktopLangueFeatures,
   desktopLangueFormulaVisual,
   desktopLanguePath,
-  ofLanguage,
+  deLanguage,
+  leLanguage,
 } from '~/config/desktop-langues'
 import { orderByMaquette } from '~/config/language-badges'
 
@@ -47,12 +48,6 @@ const selectedLevel = ref<(typeof levels)[number]['id']>('beginner')
 const selectedLevelMeta = computed(() => levels.find(level => level.id === selectedLevel.value) ?? levels[0]!)
 
 const languageName = computed(() => selectedCourse.value?.name ?? '')
-
-const heroDescKey = computed(() => {
-  if (selectedLevel.value === 'intermediate') return 'desktop.langues.heroDescIntermediate'
-  if (selectedLevel.value === 'advanced') return 'desktop.langues.heroDescAdvanced'
-  return 'desktop.langues.heroDescBeginner'
-})
 
 const { data: offer, apiError, isInitialLoading, refresh } = await usePageData(
   'langues-offer-desktop',
@@ -127,27 +122,25 @@ function scrollToFormulas(event?: Event) {
     <div class="mx-auto flex w-1400 flex-col items-start py-11 pb-32">
       <div class="flex w-full items-start gap-24">
         <div class="flex h-610 w-939 shrink-0 items-center gap-20 overflow-clip rounded-[10px] bg-white">
-          <div class="flex h-610 w-505 shrink-0 flex-col pt-70">
-            <div class="flex w-full flex-col gap-13">
-              <div class="pb-24">
-                <span class="inline-flex h-36 w-[330.375px] items-center gap-8 rounded-[8px] bg-[#f6f6fe] px-16 py-8 text-[13px] leading-[19.5px] font-medium text-[#1a1d2b]">
-                  <img :src="`${ASSET}/badge.svg`" alt="" width="16" height="16" class="block size-16 shrink-0">
-                  {{ $t('desktop.langues.badge') }}
-                </span>
-              </div>
-              <h1 class="m-0 text-[30px] leading-[37.5px] font-semibold text-black"><span>{{ $t('desktop.langues.heroTitle', { language: languageName }) }}</span><span class="text-[#fd1d36]">{{ t(selectedLevelMeta.nameKey) }}</span></h1>
-              <p class="m-0 w-full whitespace-pre-line pb-16 pr-16 text-[12px] leading-[19.5px] text-black">
-                {{ $t(heroDescKey, {
-                  ofLanguage: ofLanguage(languageName, locale),
-                  language: languageName.toLowerCase(),
-                }) }}
+          <div class="flex h-610 w-505 shrink-0 flex-col pt-52 pb-36">
+            <div class="flex w-full flex-col gap-20">
+              <span class="inline-flex h-36 w-fit items-center gap-8 rounded-[8px] bg-[#f6f6fe] px-16 py-8 text-[13px] leading-[19.5px] font-medium text-[#1a1d2b]">
+                <img :src="`${ASSET}/badge.svg`" alt="" width="16" height="16" class="block size-16 shrink-0">
+                {{ $t('desktop.langues.badge') }}
+              </span>
+              <h1 class="m-0 text-[46px] leading-[54px] font-semibold tracking-[-1.2px] text-black">
+                {{ $t('desktop.langues.landingTitle', { leLanguage: leLanguage(languageName, locale) }) }}
+                <span class="block text-[#fd1d36]">{{ $t('desktop.langues.landingAccent') }}</span>
+              </h1>
+              <p class="m-0 w-full pr-8 text-[18px] leading-[28px] text-black">
+                {{ $t('desktop.langues.landingDesc', { ofLanguage: deLanguage(languageName, locale) }) }}
               </p>
             </div>
-            <div class="grid h-[131.5px] w-full grid-cols-4 gap-x-25">
+            <div class="grid w-full grid-cols-4 gap-x-25 pt-32">
               <div
                 v-for="feat in desktopLangueFeatures"
                 :key="feat.titleKey"
-                class="flex h-[131.5px] flex-col items-center"
+                class="flex flex-col items-center"
               >
                 <img :src="`${ASSET}/${feat.icon}`" alt="" width="48" height="48" class="block size-48 shrink-0">
                 <p class="m-0 w-full pt-12 text-center text-[10px] leading-[15px] font-bold text-[#1a1d2b]">
@@ -268,7 +261,7 @@ function scrollToFormulas(event?: Event) {
         </aside>
       </div>
 
-      <section id="formules" class="w-939 pt-28">
+      <section id="formules" class="w-939 pt-40">
         <div class="relative flex items-start">
           <h2 class="m-0 text-[16px] leading-28 font-semibold whitespace-nowrap text-[#1b254b]">
             {{ $t('desktop.langues.formulasHeading') }}
@@ -290,12 +283,12 @@ function scrollToFormulas(event?: Event) {
           :message="$t(checkoutErrorKey)"
         />
 
-        <div v-if="isInitialLoading" class="flex gap-16 pt-56">
+        <div v-if="isInitialLoading" class="flex gap-16 pt-40">
           <QSkeleton v-for="i in 3" :key="i" variant="rect" :height="405" class="min-w-px flex-1" />
         </div>
         <div
           v-else-if="formulaCards.length > 0"
-          class="flex items-stretch justify-center gap-16 pt-56"
+          class="flex items-stretch justify-center gap-16 pt-40"
         >
           <article
             v-for="card in formulaCards"
@@ -374,14 +367,14 @@ function scrollToFormulas(event?: Event) {
         </div>
         <QEmptyState
           v-else-if="!apiError"
-          class="mt-56"
+          class="mt-40"
           icon="ic-formule-kili"
           :title="$t('offer.emptyTitle')"
           :description="$t('offer.emptyDescription')"
         />
         <QAlert
           v-else
-          class="mt-56"
+          class="mt-40"
           tone="danger"
           :title="$t('state.error.title')"
           :message="apiError.kind === 'network' || apiError.kind === 'timeout'

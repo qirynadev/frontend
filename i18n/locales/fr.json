@@ -144,7 +144,8 @@
       "stat3Value": "98%",
       "stat3Label": "taux de satisfaction",
       "openSchool": "Voir la fiche",
-      "nextPage": "Page suivante"
+      "nextPage": "Page suivante",
+      "selectSchoolHint": "Veuillez sélectionner une école"
     },
     "ficheEcole": {
       "badgeAacsb": "AACSB",
@@ -154,7 +155,7 @@
       "badgePrivee": "Privée",
       "badgePublique": "Publique",
       "badgeUniversite": "Université",
-      "ctaButton": "Voir nos offres d'accompagnement",
+      "ctaButton": "Être accompagné pour candidater",
       "ctaDesc": "Nos conseillers vous accompagnent à chaque étape de votre candidature.",
       "ctaTitle": "Vous souhaitez intégrer",
       "similarTitle": "Établissements similaires"
@@ -278,6 +279,9 @@
     },
     "langues": {
       "badge": "Apprenez une langue. Ouvrez-vous au monde.",
+      "landingTitle": "Maîtrisez {leLanguage},",
+      "landingAccent": "développez votre avenir.",
+      "landingDesc": "Que ce soit pour vos études, votre carrière ou vos projets personnels, améliorez votre niveau {ofLanguage} avec des professeurs certifiés et atteignez vos objectifs.",
       "heroTitle": "{language} - Niveau ",
       "badgeBeginner": "Débutant",
       "badgeIntermediate": "Intermédiaire",
@@ -331,7 +335,15 @@
       "statSecureLabel": "contrats vérifiés",
       "statSecureValue": "100%",
       "statSupportLabel": "jusqu’à l’installation",
-      "statSupportValue": "Suivi"
+      "statSupportValue": "Suivi",
+      "typeAppart": "Appartement",
+      "typeAppartDesc": "Votre espace, votre indépendance.",
+      "typeColoc": "Colocation",
+      "typeColocDesc": "Vivez l'expérience étudiante à plusieurs.",
+      "typeResidence": "Résidence universitaire",
+      "typeResidenceDesc": "Confort, sécurité et services pour les étudiants.",
+      "typeSubtitle": "Choisissez le format qui vous correspond.",
+      "typeTitle": "Quel type de logement ?"
     },
     "monProjet": {
       "introLine1": "Retrouvez ici tous les services que vous avez choisis.",
@@ -454,7 +466,7 @@
         "badge": "Trouver mon logement",
         "titleBefore": "Un logement sûr et confortable, ",
         "titleAccent": "où que vous soyez",
-        "desc": "Nous aidons les étudiants à trouver le logement idéal dans les meilleures villes étudiantes. Colocation, résidence étudiante ou appartement privé : nous vous accompagnons de la recherche jusqu'à votre installation.",
+        "desc": "Nous aidons les étudiants à trouver le logement idéal dans les meilleures villes étudiantes.",
         "c1": "Large choix de logements",
         "c1desc": "Des milliers d'options vérifiées adaptées à votre budget et à vos besoins.",
         "c2": "Sécurité et confiance",

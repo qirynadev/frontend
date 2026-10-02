@@ -76,6 +76,24 @@ export function ofLanguage(name: string, locale: string): string {
   return VOWEL_OR_H.test(lower) ? `de l'${lower}` : `du ${lower}`
 }
 
+/** « l'anglais » / « le français » — titre Figma `1003:1436`. */
+export function leLanguage(name: string, locale: string): string {
+  const trimmed = name.trim()
+  if (!trimmed) return ''
+  const lower = trimmed.toLowerCase()
+  if (locale.startsWith('en')) return trimmed
+  return VOWEL_OR_H.test(lower) ? `l'${lower}` : `le ${lower}`
+}
+
+/** « d'anglais » / « de français » — description Figma `1003:1436`. */
+export function deLanguage(name: string, locale: string): string {
+  const trimmed = name.trim()
+  if (!trimmed) return ''
+  const lower = trimmed.toLowerCase()
+  if (locale.startsWith('en')) return trimmed
+  return VOWEL_OR_H.test(lower) ? `d'${lower}` : `de ${lower}`
+}
+
 export function desktopLangueFormulaVisual(name: string, fallbackIndex: number) {
   const key = name.toLowerCase()
   if (key.includes('everest')) return desktopLangueFormulaVisuals[0]

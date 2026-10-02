@@ -44,9 +44,7 @@ Chrome legacy (courbe, carrousel, mentions / contact / newsletter, stores). Sous
 
 ## Wings (écrans auth)
 
-**Inscription-V2** (`640:6`) : carte flottante dans `.desktop-canvas`. Fond shell `#f2f1f6` = wings hors 1728 dès FHD. Padding carte `p-30`, `rounded-[50px]`.
-
-**Connexion** (`567:5582`) : split dans `.desktop-canvas`. Formulaire aligné au logo (`pl` gutter 150). Hero `flex-1` jusqu’au bord droit du canevas.
+**Connexion**, **inscription** et **mot de passe oublié** : même split dans `.desktop-canvas`. Formulaire aligné au logo (`pl` gutter 150). Hero `flex-1` jusqu’au bord droit du canevas.
 
 ## Navigation
 
@@ -65,20 +63,11 @@ Chrome legacy (courbe, carrousel, mentions / contact / newsletter, stores). Sous
 - CTA pill « S'inscrire » (`bg-desktop-brand`)
 - Bouton langue `38×38` (drapeau seul, sans chevron)
 
-### Carte auth (`AppDesktopAuthCardNav`) — inscription
+#### Variante `auth-reset` — inscription / mot de passe
 
-Frame Figma `640:22`, **à l'intérieur** de la carte blanche, au-dessus du split formulaire / hero.
-
-| Propriété | Valeur |
-|---|---|
-| Hauteur | `80px` → `h-80` · `py-15` |
-| Padding | `pl-48` · `pr-90` (aligné trust bar hero) |
-| Fond | transparent (hérite du blanc de la carte) |
-| Gauche | logo Qiryna |
-| Droite | « Déjà un compte ? » + bouton outline « Se connecter » (`rounded-[10px]`, bord `#fc1333`) |
-| Langue | `66×38` · drapeau + chevron · `rounded-[10px]` |
-
-Meta page : `desktopNav: 'auth-card'` (masque la nav shell).
+- Texte « Déjà un compte ? »
+- Bouton outline « Se connecter » (`rounded-[10px]`, bord `#fc1333`)
+- Bouton langue `38×38` (drapeau seul)
 
 ## Split auth (formulaire / hero)
 
@@ -90,13 +79,12 @@ Meta page : `desktopNav: 'auth-card'` (masque la nav shell).
 | Panneau droit | flex | `flex-1` |
 | Hauteur contenu | `877px` (957 − 80 nav) | `h-full` · shell `is-locked` |
 
-### Inscription-V2 (`640:6`)
+### Inscription / mot de passe (alignés connexion)
 
-| Zone | Largeur Figma | Classes |
-|---|---|---|
-| Panneau gauche | `738px` | `w-738` · `px-48` |
-| Panneau droit | flex | `flex-1` · `px-78 py-48` intérieur hero |
-| Titre H1 | `36px` / `40px` line | `text-[36px] leading-40` |
+Même split que la connexion. Nav shell `auth-reset` (« Déjà un compte ? »).
+Inscription : champs + étape code, hero `inscription-hero.jpg`.
+Mot de passe : demande du code puis nouveau MDP, hero `mot-de-passe-hero.jpg`.
+Trust bar identique (3 items).
 
 ## Hero & barres de confiance
 
@@ -110,24 +98,14 @@ Meta page : `desktopNav: 'auth-card'` (masque la nav shell).
 | Texte | `11px` / `13.125px` line · semibold |
 | Séparateur | `#e6e5f5` · `h-34 w-px` |
 
-### Inscription — trust bar (`640:162`)
-
-| Propriété | Valeur |
-|---|---|
-| Hauteur | `74px` |
-| Padding | `px-21 py-11` · `gap-16` |
-| Icônes | `20×20` |
-| Items | 4 colonnes égales (`flex-1`) |
-| Position | `pb-60` · `pl-55 pr-90` dans le panneau |
-
-Image hero : `object-cover` · pleine hauteur du panneau droit (`absolute inset-y-0 left-738`) — **y compris derrière la navbar** · `opacity-85` · coins `rounded-tr` + `rounded-br`.
+Image hero : `object-cover` · pleine hauteur du panneau droit · `opacity-85`.
 
 ## Meta pages (`definePageMeta`)
 
 ```ts
 definePageMeta({
   bottomNav: false,
-  desktopNav: 'default' | 'auth' | 'auth-card',
+  desktopNav: 'default' | 'auth' | 'auth-reset' | 'auth-card',
   desktopFooter: false,    // auth plein cadre
 })
 ```
@@ -136,8 +114,8 @@ definePageMeta({
 |---|---|
 | `default` | Accueil, pages applicatives |
 | `auth` | Connexion — nav shell |
-| `auth-reset` | Mot de passe oublié — nav « Déjà un compte ? » + Se connecter |
-| `auth-card` | Inscription-V2 — nav intégrée à la carte |
+| `auth-reset` | Inscription / mot de passe oublié — nav « Déjà un compte ? » + Se connecter |
+| `auth-card` | Ancienne carte inscription (plus utilisée) |
 
 ## Fichiers de référence
 

@@ -24,8 +24,9 @@ est dans `layouts/desktop.vue`, basculé depuis `layouts/default.vue`.
 
 Branchement : `pages/destinations/[slug]/ecoles/index.vue` (mobile) et
 `desktop-pages/domaines-etudes.vue`. Un domaine cliqué depuis la fiche pays
-arrive avec `?domaine=` (onglet allumé). Le CTA pays ouvre la liste **sans**
-domaine présélectionné.
+arrive avec `?domaine=` (onglet allumé). Les CTA pays (« Explorer les
+programmes », « Commencer ») ouvrent la liste avec le premier domaine
+présélectionné.
 
 ## Fiche école
 

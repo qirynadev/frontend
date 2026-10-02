@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Mot de passe oublié desktop ← Figma `576:38`.
- * Split identique à connexion (772 / hero) · trust bar 3 étapes.
+ * Mot de passe oublié desktop — même split que `/connexion` et `/inscription`.
+ * Formulaire à gauche, hero à droite, trust bar identique.
  */
 defineProps<{
   step: 'request' | 'reset'
@@ -28,35 +28,22 @@ const emit = defineEmits<{
 const localePath = useLocalePath()
 
 const trustItems = [
-  {
-    icon: '/img/desktop/auth/reset-trust-step1.svg',
-    titleKey: 'desktop.reset.trust1Title',
-    descKey: 'desktop.reset.trust1Desc',
-  },
-  {
-    icon: '/img/desktop/auth/reset-trust-step2.svg',
-    titleKey: 'desktop.reset.trust2Title',
-    descKey: 'desktop.reset.trust2Desc',
-  },
-  {
-    icon: '/img/desktop/auth/reset-trust-step3.svg',
-    titleKey: 'desktop.reset.trust3Title',
-    descKey: 'desktop.reset.trust3Desc',
-  },
+  { icon: '/img/desktop/auth/trust-secure.svg', labelKey: 'desktop.auth.trust1' },
+  { icon: '/img/desktop/auth/trust-support.svg', labelKey: 'desktop.auth.trust2' },
+  { icon: '/img/desktop/auth/trust-studies.svg', labelKey: 'desktop.auth.trust3' },
 ] as const
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden lg:flex-row">
+  <div class="desktop-canvas flex min-h-0 flex-row overflow-hidden">
     <section
-      class="box-border flex h-full w-full flex-col overflow-y-auto bg-white pb-48 pr-32 pt-0 lg:w-680 lg:shrink-0"
+      class="box-border flex h-full w-[calc(var(--q-desktop-gutter)+680px)] shrink-0 flex-col overflow-y-auto bg-white pb-48 pr-32 pl-[var(--q-desktop-gutter)] pt-0"
     >
-      <div class="flex w-full flex-col gap-41 pt-39">
+      <div class="flex w-full flex-col gap-7 pt-39">
         <div class="w-full pt-32">
-          <!-- 583:835 — retour connexion -->
           <NuxtLink
             :to="localePath('/connexion')"
-            class="mb-30 inline-flex items-center gap-8 pb-30 text-base leading-16 font-bold text-black no-underline"
+            class="mb-30 inline-flex items-center gap-8 text-base leading-16 font-bold text-black no-underline"
           >
             <img
               src="/img/desktop/auth/reset-back-arrow.svg"
@@ -68,7 +55,7 @@ const trustItems = [
             {{ $t('desktop.reset.backToLogin') }}
           </NuxtLink>
 
-          <h1 class="m-0 text-[43px] leading-40 font-semibold text-black">
+          <h1 class="m-0 pt-30 text-[43px] leading-40 font-semibold text-black">
             {{ $t('desktop.reset.titleLine1') }}
             <span class="block text-[#fd1d36]">{{ $t('desktop.reset.titleAccent') }}</span>
           </h1>
@@ -83,14 +70,19 @@ const trustItems = [
           tone="danger"
           :title="$t('auth.error.title')"
           :message="formError"
+          class="mt-24"
         />
 
-        <QAlert v-if="notice" tone="success" :message="notice" />
+        <QAlert v-if="notice" tone="success" :message="notice" class="mt-24" />
 
-        <!-- Étape 1 — demande du code -->
-        <div v-if="step === 'request'" class="flex w-full flex-col gap-22">
-          <form class="flex w-full flex-col gap-18" novalidate @submit.prevent="emit('request')">
-            <div class="flex flex-col gap-10 pb-10">
+        <form
+          v-if="step === 'request'"
+          class="w-full pt-24"
+          novalidate
+          @submit.prevent="emit('request')"
+        >
+          <div class="flex flex-col gap-18">
+            <div class="flex flex-col gap-16">
               <p class="m-0 text-xl leading-15 font-semibold tracking-[0.5px] text-black">
                 {{ $t('desktop.reset.emailTitle') }}
               </p>
@@ -110,120 +102,105 @@ const trustItems = [
               />
             </div>
 
-            <div class="flex flex-col gap-22">
-              <button
-                type="submit"
-                :disabled="submitting"
-                class="flex w-full cursor-pointer items-center justify-center rounded-md border-0 bg-[#fc1333] px-32 py-14 text-xl leading-20 font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <QSpinner v-if="submitting" size="sm" class="text-white" />
-                <span v-else>{{ $t('desktop.reset.submit') }}</span>
-              </button>
+            <button
+              type="submit"
+              :disabled="submitting"
+              class="flex w-full cursor-pointer items-center justify-center gap-8 rounded-md border-0 bg-[#fc1333] px-32 py-14 text-xl leading-20 font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <QSpinner v-if="submitting" size="sm" class="text-white" />
+              <template v-else>
+                <span>{{ $t('desktop.reset.submit') }}</span>
+                <span aria-hidden="true">→</span>
+              </template>
+            </button>
+          </div>
+        </form>
 
-              <div class="flex items-center">
-                <span aria-hidden="true" class="h-px flex-1 bg-[#e3e5ef]" />
-                <span class="px-14 text-base leading-16 font-semibold text-[#646b8c] uppercase">{{ $t('auth.or') }}</span>
-                <span aria-hidden="true" class="h-px flex-1 bg-[#e3e5ef]" />
-              </div>
+        <form
+          v-else
+          class="w-full pt-24"
+          novalidate
+          @submit.prevent="emit('reset')"
+        >
+          <div class="flex flex-col gap-18">
+            <QInput
+              :model-value="code"
+              icon="ic-email"
+              :icon-width="16.25"
+              :icon-height="12.5"
+              :icon-bleed="0.6"
+              :placeholder="$t('auth.reset.codePlaceholder')"
+              :error="fieldErrors.code?.[0]"
+              :disabled="submitting"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              name="code"
+              @update:model-value="emit('update:code', $event)"
+            />
 
-              <!-- 576:304 — encart aide -->
-              <div class="box-border flex items-center justify-between rounded-[10px] bg-[#f7f3f7] px-19 py-20">
-                <div class="flex min-w-0 flex-1 items-start gap-16">
-                  <img
-                    src="/img/desktop/auth/reset-help-headset.svg"
-                    alt=""
-                    width="44"
-                    height="44"
-                    class="block size-44 shrink-0"
-                  >
-                  <div class="min-w-0">
-                    <p class="m-0 text-base leading-20 font-bold text-[#191919]">
-                      {{ $t('desktop.reset.helpTitle') }}
-                    </p>
-                    <p class="m-0 pt-4 text-sm leading-16 font-normal text-[#191919]">
-                      {{ $t('desktop.reset.helpDesc') }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-
-          <p class="m-0 flex items-center gap-8 text-lg leading-16 font-medium text-[#535a83]">
-            <QIcon name="ic-shield" :size="16" />
-            {{ $t('desktop.reset.secureNote') }}
-          </p>
-        </div>
-
-        <!-- Étape 2 — code + nouveau mot de passe -->
-        <div v-else class="flex w-full flex-col gap-22">
-          <form class="w-full" novalidate @submit.prevent="emit('reset')">
-            <div class="flex flex-col gap-18">
+            <div>
               <QInput
-                :model-value="code"
-                icon="ic-email"
-                :icon-width="16.25"
-                :icon-height="12.5"
+                :model-value="password"
+                type="password"
+                icon="ic-lock"
+                :icon-width="12.5"
+                :icon-height="16.25"
                 :icon-bleed="0.6"
-                :label="$t('auth.reset.codeLabel')"
-                :placeholder="$t('auth.reset.codePlaceholder')"
-                :error="fieldErrors.code?.[0]"
+                :placeholder="$t('auth.passwordPlaceholder')"
+                :state="password === '' ? 'default' : strengthTone === 'ok' ? 'valid' : 'invalid'"
+                :error="fieldErrors.password?.[0]"
                 :disabled="submitting"
-                inputmode="numeric"
-                autocomplete="one-time-code"
-                name="code"
-                @update:model-value="emit('update:code', $event)"
+                autocomplete="new-password"
+                name="password"
+                revealable
+                @update:model-value="emit('update:password', $event)"
               />
-
-              <div>
-                <div class="pb-10">
-                  <QInput
-                    :model-value="password"
-                    type="password"
-                    icon="ic-lock"
-                    :icon-width="12.5"
-                    :icon-height="16.25"
-                    :icon-bleed="0.6"
-                    :label="$t('auth.reset.newPasswordLabel')"
-                    :placeholder="$t('auth.passwordPlaceholder')"
-                    :state="password === '' ? 'default' : strengthTone === 'ok' ? 'valid' : 'invalid'"
-                    :error="fieldErrors.password?.[0]"
-                    :disabled="submitting"
-                    autocomplete="new-password"
-                    name="password"
-                    revealable
-                    @update:model-value="emit('update:password', $event)"
-                  />
-                </div>
-                <QPasswordStrength :score="score" :hint="strengthHint" :hint-tone="strengthTone" />
-              </div>
-
-              <button
-                type="submit"
-                :disabled="submitting"
-                class="flex w-full cursor-pointer items-center justify-center rounded-md border-0 bg-[#fc1333] px-32 py-14 text-xl leading-20 font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <QSpinner v-if="submitting" size="sm" class="text-white" />
-                <span v-else>{{ $t('auth.reset.submitNew') }}</span>
-              </button>
+              <QPasswordStrength class="pt-10" :score="score" :hint="strengthHint" :hint-tone="strengthTone" />
             </div>
-          </form>
 
-          <p class="m-0 flex items-center gap-8 text-lg leading-16 font-medium text-[#535a83]">
-            <QIcon name="ic-shield" :size="16" />
-            {{ $t('desktop.reset.secureNote') }}
-          </p>
+            <button
+              type="submit"
+              :disabled="submitting"
+              class="flex w-full cursor-pointer items-center justify-center gap-8 rounded-md border-0 bg-[#fc1333] px-32 py-14 text-xl leading-20 font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <QSpinner v-if="submitting" size="sm" class="text-white" />
+              <template v-else>
+                <span>{{ $t('auth.reset.submitNew') }}</span>
+                <span aria-hidden="true">→</span>
+              </template>
+            </button>
+          </div>
+        </form>
+
+        <div class="box-border flex items-center justify-between rounded-[10px] bg-[#f7f3f7] px-19 py-20">
+          <div class="flex min-w-0 flex-1 items-start gap-16">
+            <img
+              src="/img/desktop/auth/reset-help-headset.svg"
+              alt=""
+              width="44"
+              height="44"
+              class="block size-44 shrink-0"
+            >
+            <div class="min-w-0">
+              <p class="m-0 text-base leading-20 font-bold text-[#191919]">
+                {{ $t('desktop.reset.helpTitle') }}
+              </p>
+              <p class="m-0 pt-4 text-sm leading-16 font-normal text-[#191919]">
+                {{ $t('desktop.reset.helpDesc') }}
+              </p>
+            </div>
+          </div>
         </div>
+
+        <p class="m-0 flex items-center justify-center gap-8 pt-32 text-lg leading-16 font-medium text-[#535a83]">
+          <QIcon name="ic-shield" :size="26" />
+          {{ $t('desktop.auth.secureNote') }}
+        </p>
       </div>
     </section>
 
-    <!-- 1146:778 — panneau droit hero · gutter via `.desktop-boxed` -->
-    <aside
-      class="relative hidden h-full min-h-0 flex-1 items-stretch lg:flex"
-    >
-      <div
-        class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]"
-      >
+    <aside class="relative flex h-full min-h-0 flex-1 items-stretch">
+      <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]">
         <div class="absolute inset-0 overflow-hidden opacity-85">
           <img
             src="/img/desktop/auth/mot-de-passe-hero.jpg"
@@ -232,18 +209,20 @@ const trustItems = [
           >
         </div>
 
-        <!-- 576:150 — trust bar 3 étapes (hauteur fluide) -->
         <div class="absolute inset-x-0 bottom-0 flex justify-center px-48 pb-48">
           <div
-            class="box-border flex w-full min-h-0 items-stretch justify-center gap-16 rounded-[10px] border border-[#f1f5f9] bg-white px-13 py-11 shadow-[0_0_3.5px_rgba(0,0,0,0.15)]"
+            class="box-border flex h-74 w-fit max-w-full items-center justify-center gap-26 rounded-[10px] border border-[#f1f5f9] bg-white px-32 py-11 shadow-[0_0_3.5px_rgba(0,0,0,0.15)]"
           >
-            <template v-for="(item, index) in trustItems" :key="item.titleKey">
+            <template v-for="(item, index) in trustItems" :key="item.labelKey">
               <div
                 v-if="index > 0"
-                class="w-px shrink-0 self-stretch bg-[#e6e5f5]"
+                class="h-34 w-px shrink-0 bg-[#e6e5f5]"
                 aria-hidden="true"
               />
-              <div class="flex min-w-0 flex-1 items-center gap-10">
+              <div
+                class="flex shrink-0 items-center gap-10"
+                :class="index === 0 ? 'justify-center' : 'items-start'"
+              >
                 <img
                   :src="item.icon"
                   alt=""
@@ -251,10 +230,9 @@ const trustItems = [
                   height="40"
                   class="block size-40 shrink-0"
                 >
-                <div class="min-w-0 text-[11px] leading-[1.2] text-black">
-                  <p class="m-0 font-semibold">{{ $t(item.titleKey) }}</p>
-                  <p class="m-0 pt-6 font-normal">{{ $t(item.descKey) }}</p>
-                </div>
+                <p class="m-0 pt-6 text-md leading-[13.125px] font-semibold whitespace-pre-line text-black">
+                  {{ $t(item.labelKey) }}
+                </p>
               </div>
             </template>
           </div>

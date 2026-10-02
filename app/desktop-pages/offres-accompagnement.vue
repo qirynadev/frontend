@@ -7,7 +7,6 @@ import type { OfferPage } from '~/core/contracts'
 import {
   DESKTOP_OFFER_ASSET,
   desktopOfferAccentKey,
-  desktopOfferAdvantages,
   desktopOfferMbaIncludes,
   desktopOfferSteps,
 } from '~/config/desktop-offres-accompagnement'
@@ -56,23 +55,6 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
           <p class="m-0 max-w-512 text-[14px] leading-[22.75px] font-medium tracking-[-0.154px] text-black">
             {{ $t('desktop.offer.subtitle', { domain: domainLabel }) }}
           </p>
-          <div class="grid grid-cols-4 gap-16 pt-16">
-            <div
-              v-for="item in desktopOfferAdvantages"
-              :key="item.titleKey"
-              class="flex flex-col items-center gap-10"
-            >
-              <img :src="`${ASSET}/${item.icon}`" alt="" width="45" height="45" class="block size-45 shrink-0">
-              <div class="flex w-full flex-col items-start">
-                <p class="m-0 text-[11px] leading-[13.75px] font-semibold tracking-[0.066px] text-[#111827]">
-                  {{ $t(item.titleKey) }}
-                </p>
-                <p class="m-0 text-[10px] leading-[12.5px] font-medium tracking-[0.12px] text-[#6b7280]">
-                  {{ $t(item.descKey) }}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
         <div class="flex min-w-0 flex-1 items-start justify-center self-stretch">
           <img

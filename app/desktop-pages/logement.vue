@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Parcours logement desktop — boxed 1728, pas d’artboard Figma.
- * Rail pays (comme le niveau langues / le profil orientation) + formules API.
+ * Rail types de logement + formules API.
  */
 import { livingRepo, offerPageRepo } from '~/core/repositories'
 import {
@@ -11,6 +11,7 @@ import {
   desktopLogementMethod,
   desktopLogementPains,
   desktopLogementTrusts,
+  desktopLogementTypes,
 } from '~/config/desktop-logement'
 
 const props = defineProps<{
@@ -72,10 +73,7 @@ const tiers = computed(() => {
 
 const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startCheckout } = useCheckout()
 
-function cityLabel(count: number | null): string {
-  if (count === null) return t('housing.countLabel', { count: 350 })
-  return t('housing.cityCount', count)
-}
+const selectedType = ref<(typeof desktopLogementTypes)[number]['id']>('appart')
 </script>
 
 <template>
@@ -125,8 +123,8 @@ function cityLabel(count: number | null): string {
               </div>
             </div>
           </div>
-          <div class="relative h-280 w-420 shrink-0 overflow-hidden rounded-[24px] bg-[#fff7f5]">
-            <img :src="`${HOME}/housing-photo.png`" alt="" width="420" height="280" class="size-full object-cover">
+          <div class="relative w-420 shrink-0 overflow-hidden rounded-[24px] bg-white">
+            <img :src="`${HOME}/housing-photo.jpg`" alt="" width="1024" height="906" class="block h-auto w-full">
           </div>
         </section>
 
@@ -145,20 +143,43 @@ function cityLabel(count: number | null): string {
         </section>
 
         <section class="rounded-[16px] border border-[#f0f2f6] bg-white px-24 py-24">
-          <h2 class="m-0 text-[20px] leading-28 font-semibold">{{ $t('housing.intro.methodTitle') }}</h2>
-          <div class="flex items-start pt-24">
+          <h2 class="m-0 text-[17px] leading-[27px] font-bold text-[#1a1d2b]">{{ $t('housing.intro.methodTitle') }}</h2>
+          <div class="flex w-full items-center gap-16 pt-24">
             <template v-for="(step, index) in desktopLogementMethod" :key="step.id">
-              <div class="flex min-w-0 flex-1 flex-col items-center text-center">
-                <span class="flex size-48 items-center justify-center rounded-full" :class="step.bg">
-                  <img :src="`${ICON}/${step.icon}`" alt="" width="24" height="24" class="block size-24">
+              <div class="flex min-w-0 flex-1 items-center gap-16">
+                <span class="flex size-48 shrink-0 items-center justify-center rounded-full" :class="step.bg">
+                  <span
+                    class="size-20 shrink-0"
+                    :class="step.iconColor"
+                    :style="{
+                      maskImage: `url(${ICON}/${step.icon})`,
+                      WebkitMaskImage: `url(${ICON}/${step.icon})`,
+                      maskSize: 'contain',
+                      WebkitMaskSize: 'contain',
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskPosition: 'center',
+                      WebkitMaskPosition: 'center',
+                    }"
+                  />
                 </span>
-                <p class="m-0 pt-8 text-[16px] leading-20 font-bold" :class="step.numClass">{{ step.num }}</p>
-                <p class="m-0 pt-4 text-[12px] leading-16 font-medium text-[#525252]">{{ $t(step.labelKey) }}</p>
+                <div class="flex min-w-0 flex-col">
+                  <p class="m-0 text-[13px] leading-[19.5px] font-semibold text-[#1a1d2b]">{{ $t(step.titleKey) }}</p>
+                  <p class="m-0 pt-2 pr-8 text-[11px] leading-[13.75px] whitespace-pre-line text-[#6b7280]">{{ $t(step.descKey) }}</p>
+                </div>
               </div>
               <span
                 v-if="index < desktopLogementMethod.length - 1"
-                class="mt-24 h-px min-w-16 flex-1 border-t border-dashed border-[#e5e7eb]"
-              />
+                class="relative size-[11.667px] shrink-0"
+              >
+                <img
+                  src="/img/desktop/langues/chevron.svg"
+                  alt=""
+                  width="13"
+                  height="13"
+                  class="absolute -inset-[7.14%] max-w-none"
+                >
+              </span>
             </template>
           </div>
         </section>
@@ -267,39 +288,32 @@ function cityLabel(count: number | null): string {
 
       <aside class="desktop-rail flex flex-col">
         <div class="rounded-[16px] border border-[#f3f4f6] bg-white p-24">
-          <h2 class="m-0 text-[17px] leading-[25.5px] font-bold">{{ $t('housing.title') }}</h2>
-          <p class="m-0 pt-4 text-[13px] leading-[19.5px] text-[#202020]">{{ $t('housing.subtitle') }}</p>
-          <div class="flex flex-col gap-12 pt-24" role="radiogroup" :aria-label="$t('housing.title')">
+          <h2 class="m-0 text-[17px] leading-[25.5px] font-bold">{{ $t('desktop.logement.typeTitle') }}</h2>
+          <p class="m-0 pt-4 text-[13px] leading-[19.5px] text-[#202020]">{{ $t('desktop.logement.typeSubtitle') }}</p>
+          <div class="flex flex-col gap-12 pt-24" role="radiogroup" :aria-label="$t('desktop.logement.typeTitle')">
             <button
-              v-for="destination in list"
-              :key="destination.slug"
+              v-for="item in desktopLogementTypes"
+              :key="item.id"
               type="button"
               role="radio"
-              :aria-checked="selectedSlug === destination.slug"
+              :aria-checked="selectedType === item.id"
               class="relative flex w-full cursor-pointer items-center gap-16 rounded-[16px] border bg-white p-12 text-left"
-              :class="selectedSlug === destination.slug ? 'border-[#fe5358]' : 'border-[#f2f4f8]'"
-              @click="selectedSlug = destination.slug"
+              :class="selectedType === item.id ? 'border-[#fe5358]' : 'border-[#f2f4f8]'"
+              @click="selectedType = item.id"
             >
-              <span class="relative size-48 shrink-0 overflow-hidden rounded-full bg-[#f8f8fc]">
-                <img
-                  v-if="destination.country.flag"
-                  :src="destination.country.flag"
-                  alt=""
-                  width="48"
-                  height="48"
-                  class="block size-full object-cover"
-                >
+              <span class="flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-full" :class="item.iconBg">
+                <img :src="`${HOME}/${item.icon}`" alt="" width="24" height="24" class="block size-24">
               </span>
               <span class="min-w-0 flex-1 pr-28">
-                <span class="block text-[15px] leading-[22.5px] font-semibold">{{ destination.country.name }}</span>
-                <span class="mt-2 block text-[12px] leading-[15px] text-[#6b7280]">{{ cityLabel(destination.cityCount) }}</span>
+                <span class="block text-[15px] leading-[22.5px] font-semibold">{{ $t(item.titleKey) }}</span>
+                <span class="mt-2 block text-[12px] leading-[15px] text-[#6b7280]">{{ $t(item.descKey) }}</span>
               </span>
               <span
                 class="absolute top-1/2 right-16 size-20 -translate-y-1/2 rounded-full border box-border"
-                :class="selectedSlug === destination.slug ? 'border-[#f60914]' : 'border-[#e5e7eb]'"
+                :class="selectedType === item.id ? 'border-[#f60914]' : 'border-[#e5e7eb]'"
                 aria-hidden="true"
               >
-                <span v-if="selectedSlug === destination.slug" class="absolute inset-[4px] rounded-full bg-[#f60914]" />
+                <span v-if="selectedType === item.id" class="absolute inset-[4px] rounded-full bg-[#f60914]" />
               </span>
             </button>
           </div>

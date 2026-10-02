@@ -144,7 +144,8 @@
       "stat3Value": "98%",
       "stat3Label": "satisfaction rate",
       "openSchool": "View school",
-      "nextPage": "Next page"
+      "nextPage": "Next page",
+      "selectSchoolHint": "Please select a school"
     },
     "ficheEcole": {
       "badgeAacsb": "AACSB",
@@ -154,7 +155,7 @@
       "badgePrivee": "Private",
       "badgePublique": "Public",
       "badgeUniversite": "University",
-      "ctaButton": "See our support offers",
+      "ctaButton": "Get support with your application",
       "ctaDesc": "Our advisors support you at every step of your application.",
       "ctaTitle": "Want to join",
       "similarTitle": "Similar schools"
@@ -278,6 +279,9 @@
     },
     "langues": {
       "badge": "Learn a language. Open up to the world.",
+      "landingTitle": "Master {leLanguage},",
+      "landingAccent": "build your future.",
+      "landingDesc": "Whether for your studies, your career or your personal projects, improve your {ofLanguage} with certified teachers and reach your goals.",
       "heroTitle": "{language} - Level ",
       "badgeBeginner": "Beginner",
       "badgeIntermediate": "Intermediate",
@@ -331,7 +335,15 @@
       "statSecureLabel": "verified contracts",
       "statSecureValue": "100%",
       "statSupportLabel": "until you move in",
-      "statSupportValue": "Support"
+      "statSupportValue": "Support",
+      "typeAppart": "Apartment",
+      "typeAppartDesc": "Your space, your independence.",
+      "typeColoc": "Shared housing",
+      "typeColocDesc": "Live the student experience together.",
+      "typeResidence": "University residence",
+      "typeResidenceDesc": "Comfort, security and services for students.",
+      "typeSubtitle": "Choose the format that suits you.",
+      "typeTitle": "Which type of housing?"
     },
     "monProjet": {
       "introLine1": "Find all the services you have chosen here.",
@@ -454,7 +466,7 @@
         "badge": "Find my housing",
         "titleBefore": "Safe, comfortable housing, ",
         "titleAccent": "wherever you are",
-        "desc": "We help students find the right home in the best student cities. Shared flat, student residence or private apartment: we support you from the search through to moving in.",
+        "desc": "We help students find the right home in the best student cities.",
         "c1": "Wide choice of housing",
         "c1desc": "Thousands of verified options tailored to your budget and needs.",
         "c2": "Safety and trust",

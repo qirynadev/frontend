@@ -12,11 +12,17 @@ export const desktopLogementPains = [
   { id: 'delai', icon: 'pain-delai.svg', labelKey: 'housing.intro.painDelai' },
 ] as const
 
+export const desktopLogementTypes = [
+  { id: 'appart', icon: 'type-appart.svg', iconBg: 'bg-[#fff7ed]', titleKey: 'desktop.logement.typeAppart', descKey: 'desktop.logement.typeAppartDesc' },
+  { id: 'coloc', icon: 'type-colo.svg', iconBg: 'bg-[#faf5ff]', titleKey: 'desktop.logement.typeColoc', descKey: 'desktop.logement.typeColocDesc' },
+  { id: 'residence', icon: 'type-residence.svg', iconBg: 'bg-[#f0fdf4]', titleKey: 'desktop.logement.typeResidence', descKey: 'desktop.logement.typeResidenceDesc' },
+] as const
+
 export const desktopLogementMethod = [
-  { id: 'besoin', icon: 'step-besoin.svg', bg: 'bg-ls-step-1', num: '01', numClass: 'text-ls-step-1', labelKey: 'housing.intro.step1' },
-  { id: 'sourcing', icon: 'step-sourcing.svg', bg: 'bg-ls-step-2', num: '02', numClass: 'text-ls-step-2', labelKey: 'housing.intro.step2' },
-  { id: 'propositions', icon: 'step-propositions.svg', bg: 'bg-ls-step-3', num: '03', numClass: 'text-ls-step-3', labelKey: 'housing.intro.step3' },
-  { id: 'bail', icon: 'step-bail.svg', bg: 'bg-ls-step-4', num: '04', numClass: 'text-ls-step-4', labelKey: 'housing.intro.step4' },
+  { id: 'besoin', icon: 'step-besoin.svg', bg: 'bg-[#faf5ff]', iconColor: 'bg-[#9333ea]', titleKey: 'housing.intro.step1', descKey: 'desktop.paySuccess.housing.step1Desc' },
+  { id: 'sourcing', icon: 'step-sourcing.svg', bg: 'bg-[#f0fdf4]', iconColor: 'bg-[#16a34a]', titleKey: 'housing.intro.step2', descKey: 'desktop.paySuccess.housing.step2Desc' },
+  { id: 'propositions', icon: 'step-propositions.svg', bg: 'bg-[#fef2f2]', iconColor: 'bg-[#ed1c24]', titleKey: 'housing.intro.step3', descKey: 'desktop.paySuccess.housing.step3Desc' },
+  { id: 'bail', icon: 'step-bail.svg', bg: 'bg-[#eff6ff]', iconColor: 'bg-[#2563eb]', titleKey: 'housing.intro.step4', descKey: 'desktop.paySuccess.housing.step4Desc' },
 ] as const
 
 export const desktopLogementTrusts = [

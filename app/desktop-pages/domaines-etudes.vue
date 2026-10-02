@@ -2,8 +2,8 @@
 /**
  * Liste écoles desktop ← Figma `Domaines d'etudes` (54:488), 1728 px.
  *
- * Onglets : le `?domaine=` de l'URL est placé en premier et reste allumé ;
- * sans paramètre (CTA pays), aucun onglet n'est sélectionné.
+ * Onglets : le domaine `?domaine=` reste figé à gauche ; les flèches
+ * font défiler les autres. Sans paramètre, toute la rangée défile.
  */
 import type { AreaOfStudySummary, SchoolSummary } from '~/core/contracts'
 import type { ApiError } from '~/core/http/errors'
@@ -31,40 +31,46 @@ const emit = defineEmits<{
 const localePath = useLocalePath()
 
 const ASSET = '/img/desktop/domaines'
-const TAB_WINDOW = 4
-
 const tabOffset = ref(0)
 
-const orderedAreas = computed(() => {
-  const selected = props.selectedDomain
-  if (!selected) return props.areas
-  const match = props.areas.find(area => area.slug === selected)
-  if (!match) return props.areas
-  return [match, ...props.areas.filter(area => area.slug !== selected)]
-})
-
-const visibleAreas = computed(() =>
-  orderedAreas.value.slice(tabOffset.value, tabOffset.value + TAB_WINDOW),
+const activeArea = computed(() =>
+  props.selectedDomain
+    ? props.areas.find(area => area.slug === props.selectedDomain) ?? null
+    : null,
 )
 
-const tabColumns = computed(() => Math.max(1, Math.min(TAB_WINDOW, visibleAreas.value.length)))
+const trackAreas = computed(() =>
+  activeArea.value
+    ? props.areas.filter(area => area.slug !== activeArea.value!.slug)
+    : props.areas,
+)
+
+const windowSize = computed(() => (activeArea.value ? 3 : 4))
+const maxOffset = computed(() => Math.max(0, trackAreas.value.length - windowSize.value))
+const canShiftTabs = computed(() => trackAreas.value.length > windowSize.value)
 
 watch(
   () => props.selectedDomain,
   () => { tabOffset.value = 0 },
 )
 
-const canShiftTabs = computed(() => orderedAreas.value.length > TAB_WINDOW)
+watch(maxOffset, (max) => {
+  if (tabOffset.value > max) tabOffset.value = max
+})
 
 function prevTabs() {
-  if (!canShiftTabs.value) return
-  tabOffset.value = Math.max(0, tabOffset.value - 1)
+  if (!canShiftTabs.value || tabOffset.value <= 0) return
+  tabOffset.value -= 1
 }
 
 function nextTabs() {
-  if (!canShiftTabs.value) return
-  const max = Math.max(0, orderedAreas.value.length - TAB_WINDOW)
-  tabOffset.value = Math.min(max, tabOffset.value + 1)
+  if (!canShiftTabs.value || tabOffset.value >= maxOffset.value) return
+  tabOffset.value += 1
+}
+
+function selectDomain(slug: string) {
+  if (slug === props.selectedDomain) return
+  emit('select-domain', slug)
 }
 
 function tabIcon(area: AreaOfStudySummary) {
@@ -78,6 +84,26 @@ function invertTabIcon(area: AreaOfStudySummary) {
 function schoolHref(school: SchoolSummary) {
   const base = `/destinations/${props.destinationSlug}/ecoles/${school.slug}`
   return localePath(props.selectedDomain ? `${base}?domaine=${props.selectedDomain}` : base)
+}
+
+const promptSelect = ref(false)
+const firstSchoolEl = ref<HTMLElement | null>(null)
+
+watch(
+  () => [props.selectedDomain, props.page] as const,
+  () => { promptSelect.value = false },
+)
+
+function bindFirstSchool(el: Element | null, index: number) {
+  if (index === 0) firstSchoolEl.value = el as HTMLElement | null
+}
+
+function promptSchoolSelect() {
+  if (!props.schools.length) return
+  promptSelect.value = true
+  nextTick(() => {
+    firstSchoolEl.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  })
 }
 
 function locationLabel(school: SchoolSummary) {
@@ -104,11 +130,6 @@ const trustItems = [
   { icon: `${ASSET}/trust-4.svg`, bg: 'bg-[#eff6ff]', titleKey: 'desktop.domaines.trust4Title', descKey: 'desktop.domaines.trust4Desc' },
 ] as const
 
-const stats = [
-  { icon: `${ASSET}/stat-1.svg`, bg: 'bg-[#eef2ff]', valueKey: 'desktop.domaines.stat1Value', labelKey: 'desktop.domaines.stat1Label' },
-  { icon: `${ASSET}/stat-2.svg`, bg: 'bg-[#ecfdf5]', valueKey: 'desktop.domaines.stat2Value', labelKey: 'desktop.domaines.stat2Label' },
-  { icon: `${ASSET}/stat-3.svg`, bg: 'bg-[#fff7ed]', valueKey: 'desktop.domaines.stat3Value', labelKey: 'desktop.domaines.stat3Label' },
-] as const
 </script>
 
 <template>
@@ -146,8 +167,8 @@ const stats = [
             type="button"
             class="flex size-40 shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
             :aria-label="$t('desktop.domaines.nextDomains')"
-            :disabled="!canShiftTabs || tabOffset >= Math.max(0, orderedAreas.length - TAB_WINDOW)"
-            :class="!canShiftTabs || tabOffset >= Math.max(0, orderedAreas.length - TAB_WINDOW) ? 'opacity-40' : 'cursor-pointer'"
+            :disabled="!canShiftTabs || tabOffset >= maxOffset"
+            :class="!canShiftTabs || tabOffset >= maxOffset ? 'opacity-40' : 'cursor-pointer'"
             @click="nextTabs"
           >
             <span class="size-20 overflow-clip">
@@ -157,33 +178,61 @@ const stats = [
         </div>
       </div>
 
-      <div
-        v-if="areas.length"
-        class="grid w-full gap-12"
-        :style="{ gridTemplateColumns: `repeat(${tabColumns}, minmax(0, 1fr))` }"
-      >
+      <div v-if="areas.length" class="flex w-full items-stretch gap-12">
         <button
-          v-for="area in visibleAreas"
-          :key="area.id"
+          v-if="activeArea"
           type="button"
-          class="flex h-50 items-center justify-center gap-8 rounded-[6px] border px-12 py-15 text-[16px] leading-20 font-medium tracking-[-0.154px] shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
-          :class="selectedDomain === area.slug
-            ? 'border-[#232a4a] bg-[#232a4a] text-white'
-            : 'cursor-pointer border-[#f3f4f6] bg-white text-black'"
-          @click="emit('select-domain', area.slug)"
+          class="flex h-50 w-[calc((100%-36px)/4)] shrink-0 items-center justify-center gap-8 rounded-[6px] border border-[#232a4a] bg-[#232a4a] px-12 py-15 text-[16px] leading-20 font-medium tracking-[-0.154px] text-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
         >
-          <span class="size-16 shrink-0 overflow-clip">
-            <img
-              :src="tabIcon(area)"
-              alt=""
-              width="16"
-              height="16"
-              class="block size-full"
-              :class="invertTabIcon(area) ? 'brightness-0 invert' : ''"
-            >
-          </span>
-          <span class="truncate">{{ area.title }}</span>
+          <Transition name="domain-pin" mode="out-in">
+            <span :key="activeArea.id" class="flex min-w-0 items-center justify-center gap-8">
+              <span class="size-16 shrink-0 overflow-clip">
+                <img
+                  :src="tabIcon(activeArea)"
+                  alt=""
+                  width="16"
+                  height="16"
+                  class="block size-full"
+                  :class="invertTabIcon(activeArea) ? 'brightness-0 invert' : ''"
+                >
+              </span>
+              <span class="truncate">{{ activeArea.title }}</span>
+            </span>
+          </Transition>
         </button>
+
+        <div
+          class="min-h-50 min-w-0 flex-1 overflow-hidden"
+          style="container-type: inline-size"
+        >
+          <Transition name="domain-track" mode="out-in">
+            <div
+              :key="activeArea?.id ?? 'all'"
+              class="flex gap-12 transition-transform duration-[380ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+              :style="{ transform: `translateX(calc(-${tabOffset} * (100cqw + 12px) / ${windowSize}))` }"
+            >
+              <button
+                v-for="area in trackAreas"
+                :key="area.id"
+                type="button"
+                class="flex h-50 shrink-0 cursor-pointer items-center justify-center gap-8 rounded-[6px] border border-[#f3f4f6] bg-white px-12 py-15 text-[16px] leading-20 font-medium tracking-[-0.154px] text-black shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
+                :style="{ width: `calc((100cqw - ${(windowSize - 1) * 12}px) / ${windowSize})` }"
+                @click="selectDomain(area.slug)"
+              >
+                <span class="size-16 shrink-0 overflow-clip">
+                  <img
+                    :src="tabIcon(area)"
+                    alt=""
+                    width="16"
+                    height="16"
+                    class="block size-full"
+                  >
+                </span>
+                <span class="truncate">{{ area.title }}</span>
+              </button>
+            </div>
+          </Transition>
+        </div>
       </div>
 
       <PageState
@@ -200,13 +249,39 @@ const stats = [
           </div>
         </template>
 
-        <div class="flex flex-col gap-16" :aria-busy="pending ? 'true' : undefined">
-          <NuxtLink
-            v-for="school in schools"
-            :key="school.id"
-            :to="schoolHref(school)"
-            class="flex w-full items-center gap-24 rounded-[8px] border border-[#f3f4f6] bg-white p-25 text-inherit no-underline shadow-[0_0_2px_rgba(0,0,0,0.1)]"
+        <Transition name="domain-list" mode="out-in">
+          <div
+            :key="selectedDomain || 'all'"
+            class="flex flex-col gap-16 transition-opacity duration-300"
+            :class="pending ? 'opacity-55' : 'opacity-100'"
+            :aria-busy="pending ? 'true' : undefined"
           >
+          <div
+            v-for="(school, index) in schools"
+            :key="school.id"
+            :ref="(el) => bindFirstSchool(el as Element | null, index)"
+            class="relative"
+          >
+          <NuxtLink
+            :to="schoolHref(school)"
+            class="relative flex w-full items-center gap-24 rounded-[8px] bg-white p-25 text-inherit no-underline transition-[border-color,box-shadow] duration-200"
+            :class="promptSelect && index === 0
+              ? 'border border-[#ff1b40] shadow-[0_0_0_3px_rgba(255,27,64,0.22)]'
+              : 'border border-[#f3f4f6] shadow-[0_0_2px_rgba(0,0,0,0.1)]'"
+          >
+            <div
+              v-if="promptSelect && index === 0"
+              role="status"
+              class="pointer-events-none absolute top-12 right-72 z-20 flex flex-col items-end"
+            >
+              <p class="m-0 rounded-[8px] bg-[#192339] px-12 py-8 text-[13px] leading-16 font-medium text-white shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
+                {{ $t('desktop.domaines.selectSchoolHint') }}
+              </p>
+              <span
+                class="mr-16 size-0 border-x-6 border-t-8 border-x-transparent border-t-[#192339]"
+                aria-hidden="true"
+              />
+            </div>
             <div class="flex size-128 shrink-0 items-center justify-center overflow-hidden rounded-[5px] bg-white">
               <NuxtImg
                 v-if="school.logo"
@@ -247,7 +322,9 @@ const stats = [
               <img :src="`${ASSET}/card-arrow.svg`" alt="" width="40" height="40" class="block size-full">
             </span>
           </NuxtLink>
+          </div>
         </div>
+        </Transition>
 
         <nav
           v-if="totalPages > 1"
@@ -329,42 +406,50 @@ const stats = [
             </p>
           </div>
         </div>
-        <NuxtLink
-          :to="localePath('/orientation')"
-          class="flex w-full items-center justify-center gap-8 rounded-[12px] bg-[#ff1b40] py-14 text-[14px] leading-20 font-semibold tracking-[-0.154px] text-white no-underline"
+        <button
+          type="button"
+          class="flex w-full cursor-pointer items-center justify-center gap-8 rounded-[12px] border-0 bg-[#ff1b40] py-14 text-[14px] leading-20 font-semibold tracking-[-0.154px] text-white"
+          @click="promptSchoolSelect"
         >
           {{ $t('desktop.domaines.helpCta') }}
           <span class="size-16 shrink-0 overflow-clip">
             <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="block size-full">
           </span>
-        </NuxtLink>
-      </div>
-
-      <div class="flex w-full flex-col gap-14 rounded-[8px] border border-[#f9fafb] bg-white px-13 pt-18 pb-13 shadow-[0_0_2px_rgba(0,0,0,0.1)]">
-        <h2 class="m-0 text-[20px] leading-24 font-semibold tracking-[-0.32px] text-[#040c3d]">
-          {{ $t('desktop.domaines.statsTitle') }}
-        </h2>
-        <div class="grid grid-cols-3 gap-x-[3px] rounded-[5px] border border-[#efeff1] py-10">
-          <div
-            v-for="(stat, index) in stats"
-            :key="stat.valueKey"
-            class="flex flex-col items-center"
-            :class="index > 0 ? 'border-l border-[#efeff1]' : ''"
-          >
-            <span :class="['mb-8 flex size-40 items-center justify-center overflow-clip rounded-full', stat.bg]">
-              <span class="size-20 overflow-clip">
-                <img :src="stat.icon" alt="" width="20" height="20" class="block size-full">
-              </span>
-            </span>
-            <p class="m-0 text-[18px] leading-28 font-semibold tracking-[-0.45px] text-[#040c3d]">
-              {{ $t(stat.valueKey) }}
-            </p>
-            <p class="m-0 text-center text-[11px] leading-[15px] font-medium tracking-[0.25px] text-black">
-              {{ $t(stat.labelKey) }}
-            </p>
-          </div>
-        </div>
+        </button>
       </div>
     </aside>
   </div>
 </template>
+
+<style scoped>
+.domain-pin-enter-active,
+.domain-pin-leave-active,
+.domain-track-enter-active,
+.domain-track-leave-active,
+.domain-list-enter-active,
+.domain-list-leave-active {
+  transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.domain-pin-enter-from,
+.domain-track-enter-from,
+.domain-list-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.domain-pin-leave-to,
+.domain-track-leave-to,
+.domain-list-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.domain-pin-enter-from {
+  transform: translateX(10px);
+}
+
+.domain-pin-leave-to {
+  transform: translateX(-10px);
+}
+</style>
