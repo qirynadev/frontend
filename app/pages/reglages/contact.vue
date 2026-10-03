@@ -139,6 +139,14 @@ async function onSubmit(): Promise<void> {
   }
   catch (error) {
     if (error instanceof ApiError && error.kind === 'validation') {
+      // Refus du back-office par champ, message déjà traduit (adresse jetable,
+      // trop de liens, message trop long… depuis le 2026-10-03) : affiché sous
+      // le champ concerné, sans l'alerte générique.
+      const emailError = error.fieldErrors.email?.[0]
+      const messageError = error.fieldErrors.message?.[0]
+      if (emailError) errors.email = emailError
+      if (messageError) errors.message = messageError
+      if (emailError || messageError) return
       errors.message = t('settingsContact.errorMessage')
     }
     submitError.value = true
