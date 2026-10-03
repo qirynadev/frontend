@@ -52,7 +52,7 @@ export function useCheckout() {
    * `options`, le back-office affiche déjà ce sac générique (voir
    * `docs/directives-backend.md`).
    */
-  function toIntent(offer: OfferPage, tier: OfferTier) {
+  function toIntent(offer: OfferPage, tier: OfferTier, extraOptions: Record<string, string> = {}) {
     const options: Record<string, string> = {}
     if (offer.kind === 'language') options.language = offer.title
     else if (offer.kind === 'living' && offer.living) options.country = offer.living.country.name
@@ -68,6 +68,8 @@ export function useCheckout() {
     if (offer.kind === 'language' && typeof level === 'string' && tier.levels.some((entry) => entry.key === level)) {
       options.level = level
     }
+    // Choix faits sur la page même, hors adresse (type de logement desktop…).
+    Object.assign(options, extraOptions)
 
     return {
       offerId: tier.id,
@@ -109,12 +111,17 @@ export function useCheckout() {
     }
   }
 
-  async function start(offer: OfferPage, tier: OfferTier): Promise<void> {
+  /**
+   * `extraOptions` : choix faits sur la page qui ne passent pas par l'adresse,
+   * joints aux options de la commande (ex. `accommodation_type`, page Logement
+   * desktop, 2026-10-03).
+   */
+  async function start(offer: OfferPage, tier: OfferTier, extraOptions: Record<string, string> = {}): Promise<void> {
     if (pending.value !== null) return
 
     errorKey.value = null
     pending.value = tier.id
-    const intent = toIntent(offer, tier)
+    const intent = toIntent(offer, tier, extraOptions)
 
     try {
       if (!session.isAuthenticated) {

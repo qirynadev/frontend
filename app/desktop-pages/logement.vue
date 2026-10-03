@@ -74,6 +74,12 @@ const tiers = computed(() => {
 const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startCheckout } = useCheckout()
 
 const selectedType = ref<(typeof desktopLogementTypes)[number]['id']>('appart')
+
+/** Type de logement choisi, joint à la commande ; il préremplira le formulaire d'après achat. */
+function checkoutOptions(): Record<string, string> {
+  const type = desktopLogementTypes.find(item => item.id === selectedType.value)
+  return type ? { accommodation_type: type.accommodationType } : {}
+}
 </script>
 
 <template>
@@ -252,7 +258,7 @@ const selectedType = ref<(typeof desktopLogementTypes)[number]['id']>('appart')
                     :disabled="checkoutPending === entry.tier.id || (checkoutPending !== null && checkoutPending !== entry.tier.id)"
                     class="flex w-full cursor-pointer items-center justify-center rounded-[10px] px-16 py-12 text-[14px] leading-21 font-semibold disabled:cursor-not-allowed disabled:opacity-60"
                     :class="entry.visual.button"
-                    @click="startCheckout(offer, entry.tier)"
+                    @click="startCheckout(offer, entry.tier, checkoutOptions())"
                   >
                     <QSpinner v-if="checkoutPending === entry.tier.id" size="sm" />
                     <span v-else>{{ $t('offer.choose') }}</span>

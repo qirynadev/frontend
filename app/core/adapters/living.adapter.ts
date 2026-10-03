@@ -73,3 +73,23 @@ export function toLivingPreferences(raw: unknown): LivingPreferences | null {
     accommodationType: toAccommodationType(source.accommodation_type),
   }
 }
+
+/**
+ * Réponse complète de `GET /client-data/show` (`{ data, prefill }`, sans
+ * déballage) → préférences à afficher dans le formulaire d'après achat.
+ *
+ * Ce que le client a déjà enregistré l'emporte. À défaut, le type de logement
+ * choisi à l'achat (`prefill.accommodation_type`, page Logement desktop,
+ * 2026-10-03) préremplit le champ ; le client peut le modifier.
+ */
+export function toLivingPreferencesWithPrefill(raw: unknown): LivingPreferences | null {
+  const source = asRecord(raw)
+  const saved = toLivingPreferences(source.data)
+  const prefilledType = toAccommodationType(asRecord(source.prefill).accommodation_type)
+
+  if (prefilledType === null) return saved
+  if (saved === null) {
+    return { arrivalDate: null, monthlyBudget: null, stayDurationMonths: null, accommodationType: prefilledType }
+  }
+  return saved.accommodationType === null ? { ...saved, accommodationType: prefilledType } : saved
+}

@@ -12,10 +12,15 @@ export const desktopLogementPains = [
   { id: 'delai', icon: 'pain-delai.svg', labelKey: 'housing.intro.painDelai' },
 ] as const
 
+/**
+ * Types de logement de la page Logement desktop. `accommodationType` : valeur
+ * transmise avec la commande (`options.accommodation_type`), celle du
+ * formulaire de collecte d'après achat, qu'elle préremplit (2026-10-03).
+ */
 export const desktopLogementTypes = [
-  { id: 'appart', icon: 'type-appart.svg', iconBg: 'bg-[#fff7ed]', titleKey: 'desktop.logement.typeAppart', descKey: 'desktop.logement.typeAppartDesc' },
-  { id: 'coloc', icon: 'type-colo.svg', iconBg: 'bg-[#faf5ff]', titleKey: 'desktop.logement.typeColoc', descKey: 'desktop.logement.typeColocDesc' },
-  { id: 'residence', icon: 'type-residence.svg', iconBg: 'bg-[#f0fdf4]', titleKey: 'desktop.logement.typeResidence', descKey: 'desktop.logement.typeResidenceDesc' },
+  { id: 'appart', accommodationType: 'apartment', icon: 'type-appart.svg', iconBg: 'bg-[#fff7ed]', titleKey: 'desktop.logement.typeAppart', descKey: 'desktop.logement.typeAppartDesc' },
+  { id: 'coloc', accommodationType: 'shared', icon: 'type-colo.svg', iconBg: 'bg-[#faf5ff]', titleKey: 'desktop.logement.typeColoc', descKey: 'desktop.logement.typeColocDesc' },
+  { id: 'residence', accommodationType: 'dormitory', icon: 'type-residence.svg', iconBg: 'bg-[#f0fdf4]', titleKey: 'desktop.logement.typeResidence', descKey: 'desktop.logement.typeResidenceDesc' },
 ] as const
 
 export const desktopLogementMethod = [
