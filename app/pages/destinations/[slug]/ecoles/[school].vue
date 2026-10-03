@@ -374,13 +374,6 @@ useSchoolSchemaOrg(school)
                     <span>{{ formation.duration }}</span>
                   </span>
                 </div>
-
-                <p
-                  v-if="formation.summary"
-                  class="m-0 mt-6 line-clamp-3 text-base leading-[19.5px] text-text"
-                >
-                  {{ formation.summary }}
-                </p>
               </div>
 
               <QIcon name="ic-ed-chevron" :size="16" class="mt-4 shrink-0" />

@@ -21,7 +21,6 @@ import {
   DESTINATION_ASSET,
   ICONES_ARGUMENT,
   ICONES_STAT,
-  REASSURANCES,
   VISUELS_DOMAINE,
 } from '~/config/desktop-destination'
 
@@ -52,6 +51,21 @@ const domaines = computed(() =>
     }
   }),
 )
+
+/**
+ * Bouton « voir les écoles » : ouvre directement le premier domaine réel de la
+ * destination (choix de Kader, 2026-10-02), la liste complète à défaut.
+ */
+const lienEcolesCta = computed(() =>
+  domaines.value[0] ? lienDomaine(domaines.value[0].slug) : lienEcoles.value,
+)
+
+/** Bandeau de réassurance (Kader, 2026-10-02) : trois engagements, icônes du sprite. */
+const reassurance = [
+  { icon: 'ic-trust-shield', labelKey: 'trust.payment', circled: false },
+  { icon: 'ic-trust-laurel', labelKey: 'trust.support', circled: true },
+  { icon: 'ic-trust-smile', labelKey: 'trust.satisfaction', circled: false },
+] as const
 
 /**
  * Le back-office accepte quatre paires valeur + libellé sans imposer ni l'une
@@ -101,25 +115,21 @@ const logosEcoles = computed(() =>
         decoding="async"
       >
 
-      <div class="desktop-boxed desktop-split relative h-full justify-between">
-        <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start pt-93 pr-64">
+      <div class="desktop-boxed desktop-split relative h-full items-center justify-between">
+        <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start justify-center pr-64">
           <div class="flex w-full max-w-504 flex-col gap-12">
-            <div class="flex w-full flex-col items-start gap-19">
-              <span class="rounded-[6px] bg-[#fef2f2] px-12 py-4 text-[16px] leading-18 font-semibold tracking-[0.6px] text-[#ff1b40]">
-                {{ $t('desktop.destinationPays.badge') }}
-              </span>
-              <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
-                <span class="block text-[#1a1a1a]">{{ $t('desktop.destinationPays.titleBefore') }}</span>
-                <span class="block text-[#ff1b40]">{{ destination.title }}</span>
-              </h1>
-            </div>
+            <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
+              <span class="text-[#1a1a1a]">{{ $t('desktop.destinationPays.titleBefore') }}</span>
+              {{ ' ' }}
+              <span class="text-[#ff1b40]">{{ destination.title }}</span>
+            </h1>
 
             <div class="flex w-full flex-col items-start gap-19">
               <p v-if="destination.tagline" class="m-0 w-full max-w-504 text-[18px] leading-26 font-medium tracking-[-0.32px] text-black">
                 {{ destination.tagline }}
               </p>
               <NuxtLink
-                :to="lienEcoles"
+                :to="lienEcolesCta"
                 class="inline-flex items-center gap-12 rounded-[12px] bg-[#ff1b40] px-28 py-16 text-[16px] leading-20 font-semibold tracking-[-0.154px] text-white no-underline"
               >
                 {{ $t('desktop.destinationPays.ctaExplore') }}
@@ -132,11 +142,11 @@ const logosEcoles = computed(() =>
         </div>
 
         <!-- Panneau domaines : titres et liens réels -->
-        <aside v-if="domaines.length > 0" class="mt-19 flex desktop-rail flex-col items-start gap-8 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <h2 class="m-0 w-full text-[20px] leading-28 font-semibold tracking-[-0.46px] text-[#040c3d]">
+        <aside v-if="domaines.length > 0" class="flex desktop-rail flex-col items-center gap-8 rounded-[9px] border border-[#d1d5db] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+          <h2 class="m-0 w-full text-center text-[20px] leading-28 font-semibold tracking-[-0.46px] text-[#040c3d]">
             {{ $t('desktop.destinationPays.domainsTitle') }}
           </h2>
-          <p class="m-0 w-full text-[14px] leading-21 font-medium tracking-[-0.154px] text-black">
+          <p class="m-0 w-full text-center text-[14px] leading-21 font-medium tracking-[-0.154px] text-black">
             {{ $t('desktop.destinationPays.domainsDesc') }}
           </p>
 
@@ -145,7 +155,7 @@ const logosEcoles = computed(() =>
               v-for="domaine in domaines"
               :key="domaine.id"
               :to="lienDomaine(domaine.slug)"
-              class="flex items-center gap-8 rounded-[10px] border border-[#f3f4f6] bg-white px-10 py-12 text-inherit no-underline"
+              class="flex items-center gap-8 rounded-[10px] border border-[#d1d5db] bg-white px-10 py-12 text-inherit no-underline"
             >
               <span
                 v-if="domaine.pastille"
@@ -178,14 +188,14 @@ const logosEcoles = computed(() =>
     <!-- Stats + pourquoi + réassurance | écoles + CTA -->
     <div class="desktop-boxed desktop-split relative z-10 w-full items-stretch">
       <div class="flex min-w-0 flex-1 flex-col gap-25">
-        <div v-if="statistiques.length > 0" class="flex w-full items-start justify-center gap-15 rounded-[9px] border border-[#f9fafb] bg-white px-21 py-18 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+        <div v-if="statistiques.length > 0" class="flex w-full items-center justify-center gap-15 rounded-[9px] border border-[#d1d5db] bg-white px-21 py-18 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <template v-for="(stat, index) in statistiques" :key="stat.label">
-            <div v-if="index > 0" class="h-64 w-px shrink-0 bg-[#f3f4f6]" aria-hidden="true" />
+            <div v-if="index > 0" class="h-64 w-px shrink-0 bg-[#d1d5db]" aria-hidden="true" />
             <div class="flex min-w-0 flex-1 items-start justify-center gap-10">
               <span class="size-45 shrink-0 overflow-clip">
                 <img :src="stat.icone" alt="" width="45" height="45" class="block size-full" loading="lazy" decoding="async">
               </span>
-              <div class="flex min-w-0 flex-1 flex-col gap-2">
+              <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
                 <p class="m-0 text-[16px] leading-26 font-semibold tracking-[0.208px] text-[#040c3d]">{{ stat.value }}</p>
                 <p class="m-0 text-[14px] leading-15 font-normal text-black">{{ stat.label }}</p>
               </div>
@@ -203,7 +213,7 @@ const logosEcoles = computed(() =>
             <article
               v-for="argument in argumentsPays"
               :key="argument.titre"
-              class="flex flex-col gap-8 rounded-[16px] border border-[#f3f4f6] bg-white p-16 first:rounded-[9px]"
+              class="flex flex-col gap-8 rounded-[16px] border border-[#d1d5db] bg-white p-16 first:rounded-[9px]"
             >
               <div class="flex items-center gap-6">
                 <span class="size-36 shrink-0 overflow-clip">
@@ -221,20 +231,26 @@ const logosEcoles = computed(() =>
           </div>
         </div>
 
-        <div class="flex min-h-108 min-w-0 items-center rounded-[9px] border border-[#f3f4f6] bg-white px-21 py-18">
-          <div class="flex min-w-0 flex-1 items-center gap-15">
-            <template v-for="(item, index) in REASSURANCES" :key="index">
-              <div v-if="index > 0" class="h-49 w-px shrink-0 bg-[#f3f4f6]" aria-hidden="true" />
-              <div class="flex min-w-0 flex-1 items-center gap-8">
-                <span class="flex shrink-0 rounded-full bg-[#fef2f2] p-10">
-                  <span class="size-20 overflow-clip">
-                    <img :src="item.icon" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
-                  </span>
+        <div
+          class="flex min-h-108 min-w-0 w-full items-center rounded-[9px] border border-[#d1d5db] bg-white px-21 py-18"
+          :aria-label="$t('trust.label')"
+        >
+          <div class="flex min-w-0 w-full items-center">
+            <template v-for="(item, index) in reassurance" :key="item.labelKey">
+              <div
+                v-if="index > 0"
+                class="h-49 w-px shrink-0 bg-[#d1d5db]"
+                aria-hidden="true"
+              />
+              <div class="flex min-w-0 flex-1 items-center justify-center gap-12">
+                <span
+                  class="flex size-40 shrink-0 items-center justify-center"
+                  :class="item.circled ? 'rounded-full bg-[#def5e3]' : ''"
+                >
+                  <QIcon :name="item.icon" :size="item.circled ? 24 : 40" />
                 </span>
-                <p class="m-0 text-[13px] leading-16 font-medium text-black">
-                  <template v-for="(line, lineIndex) in item.lines" :key="line">
-                    <br v-if="lineIndex > 0">{{ $t(line) }}
-                  </template>
+                <p class="m-0 text-[14px] leading-[18px] font-semibold text-[#040c3d]">
+                  {{ $t(item.labelKey) }}
                 </p>
               </div>
             </template>
@@ -243,15 +259,15 @@ const logosEcoles = computed(() =>
       </div>
 
       <div class="flex desktop-rail flex-col justify-between gap-25">
-        <aside v-if="logosEcoles.length > 0" class="flex flex-1 flex-col gap-32 rounded-[9px] border border-[#f9fafb] bg-white px-16 pt-26 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <h2 class="m-0 text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
+        <aside v-if="logosEcoles.length > 0" class="flex flex-1 flex-col gap-32 rounded-[9px] border border-[#d1d5db] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+          <h2 class="m-0 text-center text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
             {{ $t('desktop.destinationPays.schoolsTitle', { pays: destination.title }) }}
           </h2>
           <div class="grid grid-cols-4 gap-12">
             <div
               v-for="ecole in logosEcoles"
               :key="ecole.id"
-              class="flex h-95 items-center justify-center rounded-[12px] border border-[#f3f4f6] bg-white px-5 py-6"
+              class="flex h-95 items-center justify-center rounded-[12px] border border-[#d1d5db] bg-white p-5"
               :title="ecole.title"
             >
               <img :src="ecole.logo!" :alt="ecole.title" class="max-h-56 max-w-full object-contain" loading="lazy" decoding="async">
@@ -275,7 +291,7 @@ const logosEcoles = computed(() =>
             </div>
           </div>
           <NuxtLink
-            :to="lienEcoles"
+            :to="lienEcolesCta"
             class="inline-flex shrink-0 items-center gap-8 rounded-[12px] bg-[#ff1b40] px-16 py-10 text-[14px] leading-20 font-semibold tracking-[-0.154px] text-white no-underline"
           >
             {{ $t('desktop.destinationPays.ctaButton') }}

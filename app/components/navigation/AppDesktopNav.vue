@@ -4,7 +4,7 @@
  *
  * Variantes auth inchangées (écrans connexion / mot de passe).
  * Variante app : logo 174×65, menus au hover, pilule Orientation.
- * Le CTA « Se connecter » (et l’avatar si session) est conservé.
+ * Compte : avatar (menu si session, lien connexion sinon).
  */
 import {
   desktopNavEntryHref,
@@ -194,9 +194,9 @@ const navItems = computed(() =>
       <div class="relative z-1 ml-auto flex h-full shrink-0 items-center gap-20">
         <NuxtLink
           :to="localePath('/orientation')"
-          class="flex h-48 items-center justify-center gap-8 rounded-full bg-[#fc1e3d] px-24 text-[16px] font-semibold whitespace-nowrap text-white no-underline transition-colors duration-150 hover:bg-[#e2122f]"
+          class="flex h-40 items-center justify-center gap-8 rounded-full bg-[#fc1e3d] px-20 text-[15px] font-semibold whitespace-nowrap text-white no-underline transition-colors duration-150 hover:bg-[#e2122f]"
         >
-          <img src="/img/desktop/orientation/pin.svg" alt="" width="16" height="16" class="size-16 shrink-0" loading="lazy" decoding="async">
+          <img src="/img/desktop/nav/logo-nav-icone.png" alt="" width="16" height="16" class="size-16 shrink-0" loading="lazy" decoding="async">
           {{ $t('desktop.nav.orientation') }}
         </NuxtLink>
 
@@ -213,9 +213,18 @@ const navItems = computed(() =>
         <NuxtLink
           v-else
           :to="localePath('/connexion')"
-          class="inline-flex items-center justify-center rounded-full border border-desktop-brand bg-white px-16 py-10 text-xl leading-20 font-semibold text-desktop-brand no-underline"
+          class="flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#fef2f2] no-underline"
+          :aria-label="$t('auth.signIn')"
         >
-          {{ $t('auth.signIn') }}
+          <img
+            src="/img/icons/reglages-profil/ic-rp-avatar-user.svg"
+            alt=""
+            width="20"
+            height="20"
+            class="block size-20"
+            loading="lazy"
+            decoding="async"
+          >
         </NuxtLink>
       </div>
     </div>

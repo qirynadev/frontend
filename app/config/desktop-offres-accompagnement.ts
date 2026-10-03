@@ -5,13 +5,6 @@
  */
 export const DESKTOP_OFFER_ASSET = '/img/desktop/offres'
 
-export const desktopOfferAdvantages = [
-  { icon: 'advantage-1.svg', titleKey: 'desktop.offer.adv1Title', descKey: 'desktop.offer.adv1Desc' },
-  { icon: 'advantage-2.svg', titleKey: 'desktop.offer.adv2Title', descKey: 'desktop.offer.adv2Desc' },
-  { icon: 'advantage-3.svg', titleKey: 'desktop.offer.adv3Title', descKey: 'desktop.offer.adv3Desc' },
-  { icon: 'advantage-4.svg', titleKey: 'desktop.offer.adv4Title', descKey: 'desktop.offer.adv4Desc' },
-] as const
-
 export const desktopOfferMbaIncludes = [
   { icon: 'include-1.svg', labelKey: 'desktop.offer.mbaInc1' },
   { icon: 'include-2.svg', labelKey: 'desktop.offer.mbaInc2' },

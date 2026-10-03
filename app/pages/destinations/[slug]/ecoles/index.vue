@@ -346,7 +346,6 @@ usePageSeo(() => ({
       :selected-domain="selectedDomain"
       :school-domain="schoolDomain"
       :title="zone?.sectionLabel"
-      :keep-order="!!zone"
       :subtitle="zone ? $t('desktop.domaines.zoneSubtitle') : undefined"
       :destination-slug="apiSlug"
       :loading="!!isInitialLoading"

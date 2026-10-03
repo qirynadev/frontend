@@ -36,7 +36,7 @@ import { useBotGuard } from '~/composables/useBotGuard'
 
 definePageMeta({
   bottomNav: false,
-  desktopNav: 'auth-card',
+  desktopNav: 'auth-reset',
   desktopFooter: false,
 })
 
