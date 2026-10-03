@@ -131,6 +131,13 @@ const areas = computed(() => data.value?.areas ?? [])
 const selectedDomain = computed(() => data.value?.selectedSlug ?? '')
 const zone = computed(() => data.value?.zone ?? null)
 const destinationName = computed(() => zone.value?.title ?? data.value?.destination?.title ?? slug.value)
+/**
+ * Desktop : pas d'onglet MBA dans la liste d'un pays (2026-10-03), MBA a son
+ * menu dédié, par zone. En mode zone, les onglets sont des zones : inchangés.
+ * Le mobile garde tous les domaines.
+ */
+const desktopAreas = computed(() => (zone.value ? areas.value : areas.value.filter(area => area.slug !== 'mba')))
+
 /** Domaine transmis à la fiche école : MBA en mode zone (l'onglet y est une zone). */
 const schoolDomain = computed(() => (zone.value ? 'mba' : selectedDomain.value))
 
@@ -341,7 +348,7 @@ usePageSeo(() => ({
 
   <div class="hidden shell:block">
     <DesktopDomainesEtudes
-      :areas="areas"
+      :areas="desktopAreas"
       :schools="schools"
       :selected-domain="selectedDomain"
       :school-domain="schoolDomain"

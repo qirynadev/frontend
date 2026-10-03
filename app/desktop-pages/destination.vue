@@ -31,15 +31,21 @@ const props = defineProps<{
 
 const localePath = useLocalePath()
 
+/** Domaine présenté à part, dans le menu « MBA » (écoles par zone). */
+const MBA_SLUG = 'mba'
+
 const lienEcoles = computed(() => localePath(`/destinations/${props.destination.slug}/ecoles`))
 
 function lienDomaine(slug: string) {
   return localePath(`/destinations/${props.destination.slug}/ecoles?domaine=${slug}`)
 }
 
-/** Domaines réels de la destination, illustrés par la maquette quand le slug est connu. */
+/**
+ * Domaines réels de la destination, illustrés par la maquette quand le slug est
+ * connu. Sans MBA sur desktop (2026-10-03) : il a son menu dédié, par zone.
+ */
 const domaines = computed(() =>
-  props.areas.map((area) => {
+  props.areas.filter(area => area.slug !== MBA_SLUG).map((area) => {
     const visuel = VISUELS_DOMAINE[area.slug]
     return {
       id: area.id,
