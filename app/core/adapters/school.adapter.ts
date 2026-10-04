@@ -2,7 +2,7 @@ import type { MbaRegionSchools, School, SchoolDetail, SchoolFormation, SchoolSum
 import { summaryFromHtml } from '~/utils/formation-content'
 import { toAreaOfStudySummary } from './area.adapter'
 import { toCountry, toSeo } from './common.adapter'
-import { asArray, asRecord, html, list, optionalNum, optionalStr, plainText, str, toUrl } from './primitives'
+import { asArray, asRecord, html, list, optionalNum, optionalStr, plainText, str, toUrl, truncateText } from './primitives'
 
 /**
  * Formations d'une école — consommée par `GET /schools/{id}/formations`
@@ -50,9 +50,18 @@ function toDetails(raw: unknown): SchoolDetail[] {
     .filter((block) => block.title !== '')
 }
 
-/** Version liste : ni présentation HTML, ni formations détaillées. */
+/**
+ * Version liste : ni présentation HTML, ni formations détaillées.
+ *
+ * Accepte deux formes d'école : la complète (`presentation`, `formations`,
+ * servie par `/schools/{pays}/{domaine}` ou par `/all-data` sans option) et
+ * l'allégée de `/all-data?lite=1`, qui fournit directement `excerpt` (texte
+ * brut, 300 caractères au plus) et `formation_count`. Les deux donnent le même
+ * résultat, quel que soit l'ordre de déploiement du back-office et du front.
+ */
 export function toSchoolSummary(raw: unknown, destinationSlug = '', flagBase?: string): SchoolSummary {
   const source = asRecord(raw)
+  const liteExcerpt = optionalStr(source, 'excerpt')
   return {
     id: str(source, 'id'),
     slug: str(source, 'slug'),
@@ -62,8 +71,9 @@ export function toSchoolSummary(raw: unknown, destinationSlug = '', flagBase?: s
     image: toUrl(source.image),
     country: toCountry(source.country, flagBase),
     destinationSlug,
-    formationCount: list(source, 'formations').filter((entry) => str(asRecord(entry), 'title') !== '').length,
-    excerpt: plainText(source.presentation, 180),
+    formationCount: optionalNum(source, 'formation_count')
+      ?? list(source, 'formations').filter((entry) => str(asRecord(entry), 'title') !== '').length,
+    excerpt: liteExcerpt !== null ? truncateText(liteExcerpt, 180) : plainText(source.presentation, 180),
     foundedYear: optionalNum(source, 'founded_year'),
     studentCount: optionalNum(source, 'student_count'),
   }

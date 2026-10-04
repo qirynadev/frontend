@@ -393,6 +393,13 @@ sert de source unique pour du contenu qui n'a souvent aucun rapport entre
 lui. Chaque fois qu'un écran de cette session s'appuie dessus, la demande
 d'endpoint dédié correspondante :
 
+- ✅ **Variante allégée `/all-data?lite=1`** - faite directement le
+  2026-10-04 (back-office `FrontendDataController`, front `catalog.ts`) : la
+  réponse complète pesait 6,3 Mo pour 606 écoles, dont 82 % pour
+  `presentation`, `points_forts`, `formations` et `details`. L'allégée les
+  remplace par `excerpt` et `formation_count` (-84 % brut, -89 % compressé,
+  mesuré sur 561 écoles). La variante complète reste disponible et inchangée ;
+  clés de cache centralisées dans `App\Support\FrontendDataCache`.
 - ✅ **Formations d'école** — résolu le 2026-08-31 (voir point 20) :
   `GET /schools/{id}/formations` existe désormais, `grade`/`duration`
   compris, câblé côté front (`[school].vue` ne dépend plus de `/all-data`

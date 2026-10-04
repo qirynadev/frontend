@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { Article, Catalog, Course, Destination, LivingDestination, Offer, OfferPage, Orientation, Page, School } from '~~/app/core/contracts'
+import type { Article, Catalog, Course, Destination, LivingDestination, Offer, OfferPage, Orientation, Page, SchoolSummary } from '~~/app/core/contracts'
 import { createApiClient } from '~~/app/core/http/api-client'
 import {
   toArticleList,
@@ -17,7 +17,7 @@ import {
   toOrientationOfferPage,
   toPageList,
   toPartnerList,
-  toSchool,
+  toSchoolSummary,
   toSiteSettings,
 } from '~~/app/core/adapters'
 import { ApiError } from '~~/app/core/http/errors'
@@ -26,16 +26,16 @@ import { ApiError } from '~~/app/core/http/errors'
  * Source de données du BFF.
  *
  * **C'est le seul fichier à modifier quand l'API sera découpée.** Aujourd'hui il
- * télécharge `/all-data` (4,4 Mo) plus quatre endpoints annexes, adapte le tout
+ * télécharge `/all-data?lite=1` plus quatre endpoints annexes, adapte le tout
  * une fois, et garde le résultat en cache Nitro. Demain, `loadSnapshot`
  * appellera `/bootstrap`, `/destinations/{slug}` et `/pages/{slug}` — ni les
  * repositories, ni les pages ne bougeront.
  *
  * Endpoints réellement consommés aujourd'hui :
  *
- * | Endpoint      | Sert à                                    | Constat |
- * |---------------|-------------------------------------------|---------|
- * | `/all-data`   | menu, accueil, destinations, écoles, pages | 4,4 Mo  |
+ * | Endpoint            | Sert à                                     | Constat |
+ * |---------------------|--------------------------------------------|---------|
+ * | `/all-data?lite=1`  | menu, accueil, destinations, écoles, pages | ~1,1 Mo |
  * | `/courses`    | langues étrangères + paliers tarifaires    | 27 Ko   |
  * | `/livings`    | destinations logement + paliers tarifaires | -       |
  * | `/profilage`  | offre d'orientation                        | 5 Ko    |
@@ -52,6 +52,16 @@ import { ApiError } from '~~/app/core/http/errors'
  *
  * Le dump reste nécessaire au menu, à l'accueil, aux listes de destinations et
  * d'écoles : les fiches en sont sorties, pas encore le reste.
+ *
+ * **Variante allégée (`?lite=1`, 2026-10-04)** : la variante complète pesait
+ * 6,3 Mo pour 606 écoles, dont 82 % rien que pour `presentation`,
+ * `points_forts`, `formations` et `details` de chaque école, que plus aucun
+ * écran ne lit ici (fiche et formations passent par les routes à l'unité
+ * ci-dessus). L'allégée les remplace par `excerpt` et `formation_count`, seuls
+ * besoins des listes. Chaque processus Nitro et chaque langue la retéléchargent
+ * et l'analysent toutes les 5 min : le gain se multiplie d'autant. Un
+ * back-office qui ignorerait l'option renvoie la variante complète, que
+ * `toSchoolSummary` sait lire aussi.
  * `/areas-of-studies/{id}` répond **500** : le rattachement école ↔ domaine
  * d'étude est donc indisponible (cf. LOT-4.md § Limites).
  */
@@ -59,8 +69,8 @@ import { ApiError } from '~~/app/core/http/errors'
 export interface CatalogSnapshot {
   catalog: Catalog
   destinations: Destination[]
-  /** Fiches complètes, présentation HTML incluse — jamais envoyées telles quelles au client. */
-  schools: School[]
+  /** Écoles en version liste. La fiche complète passe par `/schools/by-slug/{slug}`. */
+  schools: SchoolSummary[]
   offers: Offer[]
   pages: Page[]
   courses: Course[]
@@ -87,7 +97,7 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
   // AUJOURD'HUI : un dump monolithique plus cinq appels annexes.
   // DEMAIN : `client.request('/bootstrap')` seul.
   const [raw, rawCourses, rawLivings, rawOrientation, rawOrientationFormulas, rawArticles] = await Promise.all([
-    client.request<Record<string, unknown>>('/all-data'),
+    client.request<Record<string, unknown>>('/all-data', { query: { lite: 1 } }),
     // Ceux-là ne doivent pas faire tomber la page d'accueil s'ils échouent :
     // le catalogue principal suffit à rendre l'essentiel du site.
     client.request<unknown>('/courses').catch(() => []),
@@ -114,14 +124,12 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
     ...(rawOrientation ? [toOrientationOfferPage(rawOrientation, rawOrientationFormulas)] : []),
   ].filter((page) => page.slug !== '' && page.tiers.length > 0)
 
-  // Les fiches complètes sont reconstruites depuis le même dump : c'est le seul
-  // endroit où la présentation HTML des 570 écoles est manipulée.
-  const schools: School[] = []
+  const schools: SchoolSummary[] = []
   for (const sheet of Array.isArray(raw.schoolSheets) ? raw.schoolSheets : []) {
     const sheetRecord = (sheet ?? {}) as Record<string, unknown>
     const destinationSlug = typeof sheetRecord.slug === 'string' ? sheetRecord.slug : ''
     for (const school of Array.isArray(sheetRecord.schools) ? sheetRecord.schools : []) {
-      const adapted = toSchool(school, destinationSlug, flagBase)
+      const adapted = toSchoolSummary(school, destinationSlug, flagBase)
       if (adapted.id !== '' && adapted.slug !== '') schools.push(adapted)
     }
   }
@@ -153,7 +161,7 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
 /**
  * Version mise en cache.
  *
- * Sans elle, chaque rendu de page retéléchargerait les 4,4 Mo. La clé inclut la
+ * Sans elle, chaque rendu de page retéléchargerait le dump. La clé inclut la
  * langue : le back-office sert un contenu différent selon l'en-tête `lang`.
  */
 export const cachedSnapshot = defineCachedFunction(loadSnapshot, {
@@ -190,8 +198,9 @@ export function readLocale(event: H3Event): string {
  *
  * Un 404 est mis en cache comme n'importe quelle réponse (`null`) : une URL
  * inexistante rappelée en boucle ne retape pas l'API. Une panne, elle, n'est
- * jamais mise en cache — elle remonte, et la route appelante retombe sur le
- * dump en cache plutôt que de faire tomber la page.
+ * jamais mise en cache : elle remonte à la route appelante, qui décide d'un
+ * repli (l'offre de domaine retombe sur le dump en cache ; la fiche école ne
+ * le peut plus depuis la variante allégée, qui n'en porte pas le contenu).
  */
 
 /** Forme d'un slug produit par `str()->slug()` côté Laravel. Filtre les URL fantaisistes avant tout appel réseau. */
