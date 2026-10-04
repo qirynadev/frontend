@@ -166,6 +166,23 @@ describe('toHomeContent', () => {
     expect(home.steps).toHaveLength(1)
   })
 
+  it('lit l’image desktop du hero, null quand elle n’est pas téléversée (2026-10-04)', () => {
+    const withDesktop = toHomeContent({
+      ...rawHome,
+      slides: [{ image: 'https://cdn.example/hero-mobile.jpg', image_desktop: 'https://cdn.example/hero-desktop.jpg', description: 'x' }],
+    })!
+    expect(withDesktop.slides[0]).toMatchObject({
+      image: 'https://cdn.example/hero-mobile.jpg',
+      imageDesktop: 'https://cdn.example/hero-desktop.jpg',
+    })
+
+    const withoutDesktop = toHomeContent({
+      ...rawHome,
+      slides: [{ image: 'https://cdn.example/hero-mobile.jpg', image_desktop: null, description: 'x' }],
+    })!
+    expect(withoutDesktop.slides[0]!.imageDesktop).toBeNull()
+  })
+
   it('retombe sur le titre desktop quand le titre mobile est vide', () => {
     const home = toHomeContent(rawHome)!
 

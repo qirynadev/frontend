@@ -12,12 +12,13 @@ const { open: openNavMenu } = useDesktopNavMenu()
 const ASSET = '/img/desktop/home'
 
 /**
- * Bandeau administré (`HomeContent.slides[0]`, saisi dans /cms/home sous
- * « Image du Hero »), comme le fait déjà l'accueil mobile. Le desktop servait
- * un fichier local (2026-09-23) : changer l'image en back-office n'avait
- * aucun effet ici. Repli sur le visuel de la maquette si aucune diapositive.
+ * Bandeau administré : l'image « Bureau » de la diapositive du hero
+ * (`HomeContent.slides[0].imageDesktop`, /cms/home, 2026-10-04). Pas l'image
+ * mobile : affiché en entier (1728 × 516, sans recadrage pour ne pas couper la
+ * citation), un visuel au format de la carte mobile serait bien trop haut.
+ * Sans image bureau téléversée, repli sur le visuel de la maquette.
  */
-const bandeau = computed(() => catalog.home?.slides[0]?.image || `${ASSET}/hero.png`)
+const bandeau = computed(() => catalog.home?.slides[0]?.imageDesktop || `${ASSET}/hero.png`)
 
 /**
  * Illustrations des quatre sections, administrées dans /cms/home sous
@@ -132,15 +133,18 @@ const housingTypes = [
   <div class="w-full bg-white pb-80 text-[#1a1d2b]">
     <!-- Hero pleine largeur, ratio 1728×516 — pas de recadrage de la citation. -->
     <section class="relative w-full overflow-hidden">
-      <img
+      <!-- WebP à la taille réelle : le visuel de repli fait 1,1 Mo en PNG. -->
+      <NuxtImg
         :src="bandeau"
         alt=""
         width="1728"
         height="516"
+        format="webp"
+        densities="x1"
         class="block h-auto w-full max-w-none"
         loading="lazy"
         decoding="async"
-      >
+      />
     </section>
 
     <div class="desktop-boxed flex w-full flex-col">

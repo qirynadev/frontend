@@ -1,7 +1,14 @@
 import type { SeoMeta } from './common'
 
 export interface HomeSlide {
+  /** Image du hero au format mobile (carte, environ 1819 × 865). */
   image: string
+  /**
+   * Variante desktop (bandeau 1728 × 516), saisie à part dans /cms/home
+   * (2026-10-04) : la citation est dans l'image, un seul format ne sert pas
+   * les deux. `null` si non téléversée.
+   */
+  imageDesktop: string | null
   description: string
   author: string | null
 }

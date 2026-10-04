@@ -19,6 +19,7 @@ function toSlide(raw: unknown): HomeSlide | null {
   if (!image) return null
   return {
     image,
+    imageDesktop: toUrl(source.image_desktop),
     description: str(source, 'description'),
     // `author` est `null` sur toutes les diapositives actuelles.
     author: str(source, 'author') || null,
