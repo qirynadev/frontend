@@ -162,6 +162,17 @@ export function plainText(html: unknown, maxLength = 0): string {
     .replace(/\s+/g, ' ')
     .trim()
 
+  return truncateText(text, maxLength)
+}
+
+/**
+ * Coupe un texte **déjà brut** sur un mot entier, avec points de suspension.
+ *
+ * Pour un extrait fourni tel quel par l'API (`excerpt`) : repasser par
+ * `plainText` retirerait à tort un passage encadré par un `<` et un `>`
+ * littéraux (« moins de 25 ans < … > »), décodés depuis le HTML d'origine.
+ */
+export function truncateText(text: string, maxLength = 0): string {
   if (maxLength <= 0 || text.length <= maxLength) return text
   const cut = text.slice(0, maxLength)
   const lastSpace = cut.lastIndexOf(' ')

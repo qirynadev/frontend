@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { plainText } from '~/core/adapters/primitives'
 import { toFormations, toSchool, toSchoolSummary } from '~/core/adapters/school.adapter'
 import { rawSchool, rawSchoolWithFormations } from './fixtures/all-data'
 
@@ -69,6 +70,41 @@ describe('version liste', () => {
     const summary = toSchoolSummary({ ...rawSchool, founded_year: 1810, student_count: '34000' })
     expect(summary.foundedYear).toBe(1810)
     expect(summary.studentCount).toBe(34_000)
+  })
+})
+
+describe('version liste depuis /all-data?lite=1', () => {
+  /** École telle que la sert la variante allégée : ni présentation, ni formations. */
+  function liteFrom(raw: Record<string, unknown>, excerpt: string, formationCount: number) {
+    const { presentation: _p, points_forts: _pf, formations: _f, details: _d, ...rest } = raw
+    return { ...rest, excerpt, formation_count: formationCount }
+  }
+
+  it('donne le même résumé que la variante complète', () => {
+    const full = toSchoolSummary(rawSchoolWithFormations, 'france')
+    // Le back-office envoie le texte brut de la présentation (300 caractères au plus).
+    const excerpt = plainText(String(rawSchoolWithFormations.presentation))
+    const lite = toSchoolSummary(liteFrom(rawSchoolWithFormations, excerpt, full.formationCount), 'france')
+
+    expect(lite).toEqual(full)
+  })
+
+  it('lit formation_count tel quel, y compris zéro', () => {
+    expect(toSchoolSummary(liteFrom(rawSchool, 'Extrait.', 0)).formationCount).toBe(0)
+    expect(toSchoolSummary(liteFrom(rawSchool, 'Extrait.', 4)).formationCount).toBe(4)
+  })
+
+  it('recoupe l’extrait à la longueur de la carte, sur un mot entier', () => {
+    const summary = toSchoolSummary(liteFrom(rawSchool, 'formation internationale '.repeat(12).trim(), 1))
+
+    expect(summary.excerpt.length).toBeLessThanOrEqual(181)
+    expect(summary.excerpt.endsWith('…')).toBe(true)
+  })
+
+  it('ne retraite pas comme du HTML un extrait déjà brut', () => {
+    const summary = toSchoolSummary(liteFrom(rawSchool, 'Âge requis < 25 ans, admission > 90 % des candidats.', 1))
+
+    expect(summary.excerpt).toBe('Âge requis < 25 ans, admission > 90 % des candidats.')
   })
 })
 

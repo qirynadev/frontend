@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import type { SchoolSummary } from '~~/app/core/contracts'
-import { plainText, toSchoolSummary } from '~~/app/core/adapters'
+import { toSchoolSummary } from '~~/app/core/adapters'
 
 /**
  * Clé de tri pseudo-aléatoire FIXE et déterministe — `MD5(id)`, exactement
@@ -94,7 +94,7 @@ export default defineEventHandler(async (event) => {
     country: school.country,
     destinationSlug: school.destinationSlug,
     formationCount: school.formationCount,
-    excerpt: plainText(school.presentation, 180),
+    excerpt: school.excerpt,
     foundedYear: school.foundedYear,
     studentCount: school.studentCount,
   }))
