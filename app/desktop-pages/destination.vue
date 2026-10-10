@@ -108,8 +108,14 @@ const logosEcoles = computed(() =>
 
 <template>
   <div class="flex w-full flex-col items-center bg-white pb-30 text-[#1a1d2b]">
-    <!-- Hero 503 · chevauche le bloc suivant de 36 px -->
-    <section class="relative mb-[-36px] min-h-[503px] w-full overflow-hidden bg-white">
+    <!--
+      Hero 503 · chevauche le bloc suivant de 36 px. Colonne flex : le contenu
+      prend toute la hauteur (un `h-full` ne s'appliquait pas sous un simple
+      `min-h`, d'où un titre et un panneau collés sous la barre de navigation).
+      Centrage vertical dans la partie visible : 32 px en haut, 32 + 36 px en bas
+      pour le chevauchement.
+    -->
+    <section class="relative mb-[-36px] flex min-h-[503px] w-full flex-col overflow-hidden bg-white">
       <img
         v-if="destination.image"
         :src="destination.image"
@@ -117,11 +123,11 @@ const logosEcoles = computed(() =>
         width="1728"
         height="503"
         class="pointer-events-none absolute inset-0 block size-full object-cover object-center"
-        loading="lazy"
+        fetchpriority="high"
         decoding="async"
       >
 
-      <div class="desktop-boxed desktop-split relative h-full items-center justify-between">
+      <div class="desktop-boxed desktop-split relative flex-1 items-center justify-between pt-32 pb-68">
         <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start justify-center pr-64">
           <div class="flex w-full max-w-504 flex-col gap-12">
             <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
