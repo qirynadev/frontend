@@ -4,6 +4,7 @@
  */
 import type { School, SchoolFormation, SchoolSummary } from '~/core/contracts'
 import { schoolTitleBadges } from '~/config/school-title-badges'
+import { formationVisual } from '~/config/formation-visual'
 
 const props = defineProps<{
   school: School
@@ -200,8 +201,8 @@ function similarLocation(item: SchoolSummary) {
             class="flex w-full cursor-pointer items-start gap-16 rounded-[12px] border border-[#f3f4f6] bg-white p-20 text-left shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
             @click="emit('select-formation', formation)"
           >
-            <span class="size-44 shrink-0 overflow-clip">
-              <QIcon name="ic-ed-form-1" :size="44" />
+            <span :class="['flex size-44 shrink-0 items-center justify-center rounded-full', formationVisual(formation).bg]">
+              <QIcon :name="formationVisual(formation).icon" :size="22" :class="formationVisual(formation).fg" />
             </span>
             <div class="min-w-0 flex-1">
               <h3 class="m-0 text-[16px] leading-20 font-semibold text-[#040c3d]">{{ formation.title }}</h3>

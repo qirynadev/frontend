@@ -9,7 +9,8 @@
  * `display: none` littéral : même résultat visuel, accessible aux lecteurs
  * d'écran.
  *
- * Formations : une seule icône `.ed-form-icon` (`ic-ed-form-1`), méta grade +
+ * Formations : icône et teinte selon le type de formation (`formationVisual`,
+ * déduites du grade et du titre, 2026-10-10), méta grade +
  * durée (`.ed-form-meta`, réels depuis le 2026-08-31, `-` si non renseignés),
  * accroche courte limitée à 3 lignes (`line-clamp-3`), détail en modale.
  * Récupérées via `GET /schools/{id}/formations` (directives-backend §12),
@@ -23,6 +24,7 @@ import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, Di
 import { schoolRepo } from '~/core/repositories'
 import type { SchoolFormation } from '~/core/contracts'
 import { resolveDestinationApiSlug } from '~/config/destination-slugs'
+import { formationVisual } from '~/config/formation-visual'
 import DesktopFicheEcole from '~/desktop-pages/fiche-ecole.vue'
 
 const route = useRoute()
@@ -354,9 +356,9 @@ useSchoolSchemaOrg(school)
               class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-white p-20 text-left text-text shadow-card"
               @click="activeFormation = formation"
             >
-              <!-- `.ed-form-icon` — une seule icône pour toutes les formations -->
-              <span class="size-44 shrink-0 overflow-clip">
-                <QIcon name="ic-ed-form-1" :size="44" />
+              <!-- `.ed-form-icon` — icône et teinte selon le type de formation (`formationVisual`) -->
+              <span :class="['flex size-44 shrink-0 items-center justify-center rounded-full', formationVisual(formation).bg]">
+                <QIcon :name="formationVisual(formation).icon" :size="22" :class="formationVisual(formation).fg" />
               </span>
 
               <div class="min-w-0 flex-1">
