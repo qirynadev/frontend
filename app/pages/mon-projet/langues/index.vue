@@ -127,6 +127,7 @@ const levelTestCards = computed<LevelTestCard[]>(() => courseOrders.value.flatMa
 }))
 
 const hasPendingTest = computed(() => levelTestCards.value.some((card) => card.status === 'pending'))
+const hasCompletedTest = computed(() => levelTestCards.value.some((card) => card.status === 'completed'))
 
 const { enter: enterLms, openingKey: lmsOpeningKey, failure: lmsFailure } = useLmsEntry()
 
@@ -261,16 +262,23 @@ const planningHidden = computed(() =>
   hasPendingTest.value && plannedCards.value.length === 0 && unplannedCards.value.length === 0)
 
 /**
- * Statut des 3 pastilles (« Ma progression »). La première suit le test de
- * niveau réel ; les deux suivantes dérivent de `progressPct`, seul cumul
- * tranché par le responsable (§7, `docs/directives-backend.md`).
+ * Statut des 3 pastilles (« Ma progression »).
+ *
+ * 1. Test de niveau : cochée seulement si un test a réellement été passé
+ *    (niveau reçu du LMS) ; en cours tant qu'un test reste à passer ; grisée
+ *    quand aucun test ne s'applique au compte. Jamais cochée d'office : la
+ *    checklist du back-office la marque « terminée » à l'achat hors LMS, ce
+ *    qui ne dit rien d'un test passé (remarque du responsable, 2026-10-11).
+ * 2. Cours en cours : dès que la planification est ouverte.
+ * 3. Test final : à 100 % seulement, seul cumul tranché par le responsable
+ *    (§7, `docs/directives-backend.md`).
  */
 const progressSteps = computed(() => langueProgressSteps.map((step, index) => {
+  const finished = progressPct.value >= 100
   let status: LangueProgressStepStatus
-  if (planningHidden.value) status = index === 0 ? 'current' : 'todo'
-  else if (progressPct.value >= 100) status = 'done'
-  else if (index === 0) status = hasPendingTest.value ? 'current' : 'done'
-  else status = index === 1 ? 'current' : 'todo'
+  if (index === 0) status = hasPendingTest.value ? 'current' : hasCompletedTest.value ? 'done' : 'todo'
+  else if (index === 1) status = planningHidden.value ? 'todo' : finished ? 'done' : 'current'
+  else status = finished ? 'done' : 'todo'
   return { ...step, status }
 }))
 

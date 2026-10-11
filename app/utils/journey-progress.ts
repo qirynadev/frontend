@@ -15,9 +15,26 @@ import { orientationEvaluationProgress } from './orientation-progress'
  * 14 %). Seul un `échoué` reste exclu.
  */
 export function orderChecklistProgress(order: Order): number {
-  if (order.status === 'failed' || order.checklist.length === 0) return 0
-  const done = order.checklist.filter((item) => item.status === 'done').length
-  return Math.round((done / order.checklist.length) * 100)
+  if (order.status === 'failed') return 0
+  const steps = countedChecklist(order)
+  if (steps.length === 0) return 0
+  const done = steps.filter((item) => item.status === 'done').length
+  return Math.round((done / steps.length) * 100)
+}
+
+/**
+ * Étapes de la checklist qui comptent pour cette commande.
+ *
+ * L'étape « test de niveau » n'est comptée que si un test s'applique vraiment
+ * à la commande (`levelTest` à passer ou passé, dans le LMS). Sans cela, le
+ * back-office la coche d'office à l'achat alors qu'aucun test n'a eu lieu :
+ * elle sort du calcul plutôt que de créditer le client d'une étape fictive
+ * (remarque du responsable, 2026-10-11).
+ */
+function countedChecklist(order: Order): Order['checklist'] {
+  const test = order.levelTest
+  const testApplies = !!test && test.status !== 'not_required'
+  return order.checklist.filter((item) => item.stepKey !== 'level_test' || testApplies)
 }
 
 /**
