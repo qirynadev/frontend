@@ -25,6 +25,11 @@ export interface UnplannedLesson {
   /** Aucun professeur choisi sur la commande : `PlanningTeacherStep` avant `PlanningCalendar`. */
   needsTeacher: boolean
   teacher: PlanningTeacherSummary | null
+  /**
+   * Test de niveau du LMS pas encore passé pour cette commande : le serveur
+   * refuserait la réservation, l'heure n'est donc pas proposée à la planification.
+   */
+  planningLocked: boolean
 }
 
 export interface LanguageProgress {

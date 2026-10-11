@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toCalendarSlotList, toTeacher } from '~/core/adapters/planning.adapter'
+import { toCalendarSlotList, toLanguageProgressList, toTeacher } from '~/core/adapters/planning.adapter'
 
 /**
  * Badge « vérifié » d'un professeur (directives-backend §4).
@@ -46,5 +46,22 @@ describe('toCalendarSlotList — séances de groupe', () => {
 
   it('une séance passée n\'est jamais rejoignable', () => {
     expect(toCalendarSlotList([{ ...base, id: 'c', status: 'used', joinable: true, future: false }])[0]!.joinable).toBe(false)
+  })
+})
+
+describe('toLanguageProgressList : verrou du test de niveau', () => {
+  const heure = { id: 'o1', title: 'Anglais', course_id: 'c1', needs_teacher: true }
+  const groupe = (plannings: unknown[]) => [{ title: 'Anglais', total_hours: 2, total_planned: 0, plannings }]
+
+  it('marque les heures d’une commande dont le test reste à passer', () => {
+    const [langue] = toLanguageProgressList(groupe([{ ...heure, planning_locked: true }, { ...heure, id: 'o2', planning_locked: false }]))
+
+    expect(langue?.lessons.map((lesson) => lesson.planningLocked)).toEqual([true, false])
+  })
+
+  it('ne verrouille rien quand le champ est absent (back-office antérieur au branchement)', () => {
+    const [langue] = toLanguageProgressList(groupe([heure]))
+
+    expect(langue?.lessons[0]?.planningLocked).toBe(false)
   })
 })

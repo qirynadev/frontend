@@ -50,6 +50,32 @@ export interface OrderChecklistItem {
   completedAt: string | null
 }
 
+/** Les trois niveaux vendus, mêmes clés que les cartes du parcours d'achat. */
+export type CommercialLevel = 'beginner' | 'intermediate' | 'advanced'
+
+/**
+ * `not_required` : aucun test pour cette commande (branchement au LMS éteint,
+ * compte hors du mode pilote, langue absente du LMS) ; rien à afficher.
+ * `pending` : test à passer. `completed` : niveau reçu du LMS.
+ */
+export type LevelTestStatus = 'not_required' | 'pending' | 'completed'
+
+/**
+ * Test de niveau d'une commande de langue, passé dans le LMS
+ * (`level_test` côté back-office, voir `qiryna-backoffice/docs/lms-site.md`).
+ */
+export interface LevelTest {
+  status: LevelTestStatus
+  /**
+   * Le serveur refuse toute réservation de séance tant que c'est vrai. C'est
+   * ce champ, et lui seul, qui décide d'afficher ou non la planification.
+   */
+  planningLocked: boolean
+  /** Niveau détaillé mesuré : `A1` à `C2`, ou `HSK1` à `HSK6` pour le chinois. */
+  level: string | null
+  commercialLevel: CommercialLevel | null
+}
+
 export interface Order {
   id: string
   /**
@@ -110,6 +136,8 @@ export interface Order {
    * liste **vide**, pas une liste par défaut reconstituée côté client.
    */
   checklist: OrderChecklistItem[]
+  /** `null` pour toute commande qui n'est pas une commande de langue. */
+  levelTest: LevelTest | null
 }
 
 /**

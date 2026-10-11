@@ -9,21 +9,22 @@
  * Espacement topbar → contenu : **22px** ; sections : **22px**.
  * Mock : `config/projet-langue-mock.ts` + `docs/mon-projet-langue-mocks.md`.
  *
- * **Verrou « test de niveau »** (réintroduit 2026-09-02, sur demande
- * explicite du responsable) : bloque l'accès aux cours/planification tant
- * que l'étape 1 n'est pas « validée ». **Purement cosmétique** — aucune
- * donnée API ne permet de savoir si un test de niveau a réellement eu lieu
- * pour une commande de langue (voir `docs/directives-backend.md` §22/§24) :
- * `completeLevelTest()` se contente de poser `?etape=2` dans l'URL, sans
- * appel serveur. L'état n'est donc pas fiable (perdu au rechargement sans le
- * paramètre, contournable en éditant l'URL) — un vrai verrou demandera le
- * développement back-office documenté en §24 avant de pouvoir remplacer ce
- * mock par une vérification réelle.
+ * **Verrou « test de niveau »** (réel depuis le 2026-10-11) : le test se
+ * passe dans le LMS, application à part. Chaque commande de langue porte son
+ * état (`Order.levelTest`, voir `qiryna-backoffice/docs/lms-site.md`) :
+ * - `not_required` : rien à afficher, la planification fonctionne comme avant
+ *   (branchement éteint, compte hors du mode pilote, langue absente du LMS) ;
+ * - `pending` : carte « Votre test de niveau » avec son bouton ; les heures de
+ *   cette commande ne sont pas proposées à la planification ;
+ * - `completed` : carte du niveau obtenu, planification ouverte.
+ * Le site ne reproduit aucun verrou : il lit `planningLocked`, et le serveur
+ * refuse de toute façon la réservation d'une commande verrouillée.
  */
-import type { LanguageProgress, PlannedSession } from '~/core/contracts'
+import type { LanguageProgress, LevelTestStatus, PlannedSession } from '~/core/contracts'
 import { paymentRepo, planningRepo } from '~/core/repositories'
 import type { LangueProgressStepStatus } from '~/config/projet-langue-mock'
 import { langueProgressSteps } from '~/config/projet-langue-mock'
+import { forgetStartedLevelTests, startedLevelTests, useLmsEntry } from '~/composables/useLmsEntry'
 import { NuxtLink } from '#components'
 
 /** Cartes par page, sur les deux onglets (planifiés / à planifier). */
@@ -35,7 +36,6 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 type TabId = 'planned' | 'unplanned'
-type MockEtape = 1 | 2
 const route = useRoute()
 const router = useRouter()
 const activeTab = ref<TabId>(
@@ -47,14 +47,6 @@ const activeTab = ref<TabId>(
 function setTab(tab: TabId) {
   activeTab.value = tab
   void router.replace({ query: { ...route.query, tab } })
-}
-
-/** Arrivée = étape 1 (test de niveau) ; `?etape=2` après le CTA mock. */
-const mockEtape = computed<MockEtape>(() => (route.query.etape === '2' ? 2 : 1))
-
-/** Mock : passer le test de niveau → étape 2 (cours). Voir le docblock ci-dessus. */
-function completeLevelTest() {
-  void router.replace({ query: { ...route.query, etape: '2' } })
 }
 
 /** Horloge d'affichage — countdown et fenêtre de rejointure (`canJoinSession`) en dépendent. */
@@ -79,7 +71,7 @@ const { data: sessions } = await usePageData(
   { watch: [locale] },
 )
 
-const { data: orders } = await usePageData(
+const { data: orders, refresh: refreshOrders } = await usePageData(
   'langues-orders',
   () => paymentRepo.orders(locale.value),
   { watch: [locale] },
@@ -104,28 +96,83 @@ const progressPct = computed(() => {
   return Math.round(total / list.length)
 })
 
-/**
- * Statut des 3 pastilles (« Ma progression »). Tant que le test de niveau
- * (mock, voir docblock) n'est pas « validé », seule l'étape 1 est affichée
- * comme en cours. Une fois passé, le reste dérive de `progressPct` — le
- * détail des étapes internes (`Order.checklist`) n'a pas de règle validée
- * pour ce cumul (§7, `docs/directives-backend.md`) : plutôt qu'inventer une
- * agrégation, seul le pourcentage déjà tranché par le responsable alimente
- * ces deux dernières pastilles.
- */
-const progressSteps = computed(() => langueProgressSteps.map((step, index) => {
-  if (mockEtape.value === 1) {
-    const status: LangueProgressStepStatus = index === 0 ? 'current' : 'todo'
-    return { ...step, status }
+/** Langue d'une commande, lue sur ses heures restant à planifier. */
+const languageByOrder = computed(() => {
+  const map = new Map<string, string>()
+  for (const language of languages.value ?? []) {
+    for (const lesson of language.lessons) map.set(lesson.orderId, language.title)
   }
-  const status: LangueProgressStepStatus = progressPct.value >= 100
-    ? 'done'
-    : index === 0 ? 'done' : index === 1 ? 'current' : 'todo'
-  return { ...step, status }
+  return map
+})
+
+interface LevelTestCard {
+  orderId: string
+  status: Exclude<LevelTestStatus, 'not_required'>
+  language: string
+  /** « B1 (Intermédiaire) » : niveau détaillé, puis niveau vendu quand il est connu. */
+  levelLabel: string
+}
+
+/** Une carte par commande de langue soumise au test de niveau, à passer ou passé. */
+const levelTestCards = computed<LevelTestCard[]>(() => courseOrders.value.flatMap((order) => {
+  const test = order.levelTest
+  if (!test || test.status === 'not_required') return []
+  const commercial = test.commercialLevel ? t(`course.level.${test.commercialLevel}`) : ''
+  return [{
+    orderId: order.id,
+    status: test.status,
+    language: languageByOrder.value.get(order.id) ?? '',
+    levelLabel: [test.level ?? '', commercial ? `(${commercial})` : ''].filter(Boolean).join(' '),
+  }]
 }))
 
-/** 0 % tant que le test de niveau n'est pas « validé » — cohérent avec la pastille 1. */
-const displayProgressPct = computed(() => (mockEtape.value === 1 ? 0 : progressPct.value))
+const hasPendingTest = computed(() => levelTestCards.value.some((card) => card.status === 'pending'))
+
+const { enter: enterLms, openingKey: lmsOpeningKey, failure: lmsFailure } = useLmsEntry()
+
+/**
+ * Retour du LMS : le niveau arrive au back-office par un message du LMS, en
+ * général en quelques secondes, sans garantie d'ordre avec le retour du
+ * navigateur. Si un test ouvert depuis cet onglet est encore « à passer », son
+ * état est relu toutes les 4 secondes pendant une trentaine de secondes. Au-
+ * delà, le bouton du test reste : le client peut y retourner sans risque, et
+ * un rattrapage quotidien du back-office répare tout message perdu.
+ */
+const CHECK_INTERVAL_MS = 4000
+const CHECK_MAX_TRIES = 8
+const checkingResult = ref(false)
+let checkTimer: ReturnType<typeof setInterval> | null = null
+
+function stopChecking() {
+  if (checkTimer) clearInterval(checkTimer)
+  checkTimer = null
+  checkingResult.value = false
+  forgetStartedLevelTests()
+}
+
+function awaitedTestStillPending(started: string[]): boolean {
+  return levelTestCards.value.some((card) => card.status === 'pending' && started.includes(card.orderId))
+}
+
+onMounted(() => {
+  const started = startedLevelTests()
+  if (started.length === 0) return
+  if (!awaitedTestStillPending(started)) {
+    forgetStartedLevelTests()
+    return
+  }
+
+  checkingResult.value = true
+  let tries = 0
+  checkTimer = setInterval(async () => {
+    tries += 1
+    await Promise.all([refreshOrders(), refresh()])
+    if (!awaitedTestStillPending(started) || tries >= CHECK_MAX_TRIES) stopChecking()
+  }, CHECK_INTERVAL_MS)
+})
+onBeforeUnmount(() => {
+  if (checkTimer) clearInterval(checkTimer)
+})
 
 function formatSessionTime(session: PlannedSession): string {
   if (!session.startDate || !session.endDate) return ''
@@ -174,7 +221,8 @@ const plannedCards = computed(() => (sessions.value ?? []).map((session) => ({
 
 /** Cartes onglet « à planifier » — vide si tout est déjà planifié, pas de repli fictif. */
 const unplannedCards = computed(() => (languages.value ?? []).flatMap((language: LanguageProgress) =>
-  language.lessons.map((lesson, index) => {
+  // Test de niveau à passer : le serveur refuserait la réservation de ces heures.
+  language.lessons.filter((lesson) => !lesson.planningLocked).map((lesson, index) => {
     const lang = encodeURIComponent(language.title)
     const to = language.courseId === null
       ? null
@@ -203,6 +251,28 @@ function usePagedList<T>(list: Ref<T[]>) {
   })
   return { page, totalPages, paged }
 }
+
+/**
+ * Rien à planifier ni de planifié tant qu'un test reste à passer : seule la
+ * carte du test s'affiche, comme à l'étape 1 de la maquette. Dès qu'une autre
+ * commande est ouverte, les onglets reviennent, sans les heures verrouillées.
+ */
+const planningHidden = computed(() =>
+  hasPendingTest.value && plannedCards.value.length === 0 && unplannedCards.value.length === 0)
+
+/**
+ * Statut des 3 pastilles (« Ma progression »). La première suit le test de
+ * niveau réel ; les deux suivantes dérivent de `progressPct`, seul cumul
+ * tranché par le responsable (§7, `docs/directives-backend.md`).
+ */
+const progressSteps = computed(() => langueProgressSteps.map((step, index) => {
+  let status: LangueProgressStepStatus
+  if (planningHidden.value) status = index === 0 ? 'current' : 'todo'
+  else if (progressPct.value >= 100) status = 'done'
+  else if (index === 0) status = hasPendingTest.value ? 'current' : 'done'
+  else status = index === 1 ? 'current' : 'todo'
+  return { ...step, status }
+}))
 
 const { page: plannedPage, totalPages: plannedTotalPages, paged: pagedPlannedCards } = usePagedList(plannedCards)
 const { page: unplannedPage, totalPages: unplannedTotalPages, paged: pagedUnplannedCards } = usePagedList(unplannedCards)
@@ -297,7 +367,7 @@ usePageSeo(() => ({
               </p>
             </div>
             <div class="flex shrink-0 flex-col items-end">
-              <p class="m-0 text-[24px] leading-30 font-bold text-[#fc037f]">{{ displayProgressPct }}%</p>
+              <p class="m-0 text-[24px] leading-30 font-bold text-[#fc037f]">{{ progressPct }}%</p>
               <p class="m-0 text-[12px] leading-16 font-medium tracking-[0.3px] text-[#0a142f]">
                 {{ $t('languageProject.progressDone') }}
               </p>
@@ -306,7 +376,7 @@ usePageSeo(() => ({
 
           <div class="w-full pt-16">
             <div class="h-6 w-full overflow-hidden rounded-full bg-[#e8e8ff]">
-              <div class="h-6 rounded-full bg-[#fc037f]" :style="{ width: `${displayProgressPct}%` }" />
+              <div class="h-6 rounded-full bg-[#fc037f]" :style="{ width: `${progressPct}%` }" />
             </div>
           </div>
 
@@ -356,9 +426,19 @@ usePageSeo(() => ({
           </div>
         </section>
 
-        <!-- Étape 1 : Votre test de niveau (mock, voir docblock) -->
+        <!-- Retour du LMS : le résultat peut arriver quelques secondes après le navigateur -->
+        <p
+          v-if="checkingResult"
+          class="m-0 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.7)]"
+          role="status"
+        >
+          {{ $t('languageProject.levelTestChecking') }}
+        </p>
+
+        <!-- Test de niveau : une carte par commande de langue qui en a un (passé dans le LMS) -->
         <section
-          v-if="mockEtape === 1"
+          v-for="card in levelTestCards"
+          :key="card.orderId"
           class="mpo-test-card w-full rounded-xl border border-mpo-test-border bg-mpo-test-bg px-11 py-17 shadow-2xs box-border"
         >
           <div class="mpo-test-top flex items-start gap-12">
@@ -366,23 +446,47 @@ usePageSeo(() => ({
               <img src="/img/mpo-test-clipboard.png" alt="" width="85" height="85" class="block size-85 object-cover">
             </div>
             <div class="mpo-test-copy flex min-w-0 flex-1 flex-col gap-15 pt-4">
-              <h2 class="m-0 text-xl leading-[18.75px] font-bold text-mpo-heading">{{ $t('languageProject.levelTestTitle') }}</h2>
-              <p class="m-0 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">{{ $t('languageProject.levelTestDesc') }}</p>
+              <div class="flex flex-col gap-6">
+                <p v-if="card.language" class="m-0 text-exact-11-5 leading-[15.525px] font-medium text-mpo-text">{{ card.language }}</p>
+                <h2 class="m-0 text-xl leading-[18.75px] font-bold text-mpo-heading">
+                  {{ card.status === 'completed'
+                    ? $t('languageProject.levelTestDoneTitle', { level: card.levelLabel })
+                    : $t('languageProject.levelTestTitle') }}
+                </h2>
+              </div>
+              <p class="m-0 text-exact-11-5 leading-[15.525px] font-normal text-mpo-text">
+                {{ card.status === 'completed'
+                  ? $t('languageProject.levelTestDoneDesc')
+                  : $t('languageProject.levelTestPendingDesc') }}
+              </p>
               <button
                 type="button"
-                class="mpo-test-btn inline-flex w-fit max-w-full cursor-pointer items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn"
-                @click="completeLevelTest"
+                :disabled="lmsOpeningKey !== null"
+                :class="[
+                  'mpo-test-btn inline-flex w-fit max-w-full items-center gap-6 rounded-[5px] border border-mpo-test-btn bg-white px-13 py-9 text-md leading-[16.5px] font-medium text-mpo-test-btn',
+                  lmsOpeningKey !== null ? 'cursor-wait opacity-60' : 'cursor-pointer',
+                ]"
+                @click="enterLms({ orderId: card.orderId, target: 'placement' })"
               >
                 <img src="/img/icons/ic-mpo-external.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                <span>{{ $t('languageProject.levelTestCta') }}</span>
+                <span v-if="lmsOpeningKey === card.orderId">{{ $t('languageProject.levelTestOpening') }}</span>
+                <span v-else-if="card.status === 'completed'">{{ $t('languageProject.levelTestDoneCta') }}</span>
+                <span v-else>{{ $t('languageProject.levelTestCta') }}</span>
               </button>
+              <p
+                v-if="lmsFailure?.key === card.orderId"
+                class="m-0 text-exact-11-5 leading-[15.525px] font-medium text-[#f05]"
+                role="alert"
+              >
+                {{ lmsFailure.message }}
+              </p>
             </div>
           </div>
         </section>
 
         <!-- Prochain cours : hauteur au contenu ; compteur responsive (s → m masqués) -->
         <aside
-          v-if="mockEtape === 2 && nextCourseLabels"
+          v-if="nextCourseLabels"
           class="box-border flex w-full flex-col rounded-2xl p-16 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
           style="background-image: linear-gradient(157.8deg, #4f46e5 0%, #ff0055 100%)"
         >
@@ -444,7 +548,7 @@ usePageSeo(() => ({
         </aside>
 
         <!-- Onglets + listes (grille empilée = hauteur stable au changement d’onglet) -->
-        <section v-if="mockEtape === 2" class="flex w-full flex-col gap-22">
+        <section v-if="!planningHidden" class="flex w-full flex-col gap-22">
           <div
             class="box-border flex h-41 w-full items-stretch rounded-[6px] border border-[#efeff7] bg-[#f8f8fd] p-px"
             role="tablist"

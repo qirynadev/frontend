@@ -113,7 +113,7 @@ export function authClient(event: H3Event): ApiClient {
  * en dépendent pour surligner le bon champ.
  */
 export function rethrowApiError(error: unknown): never {
-  const candidate = error as { status?: number; message?: string; fieldErrors?: Record<string, string[]> }
+  const candidate = error as { status?: number; message?: string; fieldErrors?: Record<string, string[]>; code?: string | null }
   const status = typeof candidate?.status === 'number' && candidate.status >= 400 ? candidate.status : 502
 
   throw createError({
@@ -122,6 +122,8 @@ export function rethrowApiError(error: unknown): never {
     data: {
       message: candidate?.message ?? 'Erreur du service distant',
       errors: candidate?.fieldErrors ?? {},
+      // Code métier du back-office, quand il en fournit un (`level_test_required`...).
+      ...(candidate?.code ? { code: candidate.code } : {}),
     },
   })
 }

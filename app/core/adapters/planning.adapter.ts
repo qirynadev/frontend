@@ -26,6 +26,8 @@ function toUnplannedLesson(raw: unknown): UnplannedLesson {
     expired: bool(source, 'expired', false),
     needsTeacher: bool(source, 'needs_teacher', true),
     teacher: toPlanningTeacherSummary(source.teacher),
+    // Absent d'un back-office antérieur au branchement du LMS : non verrouillé.
+    planningLocked: bool(source, 'planning_locked', false),
   }
 }
 

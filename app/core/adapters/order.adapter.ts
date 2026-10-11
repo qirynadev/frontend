@@ -1,4 +1,4 @@
-import type { Order, OrderChecklistItem, OrderChecklistItemStatus, OrderOffer, OrderStatus, PaymentInit, PaymentValidation } from '../contracts'
+import type { CommercialLevel, LevelTest, LevelTestStatus, Order, OrderChecklistItem, OrderChecklistItemStatus, OrderOffer, OrderStatus, PaymentInit, PaymentValidation } from '../contracts'
 import { asArray, asRecord, bool, dig, num, optionalNum, optionalStr, str, toIsoDate, toUrl } from './primitives'
 
 /**
@@ -122,6 +122,32 @@ export function toOrderChecklist(raw: unknown): OrderChecklistItem[] {
     .sort((a, b) => a.position - b.position)
 }
 
+const COMMERCIAL_LEVELS: readonly CommercialLevel[] = ['beginner', 'intermediate', 'advanced']
+
+/**
+ * Test de niveau d'une commande de langue (`level_test`).
+ *
+ * `null` quand le bloc est absent : commande d'un autre type, ou back-office
+ * antérieur au branchement du LMS. Un statut inconnu retombe sur
+ * `not_required`, c'est-à-dire « rien à afficher » : mieux vaut ne pas montrer
+ * l'étape que proposer un test qui n'existe pas.
+ */
+export function toLevelTest(raw: unknown): LevelTest | null {
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const source = asRecord(raw)
+
+  const rawStatus = str(source, 'status')
+  const status: LevelTestStatus = rawStatus === 'pending' || rawStatus === 'completed' ? rawStatus : 'not_required'
+  const commercial = str(source, 'commercial_level') as CommercialLevel
+
+  return {
+    status,
+    planningLocked: bool(source, 'planning_locked', false),
+    level: optionalStr(source, 'level'),
+    commercialLevel: COMMERCIAL_LEVELS.includes(commercial) ? commercial : null,
+  }
+}
+
 export function toOrder(raw: unknown): Order | null {
   const source = asRecord(raw)
   const id = str(source, 'id')
@@ -155,6 +181,7 @@ export function toOrder(raw: unknown): Order | null {
     // `costofliving`, seul `associated_service.country.name` porte le pays.
     destinationCountry: optionalStr(source, 'destination_country') ?? optionalStr(source, 'associated_service.country.name'),
     checklist: toOrderChecklist(source.checklist),
+    levelTest: toLevelTest(source.level_test),
   }
 }
 
