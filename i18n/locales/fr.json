@@ -1318,8 +1318,14 @@
     "connect": "Se connecter",
     "duration60": "60 min",
     "hourToPlan": "1 heure à planifier",
+    "levelTestChecking": "Si vous venez de terminer votre test, votre résultat arrive dans quelques instants.",
     "levelTestCta": "Passer le test",
-    "levelTestDesc": "Vous pouvez revoir ou reprendre le test de niveau à tout moment.",
+    "levelTestDoneCta": "Revoir mon résultat",
+    "levelTestDoneDesc": "Niveau mesuré par votre test. Vous pouvez planifier vos séances.",
+    "levelTestDoneTitle": "Votre niveau : {level}",
+    "levelTestError": "Impossible d'ouvrir le test pour le moment. Réessayez dans quelques minutes.",
+    "levelTestOpening": "Ouverture en cours",
+    "levelTestPendingDesc": "Passez ce test de 15 à 20 minutes pour ouvrir la planification de vos séances.",
     "levelTestTitle": "Votre test de niveau",
     "nextTitle": "Prochain cours",
     "progressDone": "terminé",
@@ -1399,6 +1405,13 @@
     "rightsCta": "Accès, rectification, suppression ou opposition — en quelques gestes.",
     "rightsTitle": "Exercer mes droits",
     "updatedPrefix": "Mis à jour le"
+  },
+  "lmsEntry": {
+    "back": "Retour à mon projet",
+    "error": "Impossible d'ouvrir votre espace d'apprentissage pour le moment. Réessayez dans quelques minutes.",
+    "errorTitle": "Accès indisponible",
+    "loading": "Ouverture de votre espace d'apprentissage",
+    "seoTitle": "Espace d'apprentissage"
   },
   "logementConfirmation": {
     "accommodationApartment": "Appartement",

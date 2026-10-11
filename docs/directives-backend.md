@@ -32,7 +32,7 @@ Page partageable pour Prosper, même contenu : https://claude.ai/code/artifact/5
 | Suppression de compte | Aucun endpoint dans `routes/api.php`. | Endpoint authentifié + règle de conservation à valider (commandes payées, factures). |
 | « Être rappelé » | Rien n'existe (ni modèle, ni route). | Enregistrer la demande et la faire arriver au back-office, comme la messagerie. Après l'écran de Kader. |
 | E-mails transactionnels | 6 gabarits (`resources/views/emails`) et 10 notifications (`app/Notifications`). | Contenu et présentation harmonisés d'un e-mail à l'autre. |
-| Test de niveau langue (§22, §24) | `LEVEL_TEST` marqué « terminé » à l'achat ; aucun statut consultable par le client. | Déclencher le test pour les cours, exposer son statut, ne plus cocher l'étape d'office. Dépend du catalogue du prestataire. |
+| Test de niveau langue (§22, §24) | ✅ Livré le 2026-10-11 : le test se passe dans le LMS, le back-office expose `level_test` par commande et refuse la réservation tant qu'il n'est pas passé. | Rien : voir §24. Reste hors LMS, `LEVEL_TEST` est coché à l'achat comme avant. |
 | Tarification | Double saisie : prix affiché en base, prix Stripe à part. | Décision du promoteur (source du prix), puis mise en œuvre. |
 
 ### Importants, non bloquants
@@ -928,7 +928,37 @@ les besoins concrets par parcours sont listés ci-dessus, suffisants pour
 lancer un chantier back-office unique et bien élaboré dès maintenant,
 plutôt que quatre demandes séparées dans le temps.
 
-## 24. 🔴 Verrou « test de niveau » avant planification (`/mon-projet/langues`) — remis en front à titre cosmétique, pas de contrôle réel possible aujourd'hui
+## 24. ✅ Livré (2026-10-11) : verrou « test de niveau » avant planification (`/mon-projet/langues`), réel, par le LMS
+
+**Ce qui est en place.** Le test de niveau se passe dans le LMS, application
+à part (`qiryna-lms`). Le back-office (`staging`) expose l'état du test sur
+chaque commande de langue et refuse toute réservation d'une commande non
+testée. Le site ne parle jamais au LMS ; son contrat est décrit dans
+`qiryna-backoffice/docs/lms-site.md`.
+
+| Besoin | Côté site |
+|---|---|
+| État du test d'une commande | `Order.levelTest` (`level_test` de `/payment/list`) : `not_required`, `pending`, `completed`, avec `planningLocked`, `level`, `commercialLevel` |
+| Heures non réservables | `UnplannedLesson.planningLocked` (`planning_locked` de `/user/plannings/unplanned`) : ces heures ne sont pas proposées |
+| Entrer dans le LMS | `POST /api/bff/lms/sso` (relaie `POST /user/lms/sso`), appelé **au clic** par `useLmsEntry` : l'adresse ne vaut que 60 secondes et une seule fois |
+| Retour du LMS | `mon-projet/langues/index.vue` relit l'état toutes les 4 secondes pendant une trentaine de secondes si un test ouvert depuis l'onglet est encore « à passer » |
+| Réservation refusée | `planifier.vue` reconnaît le code `level_test_required` (400) et ramène à `/mon-projet/langues` |
+| Session du LMS expirée | Page `/lms/entree` : nouvelle adresse d'entrée, puis redirection (connexion de Qiryna d'abord si besoin) |
+
+**Ce que le site ne fait pas, volontairement** : aucun verrou reproduit (il
+lit `planningLocked`, le serveur tranche), aucune traduction de niveau,
+aucun secret. Un compte hors du mode pilote, ou un environnement où le
+branchement est éteint, reçoit `not_required` : rien ne s'affiche et le
+parcours reste celui d'avant.
+
+**Reste à faire** : le lien « Mes cours » vers le tableau de bord du LMS
+(`target: "courses"`), à poser quand les cours existeront dans le LMS et que
+Kader aura dessiné son emplacement ; `mon-projet/langues/certification.vue`
+est toujours une maquette (voir §22, point 3).
+
+L'analyse d'origine est conservée ci-dessous pour mémoire.
+
+### Constat d'origine (2026-09-02), résolu
 
 **Demande produit (2026-09-02)** : sur `/mon-projet/langues`, l'accès aux
 onglets « cours planifiés »/« à planifier » et au bloc « prochain cours » ne

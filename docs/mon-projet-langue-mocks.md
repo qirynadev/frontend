@@ -21,7 +21,7 @@ Doc professeurs / créneaux 2 h : `docs/mon-projet-professeur-mocks.md`
 | Cours planifiés | `planningRepo.planned` | Si vide → `languePlannedSessionsMock` |
 | Cours à planifier | `lessons[]` unplanned | Si vide → `langueUnplannedSessionsMock` → CTA Professeur |
 | Countdown / prochain cours | prochaine séance `startDate` future | Sinon **22h 18min 35s** relatif |
-| Test de niveau | mock `langueLevelTestUrl` | Carte type orientation sur l’index |
+| Test de niveau | `Order.levelTest` (réel depuis le 2026-10-11) | Passé dans le LMS ; voir `directives-backend.md` §24 |
 | Étape Test final | — | **Pas d’endpoint** : écran 100 % mock Figma |
 | Rapport / test / conseillère | — | Boutons inertes ou lien Messages (hors API langue) |
 
@@ -30,10 +30,7 @@ Doc professeurs / créneaux 2 h : `docs/mon-projet-professeur-mocks.md`
 | Élément | Contenu | Figma |
 |---|---|---|
 | 3 étapes parcours | Test de niveau → Cours en cours → Test final | Langue 1 & 2 |
-| Arrivée mock | `?etape=1` (défaut) : pastille 1 « current » non cochée + carte test | — |
-| CTA « Passer le test » | → `?etape=2` (étape 2 : cours + onglets) | mock |
 | Pastille Test final | Lien → `/mon-projet/langues/certification` (à l’étape 2) | — |
-| Carte test de niveau | Visible **uniquement** à l’étape 1 | aligné orientation |
 | 4 cartes planifiées | titre + horaire + date + « Se connecter » | Langue 1 |
 | 4 cartes à planifier | titre + « 60 min » + « Planifier » → demo professeur | Langues 2 |
 | Test final 100 % | profil prêt, test, à savoir, aide | Langues 4 |

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   normalizeServiceType,
+  toLevelTest,
   toOrder,
   toOrderChecklist,
   toOrderList,
@@ -206,6 +207,48 @@ describe('cas dégradé', () => {
     expect(toPaymentValidation({ confirmed: false, failed: true, order: rawOrder })).toMatchObject({
       confirmed: false,
       failed: true,
+    })
+  })
+})
+
+describe('test de niveau (LMS)', () => {
+  const pending = { required: true, status: 'pending', planning_locked: true, level: null, commercial_level: null }
+
+  it('traduit un test à passer : planification verrouillée, aucun niveau', () => {
+    expect(toOrder({ ...rawOrder, level_test: pending })?.levelTest).toEqual({
+      status: 'pending',
+      planningLocked: true,
+      level: null,
+      commercialLevel: null,
+    })
+  })
+
+  it('traduit un test passé, avec son niveau détaillé et son niveau vendu', () => {
+    const done = { ...pending, status: 'completed', planning_locked: false, level: 'B1', commercial_level: 'intermediate' }
+
+    expect(toOrder({ ...rawOrder, level_test: done })?.levelTest).toEqual({
+      status: 'completed',
+      planningLocked: false,
+      level: 'B1',
+      commercialLevel: 'intermediate',
+    })
+  })
+
+  it('donne `null` sans bloc : autre type de commande, ou back-office antérieur au branchement', () => {
+    expect(toOrder(rawOrder)?.levelTest).toBeNull()
+    expect(toOrder({ ...rawOrder, level_test: null })?.levelTest).toBeNull()
+    expect(toLevelTest([])).toBeNull()
+  })
+
+  it('ramène un statut inconnu à « rien à afficher », jamais à un test à passer', () => {
+    expect(toLevelTest({ status: 'bientot', planning_locked: false })?.status).toBe('not_required')
+    expect(toLevelTest({})).toEqual({ status: 'not_required', planningLocked: false, level: null, commercialLevel: null })
+  })
+
+  it('écarte un niveau vendu hors des trois clés connues', () => {
+    expect(toLevelTest({ status: 'completed', level: 'HSK3', commercial_level: 'expert' })).toMatchObject({
+      level: 'HSK3',
+      commercialLevel: null,
     })
   })
 })

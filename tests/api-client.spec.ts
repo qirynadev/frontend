@@ -139,6 +139,15 @@ describe('normalisation des erreurs', () => {
     expect(toApiError(httpError(403, { message: 'Accès restreint' }), '/x').message).toBe('Accès restreint')
   })
 
+  it('garde le code métier du back-office, à plat comme sous `data` (BFF)', () => {
+    const refus = { status: false, code: 'level_test_required', message: 'Passez votre test de niveau.' }
+
+    expect(toApiError(httpError(400, refus), '/user/plannings/create').code).toBe('level_test_required')
+    expect(toApiError(httpError(400, { message: 'x', data: { message: 'Passez votre test de niveau.', code: 'level_test_required' } }), '/plannings/create').code).toBe('level_test_required')
+    expect(toApiError(httpError(400, { message: 'Refus sans code' }), '/x').code).toBeNull()
+    expect(toApiError(networkError(), '/x').code).toBeNull()
+  })
+
   it('reconnaît un dépassement de délai', () => {
     const aborted = Object.assign(new Error('aborted'), { name: 'AbortError' })
     const error = toApiError(aborted, '/all-data')

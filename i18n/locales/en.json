@@ -1318,8 +1318,14 @@
     "connect": "Join",
     "duration60": "60 min",
     "hourToPlan": "1 hour to schedule",
+    "levelTestChecking": "If you have just finished your test, your result will appear in a moment.",
     "levelTestCta": "Take the test",
-    "levelTestDesc": "You can review or retake the level test at any time.",
+    "levelTestDoneCta": "Review my result",
+    "levelTestDoneDesc": "Level measured by your test. You can now schedule your sessions.",
+    "levelTestDoneTitle": "Your level: {level}",
+    "levelTestError": "The test cannot be opened right now. Please try again in a few minutes.",
+    "levelTestOpening": "Opening",
+    "levelTestPendingDesc": "Take this 15 to 20 minute test to unlock the scheduling of your sessions.",
     "levelTestTitle": "Your level test",
     "nextTitle": "Next class",
     "progressDone": "done",
@@ -1399,6 +1405,13 @@
     "rightsCta": "Access, rectify, delete or object — in a few steps.",
     "rightsTitle": "Exercise my rights",
     "updatedPrefix": "Updated"
+  },
+  "lmsEntry": {
+    "back": "Back to my project",
+    "error": "Your learning space cannot be opened right now. Please try again in a few minutes.",
+    "errorTitle": "Access unavailable",
+    "loading": "Opening your learning space",
+    "seoTitle": "Learning space"
   },
   "logementConfirmation": {
     "accommodationApartment": "Apartment",

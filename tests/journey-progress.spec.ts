@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Order, OrientationEvaluation } from '~/core/contracts'
-import { globalJourneyProgress, orderProgress } from '~/utils/journey-progress'
+import { globalJourneyProgress, orderChecklistProgress, orderProgress } from '~/utils/journey-progress'
 
 /**
  * Progression globale (anneau de l'accueil et de l'aperçu) — règle du
@@ -80,5 +80,35 @@ describe('progression globale', () => {
     expect(globalJourneyProgress([orientation, school], evaluations)).toBe(34)
     // Sans bilan rattaché, la commande d'orientation compte 0.
     expect(orderProgress(orientation, [])).toBe(0)
+  })
+})
+
+/**
+ * Étape « test de niveau » d'une commande de langue (remarque du responsable,
+ * 2026-10-11) : hors LMS, le back-office la coche d'office à l'achat. Elle ne
+ * doit créditer le client que si un test s'applique vraiment à sa commande.
+ */
+describe('test de niveau dans la progression d’une commande de langue', () => {
+  const steps = (levelTest: 'done' | 'pending') => [
+    { id: '1', stepKey: 'registration', position: 1, status: 'done' as const, completedAt: null },
+    { id: '2', stepKey: 'level_test', position: 2, status: levelTest, completedAt: null },
+    { id: '3', stepKey: 'course_in_progress', position: 3, status: 'upcoming' as const, completedAt: null },
+    { id: '4', stepKey: 'midterm_evaluation', position: 4, status: 'upcoming' as const, completedAt: null },
+    { id: '5', stepKey: 'final_certification', position: 5, status: 'upcoming' as const, completedAt: null },
+  ]
+  const course = (checklist: ReturnType<typeof steps>, levelTest: Order['levelTest']) =>
+    ({ id: 'c1', serviceType: 'course', status: 'confirmed', checklist, levelTest }) as unknown as Order
+  const test = (status: 'not_required' | 'pending' | 'completed') =>
+    ({ status, planningLocked: status === 'pending', level: status === 'completed' ? 'B1' : null, commercialLevel: null })
+
+  it('ne compte pas une étape cochée d’office quand aucun test ne s’applique', () => {
+    // Inscription seule sur les 4 étapes restantes : 25 %, pas 2 sur 5.
+    expect(orderChecklistProgress(course(steps('done'), test('not_required')))).toBe(25)
+    expect(orderChecklistProgress(course(steps('done'), null))).toBe(25)
+  })
+
+  it('compte l’étape telle quelle quand un test s’applique', () => {
+    expect(orderChecklistProgress(course(steps('pending'), test('pending')))).toBe(20)
+    expect(orderChecklistProgress(course(steps('done'), test('completed')))).toBe(40)
   })
 })

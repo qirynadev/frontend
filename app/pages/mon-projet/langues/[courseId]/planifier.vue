@@ -21,6 +21,7 @@ import {
   langueCreneauHoursMock,
   langueTeachersMock,
 } from '~/config/projet-langue-mock'
+import { ApiError } from '~/core/http/errors'
 import { planningRepo } from '~/core/repositories'
 import { resolveTeacherAvailability } from '~/utils/teacher-availability'
 
@@ -314,7 +315,13 @@ async function confirmSlot() {
     }
     await router.push(localePath({ path: '/mon-projet/langues', query: { tab: 'planned' } }))
   }
-  catch {
+  catch (error) {
+    // Test de niveau pas encore passé : le serveur refuse la réservation.
+    // La page des cours porte le bouton du test, le client y est ramené.
+    if (error instanceof ApiError && error.code === 'level_test_required') {
+      await router.replace(localePath('/mon-projet/langues'))
+      return
+    }
     bookError.value = true
     booking.value = false
     await refresh()

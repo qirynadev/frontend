@@ -31,6 +31,12 @@ export class ApiError extends Error {
   /** Erreurs de validation Laravel, indexées par champ. */
   readonly fieldErrors: Record<string, string[]>
   readonly path: string
+  /**
+   * Code métier stable, quand le back-office en fournit un à côté du message
+   * (`level_test_required`, `no_language_order`...). `null` sinon : la plupart
+   * des refus n'en portent pas.
+   */
+  readonly code: string | null
 
   constructor(options: {
     kind: ApiErrorKind
@@ -38,6 +44,7 @@ export class ApiError extends Error {
     message: string
     path: string
     fieldErrors?: Record<string, string[]>
+    code?: string | null
   }) {
     super(options.message)
     this.name = 'ApiError'
@@ -45,6 +52,7 @@ export class ApiError extends Error {
     this.status = options.status
     this.path = options.path
     this.fieldErrors = options.fieldErrors ?? {}
+    this.code = options.code ?? null
   }
 
   /** Vrai si réessayer a une chance d'aboutir. */
@@ -114,6 +122,12 @@ function extractFieldErrors(payload: unknown): Record<string, string[]> {
   return result
 }
 
+/** Code métier (`code`) d'une réponse d'erreur, à plat (Laravel) ou sous `data` (BFF). */
+function extractCode(payload: unknown): string | null {
+  const code = unwrapErrorPayload(payload).code
+  return typeof code === 'string' && code !== '' ? code : null
+}
+
 /** Convertit n'importe quelle exception réseau en `ApiError`. */
 export function toApiError(error: unknown, path: string): ApiError {
   if (error instanceof ApiError) return error
@@ -131,5 +145,6 @@ export function toApiError(error: unknown, path: string): ApiError {
     path,
     message: extractMessage(candidate?.data, candidate?.message ?? 'Erreur réseau'),
     fieldErrors: extractFieldErrors(candidate?.data),
+    code: extractCode(candidate?.data),
   })
 }
