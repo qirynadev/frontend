@@ -1472,6 +1472,37 @@ chaque domaine d'études ; le desktop leur préfère les visuels de la maquette
 pour les slugs connus) et le bandeau d'engagements mobile (`TrustStrip`, commun
 à tout le site).
 
+## 33. ✅ Codé (back-office, `staging`) : pages langue et logement administrables
+
+Suite du §32, demandée le même jour : « la même chose dans la mesure du
+possible pour la page d'une langue et pour la page logement ». Même principe,
+réglé par élément (une langue, un pays du logement), avec repli sur l'existant.
+
+- **Socle commun** : `App\Support\PageContent::SCHEMAS` décrit chaque page
+  (textes, listes, blocs, zones d'icônes) ; validation, mise en forme et
+  formulaire en découlent. La bibliothèque d'icônes devient commune
+  (`config/page_icons.php`, 68 pictogrammes, `/page-icons/{picto}/{teinte}.svg` ;
+  l'ancienne adresse `/destination-icons/…` reste servie).
+- **Langue** (`courses`, `course_translations`) : pastille, grand titre,
+  texte, 4 atouts + icônes, photo du bandeau, titre et phrase du panneau de
+  niveau, libellés courts des 3 niveaux, bouton, phrase de confiance, note,
+  titre des formules, titre et 4 étapes du parcours + icônes.
+- **Logement** (`cost_of_livings`, `cost_of_living_translations`) : pastille,
+  grand titre, texte, 3 chiffres + icônes (le premier compte les pays tant
+  qu'il est vide), photo, 4 difficultés + icônes, méthode en 4 étapes +
+  icônes, titre et phrase des formules (`{pays}` remplacé), 3 engagements +
+  icônes, panneau des types (titre, phrase, 3 types + icônes, toujours liés
+  au même `accommodation_type`), encart final + icône.
+- **API** : `page_texts`, `icons` (avec `url`) et `hero_image` sur
+  `CourseResource` et `CostOfLivingResource`. **Front** : `CourseSummary.page`
+  et `LivingDestination.page` (`app/core/contracts/page-content.ts`), lus par
+  `pageText()`, `pageListText()`, `pageIcon()` (`app/utils/page-content.ts`).
+  Pages desktop seulement.
+
+Restent hors périmètre : le contenu des formules (réglé dans chaque formule),
+les quatre avatars et les étoiles de niveau de la page langue, les pages
+mobiles.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

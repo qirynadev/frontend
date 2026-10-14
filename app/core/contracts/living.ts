@@ -1,4 +1,5 @@
 import type { Country } from './common'
+import type { PageContent } from './page-content'
 
 /**
  * Destination logement, telle qu'affichée dans le sélecteur `/logement`.
@@ -20,6 +21,8 @@ export interface LivingDestination {
    * `null` si l'API ne l'expose pas — la carte retombe alors sur le libellé éditorial.
    */
   cityCount: number | null
+  /** Contenu de la page logement du pays réglé dans le back-office (2026-10-14). */
+  page: PageContent
 }
 
 /**

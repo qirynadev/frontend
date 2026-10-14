@@ -7,6 +7,10 @@
  * décoratifs, les trois mêmes formules et prix s'affichaient quel que soit le
  * niveau. Filtrage et objectif par niveau repris de mobile
  * (`visibleTiers`/`goalFor`, `app/pages/offres/[slug].vue`).
+ *
+ * Textes, icônes et photo réglables par langue dans le back-office depuis le
+ * 2026-10-14 (`course.page`, lu par `pageText()`…) ; ce qui n'y est pas saisi
+ * garde les traductions et les visuels de la maquette.
  */
 import type { CourseSummary, LanguageLevelKey, OfferTier } from '~/core/contracts'
 import { offerPageRepo } from '~/core/repositories'
@@ -22,6 +26,8 @@ import {
 } from '~/config/desktop-langues'
 import { isLanguageLevel } from '~/config/language-levels'
 import { orderByMaquette } from '~/config/language-badges'
+import { emphasisSegments } from '~/utils/emphasis'
+import { pageIcon, pageListText, pageText } from '~/utils/page-content'
 
 const props = defineProps<{
   courses: CourseSummary[]
@@ -43,12 +49,12 @@ const selectedSlug = computed(() => {
 
 const selectedCourse = computed(() => ordered.value.find(course => course.slug === selectedSlug.value) ?? ordered.value[0] ?? null)
 
-const levels = desktopLangueDefaultLevels.map(level => ({
+const levels = computed(() => desktopLangueDefaultLevels.map((level, index) => ({
   id: level.id,
-  nameKey: level.nameKey,
-  descKey: level.descKey,
   visual: level.visual,
-}))
+  name: pageListText(page.value, 'levels', index, 'title') ?? t(level.nameKey),
+  desc: pageListText(page.value, 'levels', index, 'text') ?? t(level.descKey),
+})))
 
 /**
  * Niveau choisi — vit dans l'URL (`?niveau=`), comme sur mobile
@@ -67,9 +73,36 @@ const selectedLevel = computed<LanguageLevelKey>({
   },
 })
 
-const selectedLevelMeta = computed(() => levels.find(level => level.id === selectedLevel.value) ?? levels[0]!)
+const selectedLevelMeta = computed(() => levels.value.find(level => level.id === selectedLevel.value) ?? levels.value[0]!)
 
 const languageName = computed(() => selectedCourse.value?.name ?? '')
+
+/** Contenu de la page réglé pour la langue choisie (vide = défauts du site). */
+const page = computed(() => selectedCourse.value?.page ?? null)
+const texte = (key: string) => pageText(page.value, key)
+
+const titre = computed(() => {
+  const saisi = texte('heading')
+  return saisi ? emphasisSegments(saisi) : null
+})
+const titreNiveau = computed(() => {
+  const saisi = texte('level_title')
+  return saisi ? emphasisSegments(saisi) : null
+})
+
+const atouts = computed(() => desktopLangueFeatures.map((feat, index) => ({
+  ...feat,
+  image: pageIcon(page.value, 'features', index),
+  titre: pageListText(page.value, 'features', index, 'title') ?? t(feat.titleKey),
+  texte: pageListText(page.value, 'features', index, 'text') ?? t(feat.descKey),
+})))
+
+const etapes = computed(() => desktopLanguePath.map((step, index) => ({
+  ...step,
+  image: pageIcon(page.value, 'path', index),
+  titre: pageListText(page.value, 'path', index, 'title') ?? t(step.titleKey),
+  texte: pageListText(page.value, 'path', index, 'text') ?? t(step.descKey),
+})))
 
 const { data: offer, apiError, isInitialLoading, refresh } = await usePageData(
   'langues-offer-desktop',
@@ -160,38 +193,45 @@ function scrollToFormulas(event?: Event) {
             <div class="flex w-full flex-col gap-20">
               <span class="inline-flex h-36 w-fit items-center gap-8 rounded-[8px] bg-[#f6f6fe] px-16 py-8 text-[13px] leading-[19.5px] font-medium text-[#1a1d2b]">
                 <img :src="`${ASSET}/badge.svg`" alt="" width="16" height="16" class="block size-16 shrink-0" loading="lazy" decoding="async">
-                {{ $t('desktop.langues.badge') }}
+                {{ texte('badge') ?? $t('desktop.langues.badge') }}
               </span>
-              <h1 class="m-0 text-[46px] leading-[54px] font-semibold tracking-[-1.2px] text-black">
+              <h1 v-if="titre" class="m-0 text-[46px] leading-[54px] font-semibold tracking-[-1.2px] whitespace-pre-line text-black">
+                <span
+                  v-for="(segment, index) in titre"
+                  :key="index"
+                  :class="segment.emphasis ? 'text-[#fd1d36]' : ''"
+                >{{ segment.text }}</span>
+              </h1>
+              <h1 v-else class="m-0 text-[46px] leading-[54px] font-semibold tracking-[-1.2px] text-black">
                 {{ $t('desktop.langues.landingTitle', { leLanguage: leLanguage(languageName, locale) }) }}
                 <span class="block text-[#fd1d36]">{{ $t('desktop.langues.landingAccent') }}</span>
               </h1>
-              <p class="m-0 w-full pr-8 text-[18px] leading-[28px] text-black">
-                {{ $t('desktop.langues.landingDesc', { ofLanguage: deLanguage(languageName, locale) }) }}
+              <p class="m-0 w-full pr-8 text-[18px] leading-[28px] whitespace-pre-line text-black">
+                {{ texte('description') ?? $t('desktop.langues.landingDesc', { ofLanguage: deLanguage(languageName, locale) }) }}
               </p>
             </div>
             <div class="grid w-full grid-cols-4 gap-x-25 pt-32">
               <div
-                v-for="feat in desktopLangueFeatures"
+                v-for="feat in atouts"
                 :key="feat.titleKey"
                 class="flex flex-col items-center"
               >
-                <img :src="`${ASSET}/${feat.icon}`" alt="" width="48" height="48" class="block size-48 shrink-0" loading="lazy" decoding="async">
+                <img :src="feat.image ?? `${ASSET}/${feat.icon}`" alt="" width="48" height="48" class="block size-48 shrink-0" loading="lazy" decoding="async">
                 <p class="m-0 w-full pt-12 text-center text-[10px] leading-[15px] font-bold text-[#1a1d2b]">
-                  {{ $t(feat.titleKey) }}
+                  {{ feat.titre }}
                 </p>
                 <p
                   class="m-0 pt-4 text-center text-[10px] leading-[12.5px] text-[#9ca3af]"
                   :class="feat.icon === 'feat-4.svg' ? 'w-94' : 'w-full'"
                 >
-                  {{ $t(feat.descKey) }}
+                  {{ feat.texte }}
                 </p>
               </div>
             </div>
           </div>
           <div class="relative h-610 w-414 shrink-0 overflow-hidden">
             <img
-              :src="`${ASSET}/hero.png`"
+              :src="page?.heroImage ?? `${ASSET}/hero.png`"
               alt=""
               width="414"
               height="610"
@@ -205,12 +245,19 @@ function scrollToFormulas(event?: Event) {
         <aside class="flex h-[621px] w-437 shrink-0 flex-col gap-20">
           <div class="flex w-full flex-col gap-16 rounded-[10px] border border-[#f4f5f7] bg-white p-25">
             <div>
-              <h2 class="m-0 text-[28px] leading-35 font-semibold text-[#1a1d2b]">
+              <h2 v-if="titreNiveau" class="m-0 text-[28px] leading-35 font-semibold whitespace-pre-line text-[#1a1d2b]">
+                <span
+                  v-for="(segment, index) in titreNiveau"
+                  :key="index"
+                  :class="segment.emphasis ? 'text-[#ed1c24]' : ''"
+                >{{ segment.text }}</span>
+              </h2>
+              <h2 v-else class="m-0 text-[28px] leading-35 font-semibold text-[#1a1d2b]">
                 {{ $t('desktop.langues.levelTitle1') }}
                 <span class="block text-[#ed1c24]">{{ $t('desktop.langues.levelTitle2') }}</span>
               </h2>
               <p class="m-0 w-358 pt-8 text-[14px] leading-21 text-[#090909]">
-                {{ $t('desktop.langues.levelSubtitle') }}
+                {{ texte('level_text') ?? $t('desktop.langues.levelSubtitle') }}
               </p>
             </div>
             <div class="flex w-full flex-col gap-12" role="radiogroup" :aria-label="$t('desktop.langues.levelTitle2')">
@@ -249,8 +296,8 @@ function scrollToFormulas(event?: Event) {
                     </span>
                   </span>
                   <span class="flex flex-col items-start gap-4 pl-14">
-                    <span class="text-[12px] leading-16 font-semibold text-black">{{ t(level.nameKey) }}</span>
-                    <span class="text-[10px] leading-[15px] whitespace-pre-line text-black">{{ t(level.descKey) }}</span>
+                    <span class="text-[12px] leading-16 font-semibold text-black">{{ level.name }}</span>
+                    <span class="text-[10px] leading-[15px] whitespace-pre-line text-black">{{ level.desc }}</span>
                   </span>
                 </span>
                 <span
@@ -268,7 +315,7 @@ function scrollToFormulas(event?: Event) {
               class="flex h-51 w-358 cursor-pointer items-center justify-center gap-8 rounded-[12px] bg-[#ed1c24] py-14 text-center text-[15px] leading-[22.5px] font-bold text-white no-underline shadow-[0_1px_1px_rgba(239,68,68,0.2)]"
               @click="scrollToFormulas"
             >
-              {{ $t('desktop.langues.cta') }}
+              {{ texte('cta_label') ?? $t('desktop.langues.cta') }}
               <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="block size-16 shrink-0" loading="lazy" decoding="async">
             </a>
           </div>
@@ -276,7 +323,7 @@ function scrollToFormulas(event?: Event) {
           <div class="flex w-full flex-col">
             <p class="m-0 flex items-center gap-8 text-[13px] leading-[19.5px] font-medium text-[#3e3e3e]">
               <img :src="`${ASSET}/shield.svg`" alt="" width="16" height="16" class="block size-16 shrink-0" loading="lazy" decoding="async">
-              {{ $t('desktop.langues.trust') }}
+              {{ texte('trust_text') ?? $t('desktop.langues.trust') }}
             </p>
             <div class="flex items-center pt-20">
               <div class="flex items-start gap-2 overflow-clip">
@@ -293,7 +340,7 @@ function scrollToFormulas(event?: Event) {
                 >
               </div>
               <div class="flex items-center pl-16">
-                <span class="text-[12px] leading-16 font-extrabold text-black">{{ $t('desktop.langues.rating') }}</span>
+                <span class="text-[12px] leading-16 font-extrabold text-black">{{ texte('rating') ?? $t('desktop.langues.rating') }}</span>
                 <span class="pl-8 text-[12px] leading-16 text-[#fbbf24]">★★★★★</span>
               </div>
             </div>
@@ -304,7 +351,7 @@ function scrollToFormulas(event?: Event) {
       <section id="formules" class="w-939 pt-40">
         <div class="relative flex items-start">
           <h2 class="m-0 text-[16px] leading-28 font-semibold whitespace-nowrap text-[#1b254b]">
-            {{ $t('desktop.langues.formulasHeading') }}
+            {{ texte('formulas_title') ?? $t('desktop.langues.formulasHeading') }}
           </h2>
           <img
             :src="`${FORMULES}/formula-arrow.png`"
@@ -444,21 +491,22 @@ function scrollToFormulas(event?: Event) {
       <div class="w-full pt-24">
         <div class="flex w-full flex-col rounded-[16px] border border-[#f0f2f6] bg-white px-32 py-24">
           <h2 class="m-0 text-[17px] leading-[27px] font-bold text-[#1a1d2b]">
-            {{ $t('desktop.langues.pathTitle') }}
+            {{ texte('path_title') ?? $t('desktop.langues.pathTitle') }}
           </h2>
           <div class="flex w-full items-center gap-16 pt-24">
-            <template v-for="(step, index) in desktopLanguePath" :key="step.titleKey">
+            <template v-for="(step, index) in etapes" :key="step.titleKey">
               <div class="flex min-w-0 flex-1 items-center gap-16">
-                <span class="flex size-48 shrink-0 items-center justify-center rounded-full" :class="step.bg">
+                <img v-if="step.image" :src="step.image" alt="" width="48" height="48" class="block size-48 shrink-0" loading="lazy" decoding="async">
+                <span v-else class="flex size-48 shrink-0 items-center justify-center rounded-full" :class="step.bg">
                   <img :src="`${ASSET}/${step.icon}`" alt="" width="20" height="20" class="block size-20" loading="lazy" decoding="async">
                 </span>
                 <div class="flex w-[214.5px] min-w-0 flex-col">
-                  <p class="m-0 text-[13px] leading-[19.5px] font-semibold text-[#1a1d2b]">{{ $t(step.titleKey) }}</p>
-                  <p class="m-0 w-207 pt-2 pr-8 text-[11px] leading-[13.75px] text-[#6b7280]">{{ $t(step.descKey) }}</p>
+                  <p class="m-0 text-[13px] leading-[19.5px] font-semibold text-[#1a1d2b]">{{ step.titre }}</p>
+                  <p class="m-0 w-207 pt-2 pr-8 text-[11px] leading-[13.75px] text-[#6b7280]">{{ step.texte }}</p>
                 </div>
               </div>
               <span
-                v-if="index < desktopLanguePath.length - 1"
+                v-if="index < etapes.length - 1"
                 class="relative size-[11.667px] shrink-0"
               >
                 <img

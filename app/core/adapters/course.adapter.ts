@@ -1,6 +1,7 @@
 import type { Course, CourseLevel, CourseObjective, CourseSummary, LanguageLevelKey } from '../contracts'
 import { LANGUAGE_LEVEL_KEYS } from '../contracts/course'
 import { toSeo } from './common.adapter'
+import { toPageContent } from './page-content.adapter'
 import { asRecord, bool, dedupeBySlug, html, list, optionalStr, plainText, str, toUrl } from './primitives'
 
 /**
@@ -69,6 +70,7 @@ export function toCourseSummary(raw: unknown): CourseSummary {
     badge: optionalStr(source, 'badge'),
     levelCount: toLevels(source.levels).length,
     availableLevels: (Array.isArray(source.available_levels) ? source.available_levels : []).filter(isLanguageLevelKey),
+    page: toPageContent(source),
   }
 }
 
