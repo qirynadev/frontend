@@ -1437,6 +1437,41 @@ l'environnement, puis `https://qiryna.com` à la mise en ligne). Sans cela, la
 valeur par défaut `https://qiryna.com` s'applique, et le lien de confirmation
 mène à un site qui n'est pas encore en ligne.
 
+## 32. ✅ Codé (back-office, `staging`) : page destination entièrement administrable
+
+Demande du responsable (2026-10-14) : 100 % des textes de la page destination
+modifiables depuis l'admin, icônes comprises, et des mots du grand titre mis en
+couleur par une syntaxe claire. Arbitrages : champs orphelins rangés sans
+toucher au design, icônes choisies dans une bibliothèque, textes réglés par
+pays avec repli sur le texte actuel, mots en couleur entre astérisques.
+
+- **`school_file_translations.page_texts`** (JSON, traduit) : `heading`,
+  `cta_label`, `domains_title`, `domains_text`, `why_title`, `schools_title`,
+  `banner_title`, `banner_text`, `banner_button`, `trust[3]`. Servi par
+  `SchoolFileResource` à forme fixe, `null` = texte des traductions du site.
+  `heading` : « Étudier en \*France\* » met « France » en couleur
+  (`app/utils/emphasis.ts`, même règle dans l'aperçu du formulaire).
+- **`school_files.icons`** (JSON, non traduit) : `{stats[4], highlights[4],
+  trust[3]}`, chacun `{picto, tint}` ou `null`. L'API ajoute l'`url` du SVG,
+  servi par `GET /destination-icons/{picto}/{tint}.svg` (cache d'un an, URL
+  versionnée par `config/destination_icons.php`). `null` = icône de la
+  maquette. Bibliothèque : 51 pictogrammes Lucide × 8 teintes de la maquette.
+- **Formulaire** Destination → Créer / Modifier réorganisé dans l'ordre de la
+  page (bandeau, panneau des domaines, chiffres clés, « Pourquoi », engagements,
+  écoles, encart final, référencement). « Titre » devient « Accroche » ;
+  « Description » devient le texte pour Google (elle ne s'affiche pas sur la
+  page). `subtitle` et `stats_note` retirés du formulaire, **données conservées**
+  (l'enregistrement ne les écrase plus).
+- **Front** : contrat `Destination.texts` / `.trust`, `icon` sur chaque
+  statistique et atout ; desktop entièrement branché, mobile pour le titre des
+  domaines et les icônes des chiffres. Un catalogue mis en cache par l'ancienne
+  version (sans ces champs) garde simplement les textes par défaut.
+
+Restent hors périmètre : les icônes des domaines (réglées dans la fiche de
+chaque domaine d'études ; le desktop leur préfère les visuels de la maquette
+pour les slugs connus) et le bandeau d'engagements mobile (`TrustStrip`, commun
+à tout le site).
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

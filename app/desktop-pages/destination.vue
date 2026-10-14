@@ -10,13 +10,18 @@
  * Tout vient de l'API : nom, accroche, image, statistiques (avec leurs vraies
  * valeurs — celles codées en dur pour la France étaient périmées : « 3 500+ »
  * contre « 97+ » servi), domaines réels, arguments éditoriaux
- * (`SchoolFile.highlights`), présentation, logos d'écoles. Ne restent locales
- * que les illustrations, absentes de l'API : icônes de statistiques,
- * d'arguments et de domaines (`~/config/desktop-destination`).
+ * (`SchoolFile.highlights`), présentation, logos d'écoles.
+ *
+ * Depuis le 2026-10-14, les textes encore figés (grand titre, boutons, titres
+ * de sections, réassurance, encart final) et les icônes se règlent aussi dans
+ * le back-office (`destination.texts`, `.trust`, `stat.icon`…). Tout champ
+ * laissé vide garde le texte des traductions ou l'icône de la maquette
+ * (`~/config/desktop-destination`) : le rendu par défaut ne change pas.
  *
  * Chaque section disparaît si sa donnée manque : aucune case vide.
  */
-import type { AreaOfStudySummary, Destination } from '~/core/contracts'
+import type { AreaOfStudySummary, Destination, DestinationPageTexts } from '~/core/contracts'
+import { emphasisSegments } from '~/utils/emphasis'
 import {
   DESTINATION_ASSET,
   ICONES_ARGUMENT,
@@ -30,6 +35,28 @@ const props = defineProps<{
 }>()
 
 const localePath = useLocalePath()
+const { t } = useI18n()
+
+/**
+ * Textes administrés de la page ; `null` = texte des traductions. Le repli sur
+ * un objet vide couvre un catalogue mis en cache par une version du site
+ * antérieure à ces champs (cache serveur de quelques minutes après un
+ * déploiement) : la page garde alors simplement ses textes par défaut.
+ */
+const textes = computed<Partial<DestinationPageTexts>>(() => props.destination.texts ?? {})
+
+/**
+ * Grand titre : saisi dans le back-office (mots en couleur entre astérisques),
+ * sinon « Étudier en » + le pays en couleur, comme la maquette.
+ */
+const titre = computed(() =>
+  textes.value.heading
+    ? emphasisSegments(textes.value.heading)
+    : [
+        { text: `${t('desktop.destinationPays.titleBefore')} `, emphasis: false },
+        { text: props.destination.title, emphasis: true },
+      ],
+)
 
 /** Domaine présenté à part, dans le menu « MBA » (écoles par zone). */
 const MBA_SLUG = 'mba'
@@ -66,12 +93,23 @@ const lienEcolesCta = computed(() =>
   domaines.value[0] ? lienDomaine(domaines.value[0].slug) : lienEcoles.value,
 )
 
-/** Bandeau de réassurance (Kader, 2026-10-02) : trois engagements, icônes du sprite. */
-const reassurance = [
+/**
+ * Bandeau de réassurance (Kader, 2026-10-02) : trois engagements, icônes du
+ * sprite. Libellé et icône remplaçables un à un depuis le back-office.
+ */
+const REASSURANCE_DEFAUT = [
   { icon: 'ic-trust-shield', labelKey: 'trust.payment', circled: false },
   { icon: 'ic-trust-laurel', labelKey: 'trust.support', circled: true },
   { icon: 'ic-trust-smile', labelKey: 'trust.satisfaction', circled: false },
 ] as const
+
+const reassurance = computed(() =>
+  REASSURANCE_DEFAUT.map((item, index) => ({
+    ...item,
+    label: props.destination.trust?.[index]?.label ?? t(item.labelKey),
+    image: props.destination.trust?.[index]?.icon ?? null,
+  })),
+)
 
 /**
  * Le back-office accepte quatre paires valeur + libellé sans imposer ni l'une
@@ -82,7 +120,7 @@ const statistiques = computed(() =>
   props.destination.stats
     .filter((stat) => stat.value.trim() !== '' && stat.label.trim() !== '')
     .slice(0, 4)
-    .map((stat, index) => ({ ...stat, icone: ICONES_STAT[index] ?? ICONES_STAT[0] })),
+    .map((stat, index) => ({ ...stat, icone: stat.icon ?? ICONES_STAT[index] ?? ICONES_STAT[0] })),
 )
 
 /**
@@ -94,7 +132,7 @@ const statistiques = computed(() =>
  */
 const argumentsPays = computed(() =>
   props.destination.highlights.slice(0, 4).map((argument, index) => ({
-    icone: ICONES_ARGUMENT[index] ?? ICONES_ARGUMENT[0],
+    icone: argument.icon ?? ICONES_ARGUMENT[index] ?? ICONES_ARGUMENT[0],
     titre: argument.title,
     description: argument.text,
   })),
@@ -131,9 +169,11 @@ const logosEcoles = computed(() =>
         <div class="flex min-w-0 flex-1 max-w-672 flex-col items-start justify-center pr-64">
           <div class="flex w-full max-w-504 flex-col gap-12">
             <h1 class="m-0 text-[49px] leading-[54.6px] font-semibold tracking-[-1.4px]">
-              <span class="text-[#1a1a1a]">{{ $t('desktop.destinationPays.titleBefore') }}</span>
-              {{ ' ' }}
-              <span class="text-[#ff1b40]">{{ destination.title }}</span>
+              <span
+                v-for="(segment, index) in titre"
+                :key="index"
+                :class="segment.emphasis ? 'text-[#ff1b40]' : 'text-[#1a1a1a]'"
+              >{{ segment.text }}</span>
             </h1>
 
             <div class="flex w-full flex-col items-start gap-19">
@@ -144,7 +184,7 @@ const logosEcoles = computed(() =>
                 :to="lienEcolesCta"
                 class="inline-flex items-center gap-12 rounded-[12px] bg-[#ff1b40] px-28 py-16 text-[16px] leading-20 font-semibold tracking-[-0.154px] text-white no-underline"
               >
-                {{ $t('desktop.destinationPays.ctaExplore') }}
+                {{ textes.ctaLabel ?? $t('desktop.destinationPays.ctaExplore') }}
                 <span class="size-20 shrink-0 overflow-clip">
                   <img :src="`${DESTINATION_ASSET}/arrow-right.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
                 </span>
@@ -156,10 +196,10 @@ const logosEcoles = computed(() =>
         <!-- Panneau domaines : titres et liens réels -->
         <aside v-if="domaines.length > 0" class="flex desktop-rail flex-col items-center gap-8 rounded-[9px] border border-[#d1d5db] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <h2 class="m-0 w-full text-center text-[20px] leading-28 font-semibold tracking-[-0.46px] text-[#040c3d]">
-            {{ $t('desktop.destinationPays.domainsTitle') }}
+            {{ textes.domainsTitle ?? $t('desktop.destinationPays.domainsTitle') }}
           </h2>
           <p class="m-0 w-full text-center text-[14px] leading-21 font-medium tracking-[-0.154px] text-black">
-            {{ $t('desktop.destinationPays.domainsDesc') }}
+            {{ textes.domainsText ?? $t('desktop.destinationPays.domainsDesc') }}
           </p>
 
           <div class="mt-8 grid w-full grid-cols-2 gap-8">
@@ -217,7 +257,7 @@ const logosEcoles = computed(() =>
 
         <div class="flex w-full flex-col gap-20">
           <h2 class="m-0 text-[20px] leading-28 font-semibold tracking-[-0.46px] text-[#040c3d]">
-            {{ $t('desktop.destinationPays.whyTitle', { pays: destination.title }) }}
+            {{ textes.whyTitle ?? $t('desktop.destinationPays.whyTitle', { pays: destination.title }) }}
           </h2>
 
           <!-- Quatre arguments rédigés, ou la présentation réelle à défaut -->
@@ -255,14 +295,25 @@ const logosEcoles = computed(() =>
                 aria-hidden="true"
               />
               <div class="flex min-w-0 flex-1 items-center justify-center gap-12">
+                <img
+                  v-if="item.image"
+                  :src="item.image"
+                  alt=""
+                  width="40"
+                  height="40"
+                  class="block size-40 shrink-0"
+                  loading="lazy"
+                  decoding="async"
+                >
                 <span
+                  v-else
                   class="flex size-40 shrink-0 items-center justify-center"
                   :class="item.circled ? 'rounded-full bg-[#def5e3]' : ''"
                 >
                   <QIcon :name="item.icon" :size="item.circled ? 24 : 40" />
                 </span>
                 <p class="m-0 text-[14px] leading-[18px] font-semibold text-[#040c3d]">
-                  {{ $t(item.labelKey) }}
+                  {{ item.label }}
                 </p>
               </div>
             </template>
@@ -273,7 +324,7 @@ const logosEcoles = computed(() =>
       <div class="flex desktop-rail flex-col justify-between gap-25">
         <aside v-if="logosEcoles.length > 0" class="flex flex-1 flex-col gap-32 rounded-[9px] border border-[#d1d5db] bg-white px-16 pt-21 pb-16 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <h2 class="m-0 text-center text-[20px] leading-[25.5px] font-semibold tracking-[-0.442px] text-[#040c3d]">
-            {{ $t('desktop.destinationPays.schoolsTitle', { pays: destination.title }) }}
+            {{ textes.schoolsTitle ?? $t('desktop.destinationPays.schoolsTitle', { pays: destination.title }) }}
           </h2>
           <div class="grid grid-cols-4 gap-12">
             <div
@@ -295,10 +346,10 @@ const logosEcoles = computed(() =>
             </span>
             <div class="flex min-w-0 flex-col gap-4">
               <p class="m-0 text-[14px] leading-18 font-normal tracking-[-0.24px] text-white">
-                {{ $t('desktop.destinationPays.ctaTitle') }}
+                {{ textes.bannerTitle ?? $t('desktop.destinationPays.ctaTitle') }}
               </p>
               <p class="m-0 text-[13px] leading-16 font-normal tracking-[-0.078px] text-[#9ca3af]">
-                {{ $t('desktop.destinationPays.ctaDesc') }}
+                {{ textes.bannerText ?? $t('desktop.destinationPays.ctaDesc') }}
               </p>
             </div>
           </div>
@@ -306,7 +357,7 @@ const logosEcoles = computed(() =>
             :to="lienEcolesCta"
             class="inline-flex shrink-0 items-center gap-8 rounded-[12px] bg-[#ff1b40] px-16 py-10 text-[14px] leading-20 font-semibold tracking-[-0.154px] text-white no-underline"
           >
-            {{ $t('desktop.destinationPays.ctaButton') }}
+            {{ textes.bannerButton ?? $t('desktop.destinationPays.ctaButton') }}
             <span class="size-16 shrink-0 overflow-clip">
               <img :src="`${DESTINATION_ASSET}/cta-pin.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
             </span>

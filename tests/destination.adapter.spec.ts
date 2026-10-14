@@ -61,8 +61,8 @@ describe('réponse nominale', () => {
     const { stats } = toDestination(rawDestination)
 
     expect(stats).toHaveLength(4)
-    expect(stats[0]).toEqual({ value: '295', label: 'Universités et grandes écoles' })
-    expect(stats[1]).toEqual({ value: '550 000', label: 'Étudiants internationaux' })
+    expect(stats[0]).toEqual({ value: '295', label: 'Universités et grandes écoles', icon: null })
+    expect(stats[1]).toEqual({ value: '550 000', label: 'Étudiants internationaux', icon: null })
   })
 
   it('vide une valeur ou un libellé absent plutôt que d’inventer un repli', () => {
@@ -70,8 +70,65 @@ describe('réponse nominale', () => {
 
     // Ligne 3 : value manquante ; ligne 4 : label manquant — voir la page,
     // qui affiche « - » pour toute chaîne vide.
-    expect(stats[2]).toEqual({ value: '', label: 'destination d’études dans le monde' })
-    expect(stats[3]).toEqual({ value: '138', label: '' })
+    expect(stats[2]).toEqual({ value: '', label: 'destination d’études dans le monde', icon: null })
+    expect(stats[3]).toEqual({ value: '138', label: '', icon: null })
+  })
+})
+
+describe('textes et icônes de page administrés (2026-10-14)', () => {
+  const icon = (picto: string) => ({ picto, tint: 'bleu', url: `https://admin.test/destination-icons/${picto}/bleu.svg?v=1` })
+
+  const administree = {
+    ...rawDestination,
+    stats: [{ value: '1', label: 'a' }, { value: '2', label: 'b' }],
+    highlights: [{ title: '', text: '' }, { title: 'Atout', text: 'Texte' }],
+    page_texts: {
+      heading: 'Étudier en *France*',
+      cta_label: null,
+      why_title: 'Pourquoi la France ?',
+      trust: ['Paiement sécurisé', null, '  '],
+    },
+    icons: {
+      stats: [null, icon('globe')],
+      highlights: [null, icon('rocket')],
+      trust: [icon('smile'), null, null],
+    },
+  }
+
+  it('lit les textes saisis et laisse null ce qui est vide', () => {
+    const { texts } = toDestination(administree)
+
+    expect(texts.heading).toBe('Étudier en *France*')
+    expect(texts.whyTitle).toBe('Pourquoi la France ?')
+    expect(texts.ctaLabel).toBeNull()
+    expect(texts.bannerButton).toBeNull()
+  })
+
+  it('associe chaque icône à sa position saisie, même quand un atout vide est écarté', () => {
+    const { stats, highlights } = toDestination(administree)
+
+    expect(stats.map((stat) => stat.icon)).toEqual([null, icon('globe').url])
+    // L'atout 1, vide, disparaît : l'atout 2 garde son icône à lui.
+    expect(highlights).toEqual([{ title: 'Atout', text: 'Texte', icon: icon('rocket').url }])
+  })
+
+  it('donne toujours trois engagements, un libellé blanc valant défaut', () => {
+    expect(toDestination(administree).trust).toEqual([
+      { label: 'Paiement sécurisé', icon: icon('smile').url },
+      { label: null, icon: null },
+      { label: null, icon: null },
+    ])
+  })
+
+  it('sans ces champs (ancienne API), tout reste au défaut du site', () => {
+    const destination = toDestination(rawDestination)
+
+    expect(Object.values(destination.texts).every((value) => value === null)).toBe(true)
+    expect(destination.trust).toEqual([
+      { label: null, icon: null },
+      { label: null, icon: null },
+      { label: null, icon: null },
+    ])
   })
 })
 
