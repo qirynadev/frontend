@@ -23,8 +23,11 @@
  * d'excellence » identique pour tous, en ignorant ce champ. Repli sur le nom
  * du pays si jamais vide (ne devrait pas arriver, le champ est requis côté
  * back-office). `subtitle` existe aussi côté back-office (accroche
- * secondaire par pays) mais n'a pas d'emplacement dans cette maquette —
- * non affiché, à considérer séparément si besoin.
+ * secondaire par pays) mais n'a pas d'emplacement dans cette maquette :
+ * retiré du formulaire le 2026-10-14, données conservées.
+ *
+ * Textes et icônes administrables (2026-10-14) : le titre des domaines et les
+ * icônes des chiffres suivent le back-office quand ils y sont saisis.
  *
  * Domaines réels de la destination (`destinationRepo.areas`), pas le
  * catalogue générique d'offres : deux destinations n'ont pas les mêmes — la
@@ -80,6 +83,8 @@ const stats = computed(() => {
     ...slot,
     value: real[index]?.value || '-',
     label: real[index]?.label || '-',
+    /** Icône choisie dans le back-office (2026-10-14), sinon celle de la maquette. */
+    image: real[index]?.icon ?? null,
   }))
 })
 
@@ -120,7 +125,17 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
             :key="stat.icon"
             class="flex min-w-0 flex-1 flex-col items-center gap-5 [&:not(:first-child)]:px-4 max-2xs:flex-[1_1_40%]"
           >
-            <div :class="['flex size-40 shrink-0 items-center justify-center rounded-full', stat.bg]">
+            <img
+              v-if="stat.image"
+              :src="stat.image"
+              alt=""
+              width="40"
+              height="40"
+              class="block size-40 shrink-0"
+              loading="lazy"
+              decoding="async"
+            >
+            <div v-else :class="['flex size-40 shrink-0 items-center justify-center rounded-full', stat.bg]">
               <QIcon :name="stat.icon" :size="24" />
             </div>
             <p class="m-0 mt-6 text-md leading-[13.125px] font-semibold whitespace-nowrap text-navy text-center">
@@ -136,7 +151,7 @@ useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle
       <!-- Domaines (.dom-section) — masqués tant qu'aucun n'a d'école -->
       <div v-if="areas.length > 0" class="mt-22 flex w-full flex-col gap-22">
         <h2 class="m-0 text-xl leading-16 font-semibold tracking-wider text-text">
-          {{ $t('destination.detail.domainsTitle') }}
+          {{ destination.texts?.domainsTitle ?? $t('destination.detail.domainsTitle') }}
         </h2>
 
         <div class="grid w-full grid-cols-2 gap-16 pb-25">

@@ -31,6 +31,8 @@ export interface DestinationSummary {
 export interface DestinationStat {
   value: string
   label: string
+  /** Icône choisie dans le back-office ; `null` = icône de la maquette. */
+  icon: string | null
 }
 
 /**
@@ -45,6 +47,32 @@ export interface DestinationStat {
 export interface DestinationHighlight {
   title: string
   text: string
+  /** Icône choisie dans le back-office ; `null` = icône de la maquette. */
+  icon: string | null
+}
+
+/**
+ * Textes de la page destination administrables depuis le 2026-10-14
+ * (`SchoolFile.page_texts`, traduits). `null` = le texte par défaut du site
+ * (traductions `desktop.destinationPays`), comme avant.
+ */
+export interface DestinationPageTexts {
+  /** Grand titre ; les passages entre astérisques s'affichent en couleur : « Étudier en *France* ». */
+  heading: string | null
+  ctaLabel: string | null
+  domainsTitle: string | null
+  domainsText: string | null
+  whyTitle: string | null
+  schoolsTitle: string | null
+  bannerTitle: string | null
+  bannerText: string | null
+  bannerButton: string | null
+}
+
+/** Un engagement du bandeau de réassurance ; chaque moitié retombe sur le défaut si `null`. */
+export interface DestinationTrustItem {
+  label: string | null
+  icon: string | null
 }
 
 export interface Destination extends DestinationSummary {
@@ -56,5 +84,8 @@ export interface Destination extends DestinationSummary {
   stats: DestinationStat[]
   /** Jusqu'à 4 arguments éditoriaux ; vide tant qu'aucun n'est saisi. */
   highlights: DestinationHighlight[]
+  texts: DestinationPageTexts
+  /** Toujours trois entrées, dans l'ordre du bandeau. */
+  trust: DestinationTrustItem[]
   seo: SeoMeta
 }
