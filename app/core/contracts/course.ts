@@ -1,4 +1,5 @@
 import type { SeoMeta } from './common'
+import type { PageContent } from './page-content'
 
 /** Niveau proposé pour une langue (Beginner / Intermediate / Advanced). */
 export interface CourseLevel {
@@ -64,6 +65,8 @@ export interface CourseSummary {
    * encore déclinée par niveau, le parcours saute ce choix.
    */
   availableLevels: LanguageLevelKey[]
+  /** Contenu de la page langue réglé dans le back-office (2026-10-14). */
+  page: PageContent
 }
 
 export interface Course extends CourseSummary {

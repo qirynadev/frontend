@@ -1,5 +1,6 @@
 import type { Country, LivingAccommodationType, LivingDestination, LivingPreferences, LivingStats } from '../contracts'
 import { toCountry } from './common.adapter'
+import { toPageContent } from './page-content.adapter'
 import { asRecord, optionalNum, optionalStr, str, toIsoDate, toUrl } from './primitives'
 
 /**
@@ -35,6 +36,7 @@ export function toLivingDestination(raw: unknown): LivingDestination {
     tagline: str(source, 'title'),
     photo: toUrl(source.picture),
     cityCount: toCityCount(source),
+    page: toPageContent(source),
   }
 }
 
