@@ -24,6 +24,10 @@
  * ratio proche — la maquette elle-même réutilise ses pourcentages tels
  * quels entre le cadre 145×45 et le 150×47).
  *
+ * En sombre, `public/img/logo-dark.png` (même 450×141) : wordmark blanc +
+ * icône Q couleur. Le swap est CSS (`data-theme` / `prefers-color-scheme`),
+ * pas JS — pas de flash au premier paint.
+ *
  * Le fichier vectoriel d'origine reste à demander à l'équipe design : il
  * remplacera ce WebP sans toucher au reste du code.
  */
@@ -44,7 +48,15 @@ withDefaults(
       alt="Qiryna"
       width="450"
       height="141"
-      class="absolute block max-w-none"
+      class="q-logo-light absolute max-w-none"
+      style="width: 93.1%; height: 94%; left: 3.41%; top: 4.29%;"
+    >
+    <img
+      src="/img/logo-dark.png"
+      alt="Qiryna"
+      width="450"
+      height="141"
+      class="q-logo-dark absolute max-w-none"
       style="width: 93.1%; height: 94%; left: 3.41%; top: 4.29%;"
     >
   </span>

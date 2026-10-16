@@ -38,7 +38,7 @@
       "titleLine2Before": "and open ",
       "titleAccent": "your world",
       "titleLine2After": ".",
-      "desc": "Access thousands of schools, programmes\nand opportunities around the world.",
+      "desc": "Access thousands of schools, programmes and opportunities around the world.",
       "socialTitle": "Sign up with",
       "emailTitle": "Create an account with email",
       "birthDateLabel": "Date of birth",
@@ -311,11 +311,11 @@
       "levelTitle2": "current level?",
       "levelSubtitle": "Select your level to find the course that fits you.",
       "levelBeginner": "Beginner",
-      "levelBeginnerDesc": "I'm starting out and want to\nlearn the basics.",
+      "levelBeginnerDesc": "I'm starting out and want to learn the basics.",
       "levelIntermediate": "Intermediate",
-      "levelIntermediateDesc": "I understand the basics and\nwant to progress.",
+      "levelIntermediateDesc": "I understand the basics and want to progress.",
       "levelAdvanced": "Advanced",
-      "levelAdvancedDesc": "I'm comfortable and want to\nrefine my skills.",
+      "levelAdvancedDesc": "I'm comfortable and want to refine my skills.",
       "cta": "See our plans",
       "trust": "+1000 students already trust us",
       "rating": "4.9/5",
@@ -1579,6 +1579,10 @@
     "cta": "Start my guidance",
     "fallbackTitle": "School and career guidance",
     "formules": {
+      "free": {
+        "badge": "Discovery plan",
+        "tagline": "To discover"
+      },
       "jordan": {
         "badge": "2 dimensions analysed",
         "tagline": "To get off to a good start"

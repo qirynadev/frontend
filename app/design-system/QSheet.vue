@@ -37,7 +37,7 @@ const sideClass = {
 <template>
   <DialogRoot v-model:open="open">
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-100 bg-navy/40" />
+      <DialogOverlay class="fixed inset-0 z-100 bg-navy-fill/40" />
       <DialogContent
         :class="[
           'fixed z-100 flex flex-col gap-16 overflow-y-auto bg-surface-card p-gutter shadow-drawer',

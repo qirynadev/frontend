@@ -147,7 +147,7 @@ usePageSeo(() => ({
   <div class="flex w-full flex-col gap-16 pb-22">
     <AppTopBar back back-to="/mon-projet/langues" :gap="0" />
 
-    <h1 class="m-0 text-[20px] leading-normal font-semibold tracking-[-0.65px] text-[#191919]">
+    <h1 class="m-0 text-[20px] leading-normal font-semibold tracking-[-0.65px] text-text">
       {{ $t('languagePlanning.teachersAvailableTitle') }}
     </h1>
 
@@ -171,9 +171,9 @@ usePageSeo(() => ({
         <article
           v-for="teacher in pagedTeachers"
           :key="teacher.id"
-          class="box-border flex w-full gap-14 rounded-[10px] border border-[#f3f4f6] bg-surface-card p-15 shadow-[0_2px_6px_rgba(0,0,0,0.03)]"
+          class="box-border flex w-full gap-14 rounded-[10px] border border-border bg-surface-card p-15 shadow-[0_2px_6px_rgba(0,0,0,0.03)]"
         >
-          <div class="h-113 w-75 shrink-0 overflow-hidden rounded-[10px] bg-[#f3f4f6]">
+          <div class="h-113 w-75 shrink-0 overflow-hidden rounded-[10px] bg-surface">
             <img
               v-if="teacher.photo"
               :src="teacher.photo"
@@ -187,7 +187,7 @@ usePageSeo(() => ({
           <div class="flex min-w-0 flex-1 gap-22">
             <div class="min-w-0 w-[125px] shrink-0">
               <div class="flex items-center gap-6">
-                <h2 class="m-0 truncate text-[13px] leading-15 font-semibold text-[#0a142f]">{{ teacher.fullName }}</h2>
+                <h2 class="m-0 truncate text-[13px] leading-15 font-semibold text-text">{{ teacher.fullName }}</h2>
                 <img
                   v-if="teacher.verified"
                   src="/img/icons/mpl-prof/verified.svg"
@@ -199,7 +199,7 @@ usePageSeo(() => ({
               </div>
 
               <div class="flex flex-col pt-6">
-                <p v-if="teacher.countryLabel" class="m-0 flex items-center gap-8 text-[10px] leading-[17.25px] font-medium text-[#374151]">
+                <p v-if="teacher.countryLabel" class="m-0 flex items-center gap-8 text-[10px] leading-[17.25px] font-medium text-muted">
                   <img
                     v-if="teacher.flagSrc"
                     :src="teacher.flagSrc"
@@ -213,16 +213,16 @@ usePageSeo(() => ({
 
                 <p v-if="teacher.rating !== null" class="m-0 flex h-24 items-center gap-8 text-[10px] leading-[17.25px]">
                   <img src="/img/icons/mpl-prof/star.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
-                  <span class="font-bold text-[#0a142f]">{{ formatRating(teacher.rating) }}</span>
-                  <span class="font-normal text-[#6b7280]">({{ $t('languagePlanning.reviewsCount', { count: teacher.reviewsCount }) }})</span>
+                  <span class="font-bold text-text">{{ formatRating(teacher.rating) }}</span>
+                  <span class="font-normal text-muted">({{ $t('languagePlanning.reviewsCount', { count: teacher.reviewsCount }) }})</span>
                 </p>
 
-                <p v-if="teacher.qualification" class="m-0 flex h-24 items-center gap-8 text-[10px] leading-[17.25px] font-normal text-[#374151]">
+                <p v-if="teacher.qualification" class="m-0 flex h-24 items-center gap-8 text-[10px] leading-[17.25px] font-normal text-muted">
                   <img src="/img/icons/mpl-prof/grad.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                   <span class="truncate">{{ teacher.qualification }}</span>
                 </p>
 
-                <p v-if="teacher.experienceYears !== null" class="m-0 flex h-24 items-center gap-8 text-[10px] leading-[17.25px] font-normal text-[#374151]">
+                <p v-if="teacher.experienceYears !== null" class="m-0 flex h-24 items-center gap-8 text-[10px] leading-[17.25px] font-normal text-muted">
                   <img src="/img/icons/mpl-prof/chat.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                   <span>{{ $t('languagePlanning.experienceYears', teacher.experienceYears) }}</span>
                 </p>
@@ -245,10 +245,10 @@ usePageSeo(() => ({
               <div v-else class="h-21" />
 
               <div class="flex flex-col items-center pb-6">
-                <p class="m-0 text-center text-[10px] leading-[12.5px] font-normal text-[#282828]">
+                <p class="m-0 text-center text-[10px] leading-[12.5px] font-normal text-text">
                   {{ $t('languagePlanning.priceFrom') }}
                 </p>
-                <p class="m-0 pt-2 text-center text-[13px] leading-[16.25px] font-bold text-[#0a142f]">
+                <p class="m-0 pt-2 text-center text-[13px] leading-[16.25px] font-bold text-text">
                   {{ teacher.priceFrom }}
                 </p>
               </div>
@@ -256,7 +256,7 @@ usePageSeo(() => ({
               <button
                 type="button"
                 :disabled="assigning !== null"
-                class="inline-flex w-95 cursor-pointer items-center justify-center rounded-[6px] border-0 bg-[#4f46e5] py-6 text-[11px] leading-18 font-semibold text-white disabled:opacity-60"
+                class="inline-flex w-95 cursor-pointer items-center justify-center rounded-[6px] border-0 bg-primary py-6 text-[11px] leading-18 font-semibold text-on-primary disabled:opacity-60"
                 @click="choose(teacher.id)"
               >
                 <QSpinner v-if="assigning === teacher.id" size="sm" />
@@ -275,11 +275,11 @@ usePageSeo(() => ({
         />
 
         <!-- Satisfaction garantie (Figma) -->
-        <aside class="box-border flex w-full items-center gap-12 rounded-[10px] border border-[#e8e8ff] bg-[#f5f4fd] px-14 py-14">
+        <aside class="box-border flex w-full items-center gap-12 rounded-[10px] border border-border bg-surface-2 px-14 py-14">
           <img src="/img/icons/mpl-prof/shield.svg" alt="" width="44" height="44" class="block size-44 shrink-0">
           <div class="min-w-0 flex-1">
-            <p class="m-0 text-[13px] leading-18 font-bold text-[#0a142f]">{{ $t('languagePlanning.guaranteeTitle') }}</p>
-            <p class="m-0 pt-2 text-[11px] leading-16 font-normal text-[#4b5563]">{{ $t('languagePlanning.guaranteeDesc') }}</p>
+            <p class="m-0 text-[13px] leading-18 font-bold text-text">{{ $t('languagePlanning.guaranteeTitle') }}</p>
+            <p class="m-0 pt-2 text-[11px] leading-16 font-normal text-muted">{{ $t('languagePlanning.guaranteeDesc') }}</p>
           </div>
           <img src="/img/icons/mpl-prof/chevron.svg" alt="" width="8" height="13" class="block h-13 w-8 shrink-0 opacity-60">
         </aside>

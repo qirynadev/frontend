@@ -71,20 +71,20 @@ usePageSeo(() => ({
         </template>
 
         <template v-if="admission?.order">
-          <div class="mpa-tabs flex w-full rounded-[14px] border border-[#f8f8fc] bg-[#fdfdfd] p-1 box-border" role="tablist" :aria-label="$t('admission.tabsLabel')">
+          <div class="mpa-tabs flex w-full rounded-[14px] border border-border bg-surface p-1 box-border" role="tablist" :aria-label="$t('admission.tabsLabel')">
             <button
               type="button"
               :class="[
                 'mpa-tab flex-1 flex flex-row items-center justify-center gap-8 border rounded-xl px-12 py-12 text-md font-medium leading-[19.5px] cursor-pointer box-border transition-colors duration-150',
                 activeTab === 'apercu'
-                  ? 'is-active bg-[#f8f7ff] border-[#e2dff5] text-[#2d00fc]'
+                  ? 'is-active bg-mpa-tab-active-bg border-mpa-tab-active-border text-primary-link'
                   : 'border-transparent bg-transparent text-text',
               ]"
               role="tab"
               :aria-selected="activeTab === 'apercu'"
               @click="setTab('apercu')"
             >
-              <img class="mpa-tab-icon block size-16 shrink-0 object-contain" src="/img/icons/ic-mpa-tab-apercu.svg" alt="" width="15" height="14">
+              <img class="mpa-tab-icon q-chrome-ink block size-16 shrink-0 object-contain" src="/img/icons/ic-mpa-tab-apercu.svg" alt="" width="15" height="14">
               <span>{{ $t('admission.tabApercu') }}</span>
             </button>
 
@@ -93,14 +93,14 @@ usePageSeo(() => ({
               :class="[
                 'mpa-tab flex-1 flex flex-row items-center justify-center gap-8 border rounded-xl px-12 py-12 text-md font-medium leading-[19.5px] cursor-pointer box-border transition-colors duration-150',
                 activeTab === 'document'
-                  ? 'is-active bg-[#f8f7ff] border-[#e2dff5] text-[#2d00fc]'
+                  ? 'is-active bg-mpa-tab-active-bg border-mpa-tab-active-border text-primary-link'
                   : 'border-transparent bg-transparent text-text',
               ]"
               role="tab"
               :aria-selected="activeTab === 'document'"
               @click="setTab('document')"
             >
-              <img class="mpa-tab-icon block size-16 shrink-0 object-contain" src="/img/icons/ic-mpa-tab-document.svg" alt="" width="13" height="17">
+              <img class="mpa-tab-icon q-chrome-ink block size-16 shrink-0 object-contain" src="/img/icons/ic-mpa-tab-document.svg" alt="" width="13" height="17">
               <span>{{ $t('admission.tabDocument') }}</span>
             </button>
           </div>
@@ -120,17 +120,17 @@ usePageSeo(() => ({
             />
           </div>
 
-          <section class="mpa-help flex w-full items-center justify-between gap-8 rounded-xl bg-[#f5f3ff] p-9 box-border">
+          <section class="mpa-help flex w-full items-center justify-between gap-8 rounded-xl bg-surface-2 p-9 box-border">
             <div class="mpa-help-main flex min-w-0 flex-1 items-start gap-11">
-              <span class="mpa-help-icon flex size-44 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8e2fd]">
+              <span class="mpa-help-icon flex size-44 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-soft">
                 <img src="/img/icons/ic-mpa-headset.svg" alt="" width="24" height="24" class="block size-24">
               </span>
               <div class="mpa-help-copy">
-                <h3 class="m-0 text-base leading-20 font-bold text-[#191919]">{{ $t('admission.helpTitle') }}</h3>
-                <p class="m-0 mt-4 text-xs leading-16 font-normal text-[#191919]">{{ $t('admission.helpDesc') }}</p>
+                <h3 class="m-0 text-base leading-20 font-bold text-text">{{ $t('admission.helpTitle') }}</h3>
+                <p class="m-0 mt-4 text-xs leading-16 font-normal text-text">{{ $t('admission.helpDesc') }}</p>
               </div>
             </div>
-            <a href="#" class="mpa-help-btn shrink-0 whitespace-nowrap rounded-xl border border-[#450ff2] bg-[#450ffd] px-11 py-9 text-center text-sm leading-16 font-medium text-white no-underline">
+            <a href="#" class="mpa-help-btn shrink-0 whitespace-nowrap rounded-xl border border-primary-link bg-primary-cta px-11 py-9 text-center text-sm leading-16 font-medium text-on-primary no-underline">
               {{ $t('admission.contactAdvisor') }}
             </a>
           </section>

@@ -10,7 +10,7 @@
  * | espacements | `gap: 8px`, `padding: 10px 8px` |
  * | onglet | `gap: 1px`, libellé 10px/20px, `font-weight: 500` |
  * | cadre d'icône | 36×34, icône 24×24 (36×34 pour « Orientation ») |
- * | couleur | `--color-navy`, actif `--color-nav-active` (libellé + icône `-active`) |
+ * | couleur | inactif `--color-text` (blanc en sombre), actif `--color-nav-active` |
  *
  * Orientation : logo Qiryna inchangé à l'actif — seul le libellé se colore.
  *
@@ -37,7 +37,7 @@ withDefaults(
   <nav
     :aria-label="ariaLabel ?? $t('ds.nav.main')"
     :class="[
-      'flex items-center justify-center gap-8 rounded-xl bg-surface-card px-8 py-10 shadow-card',
+      'flex items-center justify-center gap-8 rounded-xl border border-border bg-surface-card px-8 py-10 shadow-card',
       inline
         ? 'w-full'
         : 'fixed bottom-nav-bottom left-1/2 z-50 w-[calc(100%-var(--spacing-nav-inset)*2)] max-w-[calc(var(--container-shell)-var(--spacing-nav-inset)*2)] -translate-x-1/2',
@@ -56,6 +56,7 @@ withDefaults(
           :name="item.id === active && item.iconActive ? item.iconActive : item.icon"
           :size="item.iconWidth"
           :height="item.iconHeight"
+          :class="item.id === active ? '!text-nav-active' : '!text-text'"
         />
       </span>
       <span

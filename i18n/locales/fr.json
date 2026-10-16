@@ -38,7 +38,7 @@
       "titleLine2Before": "et ouvrez ",
       "titleAccent": "votre monde",
       "titleLine2After": ".",
-      "desc": "Accédez à des milliers d'écoles, de programmes\net d'opportunités partout dans le monde.",
+      "desc": "Accédez à des milliers d'écoles, de programmes et d'opportunités partout dans le monde.",
       "socialTitle": "S'inscrire avec",
       "emailTitle": "Créer un compte avec votre e-mail",
       "birthDateLabel": "Date de naissance",
@@ -311,11 +311,11 @@
       "levelTitle2": "niveau actuel ?",
       "levelSubtitle": "Sélectionnez votre niveau pour trouver le cours qui vous correspond.",
       "levelBeginner": "Beginner",
-      "levelBeginnerDesc": "Je débute et je souhaite \nacquérir les bases.",
+      "levelBeginnerDesc": "Je débute et je souhaite acquérir les bases.",
       "levelIntermediate": "Intermediate",
-      "levelIntermediateDesc": "Je comprends les bases et \nje veux progresser.",
+      "levelIntermediateDesc": "Je comprends les bases et je veux progresser.",
       "levelAdvanced": "Advanced",
-      "levelAdvancedDesc": "Je suis à l'aise et je veux \nme perfectionner.",
+      "levelAdvancedDesc": "Je suis à l'aise et je veux me perfectionner.",
       "cta": "Voir nos formules",
       "trust": "+1000 étudiants nous font déjà confiance",
       "rating": "4.9/5",
@@ -1579,6 +1579,10 @@
     "cta": "Commencer mon orientation",
     "fallbackTitle": "Orientation scolaire et professionnelle",
     "formules": {
+      "free": {
+        "badge": "Formule découverte",
+        "tagline": "Pour découvrir"
+      },
       "jordan": {
         "badge": "2 dimensions analysées",
         "tagline": "Pour bien démarrer"

@@ -100,7 +100,7 @@ function toggleShown(id: string) {
         </div>
       </aside>
 
-      <form class="rm-card mt-20 flex w-full flex-col rounded-xl bg-surface-card p-16 shadow-card box-border" @submit.prevent>
+      <form class="rm-card mt-20 flex w-full flex-col rounded-xl border border-border bg-surface-card p-16 shadow-card box-border" @submit.prevent>
         <label
           v-for="(field, index) in fields"
           :key="field.id"

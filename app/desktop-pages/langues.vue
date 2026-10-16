@@ -59,6 +59,13 @@ const { data: offer, apiError, isInitialLoading, refresh } = await usePageData(
 
 const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startCheckout } = useCheckout()
 
+const highlightFormulas = ref(false)
+let highlightTimer: ReturnType<typeof setTimeout> | null = null
+
+onBeforeUnmount(() => {
+  if (highlightTimer) clearTimeout(highlightTimer)
+})
+
 function taglineKey(visualKey: string) {
   if (visualKey === 'aconcagua') return 'desktop.langues.formulaTaglineAconcagua'
   if (visualKey === 'kilimandjaro') return 'desktop.langues.formulaTaglineKilimandjaro'
@@ -103,17 +110,31 @@ const formulaCards = computed(() => {
   })
 })
 
+function flashFormulaCards() {
+  highlightFormulas.value = false
+  requestAnimationFrame(() => {
+    highlightFormulas.value = true
+    if (highlightTimer) clearTimeout(highlightTimer)
+    highlightTimer = setTimeout(() => {
+      highlightFormulas.value = false
+      highlightTimer = null
+    }, 1600)
+  })
+}
+
 function scrollToFormulas(event?: Event) {
   event?.preventDefault()
   if (!import.meta.client) return
-  const target = document.getElementById('formules')
+  const desktop = document.getElementById('q-shell-desktop')
+  const target = (desktop ?? document).querySelector('#formules') as HTMLElement | null
   if (!target) return
-  const nav = document.querySelector('#q-shell-desktop .sticky') as HTMLElement | null
+  const nav = desktop?.querySelector('.sticky') as HTMLElement | null
   const offset = nav?.getBoundingClientRect().height ?? 80
   window.scrollTo({
     top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - offset - 12),
     behavior: 'smooth',
   })
+  flashFormulaCards()
 }
 </script>
 
@@ -121,8 +142,9 @@ function scrollToFormulas(event?: Event) {
   <div class="desktop-boxed bg-[#fefefe]">
     <div class="mx-auto flex w-1400 flex-col items-start py-11 pb-32">
       <div class="flex w-full items-start gap-24">
-        <div class="flex h-610 w-939 shrink-0 items-center gap-20 overflow-clip rounded-[10px] bg-white">
-          <div class="flex h-610 w-505 shrink-0 flex-col pt-52 pb-36">
+        <div class="flex w-939 shrink-0 flex-col">
+          <div class="flex h-427 w-939 shrink-0 items-start gap-20 overflow-clip rounded-[10px] bg-white">
+          <div class="flex h-427 w-505 shrink-0 flex-col pt-52">
             <div class="flex w-full flex-col gap-20">
               <span class="inline-flex h-36 w-fit items-center gap-8 rounded-[8px] bg-[#f6f6fe] px-16 py-8 text-[13px] leading-[19.5px] font-medium text-[#1a1d2b]">
                 <img :src="`${ASSET}/badge.svg`" alt="" width="16" height="16" class="block size-16 shrink-0">
@@ -146,32 +168,159 @@ function scrollToFormulas(event?: Event) {
                 <p class="m-0 w-full pt-12 text-center text-[10px] leading-[15px] font-bold text-[#1a1d2b]">
                   {{ $t(feat.titleKey) }}
                 </p>
-                <p
-                  class="m-0 pt-4 text-center text-[10px] leading-[12.5px] text-[#9ca3af]"
-                  :class="feat.icon === 'feat-4.svg' ? 'w-94' : 'w-full'"
-                >
-                  {{ $t(feat.descKey) }}
-                </p>
               </div>
             </div>
           </div>
-          <div class="relative h-610 w-414 shrink-0 overflow-hidden">
+          <div class="relative h-427 w-414 shrink-0 overflow-hidden">
             <img
               :src="`${ASSET}/hero.png`"
               alt=""
               width="414"
-              height="610"
-              class="block h-610 w-414 object-cover"
+              height="427"
+              class="block h-427 w-414 object-cover object-top"
             >
           </div>
+        </div>
+
+        <section id="formules" class="w-full scroll-mt-92 pt-36">
+          <div class="relative flex items-start">
+            <h2 class="m-0 text-[16px] leading-28 font-semibold whitespace-nowrap text-[#1b254b]">
+              {{ $t('desktop.langues.formulasHeading') }}
+            </h2>
+            <img
+              :src="`${FORMULES}/formula-arrow.png`"
+              alt=""
+              width="86"
+              height="62"
+              class="pointer-events-none absolute top-0 left-[285px] h-62 w-86 object-contain"
+            >
+          </div>
+
+          <QAlert
+            v-if="checkoutErrorKey"
+            class="mt-16"
+            tone="danger"
+            :title="$t('auth.error.title')"
+            :message="$t(checkoutErrorKey)"
+          />
+
+          <div v-if="isInitialLoading" class="flex gap-16 pt-40">
+            <QSkeleton v-for="i in 3" :key="i" variant="rect" :height="405" class="min-w-px flex-1" />
+          </div>
+          <div
+            v-else-if="formulaCards.length > 0"
+            class="flex items-stretch justify-center gap-16 pt-40"
+          >
+            <article
+              v-for="card in formulaCards"
+              :key="card.tier.id"
+              class="relative flex min-w-px flex-1 flex-col justify-between rounded-[10px] border bg-white p-25 transition-[box-shadow] duration-200"
+              :class="[card.visual.border, highlightFormulas && 'q-formula-flash shadow-[0_0_0_3px_#ed1c24]']"
+            >
+              <span
+                v-if="card.visual.popular"
+                class="absolute top-[-1px] right-[-1px] inline-flex items-center rounded-tr-[10px] rounded-bl-[10px] bg-[#e5002b] px-12 py-4"
+              >
+                <img
+                  :src="`${FORMULES}/badge-star.svg`"
+                  alt=""
+                  width="9"
+                  height="8"
+                  class="block h-[8.433px] w-[8.739px] shrink-0"
+                >
+                <span class="pl-4 text-[9px] leading-[13.5px] font-black text-white">
+                  {{ $t('desktop.langues.formulaPopular') }}
+                </span>
+              </span>
+              <div class="flex w-full flex-col gap-16">
+                <div class="flex items-start gap-16">
+                  <img
+                    :src="`${FORMULES}/${card.visual.icon}`"
+                    alt=""
+                    width="48"
+                    height="48"
+                    class="block size-48 shrink-0"
+                  >
+                  <div class="flex min-w-px flex-1 flex-col gap-2">
+                    <h3 class="m-0 text-[16px] leading-24 font-black text-[#1b254b]">{{ card.tier.name }}</h3>
+                    <p class="m-0 whitespace-pre-line text-[10px] leading-[15px] font-medium text-black">{{ card.tagline }}</p>
+                  </div>
+                </div>
+                <ul
+                  class="m-0 flex list-none flex-col gap-10 p-0"
+                  :class="card.visual.listBorder ? 'border-t border-[#f8fafc] pt-17' : 'pt-16'"
+                >
+                  <li
+                    v-for="feature in card.features"
+                    :key="feature"
+                    class="flex items-start"
+                  >
+                    <img
+                      :src="`${FORMULES}/${card.visual.check}`"
+                      alt=""
+                      width="14"
+                      height="14"
+                      class="mt-1 block size-14 shrink-0"
+                    >
+                    <span class="pl-8 text-[12px] leading-16 text-black">{{ feature }}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="flex w-full flex-col gap-16 pt-22">
+                <div class="flex flex-col items-center pt-16">
+                  <p class="m-0 text-center text-[24px] leading-32 font-semibold whitespace-nowrap text-[#1b254b]">
+                    {{ n(card.tier.price.amount, 'currency') }}
+                  </p>
+                </div>
+                <button
+                  v-if="offer"
+                  type="button"
+                  :disabled="checkoutPending === card.tier.id || (checkoutPending !== null && checkoutPending !== card.tier.id)"
+                  class="flex w-full cursor-pointer items-center justify-center rounded-[10px] text-center text-[12px] leading-16 tracking-[0.3px] disabled:cursor-not-allowed disabled:opacity-60"
+                  :class="card.visual.button"
+                  @click="startCheckout(offer, card.tier)"
+                >
+                  <QSpinner v-if="checkoutPending === card.tier.id" size="sm" />
+                  <span v-else>{{ $t('offer.choose') }}</span>
+                </button>
+              </div>
+            </article>
+          </div>
+          <QEmptyState
+            v-else-if="!apiError"
+            class="mt-40"
+            icon="ic-formule-kili"
+            :title="$t('offer.emptyTitle')"
+            :description="$t('offer.emptyDescription')"
+          />
+          <QAlert
+            v-else
+            class="mt-40"
+            tone="danger"
+            :title="$t('state.error.title')"
+            :message="apiError.kind === 'network' || apiError.kind === 'timeout'
+              ? $t('state.error.network')
+              : $t('state.error.server')"
+          >
+            <template #actions>
+              <button
+                type="button"
+                class="cursor-pointer border-0 bg-transparent p-0 text-inherit underline"
+                @click="refresh()"
+              >
+                {{ $t('state.error.retry') }}
+              </button>
+            </template>
+          </QAlert>
+        </section>
         </div>
 
         <aside class="flex h-[621px] w-437 shrink-0 flex-col gap-20">
           <div class="flex w-full flex-col gap-16 rounded-[10px] border border-[#f4f5f7] bg-white p-25">
             <div>
-              <h2 class="m-0 text-[28px] leading-35 font-semibold text-[#1a1d2b]">
+              <h2 class="m-0 whitespace-nowrap text-[22px] leading-28 font-semibold text-[#1a1d2b]">
                 {{ $t('desktop.langues.levelTitle1') }}
-                <span class="block text-[#ed1c24]">{{ $t('desktop.langues.levelTitle2') }}</span>
+                <span class="text-[#ed1c24]"> {{ $t('desktop.langues.levelTitle2') }}</span>
               </h2>
               <p class="m-0 w-358 pt-8 text-[14px] leading-21 text-[#090909]">
                 {{ $t('desktop.langues.levelSubtitle') }}
@@ -212,7 +361,7 @@ function scrollToFormulas(event?: Event) {
                   </span>
                   <span class="flex flex-col items-start gap-4 pl-14">
                     <span class="text-[12px] leading-16 font-semibold text-black">{{ t(level.nameKey) }}</span>
-                    <span class="text-[10px] leading-[15px] whitespace-pre-line text-black">{{ t(level.descKey) }}</span>
+                    <span class="text-[10px] leading-[15px] whitespace-nowrap text-black">{{ t(level.descKey) }}</span>
                   </span>
                 </span>
                 <span
@@ -228,7 +377,7 @@ function scrollToFormulas(event?: Event) {
             <a
               href="#formules"
               class="flex h-51 w-358 cursor-pointer items-center justify-center gap-8 rounded-[12px] bg-[#ed1c24] py-14 text-center text-[15px] leading-[22.5px] font-bold text-white no-underline shadow-[0_1px_1px_rgba(239,68,68,0.2)]"
-              @click="scrollToFormulas"
+              @click.prevent="scrollToFormulas"
             >
               {{ $t('desktop.langues.cta') }}
               <img :src="`${ASSET}/cta-arrow.svg`" alt="" width="16" height="16" class="block size-16 shrink-0">
@@ -261,137 +410,6 @@ function scrollToFormulas(event?: Event) {
         </aside>
       </div>
 
-      <section id="formules" class="w-939 pt-40">
-        <div class="relative flex items-start">
-          <h2 class="m-0 text-[16px] leading-28 font-semibold whitespace-nowrap text-[#1b254b]">
-            {{ $t('desktop.langues.formulasHeading') }}
-          </h2>
-          <img
-            :src="`${FORMULES}/formula-arrow.png`"
-            alt=""
-            width="86"
-            height="62"
-            class="pointer-events-none absolute top-0 left-[285px] h-62 w-86 object-contain"
-          >
-        </div>
-
-        <QAlert
-          v-if="checkoutErrorKey"
-          class="mt-16"
-          tone="danger"
-          :title="$t('auth.error.title')"
-          :message="$t(checkoutErrorKey)"
-        />
-
-        <div v-if="isInitialLoading" class="flex gap-16 pt-40">
-          <QSkeleton v-for="i in 3" :key="i" variant="rect" :height="405" class="min-w-px flex-1" />
-        </div>
-        <div
-          v-else-if="formulaCards.length > 0"
-          class="flex items-stretch justify-center gap-16 pt-40"
-        >
-          <article
-            v-for="card in formulaCards"
-            :key="card.tier.id"
-            class="relative flex min-w-px flex-1 flex-col justify-between rounded-[10px] border bg-white p-25"
-            :class="card.visual.border"
-          >
-            <span
-              v-if="card.visual.popular"
-              class="absolute top-[-1px] right-[-1px] inline-flex items-center rounded-tr-[10px] rounded-bl-[10px] bg-[#e5002b] px-12 py-4"
-            >
-              <img
-                :src="`${FORMULES}/badge-star.svg`"
-                alt=""
-                width="9"
-                height="8"
-                class="block h-[8.433px] w-[8.739px] shrink-0"
-              >
-              <span class="pl-4 text-[9px] leading-[13.5px] font-black text-white">
-                {{ $t('desktop.langues.formulaPopular') }}
-              </span>
-            </span>
-            <div class="flex w-full flex-col gap-16">
-              <div class="flex items-start gap-16">
-                <img
-                  :src="`${FORMULES}/${card.visual.icon}`"
-                  alt=""
-                  width="48"
-                  height="48"
-                  class="block size-48 shrink-0"
-                >
-                <div class="flex min-w-px flex-1 flex-col gap-2">
-                  <h3 class="m-0 text-[16px] leading-24 font-black text-[#1b254b]">{{ card.tier.name }}</h3>
-                  <p class="m-0 whitespace-pre-line text-[10px] leading-[15px] font-medium text-black">{{ card.tagline }}</p>
-                </div>
-              </div>
-              <ul
-                class="m-0 flex list-none flex-col gap-10 p-0"
-                :class="card.visual.listBorder ? 'border-t border-[#f8fafc] pt-17' : 'pt-16'"
-              >
-                <li
-                  v-for="feature in card.features"
-                  :key="feature"
-                  class="flex items-start"
-                >
-                  <img
-                    :src="`${FORMULES}/${card.visual.check}`"
-                    alt=""
-                    width="14"
-                    height="14"
-                    class="mt-1 block size-14 shrink-0"
-                  >
-                  <span class="pl-8 text-[12px] leading-16 text-black">{{ feature }}</span>
-                </li>
-              </ul>
-            </div>
-            <div class="flex w-full flex-col gap-16 pt-22">
-              <div class="flex flex-col items-center pt-16">
-                <p class="m-0 text-center text-[24px] leading-32 font-semibold whitespace-nowrap text-[#1b254b]">
-                  {{ n(card.tier.price.amount, 'currency') }}
-                </p>
-              </div>
-              <button
-                v-if="offer"
-                type="button"
-                :disabled="checkoutPending === card.tier.id || (checkoutPending !== null && checkoutPending !== card.tier.id)"
-                class="flex w-full cursor-pointer items-center justify-center rounded-[10px] text-center text-[12px] leading-16 tracking-[0.3px] disabled:cursor-not-allowed disabled:opacity-60"
-                :class="card.visual.button"
-                @click="startCheckout(offer, card.tier)"
-              >
-                <QSpinner v-if="checkoutPending === card.tier.id" size="sm" />
-                <span v-else>{{ $t('offer.choose') }}</span>
-              </button>
-            </div>
-          </article>
-        </div>
-        <QEmptyState
-          v-else-if="!apiError"
-          class="mt-40"
-          icon="ic-formule-kili"
-          :title="$t('offer.emptyTitle')"
-          :description="$t('offer.emptyDescription')"
-        />
-        <QAlert
-          v-else
-          class="mt-40"
-          tone="danger"
-          :title="$t('state.error.title')"
-          :message="apiError.kind === 'network' || apiError.kind === 'timeout'
-            ? $t('state.error.network')
-            : $t('state.error.server')"
-        >
-          <template #actions>
-            <button
-              type="button"
-              class="cursor-pointer border-0 bg-transparent p-0 text-inherit underline"
-              @click="refresh()"
-            >
-              {{ $t('state.error.retry') }}
-            </button>
-          </template>
-        </QAlert>
-      </section>
 
       <div class="w-full pt-24">
         <div class="flex w-full flex-col rounded-[16px] border border-[#f0f2f6] bg-white px-32 py-24">
@@ -428,3 +446,24 @@ function scrollToFormulas(event?: Event) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.q-formula-flash {
+  animation: q-formula-flash 1.6s ease-out;
+}
+
+@keyframes q-formula-flash {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  18%,
+  38% {
+    box-shadow: 0 0 0 3px #ed1c24;
+  }
+  55%,
+  75% {
+    box-shadow: 0 0 0 3px #ed1c24;
+  }
+}
+</style>

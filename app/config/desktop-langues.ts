@@ -6,10 +6,10 @@ export const DESKTOP_LANGUES_ASSET = '/img/desktop/langues'
 export const DESKTOP_LANGUES_FORMULES_ASSET = `${DESKTOP_LANGUES_ASSET}/formules`
 
 export const desktopLangueFeatures = [
-  { icon: 'feat-1.svg', titleKey: 'desktop.langues.feat1Title', descKey: 'desktop.langues.feat1Desc' },
-  { icon: 'feat-2.svg', titleKey: 'desktop.langues.feat2Title', descKey: 'desktop.langues.feat2Desc' },
-  { icon: 'feat-3.svg', titleKey: 'desktop.langues.feat3Title', descKey: 'desktop.langues.feat3Desc' },
-  { icon: 'feat-4.svg', titleKey: 'desktop.langues.feat4Title', descKey: 'desktop.langues.feat4Desc' },
+  { icon: 'feat-1.svg', titleKey: 'desktop.langues.feat1Title' },
+  { icon: 'feat-2.svg', titleKey: 'desktop.langues.feat2Title' },
+  { icon: 'feat-3.svg', titleKey: 'desktop.langues.feat3Title' },
+  { icon: 'feat-4.svg', titleKey: 'desktop.langues.feat4Title' },
 ] as const
 
 export const desktopLanguePath = [

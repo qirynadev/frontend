@@ -118,7 +118,7 @@ function goBack() {
       <QIcon name="ic-bell" :size="25" />
       <span
         v-if="notifications > 0"
-        class="absolute top-4 left-24 inline-flex h-20 min-w-20 items-center justify-center rounded-full bg-danger px-6 text-base leading-20 font-medium text-white"
+        class="absolute top-4 left-24 inline-flex h-20 min-w-20 items-center justify-center rounded-full bg-danger px-6 text-base leading-20 font-medium text-on-danger"
       >
         {{ notifications }}
       </span>

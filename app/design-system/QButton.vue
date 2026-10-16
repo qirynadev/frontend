@@ -43,12 +43,12 @@ const sizeClass: Record<Size, string> = {
 const iconSize: Record<Size, number> = { sm: 14, md: 16, lg: 20 }
 
 const solid: Record<Tone, string> = {
-  primary: 'bg-primary text-white hover:bg-primary-dark',
-  success: 'bg-success text-white hover:opacity-90',
-  warning: 'bg-warning text-white hover:opacity-90',
-  danger: 'bg-danger text-white hover:opacity-90',
-  info: 'bg-info text-white hover:opacity-90',
-  neutral: 'bg-navy text-white hover:opacity-90',
+  primary: 'bg-primary text-on-primary hover:bg-primary-dark',
+  success: 'bg-success text-on-success hover:opacity-90',
+  warning: 'bg-warning text-on-primary hover:opacity-90',
+  danger: 'bg-danger text-on-danger hover:opacity-90',
+  info: 'bg-info text-on-primary hover:opacity-90',
+  neutral: 'bg-navy-fill text-on-primary hover:opacity-90',
 }
 
 const outline: Record<Tone, string> = {

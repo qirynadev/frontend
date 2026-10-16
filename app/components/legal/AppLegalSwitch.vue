@@ -33,18 +33,18 @@ function toggle() {
     :disabled="disabled || locked"
     class="relative h-24 w-48 shrink-0 rounded-full border-0 p-0"
     :class="[
-      locked ? 'cursor-default bg-[#f3e8ff] opacity-80' : on ? 'cursor-pointer bg-primary' : 'cursor-pointer bg-[#e5e7eb]',
+      locked ? 'cursor-default bg-primary-soft opacity-80' : on ? 'cursor-pointer bg-primary' : 'cursor-pointer bg-border',
       disabled && !locked ? 'cursor-default opacity-60' : '',
     ]"
     @click="toggle"
   >
     <span
-      class="absolute top-2 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+      class="absolute top-2 rounded-full bg-surface-card shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
       :class="locked
         ? 'left-28 size-16'
         : on
           ? 'left-26 size-20 border border-white'
-          : 'left-2 size-20 border border-[#d1d5db]'"
+          : 'left-2 size-20 border border-border'"
     />
   </button>
 </template>

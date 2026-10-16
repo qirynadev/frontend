@@ -41,7 +41,7 @@ const tint: Record<Tone, string> = {
       <QIconCircle :icon="icon" :tone="tone" size="lg" />
       <div class="min-w-0 flex-1">
         <p class="m-0 text-base font-bold text-text">{{ title }}</p>
-        <p v-if="description" class="mt-4 mb-0 text-sm text-text">{{ description }}</p>
+        <p v-if="description" class="mt-4 mb-0 text-sm text-muted">{{ description }}</p>
       </div>
     </div>
 

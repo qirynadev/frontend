@@ -123,22 +123,27 @@ usePageSeo(() => ({
             class="flex w-full items-end gap-11"
             :for="`rp-${field.id}`"
           >
-            <!-- Prénom / nom : tuile CSS + glyphe ; autres : tuile SVG Figma -->
             <span
-              v-if="field.icon === 'person'"
-              class="flex size-46 shrink-0 items-center justify-center rounded-[12px] bg-rp-tile-bg"
+              class="flex size-46 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rp-tile-bg"
               aria-hidden="true"
             >
-              <img :src="`${ICON}/ic-rp-person.svg`" alt="" width="20" height="19" class="block">
+              <img
+                v-if="field.icon === 'person'"
+                :src="`${ICON}/ic-rp-person.svg`"
+                alt=""
+                width="20"
+                height="19"
+                class="q-chrome-ink block"
+              >
+              <img
+                v-else
+                :src="`${ICON}/ic-rp-${field.icon}.svg`"
+                alt=""
+                width="46"
+                height="46"
+                class="q-chrome-ink block size-46"
+              >
             </span>
-            <img
-              v-else
-              :src="`${ICON}/ic-rp-${field.icon}-tile.svg`"
-              alt=""
-              width="46"
-              height="46"
-              class="block size-46 shrink-0"
-            >
 
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">

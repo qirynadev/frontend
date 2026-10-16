@@ -76,14 +76,14 @@ export const toneSoft: Record<Tone, string> = {
   neutral: 'bg-neutral-bg text-neutral',
 }
 
-/** Fond plein de la tonalité, texte blanc. */
+/** Fond plein de la tonalité, texte `--color-on-*` (jamais inversé en sombre). */
 export const toneSolid: Record<Tone, string> = {
-  primary: 'bg-primary text-white',
-  success: 'bg-success text-white',
-  warning: 'bg-warning text-white',
-  danger: 'bg-danger text-white',
-  info: 'bg-info text-white',
-  neutral: 'bg-neutral text-white',
+  primary: 'bg-primary text-on-primary',
+  success: 'bg-success text-on-success',
+  warning: 'bg-warning text-on-primary',
+  danger: 'bg-danger text-on-danger',
+  info: 'bg-info text-on-primary',
+  neutral: 'bg-neutral text-on-primary',
 }
 
 /** Contour + texte de la tonalité, fond transparent. */
