@@ -19,7 +19,7 @@
  * Informations personnelles → `/reglages/informations-personnelles`.
  */
 import { NuxtLink } from '#components'
-import { useSessionStore } from '~/core/stores'
+import { useSessionStore, useThemeStore } from '~/core/stores'
 import DesktopReglagesProfil from '~/desktop-pages/reglages-profil.vue'
 
 // Accessible sans connexion — cet index n'est qu'un sommaire de liens ; seules
@@ -28,6 +28,14 @@ import DesktopReglagesProfil from '~/desktop-pages/reglages-profil.vue'
 const { t } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
+const theme = useThemeStore()
+
+/** Reflète le vrai choix (`useThemeStore`) plutôt qu'un « Clair » figé. */
+const themeValueLabel = computed(() => {
+  if (theme.preference === 'sombre') return t('settingsTheme.darkTitle')
+  if (theme.preference === 'systeme') return t('settingsTheme.systemTitle')
+  return t('settingsTheme.lightTitle')
+})
 
 /** Même geste que `AppSideMenu.vue` : le cookie est effacé côté serveur, l'état local suit toujours. */
 async function onLogout() {
@@ -97,7 +105,7 @@ usePageSeo(() => ({
       </section>
 
       <section v-for="section in sections" :key="section.titleKey" class="rg-section flex flex-col gap-15 w-full">
-        <h2 class="rg-section-title m-0 px-4 text-xl leading-20 font-semibold tracking-[0.7px] text-black">
+        <h2 class="rg-section-title m-0 px-4 text-xl leading-20 font-semibold tracking-[0.7px] text-text">
           {{ $t(section.titleKey) }}
         </h2>
 
@@ -119,18 +127,24 @@ usePageSeo(() => ({
           >
             <span
               :class="[
-                'rg-row-icon mr-16 size-40 shrink-0 overflow-hidden rounded-xl',
-                row.danger ? 'rg-row-icon--danger flex items-center justify-center bg-rg-danger-bg' : '',
+                'rg-row-icon mr-16 flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-[12px]',
+                row.danger ? 'rg-row-icon--danger bg-rg-danger-bg' : 'bg-rp-tile-bg',
               ]"
             >
-              <QIcon :name="row.icon" :size="row.danger ? 20 : 40" />
+              <img
+                :src="row.danger ? `/img/icons/${row.icon}.svg` : `/img/icons/${row.icon}-glyph.svg`"
+                alt=""
+                :width="row.danger ? 20 : 40"
+                :height="row.danger ? 20 : 40"
+                :class="row.danger ? 'q-chrome-ink block size-20' : 'q-chrome-ink block size-40'"
+              >
             </span>
 
             <span class="rg-row-copy flex min-w-0 flex-1 flex-col items-start">
               <span
                 :class="[
                   'rg-row-title text-exact-16 leading-24 font-semibold',
-                  row.indigo ? 'text-rg-row-indigo' : row.danger ? 'text-rg-danger' : 'text-black',
+                  row.indigo ? 'text-rg-row-indigo' : row.danger ? 'text-rg-danger' : 'text-text',
                 ]"
               >{{ $t(row.titleKey) }}</span>
               <span
@@ -140,12 +154,12 @@ usePageSeo(() => ({
             </span>
 
             <span v-if="row.valueKey" class="rg-row-value mr-8 shrink-0 text-xl leading-20 font-normal text-rg-row-value">
-              {{ $t(row.valueKey) }}
+              {{ row.theme ? themeValueLabel : $t(row.valueKey) }}
             </span>
 
             <img
               v-if="!row.danger"
-              class="rg-row-chevron block size-20 shrink-0 object-contain"
+              class="rg-row-chevron q-chrome-ink block size-20 shrink-0 object-contain"
               src="/img/icons/ic-rg-chevron.svg"
               alt=""
               width="20"

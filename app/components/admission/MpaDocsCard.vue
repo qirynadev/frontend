@@ -21,16 +21,16 @@ const { uploading, uploadError, onPick, missingRequired, finalizing, finalizeErr
 </script>
 
 <template>
-  <section class="mpa-docs-card mt-10 w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-white p-17 px-1 box-border" :aria-label="$t('admission.docsTitle')">
-    <h2 class="mpa-docs-title m-0 px-15 text-sm leading-[25.5px] font-bold text-[#0b0b0b]">{{ $t('admission.docsTitle') }}</h2>
+  <section class="mpa-docs-card mt-10 w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-surface-card p-17 px-1 box-border" :aria-label="$t('admission.docsTitle')">
+    <h2 class="mpa-docs-title m-0 px-15 text-sm leading-[25.5px] font-bold text-text">{{ $t('admission.docsTitle') }}</h2>
 
-    <div class="mpa-docs-banner mx-15 mt-16 flex min-h-86 items-start gap-11 rounded-xl bg-[#f5f3ff] p-9 box-border">
+    <div class="mpa-docs-banner mx-15 mt-16 flex min-h-86 items-start gap-11 rounded-xl bg-surface-2 p-9 box-border">
       <span class="mpa-docs-banner-icon size-44 shrink-0 overflow-hidden">
         <img src="/img/icons/ic-mpa-doc-info.svg" alt="" width="44" height="44" class="block size-full">
       </span>
       <div class="mpa-docs-banner-copy">
-        <h3 class="m-0 text-base leading-20 font-bold text-[#191919]">{{ $t('admission.docsBannerTitle') }}</h3>
-        <p class="m-0 mt-4 text-xs leading-16 font-normal text-[#191919]">{{ $t('admission.docsBannerDesc') }}</p>
+        <h3 class="m-0 text-base leading-20 font-bold text-text">{{ $t('admission.docsBannerTitle') }}</h3>
+        <p class="m-0 mt-4 text-xs leading-16 font-normal text-text">{{ $t('admission.docsBannerDesc') }}</p>
       </div>
     </div>
 
@@ -38,18 +38,18 @@ const { uploading, uploadError, onPick, missingRequired, finalizing, finalizeErr
       <li
         v-for="doc in documents"
         :key="doc.id"
-        class="mpa-doc-row flex items-center justify-between gap-12 rounded-xl border border-[#f3f4fb] bg-white p-15 box-border [&+:not(:first-child)]:mt-10"
+        class="mpa-doc-row flex items-center justify-between gap-12 rounded-xl border border-border bg-surface-card p-15 box-border [&+:not(:first-child)]:mt-10"
       >
         <div class="mpa-doc-main min-w-0 flex-1 flex items-center gap-12">
           <span class="mpa-doc-icon size-40 shrink-0 overflow-hidden rounded-2xl">
             <img :src="doc.icon" alt="" width="40" height="40" class="block size-full">
           </span>
           <div class="mpa-doc-copy min-w-0">
-            <h4 class="m-0 text-sm leading-[17.5px] font-medium text-[#0d153e]">
+            <h4 class="m-0 text-sm leading-[17.5px] font-medium text-navy">
               {{ $t(doc.titleKey) }}
               <span v-if="doc.required" class="mpa-doc-required text-mpa-required">*</span>
             </h4>
-            <p class="m-0 mt-2 text-base leading-15 font-medium text-[#94a3b8]">
+            <p class="m-0 mt-2 text-base leading-15 font-medium text-muted-2">
               <template v-if="uploadError[doc.formField]">
                 <span class="text-danger">{{ $t('admission.docUploadError') }}</span>
               </template>
@@ -89,7 +89,7 @@ const { uploading, uploadError, onPick, missingRequired, finalizing, finalizeErr
               </a>
             </template>
             <template v-else>
-              <span class="mpa-doc-badge inline-flex items-center gap-6 rounded-lg bg-[#f1f1f4] px-10 py-4 text-sm leading-[16.5px] font-medium text-[#94a3b8] whitespace-nowrap">
+              <span class="mpa-doc-badge inline-flex items-center gap-6 rounded-lg bg-surface px-10 py-4 text-sm leading-[16.5px] font-medium text-muted-2 whitespace-nowrap">
                 {{ $t('admission.statusUpload') }}
               </span>
             </template>
@@ -134,7 +134,7 @@ const { uploading, uploadError, onPick, missingRequired, finalizing, finalizeErr
         </p>
       </template>
       <template v-else>
-        <p class="m-0 text-xs leading-14 font-normal text-[#94a3b8]">{{ $t('admission.docsSubmitHint') }}</p>
+        <p class="m-0 text-xs leading-14 font-normal text-muted-2">{{ $t('admission.docsSubmitHint') }}</p>
         <QAlert v-if="finalizeError" tone="danger" :message="$t('admission.docsSubmitError')" />
         <button
           type="button"

@@ -17,7 +17,7 @@ import type { ApiError } from '~/core/http/errors'
  */
 const props = withDefaults(
   defineProps<{
-    loading: boolean
+    loading?: boolean
     error?: ApiError | null
     empty?: boolean
     /** Titre de l'état vide. Le slot `empty` l'emporte s'il est fourni. */
@@ -26,7 +26,7 @@ const props = withDefaults(
     /** Relance le chargement. Sans elle, l'état d'erreur n'offre pas de bouton. */
     onRetry?: () => void
   }>(),
-  { error: null, empty: false, emptyTitle: undefined, emptyDescription: undefined, onRetry: undefined },
+  { loading: false, error: null, empty: false, emptyTitle: undefined, emptyDescription: undefined, onRetry: undefined },
 )
 
 const { t } = useI18n()

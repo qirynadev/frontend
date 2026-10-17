@@ -34,8 +34,8 @@ const glyphSize: Record<Size, number> = { sm: 16, md: 20, lg: 25 }
 
 const variantClass: Record<Variant, string> = {
   plain: 'bg-transparent text-navy hover:bg-surface',
-  surface: 'bg-white text-navy shadow-card hover:bg-surface',
-  outline: 'border border-border bg-white text-navy hover:bg-surface',
+  surface: 'bg-surface-card text-navy shadow-card hover:bg-surface',
+  outline: 'border border-border bg-surface-card text-navy hover:bg-surface',
 }
 
 const badgeText = computed(() =>
@@ -62,7 +62,7 @@ const component = computed(() => (props.to ? resolveComponent('NuxtLink') : 'but
     <QIcon :name="icon" :size="glyphSize[size]" />
     <span
       v-if="badge > 0"
-      class="absolute top-0 right-0 inline-flex h-20 min-w-20 items-center justify-center rounded-full bg-danger px-6 text-base leading-none font-medium text-white"
+      class="absolute top-0 right-0 inline-flex h-20 min-w-20 items-center justify-center rounded-full bg-danger px-6 text-base leading-none font-medium text-on-danger"
     >
       {{ badgeText }}
     </span>

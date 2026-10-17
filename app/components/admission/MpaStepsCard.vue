@@ -66,15 +66,15 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="mpa-steps-card w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-white p-17 px-1 box-border">
+  <section class="mpa-steps-card w-full rounded-xl border border-[rgba(226,232,240,0.8)] bg-surface-card p-17 px-1 box-border">
     <div class="mpa-steps-head flex items-center justify-between gap-12 px-19 pb-16">
-      <h2 class="m-0 text-xl leading-[25.5px] font-bold text-[#0b0b0b]">{{ $t('admission.stepsTitle') }}</h2>
+      <h2 class="m-0 text-xl leading-[25.5px] font-bold text-text">{{ $t('admission.stepsTitle') }}</h2>
     </div>
 
     <div ref="stepsContainerRef" class="mpa-steps relative flex flex-col gap-16 px-16">
       <div class="mpa-steps-lines pointer-events-none absolute top-0 bottom-0 left-28 w-1" aria-hidden="true">
         <span ref="purpleLineRef" class="mpa-steps-line mpa-steps-line--purple absolute left-0 w-1 bg-[#cfc0fa]" />
-        <span ref="greyLineRef" class="mpa-steps-line mpa-steps-line--grey absolute left-0 w-1 bg-[#e2e8f0]" />
+        <span ref="greyLineRef" class="mpa-steps-line mpa-steps-line--grey absolute left-0 w-1 bg-border" />
       </div>
 
       <article
@@ -82,16 +82,16 @@ onUnmounted(() => {
         :key="step.id"
         :class="[
           'mpa-step relative z-1 flex items-start gap-12 px-4',
-          step.status === 'current' ? 'mpa-step--current -mx-5 rounded-xl bg-[#f7f5ff] px-7 py-12' : '',
+          step.status === 'current' ? 'mpa-step--current -mx-5 rounded-xl bg-surface-2 px-7 py-12' : '',
           index === steps.length - 1 ? 'mpa-step--last' : '',
         ]"
       >
         <span
           :class="[
             'mpa-step-marker mt-2 flex size-24 shrink-0 items-center justify-center rounded-full box-border',
-            step.status === 'done' ? 'mpa-step-marker--done bg-[#4f18f6]' : '',
-            step.status === 'current' ? 'mpa-step-marker--current bg-[#4f18f6] text-sm leading-[16.5px] font-medium text-white' : '',
-            step.status === 'upcoming' ? 'mpa-step-marker--upcoming border border-[#e2e8f0] bg-white text-sm leading-[16.5px] font-medium text-black' : '',
+            step.status === 'done' ? 'mpa-step-marker--done bg-primary' : '',
+            step.status === 'current' ? 'mpa-step-marker--current bg-primary text-sm leading-[16.5px] font-medium text-on-primary' : '',
+            step.status === 'upcoming' ? 'mpa-step-marker--upcoming border border-border bg-surface-card text-sm leading-[16.5px] font-medium text-text' : '',
           ]"
         >
           <img v-if="step.status === 'done'" src="/img/icons/ic-mpa-step-check.svg" alt="" width="10" height="10" class="block size-10">
@@ -99,10 +99,10 @@ onUnmounted(() => {
         </span>
 
         <div class="mpa-step-main min-w-0 flex-1">
-          <h3 :class="['m-0 text-base font-medium text-[#0d153e]', step.status === 'current' ? 'leading-[18.125px]' : 'leading-[17.5px]']">
+          <h3 :class="['m-0 text-base font-medium text-navy', step.status === 'current' ? 'leading-[18.125px]' : 'leading-[17.5px]']">
             {{ $t(step.titleKey) }}
           </h3>
-          <p :class="['m-0 mt-2 text-xs leading-15 font-normal', index === steps.length - 1 ? 'text-[#94a3b8]' : 'text-[#64748b]']">
+          <p :class="['m-0 mt-2 text-xs leading-15 font-normal', index === steps.length - 1 ? 'text-muted-2' : 'text-muted']">
             {{ $t(step.descKey) }}
           </p>
         </div>
@@ -113,7 +113,7 @@ onUnmounted(() => {
               'mpa-step-badge rounded-md text-exact-10-5 leading-[15.75px] font-medium whitespace-nowrap',
               step.status === 'done' ? 'mpa-step-badge--done bg-[#e2f4e5] px-13 py-1 text-[#079b12]' : '',
               step.status === 'current' ? 'mpa-step-badge--current bg-[#f3efff] px-14 py-1 text-[#4f18f6]' : '',
-              step.status === 'upcoming' ? 'mpa-step-badge--soon bg-[#f1f5f9] px-12 py-1 text-[#64748b]' : '',
+              step.status === 'upcoming' ? 'mpa-step-badge--soon bg-surface px-12 py-1 text-muted' : '',
             ]"
           >
             <template v-if="step.status === 'done'">{{ $t('admission.statusDone') }}</template>

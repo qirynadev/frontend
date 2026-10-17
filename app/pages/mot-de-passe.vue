@@ -244,8 +244,8 @@ usePageSeo(() => ({
     </div>
 
     <!-- Formulaire -->
-    <div class="pt-2 pb-20">
-      <div class="rounded-xl bg-white px-20 py-25 shadow-card">
+    <div class="pt-15 pb-20">
+      <div class="rounded-xl border border-border bg-surface-card px-20 py-25 shadow-card">
         <QAlert
           v-if="formError"
           tone="danger"

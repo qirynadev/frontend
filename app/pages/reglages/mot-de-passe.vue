@@ -127,14 +127,14 @@ function toggleShown(id: string) {
         </p>
       </section>
 
-      <form class="rm-card mt-10 flex w-full flex-col rounded-xl bg-white p-16 shadow-card box-border" @submit.prevent="save">
+      <form class="rm-card mt-10 flex w-full flex-col rounded-xl border border-border bg-surface-card p-16 shadow-card box-border" @submit.prevent="save">
         <label
           v-for="(field, index) in fields"
           :key="field.id"
           :class="['rm-field flex w-full flex-col', index > 0 ? 'mt-20' : '']"
         >
           <span class="rm-label text-xl leading-21 font-medium text-navy-2">{{ $t(field.labelKey) }}</span>
-          <span class="rm-input relative mt-6 flex w-full items-center rounded-xl border border-border-slate bg-white p-7 box-border">
+          <span class="rm-input relative mt-6 flex w-full items-center rounded-xl border border-border-slate bg-surface-card p-7 box-border">
             <span class="rm-input-icon mr-10 size-36 shrink-0 overflow-hidden">
               <QIcon name="ic-rm-lock" :size="36" />
             </span>
@@ -177,7 +177,7 @@ function toggleShown(id: string) {
               <span
                 :class="[
                   'rm-rule-dot mt-[1.5px] size-14 shrink-0 rounded-full border box-border',
-                  rule.ok ? 'border-success bg-success' : 'border-rm-rule-dot-border bg-white',
+                  rule.ok ? 'border-success bg-success' : 'border-rm-rule-dot-border bg-surface-card',
                 ]"
               />
               {{ $t(rule.labelKey) }}
@@ -187,7 +187,7 @@ function toggleShown(id: string) {
 
         <label class="rm-field mt-20 flex w-full flex-col">
           <span class="rm-label text-xl leading-21 font-medium text-navy-2">{{ $t('settingsPassword.confirmLabel') }}</span>
-          <span class="rm-input relative mt-6 flex w-full items-center rounded-xl border border-border-slate bg-white p-7 box-border">
+          <span class="rm-input relative mt-6 flex w-full items-center rounded-xl border border-border-slate bg-surface-card p-7 box-border">
             <span class="rm-input-icon mr-10 size-36 shrink-0 overflow-hidden">
               <QIcon name="ic-rm-lock" :size="36" />
             </span>

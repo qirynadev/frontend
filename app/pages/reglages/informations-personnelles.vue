@@ -77,7 +77,7 @@ usePageSeo(() => ({
 
 
       <!-- Informations -->
-      <section class="rp-card box-border flex w-full flex-col gap-20 rounded-[16px] border border-rp-card-border bg-white p-20 shadow-rp-card">
+      <section class="rp-card box-border flex w-full flex-col gap-20 rounded-[16px] border border-rp-card-border bg-surface-card p-20 shadow-rp-card">
         <h2 class="m-0 text-exact-16 leading-24 font-semibold text-text">
           {{ $t('settingsPersonal.infoTitle') }}
         </h2>
@@ -85,12 +85,12 @@ usePageSeo(() => ({
         <div class="flex w-full flex-col gap-16">
           <!-- Prénom -->
           <label class="flex w-full items-end gap-11" for="rp-firstName">
-            <span class="flex size-46 shrink-0 items-center justify-center rounded-[12px] bg-rp-tile-bg" aria-hidden="true">
-              <img :src="`${ICON}/ic-rp-person.svg`" alt="" width="20" height="19" class="block">
+            <span class="flex size-46 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rp-tile-bg" aria-hidden="true">
+              <img :src="`${ICON}/ic-rp-person.svg`" alt="" width="20" height="19" class="q-chrome-ink block">
             </span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.firstName') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card px-12">
                 <input
                   id="rp-firstName"
                   v-model="firstName"
@@ -104,12 +104,12 @@ usePageSeo(() => ({
 
           <!-- Nom -->
           <label class="flex w-full items-end gap-11" for="rp-lastName">
-            <span class="flex size-46 shrink-0 items-center justify-center rounded-[12px] bg-rp-tile-bg" aria-hidden="true">
-              <img :src="`${ICON}/ic-rp-person.svg`" alt="" width="20" height="19" class="block">
+            <span class="flex size-46 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rp-tile-bg" aria-hidden="true">
+              <img :src="`${ICON}/ic-rp-person.svg`" alt="" width="20" height="19" class="q-chrome-ink block">
             </span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.lastName') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card px-12">
                 <input
                   id="rp-lastName"
                   v-model="lastName"
@@ -123,7 +123,7 @@ usePageSeo(() => ({
 
           <!-- E-mail : lecture seule, l'API ne prend pas en charge son changement ici -->
           <label class="flex w-full items-end gap-11" for="rp-email">
-            <img :src="`${ICON}/ic-rp-email-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex size-46 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rp-tile-bg" aria-hidden="true"><img :src="`${ICON}/ic-rp-email.svg`" alt="" width="46" height="46" class="q-chrome-ink block size-46"></span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.email') }}</span>
               <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-2 px-12">
@@ -141,7 +141,7 @@ usePageSeo(() => ({
 
           <!-- Date de naissance -->
           <label class="flex w-full items-end gap-11" for="rp-birthDate">
-            <img :src="`${ICON}/ic-rp-calendar-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex size-46 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rp-tile-bg" aria-hidden="true"><img :src="`${ICON}/ic-rp-calendar.svg`" alt="" width="46" height="46" class="q-chrome-ink block size-46"></span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.birthDate') }}</span>
               <span class="mt-4 box-border flex h-46 w-full items-center overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
@@ -157,7 +157,7 @@ usePageSeo(() => ({
 
           <!-- Pays : identifiant réel (lc_country_id), choisi par recherche -->
           <label class="flex w-full items-end gap-11" for="rp-country">
-            <img :src="`${ICON}/ic-rp-pin-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex size-46 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rp-tile-bg" aria-hidden="true"><img :src="`${ICON}/ic-rp-pin.svg`" alt="" width="46" height="46" class="q-chrome-ink block size-46"></span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.country') }}</span>
               <button
@@ -178,10 +178,10 @@ usePageSeo(() => ({
 
           <!-- Téléphone -->
           <label class="flex w-full items-end gap-11" for="rp-phone">
-            <img :src="`${ICON}/ic-rp-phone-tile.svg`" alt="" width="46" height="46" class="block size-46 shrink-0">
+            <span class="flex size-46 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rp-tile-bg" aria-hidden="true"><img :src="`${ICON}/ic-rp-phone.svg`" alt="" width="46" height="46" class="q-chrome-ink block size-46"></span>
             <span class="flex min-w-0 flex-1 flex-col items-start">
               <span class="text-md leading-[16.5px] font-medium text-rp-label">{{ $t('settingsPersonal.phone') }}</span>
-              <span class="mt-4 box-border flex h-46 w-full items-center gap-8 overflow-hidden rounded-[12px] border border-rp-card-border bg-white px-12">
+              <span class="mt-4 box-border flex h-46 w-full items-center gap-8 overflow-hidden rounded-[12px] border border-rp-card-border bg-surface-card px-12">
                 <button
                   type="button"
                   aria-haspopup="dialog"
@@ -239,7 +239,7 @@ usePageSeo(() => ({
       <!-- Supprimer mon compte -->
       <button
         type="button"
-        class="rp-card box-border flex w-full cursor-pointer items-center rounded-[16px] border border-rp-card-border bg-white p-20 text-left shadow-rp-card"
+        class="rp-card box-border flex w-full cursor-pointer items-center rounded-[16px] border border-rp-card-border bg-surface-card p-20 text-left shadow-rp-card"
       >
         <span class="mr-16 flex size-48 shrink-0 items-center justify-center rounded-[12px] bg-rp-delete-bg" aria-hidden="true">
           <img :src="`${ICON}/ic-rp-trash.svg`" alt="" width="24" height="24" class="block size-24">
@@ -248,7 +248,7 @@ usePageSeo(() => ({
           <span class="block text-lg leading-20 font-semibold text-rp-input">
             {{ $t('settingsPersonal.deleteTitle') }}
           </span>
-          <span class="mt-2 block text-md leading-[13.75px] font-normal text-black">
+          <span class="mt-2 block text-md leading-[13.75px] font-normal text-text">
             {{ $t('settingsPersonal.deleteDesc') }}
           </span>
         </span>

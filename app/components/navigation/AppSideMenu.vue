@@ -66,7 +66,7 @@ const photoUrl = computed(() =>
       />
 
       <DialogContent
-        class="absolute inset-y-0 left-0 z-100 flex max-h-dvh w-[min(331px,82.34%)] flex-col items-center gap-0 overflow-hidden rounded-r-panel bg-white shadow-drawer will-change-transform transition-transform duration-300 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0"
+        class="absolute inset-y-0 left-0 z-100 flex max-h-dvh w-[min(331px,82.34%)] flex-col items-center gap-0 overflow-hidden rounded-r-panel bg-surface-card shadow-drawer will-change-transform transition-transform duration-300 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0"
         @click="($event.target as HTMLElement).closest('a') && close()"
       >
         <!-- En-tête : logo + fermeture -->
@@ -114,7 +114,7 @@ const photoUrl = computed(() =>
             <template v-if="session.isAuthenticated">
               <NuxtLink
                 :to="localePath('/reglages')"
-                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-white no-underline"
+                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-on-primary no-underline"
               >
                 {{ $t('menu.account') }}
               </NuxtLink>
@@ -123,13 +123,13 @@ const photoUrl = computed(() =>
             <template v-else>
               <NuxtLink
                 :to="localePath('/connexion')"
-                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-white no-underline"
+                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-on-primary no-underline"
               >
                 {{ $t('menu.signIn') }}
               </NuxtLink>
               <NuxtLink
                 :to="localePath('/inscription')"
-                class="flex w-full items-center justify-center rounded-xl border border-menu-btn-outline bg-white py-15 text-center text-xl leading-20 font-semibold text-menu-btn-outline no-underline"
+                class="flex w-full items-center justify-center rounded-xl border border-menu-btn-outline bg-surface-card py-15 text-center text-xl leading-20 font-semibold text-menu-btn-outline no-underline"
               >
                 {{ $t('menu.signUp') }}
               </NuxtLink>

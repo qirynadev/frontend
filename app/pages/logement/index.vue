@@ -84,7 +84,7 @@ usePageSeo(() => ({
           v-for="destination in destinations"
           :key="destination.slug"
           :to="localePath(`/logement/${destination.slug}/decouverte`)"
-          class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-transparent bg-white px-7 pt-7 pb-10 text-left text-text no-underline shadow-card box-border"
+          class="relative flex min-h-217 max-xs:min-h-0 w-full flex-col items-start gap-22 rounded-xl border border-border bg-surface-card px-7 pt-7 pb-10 text-left text-text no-underline shadow-card box-border"
         >
           <div class="relative h-112 w-full shrink-0">
             <NuxtImg
@@ -130,13 +130,13 @@ usePageSeo(() => ({
 
       <!-- Encart d'accompagnement -->
       <div class="w-full py-22">
-        <div class="flex w-full items-start gap-16 rounded-xl bg-surface-2 px-9 py-20">
+        <div class="flex w-full items-start gap-16 rounded-xl border border-border-soft bg-surface-2 px-9 py-20">
           <QIcon name="ic-log-help" :size="44" />
           <div>
             <p class="m-0 text-base leading-20 font-bold text-text">
               {{ $t('housing.helpTitle') }}
             </p>
-            <p class="m-0 pt-4 text-sm leading-16 text-text">
+            <p class="m-0 pt-4 text-sm leading-16 text-muted">
               {{ $t('housing.helpDescription') }}
             </p>
           </div>

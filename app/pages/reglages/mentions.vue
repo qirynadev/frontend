@@ -84,7 +84,7 @@ usePageSeo(() => ({
 
       <aside class="box-border flex w-full items-start rounded-[16px] bg-rml-banner p-16">
         <span class="flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-full bg-rml-banner-icon">
-          <img :src="`${ICON}/ic-ril-trust.svg`" alt="" width="24" height="24" class="block size-24">
+          <img :src="`${ICON}/ic-ril-trust.svg`" alt="" width="24" height="24" class="q-chrome-ink block size-24">
         </span>
         <div class="min-w-0 flex-1 pl-16">
           <p class="m-0 text-xl leading-24 font-semibold text-rml-heading">{{ $t('settingsLegal.trustTitle') }}</p>
@@ -117,23 +117,31 @@ usePageSeo(() => ({
           >
             <span class="flex min-w-0 flex-1 items-start">
               <span
-                v-if="row.tile"
-                class="mt-2 size-40 shrink-0 overflow-hidden"
-              >
-                <img :src="`${ICON}/${row.icon}.svg`" alt="" width="40" height="40" class="block size-40">
-              </span>
-              <span
-                v-else
                 class="mt-2 flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rml-tile"
               >
-                <img :src="`${ICON}/${row.icon}.svg`" alt="" width="20" height="20" class="block size-20">
+                <img
+                  v-if="row.tile"
+                  :src="`${ICON}/${row.icon}-glyph.svg`"
+                  alt=""
+                  width="40"
+                  height="40"
+                  class="q-chrome-ink block size-40"
+                >
+                <img
+                  v-else
+                  :src="`${ICON}/${row.icon}.svg`"
+                  alt=""
+                  width="20"
+                  height="20"
+                  class="q-chrome-ink block size-20"
+                >
               </span>
               <span class="flex min-w-0 flex-1 flex-col pl-16">
                 <span class="text-xl leading-[22.5px] font-medium text-text">{{ $t(row.titleKey) }}</span>
                 <span class="mt-2 text-base leading-[16.25px] font-normal text-rml-desc">{{ $t(row.descKey) }}</span>
               </span>
             </span>
-            <img :src="`${ICON}/ic-ril-chevron.svg`" alt="" width="20" height="20" class="ml-8 block size-20 shrink-0">
+            <img :src="`${ICON}/ic-ril-chevron.svg`" alt="" width="20" height="20" class="q-chrome-ink ml-8 block size-20 shrink-0">
           </component>
         </div>
       </section>
@@ -143,8 +151,8 @@ usePageSeo(() => ({
         :href="`mailto:${$t('settingsLegal.helpEmail')}`"
       >
         <span class="flex min-w-0 items-start">
-          <span class="mt-2 size-40 shrink-0 overflow-hidden">
-            <img :src="`${ICON}/ic-ril-mail.svg`" alt="" width="40" height="40" class="block size-40">
+          <span class="mt-2 flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-rml-tile">
+            <img :src="`${ICON}/ic-ril-mail-glyph.svg`" alt="" width="40" height="40" class="q-chrome-ink block size-40">
           </span>
           <span class="flex min-w-0 flex-1 flex-col pl-16">
             <span class="text-2xl leading-[22.5px] font-semibold text-rml-heading">{{ $t('settingsLegal.helpTitle') }}</span>
@@ -153,7 +161,7 @@ usePageSeo(() => ({
             </span>
           </span>
         </span>
-        <img :src="`${ICON}/ic-ril-mail-chevron.svg`" alt="" width="20" height="20" class="ml-8 block size-20 shrink-0">
+        <img :src="`${ICON}/ic-ril-mail-chevron.svg`" alt="" width="20" height="20" class="q-chrome-ink ml-8 block size-20 shrink-0">
       </a>
     </div>
   </div>

@@ -785,11 +785,11 @@
       "landingDesc": "Whether for your studies, your career or your personal projects, improve your {ofLanguage} with certified teachers and reach your goals.",
       "landingTitle": "Master {leLanguage},",
       "levelAdvanced": "Advanced",
-      "levelAdvancedDesc": "I'm comfortable and want to\nrefine my skills.",
+      "levelAdvancedDesc": "I'm comfortable and want to refine my skills.",
       "levelBeginner": "Beginner",
-      "levelBeginnerDesc": "I'm starting out and want to\nlearn the basics.",
+      "levelBeginnerDesc": "I'm starting out and want to learn the basics.",
       "levelIntermediate": "Intermediate",
-      "levelIntermediateDesc": "I understand the basics and\nwant to progress.",
+      "levelIntermediateDesc": "I understand the basics and want to progress.",
       "levelSubtitle": "Select your level to find the course that fits you.",
       "levelTitle1": "What is your",
       "levelTitle2": "current level?",
@@ -1023,7 +1023,7 @@
       "countryLabel": "Country of residence",
       "countryPlaceholder": "Select",
       "countryUs": "United States",
-      "desc": "Access thousands of schools, programmes\nand opportunities around the world.",
+      "desc": "Access thousands of schools, programmes and opportunities around the world.",
       "emailTitle": "Create an account with email",
       "genderFemale": "Female",
       "genderLabel": "Gender",
@@ -1637,6 +1637,10 @@
     "cta": "Start my guidance",
     "fallbackTitle": "School and career guidance",
     "formules": {
+      "free": {
+        "badge": "Discovery plan",
+        "tagline": "To discover"
+      },
       "jordan": {
         "badge": "2 dimensions analysed",
         "tagline": "To get off to a good start"

@@ -18,7 +18,7 @@ const { audience, saved, save, rejectAll } = useCookiePreferences()
         <h2 class="m-0 px-4 text-xl leading-20 font-semibold text-rml-desc shell:px-0 shell:text-[14px]">
           {{ $t('legalCookies.prefsTitle') }}
         </h2>
-        <div class="mt-12 flex flex-col rounded-[16px] border border-rg-card-border bg-white p-20 shadow-rp-card box-border">
+        <div class="mt-12 flex flex-col rounded-[16px] border border-rg-card-border bg-surface-card p-20 shadow-rp-card box-border">
           <div class="flex items-start">
             <div class="min-w-0 flex-1 pr-16">
               <h3 class="m-0 text-[15px] leading-[22.5px] font-semibold text-text">
@@ -110,7 +110,7 @@ const { audience, saved, save, rejectAll } = useCookiePreferences()
             </button>
             <button
               type="button"
-              class="flex h-47 flex-1 cursor-pointer items-center justify-center rounded-[12px] border-0 bg-primary text-xl leading-20 font-semibold text-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
+              class="flex h-47 flex-1 cursor-pointer items-center justify-center rounded-[12px] border-0 bg-primary text-xl leading-20 font-semibold text-on-primary shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
               @click="save"
             >
               {{ $t('legalCookies.save') }}
@@ -127,14 +127,14 @@ const { audience, saved, save, rejectAll } = useCookiePreferences()
           {{ $t('legalCookies.tableTitle') }}
         </h2>
         <div class="mt-12 overflow-hidden rounded-[20px] border border-[rgba(243,232,255,0.5)]">
-          <div class="grid grid-cols-12 gap-8 bg-[#f5f4fc] px-16 py-12">
-            <span class="col-span-4 text-[13px] leading-[19.5px] font-medium text-[#363c45]">
+          <div class="grid grid-cols-12 gap-8 bg-surface-2 px-16 py-12">
+            <span class="col-span-4 text-[13px] leading-[19.5px] font-medium text-muted">
               {{ $t('legalCookies.colName') }}
             </span>
-            <span class="col-span-5 text-[13px] leading-[19.5px] font-medium text-[#363c45]">
+            <span class="col-span-5 text-[13px] leading-[19.5px] font-medium text-muted">
               {{ $t('legalCookies.colPurpose') }}
             </span>
-            <span class="col-span-3 text-right text-[13px] leading-[19.5px] font-medium text-[#363c45]">
+            <span class="col-span-3 text-right text-[13px] leading-[19.5px] font-medium text-muted">
               {{ $t('legalCookies.colDuration') }}
             </span>
           </div>
@@ -146,7 +146,7 @@ const { audience, saved, save, rejectAll } = useCookiePreferences()
           >
             <span
               class="col-span-4 text-[13px] leading-[19.5px] font-medium"
-              :class="row.optional ? 'text-[#f59e0b]' : 'text-[#1e1b4b]'"
+              :class="row.optional ? 'text-[#f59e0b]' : 'text-text'"
             >
               {{ $t(row.nameKey) }}
             </span>
@@ -167,7 +167,7 @@ const { audience, saved, save, rejectAll } = useCookiePreferences()
           {{ $t('legalCookies.durationsTitle') }}
         </h2>
         <div class="mt-12 rounded-[20px] border border-rml-row-border p-20 box-border">
-          <p class="m-0 text-[13px] leading-[22px] text-[#2b2b2b]">
+          <p class="m-0 text-[13px] leading-[22px] text-text">
             {{ $t('legalCookies.durationsBody') }}
           </p>
         </div>
@@ -177,7 +177,7 @@ const { audience, saved, save, rejectAll } = useCookiePreferences()
           {{ $t('legalCookies.browserTitle') }}
         </h2>
         <div class="mt-12 rounded-[20px] border border-rml-row-border p-20 box-border">
-          <p class="m-0 text-[13px] leading-[22px] text-[#2b2b2b]">
+          <p class="m-0 text-[13px] leading-[22px] text-text">
             {{ $t('legalCookies.browserBody') }}
           </p>
         </div>

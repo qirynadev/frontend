@@ -95,7 +95,7 @@ usePageSeo(() => ({
     <div
       v-for="stat in stats"
       :key="stat.icon"
-      class="box-border flex items-start gap-10 rounded-xl border border-border bg-white p-11"
+      class="box-border flex items-start gap-10 rounded-xl border border-border bg-surface-card p-11"
     >
       <span
         :class="[
@@ -128,11 +128,11 @@ usePageSeo(() => ({
   </div>
 
   <!-- Argument -->
-  <div class="mt-22 box-border flex w-full items-start gap-16 rounded-xl bg-surface-2 px-9 py-20">
+  <div class="mt-22 box-border flex w-full items-start gap-16 rounded-xl border border-border-soft bg-surface-2 px-9 py-20">
     <img src="/img/icons/ic-osp-compass.svg" alt="" width="44" height="44" class="block shrink-0">
     <div class="min-w-0 flex-1">
       <h3 class="m-0 text-base leading-20 font-bold text-text">{{ $t('orientation.calloutTitle') }}</h3>
-      <p class="m-0 mt-4 text-sm leading-16 font-normal text-text">{{ $t('orientation.calloutDesc') }}</p>
+      <p class="m-0 mt-4 text-sm leading-16 font-normal text-muted">{{ $t('orientation.calloutDesc') }}</p>
     </div>
   </div>
 
@@ -171,7 +171,7 @@ usePageSeo(() => ({
         role="radio"
         :aria-checked="path === p.id"
         :class="[
-          'box-border flex w-full items-center justify-between gap-12 rounded-xl border bg-white p-17 text-left',
+          'box-border flex w-full items-center justify-between gap-12 rounded-xl border bg-surface-card p-17 text-left',
           path === p.id ? 'border-osp-path-selected-border' : 'border-osp-path-border',
         ]"
         @click="path = p.id"

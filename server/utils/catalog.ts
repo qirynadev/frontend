@@ -175,8 +175,29 @@ export const cachedSnapshot = defineCachedFunction(loadSnapshot, {
   staleMaxAge: 3600,
 })
 
-export function getSnapshot(event: H3Event): Promise<CatalogSnapshot> {
-  return cachedSnapshot(event, readLocale(event))
+export async function getSnapshot(event: H3Event): Promise<CatalogSnapshot> {
+  const locale = readLocale(event)
+  try {
+    return await cachedSnapshot(event, locale)
+  }
+  catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (!/malformed data/i.test(message)) throw error
+    console.warn('[qiryna:catalog] cache corrompu, rechargement', locale)
+    try {
+      const storage = useStorage('cache')
+      const keys = await storage.getKeys()
+      await Promise.all(
+        keys
+          .filter(key => key.includes('catalog') || key.includes('qiryna'))
+          .map(key => storage.removeItem(key)),
+      )
+    }
+    catch {
+      /* le rechargement ci-dessous suffit si la purge échoue */
+    }
+    return loadSnapshot(event, locale)
+  }
 }
 
 /** Langue demandée : `?lang=`, puis l'en-tête `lang`, puis le français. */

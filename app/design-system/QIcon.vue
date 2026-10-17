@@ -54,6 +54,19 @@ const SPRITE_ICONS = new Set([
 ])
 const isSprite = computed(() => SPRITE_ICONS.has(props.name))
 
+/** SVG maquette au trait noir : inversés en blanc en thème sombre. */
+const CHROME_INK = new Set([
+  'ic-ed-share',
+  'ic-ed-chevron',
+  'ic-ed-clock',
+  'ic-chevron-right-sm',
+  'ic-arrow-right-service',
+  'ic-log-chevron',
+  'ic-dest-chevron',
+  'ic-le-chip-next',
+])
+const isChromeInk = computed(() => CHROME_INK.has(props.name))
+
 /** Les fichiers de la maquette se reconnaissent à leur préfixe. */
 const isAsset = computed(() => !isSprite.value && /^(ic-|nav-|flag-|status-)/.test(props.name))
 
@@ -84,7 +97,7 @@ const isFilled = computed(() => icon.value?.style === 'fill')
     :aria-label="label"
     :role="label ? 'img' : undefined"
     focusable="false"
-    class="block shrink-0"
+    class="block shrink-0 text-text"
   ><use :href="`#icon-${name}`" /></svg>
 
   <img
@@ -94,7 +107,7 @@ const isFilled = computed(() => icon.value?.style === 'fill')
     :width="size"
     :height="height ?? size"
     :aria-hidden="label ? undefined : 'true'"
-    class="block shrink-0"
+    :class="['block shrink-0', isChromeInk ? 'q-chrome-ink' : '']"
     :style="{ width: `${size}px`, height: `${height ?? size}px` }"
   >
 

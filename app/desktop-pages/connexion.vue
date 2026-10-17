@@ -35,27 +35,21 @@ const emit = defineEmits<{
 const localePath = useLocalePath()
 
 const socialOrder: SocialProvider[] = ['facebook', 'google', 'linkedin']
-
-const trustItems = [
-  { icon: '/img/desktop/auth/trust-secure.svg', labelKey: 'desktop.auth.trust1' },
-  { icon: '/img/desktop/auth/trust-support.svg', labelKey: 'desktop.auth.trust2' },
-  { icon: '/img/desktop/auth/trust-studies.svg', labelKey: 'desktop.auth.trust3' },
-] as const
 </script>
 
 <template>
-  <!-- Canevas 1728 · form aligné au logo (gutter 150) · hero flex · pas de `lg:`. -->
-  <div class="desktop-canvas flex min-h-0 flex-row overflow-hidden">
+  <!-- Canevas 1728 · gutters 150 des deux côtés · image 748 fixe · pas de `lg:`. -->
+  <div class="desktop-canvas flex min-h-0 flex-row overflow-hidden bg-white pr-[var(--q-desktop-gutter)]">
     <section
-      class="box-border flex h-full w-[calc(var(--q-desktop-gutter)+680px)] shrink-0 flex-col overflow-y-auto bg-white pb-48 pr-32 pl-[var(--q-desktop-gutter)] pt-0"
+      class="box-border flex h-full w-[calc(var(--q-desktop-gutter)+680px)] shrink-0 flex-col justify-center overflow-y-auto bg-white py-24 pr-32 pl-[var(--q-desktop-gutter)]"
     >
-      <div class="flex w-full flex-col gap-7 pt-39">
-        <div class="w-full pt-32">
-          <h1 class="m-0 text-[43px] leading-40 font-semibold text-black">
+      <div class="flex w-full flex-col gap-7">
+        <div class="w-full">
+          <h1 class="m-0 text-[43px] leading-40 font-semibold whitespace-nowrap text-black">
             {{ $t('desktop.auth.welcomeBefore') }}
             <span class="text-[#fd1d36]">{{ $t('desktop.auth.welcomeAccent') }}</span>
           </h1>
-          <p class="m-0 pt-12 text-exact-16 leading-[19.5px] font-medium whitespace-pre-line text-black">
+          <p class="m-0 pt-12 text-exact-16 leading-[19.5px] font-medium whitespace-nowrap text-black">
             {{ $t('desktop.auth.welcomeDesc') }}
           </p>
         </div>
@@ -201,55 +195,6 @@ const trustItems = [
       </div>
     </section>
 
-    <aside class="relative flex h-full min-h-0 flex-1 items-stretch">
-      <div
-        class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]"
-      >
-        <!-- 567:6036 — image contenue dans le cadre inset-0 -->
-        <div class="absolute inset-0 overflow-hidden opacity-85">
-          <NuxtImg
-            src="/img/desktop/auth/connexion-hero.jpg"
-            alt=""
-            width="1100"
-            height="1152"
-            format="webp"
-            fit="cover"
-            loading="lazy"
-            decoding="async"
-            class="absolute inset-0 size-full object-cover object-center"
-          />
-        </div>
-
-        <!-- Trust bar — largeur contenu, centrée (Figma 567:6271) -->
-        <div class="absolute inset-x-0 bottom-0 flex justify-center px-48 pb-48">
-          <div
-            class="box-border flex h-74 w-fit max-w-full items-center justify-center gap-26 rounded-[10px] border border-[#f1f5f9] bg-white px-32 py-11 shadow-[0_0_3.5px_rgba(0,0,0,0.15)]"
-          >
-            <template v-for="(item, index) in trustItems" :key="item.labelKey">
-              <div
-                v-if="index > 0"
-                class="h-34 w-px shrink-0 bg-[#e6e5f5]"
-                aria-hidden="true"
-              />
-              <div
-                class="flex shrink-0 items-center gap-10"
-                :class="index === 0 ? 'justify-center' : 'items-start'"
-              >
-                <img
-                  :src="item.icon"
-                  alt=""
-                  width="40"
-                  height="40"
-                  class="block size-40 shrink-0"
-                >
-                <p class="m-0 pt-6 text-md leading-[13.125px] font-semibold whitespace-pre-line text-black">
-                  {{ $t(item.labelKey) }}
-                </p>
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-    </aside>
+    <AuthDesktopHero src="/img/desktop/auth/connexion-hero.jpg" />
   </div>
 </template>
