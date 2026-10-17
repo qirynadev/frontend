@@ -228,7 +228,7 @@ usePageSeo(() => ({
 
     <!-- Formulaire -->
     <div class="pt-15">
-      <div class="rounded-xl bg-surface-card px-20 py-25 shadow-card">
+      <div class="rounded-xl border border-border bg-surface-card px-20 py-25 shadow-card">
         <QAlert
           v-if="visibleError"
           tone="danger"

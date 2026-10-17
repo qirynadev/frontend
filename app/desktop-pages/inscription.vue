@@ -50,29 +50,22 @@ const emit = defineEmits<{
 const localePath = useLocalePath()
 
 const socialOrder: SocialProvider[] = ['facebook', 'google', 'linkedin']
-
-const trustItems = [
-  { icon: '/img/desktop/auth/trust-secure.svg', labelKey: 'desktop.auth.trust1' },
-  { icon: '/img/desktop/auth/trust-support.svg', labelKey: 'desktop.auth.trust2' },
-  { icon: '/img/desktop/auth/trust-studies.svg', labelKey: 'desktop.auth.trust3' },
-] as const
 </script>
 
 <template>
-  <div class="desktop-canvas flex min-h-0 flex-row overflow-hidden">
+  <div class="desktop-canvas flex min-h-0 flex-row overflow-hidden bg-white pr-[var(--q-desktop-gutter)]">
     <section
-      class="box-border flex h-full w-[calc(var(--q-desktop-gutter)+680px)] shrink-0 flex-col overflow-y-auto bg-white pb-48 pr-32 pl-[var(--q-desktop-gutter)] pt-0"
+      class="box-border flex h-full w-[calc(var(--q-desktop-gutter)+680px)] shrink-0 flex-col justify-center overflow-y-auto bg-white py-24 pr-32 pl-[var(--q-desktop-gutter)]"
     >
-      <div class="flex w-full flex-col gap-7 pt-39">
-        <div class="w-full pt-32">
-          <h1 class="m-0 text-[43px] leading-40 font-semibold text-black">
+      <div class="flex w-full flex-col gap-7">
+        <div class="w-full">
+          <h1 class="m-0 text-[43px] leading-[50px] font-semibold text-black">
             {{ $t('desktop.register.titleLine1') }}
             <span class="block">
-              {{ $t('desktop.register.titleLine2Before') }}
-              <span class="text-[#fd1d36]">{{ $t('desktop.register.titleAccent') }}</span>{{ $t('desktop.register.titleLine2After') }}
+              {{ $t('desktop.register.titleLine2Before') }}<span class="text-[#fd1d36]">{{ $t('desktop.register.titleAccent') }}</span>{{ $t('desktop.register.titleLine2After') }}
             </span>
           </h1>
-          <p class="m-0 pt-12 text-exact-16 leading-[19.5px] font-medium whitespace-pre-line text-black">
+          <p class="m-0 pt-12 text-exact-16 leading-[19.5px] font-medium whitespace-nowrap text-black">
             {{ $t('desktop.register.desc') }}
           </p>
         </div>
@@ -112,7 +105,7 @@ const trustItems = [
         </QAlert>
 
         <template v-if="step === 'form'">
-          <div class="flex w-full flex-col gap-12 pt-24">
+          <div class="flex w-full flex-col gap-8 pt-12">
             <p class="m-0 text-xl leading-15 font-semibold tracking-[0.5px] text-black">
               {{ $t('desktop.register.socialTitle') }}
             </p>
@@ -130,7 +123,7 @@ const trustItems = [
             </div>
           </div>
 
-          <div class="flex items-center py-20">
+          <div class="flex items-center py-10">
             <span aria-hidden="true" class="h-px flex-1 bg-[#e3e5ef]" />
             <span class="px-14 text-base leading-16 font-semibold text-[#646b8c] uppercase">{{ $t('auth.or') }}</span>
             <span aria-hidden="true" class="h-px flex-1 bg-[#e3e5ef]" />
@@ -138,8 +131,8 @@ const trustItems = [
 
           <form class="w-full" novalidate @submit.prevent="emit('submit')">
             <BotTrap />
-            <div class="flex flex-col gap-18">
-              <div class="flex flex-col gap-16">
+            <div class="flex flex-col gap-12">
+              <div class="flex flex-col gap-10">
                 <p class="m-0 text-xl leading-15 font-semibold tracking-[0.5px] text-black">
                   {{ $t('desktop.register.emailTitle') }}
                 </p>
@@ -174,7 +167,7 @@ const trustItems = [
                       @update:model-value="emit('update:lastName', $event)"
                     />
                   </div>
-                  <div class="pt-15">
+                  <div class="pt-8">
                     <QInput
                       :model-value="email"
                       type="email"
@@ -190,7 +183,7 @@ const trustItems = [
                       @update:model-value="emit('update:email', $event)"
                     />
                   </div>
-                  <div class="pt-15">
+                  <div class="pt-8">
                     <QInput
                       :model-value="password"
                       type="password"
@@ -207,9 +200,9 @@ const trustItems = [
                       revealable
                       @update:model-value="emit('update:password', $event)"
                     />
-                    <QPasswordStrength class="pt-10" :score="score" :hint="strengthHint" :hint-tone="strengthTone" />
+                    <QPasswordStrength class="pt-6" :score="score" :hint="strengthHint" :hint-tone="strengthTone" />
                   </div>
-                  <div class="pt-15">
+                  <div class="pt-8">
                     <QInput
                       :model-value="passwordConfirm"
                       type="password"
@@ -269,7 +262,7 @@ const trustItems = [
           </form>
         </template>
 
-        <form v-else class="w-full pt-24" novalidate @submit.prevent="emit('confirm')">
+        <form v-else class="w-full pt-12" novalidate @submit.prevent="emit('confirm')">
           <QInput
             :model-value="code"
             icon="ic-email"
@@ -300,60 +293,13 @@ const trustItems = [
           </div>
         </form>
 
-        <p class="m-0 flex items-center justify-center gap-8 pt-32 text-lg leading-16 font-medium text-[#535a83]">
+        <p class="m-0 flex items-center justify-center gap-8 pt-16 text-lg leading-16 font-medium text-[#535a83]">
           <QIcon name="ic-shield" :size="26" />
           {{ $t('desktop.auth.secureNote') }}
         </p>
       </div>
     </section>
 
-    <aside class="relative flex h-full min-h-0 flex-1 items-stretch">
-      <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden border-l border-[#f1f5f9] bg-[#f8fafc]">
-        <div class="absolute inset-0 overflow-hidden opacity-85">
-          <NuxtImg
-            src="/img/desktop/auth/inscription-hero.jpg"
-            alt=""
-            width="1100"
-            height="1429"
-            format="webp"
-            fit="cover"
-            loading="lazy"
-            decoding="async"
-            class="absolute inset-0 size-full object-cover object-center"
-          />
-        </div>
-
-        <div class="absolute inset-x-0 bottom-0 flex justify-center px-48 pb-48">
-          <div
-            class="box-border flex h-74 w-fit max-w-full items-center justify-center gap-26 rounded-[10px] border border-[#f1f5f9] bg-white px-32 py-11 shadow-[0_0_3.5px_rgba(0,0,0,0.15)]"
-          >
-            <template v-for="(item, index) in trustItems" :key="item.labelKey">
-              <div
-                v-if="index > 0"
-                class="h-34 w-px shrink-0 bg-[#e6e5f5]"
-                aria-hidden="true"
-              />
-              <div
-                class="flex shrink-0 items-center gap-10"
-                :class="index === 0 ? 'justify-center' : 'items-start'"
-              >
-                <img
-                  :src="item.icon"
-                  alt=""
-                  width="40"
-                  height="40"
-                  class="block size-40 shrink-0"
-                  loading="lazy"
-                  decoding="async"
-                >
-                <p class="m-0 pt-6 text-md leading-[13.125px] font-semibold whitespace-pre-line text-black">
-                  {{ $t(item.labelKey) }}
-                </p>
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-    </aside>
+    <AuthDesktopHero src="/img/desktop/auth/inscription-hero.jpg" />
   </div>
 </template>

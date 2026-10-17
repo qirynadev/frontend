@@ -127,11 +127,17 @@ usePageSeo(() => ({
           >
             <span
               :class="[
-                'rg-row-icon mr-16 size-40 shrink-0 overflow-hidden rounded-xl',
-                row.danger ? 'rg-row-icon--danger flex items-center justify-center bg-rg-danger-bg' : '',
+                'rg-row-icon mr-16 flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-[12px]',
+                row.danger ? 'rg-row-icon--danger bg-rg-danger-bg' : 'bg-rp-tile-bg',
               ]"
             >
-              <QIcon :name="row.icon" :size="row.danger ? 20 : 40" />
+              <img
+                :src="row.danger ? `/img/icons/${row.icon}.svg` : `/img/icons/${row.icon}-glyph.svg`"
+                alt=""
+                :width="row.danger ? 20 : 40"
+                :height="row.danger ? 20 : 40"
+                :class="row.danger ? 'q-chrome-ink block size-20' : 'q-chrome-ink block size-40'"
+              >
             </span>
 
             <span class="rg-row-copy flex min-w-0 flex-1 flex-col items-start">
@@ -153,7 +159,7 @@ usePageSeo(() => ({
 
             <img
               v-if="!row.danger"
-              class="rg-row-chevron block size-20 shrink-0 object-contain"
+              class="rg-row-chevron q-chrome-ink block size-20 shrink-0 object-contain"
               src="/img/icons/ic-rg-chevron.svg"
               alt=""
               width="20"

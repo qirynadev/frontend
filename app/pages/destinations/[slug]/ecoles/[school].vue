@@ -318,7 +318,7 @@ useSchoolSchemaOrg(school)
 
       <div class="mt-22 flex w-full flex-col">
         <div
-          class="flex w-full rounded-[14px] border border-[#f8f8fc] bg-[#fdfdfd] p-1 box-border"
+          class="flex w-full rounded-[14px] border border-border bg-surface p-1 box-border"
           role="tablist"
           :aria-label="$t('school.detail.tabsLabel')"
         >
@@ -331,8 +331,8 @@ useSchoolSchemaOrg(school)
             :class="[
               'flex flex-1 cursor-pointer flex-row items-center justify-center gap-8 rounded-xl border px-12 py-12 text-md leading-[19.5px] font-medium whitespace-nowrap box-border transition-colors duration-150',
               activeTab === tb.value
-                ? 'bg-[#f8f7ff] border-[#e2dff5] text-[#2d00fc]'
-                : 'border-transparent bg-transparent text-black',
+                ? 'bg-mpa-tab-active-bg border-mpa-tab-active-border text-primary-link'
+                : 'border-transparent bg-transparent text-text',
             ]"
             @click="activeTab = tb.value"
           >
@@ -353,7 +353,7 @@ useSchoolSchemaOrg(school)
               v-for="formation in formations"
               :key="formation.title"
               type="button"
-              class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-surface-card p-20 text-left text-text shadow-card"
+              class="box-border flex w-full items-start gap-16 rounded-xl border border-border bg-surface-card p-20 text-left text-text shadow-card"
               @click="activeFormation = formation"
             >
               <!-- `.ed-form-icon` — icône et teinte selon le type de formation (`formationVisual`) -->

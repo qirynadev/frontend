@@ -34,12 +34,12 @@ const softTone: Record<Tone, string> = {
 }
 
 const solidTone: Record<Tone, string> = {
-  primary: 'bg-primary text-white',
-  success: 'bg-success text-white',
-  warning: 'bg-warning text-white',
-  danger: 'bg-danger text-white',
-  info: 'bg-info text-white',
-  neutral: 'bg-neutral text-white',
+  primary: 'bg-primary text-on-primary',
+  success: 'bg-success text-on-success',
+  warning: 'bg-warning text-on-primary',
+  danger: 'bg-danger text-on-danger',
+  info: 'bg-info text-on-primary',
+  neutral: 'bg-neutral text-on-primary',
 }
 </script>
 

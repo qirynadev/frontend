@@ -128,11 +128,11 @@ usePageSeo(() => ({
   </div>
 
   <!-- Argument -->
-  <div class="mt-22 box-border flex w-full items-start gap-16 rounded-xl bg-surface-2 px-9 py-20">
+  <div class="mt-22 box-border flex w-full items-start gap-16 rounded-xl border border-border-soft bg-surface-2 px-9 py-20">
     <img src="/img/icons/ic-osp-compass.svg" alt="" width="44" height="44" class="block shrink-0">
     <div class="min-w-0 flex-1">
       <h3 class="m-0 text-base leading-20 font-bold text-text">{{ $t('orientation.calloutTitle') }}</h3>
-      <p class="m-0 mt-4 text-sm leading-16 font-normal text-text">{{ $t('orientation.calloutDesc') }}</p>
+      <p class="m-0 mt-4 text-sm leading-16 font-normal text-muted">{{ $t('orientation.calloutDesc') }}</p>
     </div>
   </div>
 

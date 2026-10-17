@@ -38,8 +38,8 @@ const paddingClass: Record<Padding, string> = {
 }
 
 const variantClass: Record<Variant, string> = {
-  elevated: 'bg-surface-card shadow-card',
-  outlined: 'bg-surface-card border border-border-soft',
+  elevated: 'bg-surface-card border border-border shadow-card',
+  outlined: 'bg-surface-card border border-border',
   flat: 'bg-surface-card',
   tinted: '',
 }
@@ -79,7 +79,7 @@ const component = computed(() => {
       'block w-full rounded-xl text-left transition-colors duration-150',
       paddingClass[padding],
       variant === 'tinted' ? tintClass[tone] : variantClass[variant],
-      selectable ? 'cursor-pointer border border-transparent' : '',
+      selectable ? 'cursor-pointer' : '',
       selectable && selected ? `${selectedBorder[tone]} shadow-none` : '',
       disabled ? 'pointer-events-none opacity-50' : '',
     ]"

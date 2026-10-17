@@ -785,11 +785,11 @@
       "landingDesc": "Que ce soit pour vos études, votre carrière ou vos projets personnels, améliorez votre niveau {ofLanguage} avec des professeurs certifiés et atteignez vos objectifs.",
       "landingTitle": "Maîtrisez {leLanguage},",
       "levelAdvanced": "Advanced",
-      "levelAdvancedDesc": "Je suis à l'aise et je veux \nme perfectionner.",
+      "levelAdvancedDesc": "Je suis à l'aise et je veux me perfectionner.",
       "levelBeginner": "Beginner",
-      "levelBeginnerDesc": "Je débute et je souhaite \nacquérir les bases.",
+      "levelBeginnerDesc": "Je débute et je souhaite acquérir les bases.",
       "levelIntermediate": "Intermediate",
-      "levelIntermediateDesc": "Je comprends les bases et \nje veux progresser.",
+      "levelIntermediateDesc": "Je comprends les bases et je veux progresser.",
       "levelSubtitle": "Sélectionnez votre niveau pour trouver le cours qui vous correspond.",
       "levelTitle1": "Quel est votre",
       "levelTitle2": "niveau actuel ?",
@@ -1023,7 +1023,7 @@
       "countryLabel": "Pays de résidence",
       "countryPlaceholder": "Sélectionner",
       "countryUs": "États-Unis",
-      "desc": "Accédez à des milliers d'écoles, de programmes\net d'opportunités partout dans le monde.",
+      "desc": "Accédez à des milliers d'écoles, de programmes et d'opportunités partout dans le monde.",
       "emailTitle": "Créer un compte avec votre e-mail",
       "genderFemale": "Femme",
       "genderLabel": "Genre",
@@ -1637,6 +1637,10 @@
     "cta": "Commencer mon orientation",
     "fallbackTitle": "Orientation scolaire et professionnelle",
     "formules": {
+      "free": {
+        "badge": "Formule découverte",
+        "tagline": "Pour découvrir"
+      },
       "jordan": {
         "badge": "2 dimensions analysées",
         "tagline": "Pour bien démarrer"

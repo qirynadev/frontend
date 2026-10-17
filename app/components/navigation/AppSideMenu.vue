@@ -114,7 +114,7 @@ const photoUrl = computed(() =>
             <template v-if="session.isAuthenticated">
               <NuxtLink
                 :to="localePath('/reglages')"
-                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-white no-underline"
+                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-on-primary no-underline"
               >
                 {{ $t('menu.account') }}
               </NuxtLink>
@@ -123,7 +123,7 @@ const photoUrl = computed(() =>
             <template v-else>
               <NuxtLink
                 :to="localePath('/connexion')"
-                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-white no-underline"
+                class="flex w-full items-center justify-center rounded-xl bg-menu-btn py-14 text-center text-xl leading-20 font-semibold text-on-primary no-underline"
               >
                 {{ $t('menu.signIn') }}
               </NuxtLink>

@@ -157,6 +157,8 @@ function actionWhen(iso: string | null): string | null {
                     :width="chrome(item).iconKind === 'badge' ? 64 : 32"
                     :height="chrome(item).iconKind === 'badge' ? 64 : 32"
                     class="block size-full"
+                    loading="lazy"
+                    decoding="async"
                   >
                 </span>
               </span>
@@ -189,7 +191,7 @@ function actionWhen(iso: string | null): string | null {
                   </p>
                   <p v-if="item.advisorName" class="m-0 mt-12 flex items-center gap-6 text-[12px] leading-18 font-normal text-[#6b7280]">
                     <span class="size-14 shrink-0 overflow-clip">
-                      <img :src="`${ASSET}/icon-advisor.svg`" alt="" width="14" height="14" class="block size-full">
+                      <img :src="`${ASSET}/icon-advisor.svg`" alt="" width="14" height="14" class="block size-full" loading="lazy" decoding="async">
                     </span>
                     {{ $t('desktop.monProjet.advisor', { name: item.advisorName }) }}
                   </p>
@@ -219,7 +221,7 @@ function actionWhen(iso: string | null): string | null {
                   >
                     {{ $t('desktop.monProjet.seeDetails') }}
                     <span v-if="item.hasOrder" class="size-16 shrink-0 overflow-clip">
-                      <img :src="`${ASSET}/icon-arrow.svg`" alt="" width="16" height="16" class="block size-full">
+                      <img :src="`${ASSET}/icon-arrow.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
                     </span>
                   </component>
                   <p v-if="item.updatedAt" class="m-0 mt-8 text-[12px] leading-18 font-medium text-[#303030]">
@@ -302,6 +304,8 @@ function actionWhen(iso: string | null): string | null {
                         width="20"
                         height="20"
                         class="block size-full"
+                        loading="lazy"
+                        decoding="async"
                       >
                     </span>
                   </span>
@@ -316,12 +320,12 @@ function actionWhen(iso: string | null): string | null {
                   <span class="flex shrink-0 items-center gap-12">
                     <span v-if="actionWhen(item.updatedAt)" class="flex items-center gap-6 text-[11px] leading-[16.5px] font-medium text-[#2c2c2c]">
                       <span class="size-12 overflow-clip">
-                        <img :src="`${ASSET}/icon-clock.svg`" alt="" width="12" height="12" class="block size-full">
+                        <img :src="`${ASSET}/icon-clock.svg`" alt="" width="12" height="12" class="block size-full" loading="lazy" decoding="async">
                       </span>
                       {{ actionWhen(item.updatedAt) }}
                     </span>
                     <span v-if="item.hasOrder" class="size-16 overflow-clip">
-                      <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="16" height="16" class="block size-full">
+                      <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
                     </span>
                   </span>
                 </component>
@@ -349,7 +353,7 @@ function actionWhen(iso: string | null): string | null {
         >
           {{ $t('desktop.monProjet.ctaButton') }}
           <span class="size-20 overflow-clip">
-            <img :src="`${ASSET}/icon-cta-arrow.svg`" alt="" width="20" height="20" class="block size-full">
+            <img :src="`${ASSET}/icon-cta-arrow.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
           </span>
         </NuxtLink>
         <div class="pointer-events-none absolute top-25 right-32 flex opacity-80" aria-hidden="true">

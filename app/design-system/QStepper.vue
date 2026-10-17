@@ -55,7 +55,7 @@ withDefaults(
           <span
             v-if="numbered && step.icon"
             :class="[
-              'absolute -right-6 -bottom-2 inline-flex size-15 items-center justify-center rounded-full text-xs font-semibold text-white',
+              'absolute -right-6 -bottom-2 inline-flex size-15 items-center justify-center rounded-full text-xs font-semibold text-on-primary',
               index <= current ? 'bg-success' : 'bg-primary',
             ]"
           >

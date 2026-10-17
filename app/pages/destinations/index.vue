@@ -65,13 +65,13 @@ usePageSeo(() => ({
 
       <!-- Encart d'accompagnement -->
       <div class="w-full py-22">
-        <div class="flex w-full items-start gap-16 rounded-xl bg-surface-2 px-9 py-20">
+        <div class="flex w-full items-start gap-16 rounded-xl border border-border-soft bg-surface-2 px-9 py-20">
           <QIcon name="ic-dest-help" :size="44" />
           <div>
             <p class="m-0 text-base leading-20 font-bold text-text">
               {{ $t('destination.list.helpTitle') }}
             </p>
-            <p class="m-0 pt-4 text-sm leading-16 text-text">
+            <p class="m-0 pt-4 text-sm leading-16 text-muted">
               {{ $t('destination.list.helpDescription') }}
             </p>
           </div>

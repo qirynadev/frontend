@@ -62,7 +62,7 @@ const component = computed(() => (props.to ? resolveComponent('NuxtLink') : 'but
     <QIcon :name="icon" :size="glyphSize[size]" />
     <span
       v-if="badge > 0"
-      class="absolute top-0 right-0 inline-flex h-20 min-w-20 items-center justify-center rounded-full bg-danger px-6 text-base leading-none font-medium text-white"
+      class="absolute top-0 right-0 inline-flex h-20 min-w-20 items-center justify-center rounded-full bg-danger px-6 text-base leading-none font-medium text-on-danger"
     >
       {{ badgeText }}
     </span>

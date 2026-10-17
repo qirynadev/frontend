@@ -120,7 +120,14 @@ usePageSeo(() => ({
               alt=""
               width="220"
               height="155"
-              class="block h-155 w-220 max-w-full object-contain object-right-top"
+              class="q-theme-light block h-155 w-220 max-w-full object-contain object-right-top"
+            >
+            <img
+              src="/img/hero-mon-projet-accompagnements-dark.webp"
+              alt=""
+              width="220"
+              height="155"
+              class="q-theme-dark h-155 w-220 max-w-full object-contain object-right-top"
             >
           </div>
         </section>

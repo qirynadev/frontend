@@ -143,9 +143,9 @@ usePageSeo(() => ({
             <div class="projet-progress-anchor absolute top-[11.72px] left-0 z-2 size-56" :aria-label="$t('projectOverview.progressPct', { pct: progressPct })">
               <div class="projet-progress-chart absolute top-0 left-0 z-1 size-74" :data-progress="progressPct" role="img">
                 <svg class="projet-chart-svg block size-74 -rotate-90 overflow-visible" viewBox="0 0 74 74" width="74" height="74" aria-hidden="true">
-                  <circle class="projet-chart-track fill-none stroke-[#e2d9fd] stroke-[5]" cx="37" cy="37" r="34.5" />
+                  <circle class="projet-chart-track fill-none stroke-border stroke-[5]" cx="37" cy="37" r="34.5" />
                   <circle
-                    class="projet-chart-bar fill-none stroke-[#3300fd] stroke-[5]"
+                    class="projet-chart-bar fill-none stroke-primary stroke-[5]"
                     cx="37"
                     cy="37"
                     r="34.5"
@@ -172,7 +172,7 @@ usePageSeo(() => ({
           </div>
 
           <!-- Stats grid -->
-          <div class="projet-stats flex w-full items-center gap-8 rounded-xl bg-[#f6f5fd] px-8 py-10">
+          <div class="projet-stats flex w-full items-center gap-8 rounded-xl bg-surface-2 px-8 py-10">
             <!-- Terminés -->
             <div class="projet-stat flex min-w-0 flex-1 flex-col items-center gap-10">
               <span class="projet-stat-icon relative block size-15 shrink-0">
@@ -261,18 +261,18 @@ usePageSeo(() => ({
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
                     {{ $t('projectOverview.cardOrientationDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--essentiel inline-flex w-fit items-center rounded-sm bg-[#efecfe] px-8 py-2 text-2xs leading-12 font-semibold text-[#2f00ff]">
+                  <span class="projet-pack projet-pack--essentiel inline-flex w-fit items-center rounded-sm bg-mp-badge-purple-bg px-8 py-2 text-2xs leading-12 font-semibold text-mp-badge-purple">
                     {{ $t('projectOverview.packEssentiel') }}
                   </span>
                 </div>
               </div>
               <div class="projet-service-aside flex shrink-0 items-center pl-8">
-                <span class="projet-status projet-status--done inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-[#e5f7e7] px-7 py-4 text-xs leading-[13.5px] font-medium text-[#1fad36]">
+                <span class="projet-status projet-status--done inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-success-bg px-7 py-4 text-xs leading-[13.5px] font-medium text-success">
                   <span>{{ $t('projectOverview.serviceDone') }}</span>
                   <img src="/img/icons/ic-status-done-check.svg" alt="" width="15" height="15" class="block size-15 shrink-0 max-w-none">
                 </span>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="q-chrome-ink block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -280,7 +280,7 @@ usePageSeo(() => ({
             <!-- 2. Orientation Premium En cours (70% complété) -->
             <article class="projet-service-card projet-service-card--h103 flex h-103 w-full items-center justify-between rounded-xl border border-surface-border bg-surface-card px-12 py-13">
               <div class="projet-service-main flex h-full min-w-0 flex-1 items-start">
-                <span class="projet-service-icon projet-service-icon--premium relative flex size-44 shrink-0 items-center justify-center rounded-full bg-[#e9f0fe]">
+                <span class="projet-service-icon projet-service-icon--premium relative flex size-44 shrink-0 items-center justify-center rounded-full bg-info-bg">
                   <img src="/img/icons/ic-service-orientation-premium.svg" alt="" width="24" height="24" class="block size-24">
                 </span>
                 <div class="projet-service-body flex h-full min-w-0 flex-1 flex-col gap-4 pl-14">
@@ -288,14 +288,14 @@ usePageSeo(() => ({
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
                     {{ $t('projectOverview.cardPremiumDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--premium inline-flex w-fit items-center rounded-sm bg-[#e9f0fe] px-8 py-2 text-2xs leading-12 font-semibold text-[#004ffc]">
+                  <span class="projet-pack projet-pack--premium inline-flex w-fit items-center rounded-sm bg-info-bg px-8 py-2 text-2xs leading-12 font-semibold text-info">
                     {{ $t('projectOverview.packPremium') }}
                   </span>
                 </div>
               </div>
               <div class="projet-service-aside projet-service-aside--stack flex shrink-0 items-center pl-8">
                 <div class="projet-service-aside-col flex flex-col items-end">
-                  <span class="projet-status projet-status--progress inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-[#fff3e0] px-7 py-4 text-xs leading-[13.5px] font-medium text-[#fe7812]">
+                  <span class="projet-status projet-status--progress inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-warning-bg px-7 py-4 text-xs leading-[13.5px] font-medium text-warning">
                     <span>{{ $t('projectOverview.serviceInProgress') }}</span>
                     <span class="projet-status-dot relative h-[7.5px] w-[7.5px] shrink-0 overflow-visible">
                       <img src="/img/icons/ic-status-progress-dot.svg" alt="" width="8" height="8" class="absolute top-1/2 left-1/2 block size-[8.3px] max-w-none -translate-x-1/2 -translate-y-1/2">
@@ -305,13 +305,13 @@ usePageSeo(() => ({
                     <span class="projet-mini-progress-label whitespace-nowrap text-4xs leading-15 font-medium text-muted-2">
                       {{ $t('projectOverview.completedPct', { pct: 70 }) }}
                     </span>
-                    <div class="projet-mini-progress-track relative h-4 w-full overflow-hidden rounded-full bg-[#e5e0fd]">
-                      <span class="projet-mini-progress-fill absolute top-0 bottom-0 left-0 right-[22.95%] rounded-full bg-[#4c17fe]" />
+                    <div class="projet-mini-progress-track relative h-4 w-full overflow-hidden rounded-full bg-primary-soft">
+                      <span class="projet-mini-progress-fill absolute top-0 bottom-0 left-0 right-[22.95%] rounded-full bg-primary" />
                     </div>
                   </div>
                 </div>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="q-chrome-ink block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -327,14 +327,14 @@ usePageSeo(() => ({
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
                     {{ $t('projectOverview.cardLangueDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--langues inline-flex w-fit items-center rounded-sm bg-[#e9f8ec] px-8 py-2 text-2xs leading-12 font-semibold text-[#05b72d]">
+                  <span class="projet-pack projet-pack--langues inline-flex w-fit items-center rounded-sm bg-mp-badge-green-bg px-8 py-2 text-2xs leading-12 font-semibold text-mp-badge-green">
                     {{ $t('projectOverview.packLangues') }}
                   </span>
                 </div>
               </div>
               <div class="projet-service-aside projet-service-aside--stack flex shrink-0 items-center pl-8">
                 <div class="projet-service-aside-col flex flex-col items-end">
-                  <span class="projet-status projet-status--soon inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-[#f5f3fc] px-7 py-4 text-xs leading-[13.5px] font-medium text-[#6b679d]">
+                  <span class="projet-status projet-status--soon inline-flex items-center gap-4 whitespace-nowrap rounded-sm bg-surface-2 px-7 py-4 text-xs leading-[13.5px] font-medium text-muted">
                     <span>{{ $t('projectOverview.serviceUpcoming') }}</span>
                     <span class="projet-status-dot relative h-[7.5px] w-[7.5px] shrink-0 overflow-visible">
                       <img src="/img/icons/ic-status-soon-dot.svg" alt="" width="8" height="8" class="absolute top-1/2 left-1/2 block size-[8.3px] max-w-none -translate-x-1/2 -translate-y-1/2">
@@ -345,7 +345,7 @@ usePageSeo(() => ({
                   </span>
                 </div>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="q-chrome-ink block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -361,17 +361,17 @@ usePageSeo(() => ({
                   <p class="m-0 line-clamp-2 text-sm leading-[16.25px] font-normal text-text">
                     {{ $t('projectOverview.cardLogementDesc') }}
                   </p>
-                  <span class="projet-pack projet-pack--logement inline-flex w-fit items-center rounded-sm bg-[#fef0e4] px-8 py-2 text-2xs leading-12 font-semibold text-[#f16f02]">
+                  <span class="projet-pack projet-pack--logement inline-flex w-fit items-center rounded-sm bg-mp-badge-orange-bg px-8 py-2 text-2xs leading-12 font-semibold text-mp-badge-orange">
                     {{ $t('projectOverview.packLogement') }}
                   </span>
                 </div>
               </div>
               <div class="projet-service-aside projet-service-aside--stack flex shrink-0 items-center pl-8">
-                <NuxtLink :to="localePath('/logement')" class="projet-btn-start cursor-pointer whitespace-nowrap rounded-lg border border-[#450ff2] bg-transparent px-12 py-9 text-sm leading-16 font-medium text-[#450ff2] no-underline">
+                <NuxtLink :to="localePath('/logement')" class="projet-btn-start cursor-pointer whitespace-nowrap rounded-lg border border-primary-link bg-transparent px-12 py-9 text-sm leading-16 font-medium text-primary-link no-underline">
                   {{ $t('projectOverview.startBtn') }}
                 </NuxtLink>
                 <span class="projet-chevron flex h-16 w-24 shrink-0 items-center justify-center pl-8">
-                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="block h-[11.5px] w-[6.5px] max-w-none">
+                  <img src="/img/icons/ic-arrow-right-service.svg" alt="" width="7" height="12" class="q-chrome-ink block h-[11.5px] w-[6.5px] max-w-none">
                 </span>
               </div>
             </article>
@@ -380,7 +380,7 @@ usePageSeo(() => ({
           <!-- RDV CTA. Sous 390px, la maquette casse la disposition : le bloc
                passe en hauteur auto, le bouton quitte l'absolu pour se caler à
                droite sous le texte (`@media (max-width: 390px)`). -->
-          <aside class="projet-rdv-cta relative mt-4 flex h-91 w-full items-center rounded-xl bg-[#f5f3ff] px-9 max-[390.02px]:h-auto max-[390.02px]:min-h-91 max-[390.02px]:gap-10 max-[390.02px]:py-14">
+          <aside class="projet-rdv-cta relative mt-4 flex h-91 w-full items-center rounded-xl bg-surface-2 px-9 max-[390.02px]:h-auto max-[390.02px]:min-h-91 max-[390.02px]:gap-10 max-[390.02px]:py-14">
             <div class="projet-rdv-left flex min-w-0 flex-1 items-start gap-11 pr-140 max-[390.02px]:pr-0">
               <span class="projet-rdv-icon relative block size-44 shrink-0">
                 <img src="/img/icons/ic-rdv-calendar.svg" alt="" width="44" height="44" class="block size-44 max-w-none">
@@ -398,7 +398,7 @@ usePageSeo(() => ({
                  conseiller n'existe côté API, contrairement au « Voir tout »
                  et au « Commencer » logement voisins (routes réelles) — reste
                  un `div`, pas un lien mort. -->
-            <div class="projet-rdv-btn absolute top-30 right-9 rounded-lg border border-[#450ff2] bg-transparent px-15 py-9 text-sm leading-16 font-medium text-[#450ff2] max-[390.02px]:static">
+            <div class="projet-rdv-btn absolute top-30 right-9 rounded-lg border border-primary-link bg-transparent px-15 py-9 text-sm leading-16 font-medium text-primary-link max-[390.02px]:static">
               {{ $t('projectOverview.bookAppointment') }}
             </div>
           </aside>

@@ -24,6 +24,10 @@
  * ratio proche — la maquette elle-même réutilise ses pourcentages tels
  * quels entre le cadre 145×45 et le 150×47).
  *
+ * En sombre, `public/img/logo-dark.png` (même 450×141) : wordmark blanc +
+ * icône Q couleur. Le swap est CSS (`data-theme` / `prefers-color-scheme`),
+ * pas JS — pas de flash au premier paint.
+ *
  * Le fichier vectoriel d'origine reste à demander à l'équipe design : il
  * remplacera ce WebP sans toucher au reste du code.
  *
@@ -34,7 +38,7 @@
  * près — et c'est le fichier actuellement téléversé en recette, octet pour
  * octet. Un autre logo, de ratio différent, reste proportionné et centré au
  * lieu d'être déformé. S'il ne se charge pas, retour au fichier local.
- * Le logo sombre attend le thème sombre de Kader.
+ * Le logo sombre suit la même règle (`site.logo_dark`, sinon `logo-dark.png`).
  */
 import type { Branding } from '~/core/contracts'
 
@@ -52,6 +56,10 @@ const LOCAL_LOGO = '/img/logo.webp'
 const { data: branding } = useNuxtData<Branding>('branding')
 const failed = ref(false)
 const src = computed(() => (failed.value ? null : branding.value?.logoLight) || LOCAL_LOGO)
+
+const LOCAL_LOGO_DARK = '/img/logo-dark.png'
+const darkFailed = ref(false)
+const darkSrc = computed(() => (darkFailed.value ? null : branding.value?.logoDark) || LOCAL_LOGO_DARK)
 </script>
 
 <template>
@@ -61,9 +69,19 @@ const src = computed(() => (failed.value ? null : branding.value?.logoLight) || 
       alt="Qiryna"
       width="450"
       height="141"
-      class="absolute block max-w-none object-contain"
+      class="q-logo-light absolute max-w-none object-contain"
       style="width: 93.1%; height: 94%; left: 3.41%; top: 4.29%;"
       @error="failed = true"
+    >
+    <!-- Variante pour fond sombre : affichée par le thème sombre (CSS), administrée elle aussi. -->
+    <img
+      :src="darkSrc"
+      alt="Qiryna"
+      width="450"
+      height="141"
+      class="q-logo-dark absolute max-w-none object-contain"
+      style="width: 93.1%; height: 94%; left: 3.41%; top: 4.29%;"
+      @error="darkFailed = true"
     >
   </span>
 </template>

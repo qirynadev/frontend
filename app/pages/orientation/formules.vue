@@ -14,11 +14,11 @@
  *
  * Checkout Stripe via `useCheckout`, comme `logement/[slug]/index.vue`.
  *
- * **Habillage par rang, pas par nom API** (même choix que logement,
- * 2026-08-22) : les trois formules réelles (Jordan/Salarié/Spécialiste RH,
- * classées par prix croissant par `orderTiers`) reprennent les couleurs et
- * icônes Jordan/Tyson/Pelé de la maquette selon leur **rang**, pas leur nom —
- * seule « Jordan » correspond réellement au premier rang par coïncidence.
+ * **Habillage par nom**, pas seulement par rang : l'API expose désormais
+ * quatre formules (Free, Étudiant, Salarié, Spécialiste RH). Un habillage
+ * borné à trois couleurs faisait tomber Salarié **et** Spécialiste RH sur
+ * Pelé (rouge). On rattache Étudiant → Jordan, Salarié → Tyson,
+ * Spécialiste RH → Pelé, Free → 4ᵉ palette orange.
  *
  * **Tagline et badge restent éditoriaux** (`orientation.formules.{jordan,
  * tyson,pele}.{tagline,badge}`, par rang) : l'API n'a ni l'un ni l'autre
@@ -43,54 +43,83 @@ const { data: offer, apiError, isInitialLoading, refresh } = await usePageData(
   { watch: [locale] },
 )
 
-/** Couleurs/icônes Jordan → Tyson → Pelé de la maquette, par rang. */
-const VISUALS = [
-  {
-    key: 'jordan',
-    icon: 'ic-of-jordan',
-    isTop: false,
-    ribbonBg: 'bg-tier-2',
-    card: 'border-tier-border',
-    name: 'text-tier-2',
-    badgeBg: 'bg-of-badge-jordan-bg',
-    badgeText: 'text-of-badge-jordan',
-    price: 'text-tier-2',
-    button: 'border border-tier-2 bg-surface-card text-tier-2',
-    checkIcon: 'ic-of-check-purple',
-  },
-  {
-    key: 'tyson',
-    icon: 'ic-of-tyson',
-    isTop: false,
-    ribbonBg: 'bg-tier-1',
-    card: 'border-tier-border',
-    name: 'text-tier-1',
-    badgeBg: 'bg-of-badge-tyson-bg',
-    badgeText: 'text-of-badge-tyson',
-    price: 'text-tier-1-price',
-    button: 'border border-tier-1-line bg-surface-card text-tier-1-line',
-    checkIcon: 'ic-of-check-green',
-  },
-  {
-    key: 'pele',
-    icon: 'ic-of-pele',
-    isTop: true,
-    ribbonBg: 'bg-tier-3',
-    card: 'border-tier-3-border',
-    name: 'text-tier-3',
-    badgeBg: 'bg-of-badge-pele-bg',
-    badgeText: 'text-of-badge-pele',
-    price: 'text-tier-3',
-    button: 'border border-tier-3 bg-surface-card text-tier-3',
-    checkIcon: 'ic-of-check-red',
-  },
-] as const
+/** Couleurs/icônes de la maquette, rattachées ensuite par nom de formule. */
+const VISUAL_JORDAN = {
+  key: 'jordan',
+  icon: 'ic-of-jordan',
+  isTop: false,
+  ribbonBg: 'bg-tier-2',
+  card: 'border-tier-border',
+  name: 'text-tier-2',
+  badgeBg: 'bg-of-badge-jordan-bg',
+  badgeText: 'text-of-badge-jordan',
+  price: 'text-tier-2',
+  button: 'border border-tier-2 bg-surface-card text-tier-2',
+  checkIcon: 'ic-of-check-purple',
+} as const
+
+const VISUAL_TYSON = {
+  key: 'tyson',
+  icon: 'ic-of-tyson',
+  isTop: false,
+  ribbonBg: 'bg-tier-1',
+  card: 'border-tier-border',
+  name: 'text-tier-1',
+  badgeBg: 'bg-of-badge-tyson-bg',
+  badgeText: 'text-of-badge-tyson',
+  price: 'text-tier-1-price',
+  button: 'border border-tier-1-line bg-surface-card text-tier-1-line',
+  checkIcon: 'ic-of-check-green',
+} as const
+
+const VISUAL_PELE = {
+  key: 'pele',
+  icon: 'ic-of-pele',
+  isTop: true,
+  ribbonBg: 'bg-tier-3',
+  card: 'border-tier-3-border',
+  name: 'text-tier-3',
+  badgeBg: 'bg-of-badge-pele-bg',
+  badgeText: 'text-of-badge-pele',
+  price: 'text-tier-3',
+  button: 'border border-tier-3 bg-surface-card text-tier-3',
+  checkIcon: 'ic-of-check-red',
+} as const
+
+const VISUAL_FREE = {
+  key: 'free',
+  icon: 'ic-of-tyson',
+  isTop: false,
+  ribbonBg: 'bg-warning',
+  card: 'border-tier-border',
+  name: 'text-warning',
+  badgeBg: 'bg-warning-bg',
+  badgeText: 'text-warning',
+  price: 'text-warning',
+  button: 'border border-warning bg-surface-card text-warning',
+  checkIcon: 'ic-of-check-green',
+} as const
+
+const VISUALS_BY_RANK = [VISUAL_JORDAN, VISUAL_TYSON, VISUAL_PELE, VISUAL_FREE] as const
+
+function foldName(name: string) {
+  return name.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+}
+
+function visualFor(name: string, index: number) {
+  const folded = foldName(name)
+  if (folded.includes('specialiste') || /\brh\b/.test(folded) || folded.includes('pele')) return VISUAL_PELE
+  if (folded.includes('salarie') || folded.includes('tyson')) return VISUAL_TYSON
+  if (folded.includes('etudiant') || folded.includes('jordan')) return VISUAL_JORDAN
+  if (folded.includes('free') || folded.includes('gratuit')) return VISUAL_FREE
+  return VISUALS_BY_RANK[index % VISUALS_BY_RANK.length]!
+}
 
 const tiers = computed(() => {
   const list = offer.value?.tiers ?? []
   return list.map((tier, index) => ({
     tier,
-    visual: VISUALS[Math.min(index, VISUALS.length - 1)]!,
+    visual: visualFor(tier.name, index),
   }))
 })
 
@@ -151,12 +180,30 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
             <header class="flex w-full flex-col items-center">
               <div class="flex w-full flex-row items-center justify-center gap-8">
                 <span
-                  v-if="entry.visual.isTop"
+                  v-if="entry.visual.isTop || entry.tier.highlighted"
                   class="flex size-36 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tier-3-bg"
                 >
-                  <QIcon :name="entry.visual.icon" :size="44" />
+                  <img
+                    v-if="entry.tier.icon"
+                    :src="entry.tier.icon"
+                    alt=""
+                    width="44"
+                    height="44"
+                    class="size-44 object-contain"
+                  >
+                  <QIcon v-else :name="entry.visual.icon" :size="44" />
                 </span>
-                <QIcon v-else :name="entry.visual.icon" :size="36" />
+                <template v-else>
+                  <img
+                    v-if="entry.tier.icon"
+                    :src="entry.tier.icon"
+                    alt=""
+                    width="36"
+                    height="36"
+                    class="size-36 object-contain"
+                  >
+                  <QIcon v-else :name="entry.visual.icon" :size="36" />
+                </template>
                 <h2 :class="['m-0 text-4xl leading-28 font-semibold whitespace-nowrap max-2xs:text-3xl', entry.visual.name]">
                   {{ entry.tier.name }}
                 </h2>

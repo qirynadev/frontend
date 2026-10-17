@@ -362,12 +362,12 @@ usePageSeo(() => ({
       <div class="flex w-full flex-col gap-22">
         <!-- Ma progression -->
         <section
-          class="box-border flex w-full flex-col rounded-[10px] border border-[#f3f4f6] bg-[#faf9fd] px-19 py-25 shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
+          class="box-border flex w-full flex-col rounded-[10px] border border-border bg-surface px-19 py-25 shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
           aria-labelledby="lang-progress-title"
         >
           <div class="flex w-full items-start justify-between gap-12">
             <div class="min-w-0 flex-1">
-              <h1 id="lang-progress-title" class="m-0 text-[18px] leading-28 font-bold text-[#0a142f]">
+              <h1 id="lang-progress-title" class="m-0 text-[18px] leading-28 font-bold text-text">
                 {{ $t('languageProject.progressTitle') }}
               </h1>
               <p class="m-0 pt-4 text-[10px] leading-20 font-normal text-[rgba(10,20,47,0.7)]">
@@ -376,14 +376,14 @@ usePageSeo(() => ({
             </div>
             <div class="flex shrink-0 flex-col items-end">
               <p class="m-0 text-[24px] leading-30 font-bold text-[#fc037f]">{{ progressPct }}%</p>
-              <p class="m-0 text-[12px] leading-16 font-medium tracking-[0.3px] text-[#0a142f]">
+              <p class="m-0 text-[12px] leading-16 font-medium tracking-[0.3px] text-text">
                 {{ $t('languageProject.progressDone') }}
               </p>
             </div>
           </div>
 
           <div class="w-full pt-16">
-            <div class="h-6 w-full overflow-hidden rounded-full bg-[#e8e8ff]">
+            <div class="h-6 w-full overflow-hidden rounded-full bg-primary-soft">
               <div class="h-6 rounded-full bg-[#fc037f]" :style="{ width: `${progressPct}%` }" />
             </div>
           </div>
@@ -391,7 +391,7 @@ usePageSeo(() => ({
           <div class="relative flex w-full items-start justify-between pt-24">
             <!-- Ligne centrée sur les pastilles 32px (top 16px), 3 colonnes. -->
             <div
-              class="pointer-events-none absolute top-40 left-[16.67%] right-[16.67%] z-0 border-t border-[#e5e7eb]"
+              class="pointer-events-none absolute top-40 left-[16.67%] right-[16.67%] z-0 border-t border-border"
               aria-hidden="true"
             />
             <component
@@ -418,15 +418,15 @@ usePageSeo(() => ({
               </span>
               <span
                 v-else
-                class="flex size-32 items-center justify-center rounded-full border border-[#e5e7eb] bg-surface-card"
+                class="flex size-32 items-center justify-center rounded-full border border-border bg-surface-card"
               >
-                <span class="text-[14px] leading-24 font-medium text-[#66619e]">{{ step.id }}</span>
+                <span class="text-[14px] leading-24 font-medium text-muted">{{ step.id }}</span>
               </span>
               <p
                 :class="[
                   'm-0 whitespace-pre-line text-center text-[10px] leading-[12.5px]',
                   step.status === 'current' ? 'font-semibold text-text' : '',
-                  step.status === 'todo' ? 'font-normal text-[#9ca3af]' : '',
+                  step.status === 'todo' ? 'font-normal text-muted-2' : '',
                   step.status === 'done' ? 'font-normal text-text' : '',
                 ]"
               >{{ $t(step.labelKey) }}</p>
@@ -558,7 +558,7 @@ usePageSeo(() => ({
         <!-- Onglets + listes (grille empilée = hauteur stable au changement d’onglet) -->
         <section v-if="!planningHidden" class="flex w-full flex-col gap-22">
           <div
-            class="box-border flex h-41 w-full items-stretch rounded-[6px] border border-[#efeff7] bg-[#f8f8fd] p-px"
+            class="box-border flex h-41 w-full items-stretch rounded-[6px] border border-border bg-surface p-px"
             role="tablist"
             :aria-label="$t('languageProject.tabsLabel')"
           >
@@ -569,7 +569,7 @@ usePageSeo(() => ({
               :class="[
                 'flex h-full min-w-0 flex-1 cursor-pointer items-center justify-center gap-8 rounded-[5px] border-0',
                 activeTab === 'planned'
-                  ? 'border-b border-[#fa007b] bg-[#fefefe] text-[#fa007a]'
+                  ? 'border-b border-[#fa007b] bg-surface-card text-[#fa007a]'
                   : 'bg-transparent text-text',
               ]"
               @click="setTab('planned')"
@@ -584,7 +584,7 @@ usePageSeo(() => ({
               :class="[
                 'flex h-full min-w-0 flex-1 cursor-pointer items-center justify-center gap-8 rounded-[5px] border-0',
                 activeTab === 'unplanned'
-                  ? 'border-b border-[#4b32f9] bg-[#f5f4fd] text-[#4329f7]'
+                  ? 'border-b border-[#4b32f9] bg-surface-2 text-[#4329f7]'
                   : 'bg-transparent text-text',
               ]"
               @click="setTab('unplanned')"
@@ -612,14 +612,14 @@ usePageSeo(() => ({
               <article
                 v-for="card in pagedPlannedCards"
                 :key="card.id"
-                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-surface-card px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
+                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-border bg-surface-card px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
               >
                 <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
                 <span class="relative size-44 shrink-0 overflow-hidden">
                   <img src="/img/icons/mpl-langue/session-cal.svg" alt="" width="44" height="44" class="block size-44">
                 </span>
                 <div class="min-w-0 flex-1">
-                  <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-[#0a142f]">{{ card.title }}</h2>
+                  <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-text">{{ card.title }}</h2>
                   <p class="m-0 flex items-center gap-6 pt-4 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
                     <img src="/img/icons/mpl-langue/clock.svg" alt="" width="14" height="14" class="block size-14 shrink-0">
                     <span>{{ card.timeLabel }}</span>
@@ -633,7 +633,7 @@ usePageSeo(() => ({
                   type="button"
                   :disabled="!card.canJoin"
                   :class="[
-                    'inline-flex shrink-0 items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]',
+                    'inline-flex shrink-0 items-center justify-center gap-6 rounded-lg border border-primary-link bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-primary-link',
                     card.canJoin ? 'cursor-pointer' : 'cursor-not-allowed opacity-40',
                   ]"
                   @click="joinSession(card.id)"
@@ -669,14 +669,14 @@ usePageSeo(() => ({
               <article
                 v-for="card in pagedUnplannedCards"
                 :key="card.id"
-                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-[#f3f4f6] bg-surface-card px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
+                class="relative box-border flex w-full items-center gap-16 overflow-hidden rounded-2xl border border-border bg-surface-card px-17 py-13 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
               >
                 <span class="absolute top-0 bottom-0 left-0 w-4 bg-[#fd087d]" aria-hidden="true" />
                 <span class="relative size-44 shrink-0 overflow-hidden">
                   <img src="/img/icons/mpl-langue/session-cal.svg" alt="" width="44" height="44" class="block size-44">
                 </span>
                 <div class="min-w-0 flex-1">
-                  <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-[#0a142f]">{{ card.title }}</h2>
+                  <h2 class="m-0 text-[14px] leading-[22.5px] font-semibold text-text">{{ card.title }}</h2>
                   <p class="m-0 pt-4 text-[12px] leading-16 font-normal text-[rgba(10,20,47,0.6)]">
                     {{ card.durationLabel }}
                   </p>
@@ -684,7 +684,7 @@ usePageSeo(() => ({
                 <NuxtLink
                   v-if="card.to"
                   :to="localePath(card.to)"
-                  class="inline-flex shrink-0 items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa] no-underline"
+                  class="inline-flex shrink-0 items-center justify-center gap-6 rounded-lg border border-primary-link bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-primary-link no-underline"
                 >
                   <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
                   <span>{{ $t('languageProject.schedule') }}</span>
@@ -692,7 +692,7 @@ usePageSeo(() => ({
                 <button
                   v-else
                   type="button"
-                  class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-6 rounded-lg border border-[#371bfa] bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-[#371bfa]"
+                  class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-6 rounded-lg border border-primary-link bg-transparent px-7 py-9 text-[10px] leading-16 font-semibold whitespace-nowrap text-primary-link"
                 >
                   <img src="/img/icons/mpl-langue/video.svg" alt="" width="16" height="16" class="block size-16">
                   <span>{{ $t('languageProject.schedule') }}</span>

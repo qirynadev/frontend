@@ -89,7 +89,12 @@ const stats = computed(() => {
 })
 
 if (data.value && !data.value.destination) {
-  throw createError({ statusCode: 404, message: t('destination.detail.notFound'), fatal: true })
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Not Found',
+    message: t('destination.detail.notFound'),
+    fatal: true,
+  })
 }
 
 useContractSeo(() => destination.value?.seo, t('destination.detail.fallbackTitle'), destination.value?.slugs)

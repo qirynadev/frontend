@@ -271,7 +271,7 @@ usePageSeo(() => ({
           v-for="school in schools"
           :key="school.id"
           :to="schoolPath(school)"
-          class="box-border flex w-full items-center rounded-xl bg-surface-card p-10 text-inherit no-underline shadow-card"
+          class="box-border flex w-full items-center rounded-xl border border-border bg-surface-card p-10 text-inherit no-underline shadow-card"
         >
           <!-- Logo 64×64 -->
           <div class="box-border flex size-64 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-card p-4 shadow-xs">

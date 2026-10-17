@@ -68,7 +68,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
       :class="[
         'flex-1 cursor-pointer text-center text-xl font-semibold transition-colors duration-150',
         variant === 'pill'
-          ? ['rounded-xl p-12', model === option.value ? 'bg-primary-dark text-white shadow-xs' : 'bg-transparent text-text']
+          ? ['rounded-xl p-12', model === option.value ? 'bg-primary-dark text-on-primary shadow-xs' : 'bg-transparent text-text']
           : ['relative border-0 bg-transparent pb-12', model === option.value ? 'text-primary-link' : 'text-muted-2'],
         option.disabled ? 'pointer-events-none opacity-50' : '',
       ]"

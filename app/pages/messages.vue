@@ -203,7 +203,8 @@ usePageSeo(() => ({
           </p>
         </div>
         <div class="msg-hero-illus pointer-events-none absolute top-0 right-0 h-150 w-190 overflow-hidden" aria-hidden="true">
-          <img src="/img/msg-hero.webp" alt="" width="211" height="167" class="block h-150 w-full max-w-full object-cover object-top">
+          <img src="/img/msg-hero.webp" alt="" width="211" height="167" class="q-theme-light block h-150 w-full max-w-full object-cover object-top">
+          <img src="/img/msg-hero-dark.webp" alt="" width="211" height="167" class="q-theme-dark h-150 w-full max-w-full object-cover object-top">
         </div>
       </section>
 

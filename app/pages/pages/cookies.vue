@@ -33,7 +33,7 @@ useContractSeo(() => page.value?.seo, t('legalCookies.title'))
           <AppLegalHeader :title="title" :intro="intro" :updated="document?.updated" />
 
           <div class="rounded-[20px] bg-rml-rights-info p-16">
-            <p class="m-0 text-[12px] leading-[22.75px] font-medium text-[#1e1b4b]">
+            <p class="m-0 text-[12px] leading-[22.75px] font-medium text-text">
               {{ $t('legalCookies.introCard') }}
             </p>
           </div>

@@ -29,7 +29,7 @@ const route = useRoute()
       type="button"
       disabled
       aria-current="page"
-      class="flex-1 cursor-pointer border-0 p-12 text-center text-xl leading-20 font-semibold no-underline rounded-xl bg-primary-dark text-white shadow-2xs"
+      class="flex-1 cursor-pointer border-0 p-12 text-center text-xl leading-20 font-semibold no-underline rounded-xl bg-primary-dark text-on-primary shadow-2xs"
     >
       {{ $t('auth.signIn') }}
     </button>
@@ -46,7 +46,7 @@ const route = useRoute()
       type="button"
       disabled
       aria-current="page"
-      class="flex-1 cursor-pointer border-0 p-12 text-center text-xl leading-20 font-semibold no-underline rounded-xl bg-primary-dark text-white shadow-2xs"
+      class="flex-1 cursor-pointer border-0 p-12 text-center text-xl leading-20 font-semibold no-underline rounded-xl bg-primary-dark text-on-primary shadow-2xs"
     >
       {{ $t('auth.signUp') }}
     </button>

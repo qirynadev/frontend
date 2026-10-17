@@ -65,7 +65,7 @@ usePageSeo(() => ({
         </p>
       </section>
 
-      <section class="rl-card w-full rounded-xl bg-surface-card p-16 shadow-card box-border">
+      <section class="rl-card w-full rounded-xl border border-border bg-surface-card p-16 shadow-card box-border">
         <h2 class="rl-card-title mt-0 mb-12 px-4 text-2xl leading-[22.5px] font-bold text-text">
           {{ $t('settingsLanguage.cardTitle') }}
         </h2>

@@ -119,7 +119,7 @@ function docIcon(doc: AdmissionDocument) {
             <section class="flex items-center gap-24 rounded-[16px] border border-[#f3f4f6] bg-gradient-to-r from-[#fdfdfd] to-[#f8f7fe] p-32 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
               <span class="flex size-96 shrink-0 items-center justify-center overflow-clip rounded-full bg-[#f0ecfe]">
                 <span class="size-48 overflow-clip">
-                  <img :src="`${ASSET}/icon-hero.svg`" alt="" width="48" height="48" class="block size-full">
+                  <img :src="`${ASSET}/icon-hero.svg`" alt="" width="48" height="48" class="block size-full" loading="lazy" decoding="async">
                 </span>
               </span>
               <div class="flex min-w-0 flex-1 flex-col">
@@ -152,7 +152,7 @@ function docIcon(doc: AdmissionDocument) {
                 <div v-if="heroAdvisor || heroUpdated" class="flex items-center gap-16 pt-16 text-[14px] leading-20">
                   <span v-if="heroAdvisor" class="flex items-center gap-8">
                     <span class="size-16 overflow-clip">
-                      <img :src="`${ASSET}/icon-advisor.svg`" alt="" width="16" height="16" class="block size-full">
+                      <img :src="`${ASSET}/icon-advisor.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
                     </span>
                     <span class="text-[14px] leading-20">
                       <span class="text-[#1b1b1b]">{{ $t('desktop.admission.advisorLabel') }} </span>
@@ -180,7 +180,7 @@ function docIcon(doc: AdmissionDocument) {
                 @click="emit('tab', 'apercu')"
               >
                 <span class="size-16 overflow-clip">
-                  <img :src="`${ASSET}/tab-apercu.svg`" alt="" width="16" height="16" class="block size-full">
+                  <img :src="`${ASSET}/tab-apercu.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
                 </span>
                 <span class="text-[16px] leading-24 font-semibold">{{ $t('admission.tabApercu') }}</span>
               </button>
@@ -195,7 +195,7 @@ function docIcon(doc: AdmissionDocument) {
                 @click="emit('tab', 'document')"
               >
                 <span class="h-16 w-13 overflow-clip">
-                  <img :src="`${ASSET}/tab-documents.svg`" alt="" width="13" height="16" class="block size-full">
+                  <img :src="`${ASSET}/tab-documents.svg`" alt="" width="13" height="16" class="block size-full" loading="lazy" decoding="async">
                 </span>
                 <span class="text-[16px] leading-24 font-semibold">{{ $t('desktop.admission.tabDocuments') }}</span>
               </button>
@@ -232,6 +232,8 @@ function docIcon(doc: AdmissionDocument) {
                       width="10"
                       height="10"
                       class="block size-10"
+                      loading="lazy"
+                      decoding="async"
                     >
                     <template v-else>{{ step.stepNumber }}</template>
                   </span>
@@ -260,7 +262,7 @@ function docIcon(doc: AdmissionDocument) {
               <h2 class="m-0 text-[17px] leading-28 font-bold text-black">{{ $t('admission.docsTitle') }}</h2>
               <div class="mt-24 flex items-start gap-12 rounded-[12px] bg-[#f7f6fe] p-16">
                 <span class="size-48 shrink-0 overflow-clip">
-                  <img :src="`${ASSET}/banner-info.svg`" alt="" width="48" height="48" class="block size-full">
+                  <img :src="`${ASSET}/banner-info.svg`" alt="" width="48" height="48" class="block size-full" loading="lazy" decoding="async">
                 </span>
                 <div>
                   <p class="m-0 text-[14px] leading-20 font-semibold text-[#1a1d2b]">{{ $t('admission.docsBannerTitle') }}.</p>
@@ -275,7 +277,7 @@ function docIcon(doc: AdmissionDocument) {
                   :class="index < documents.length - 1 ? 'border-b border-solid border-[#f7f6fd]' : ''"
                 >
                   <span class="size-40 shrink-0 overflow-clip">
-                    <img :src="docIcon(doc)" alt="" width="40" height="40" class="block size-full">
+                    <img :src="docIcon(doc)" alt="" width="40" height="40" class="block size-full" loading="lazy" decoding="async">
                   </span>
                   <div class="min-w-0 flex-1">
                     <h3 class="m-0 text-[16px] leading-24 font-medium text-black">
@@ -295,7 +297,7 @@ function docIcon(doc: AdmissionDocument) {
                     >
                       {{ $t('admission.statusValidated') }}
                       <span class="size-16 overflow-clip">
-                        <img :src="`${ASSET}/badge-check.svg`" alt="" width="16" height="16" class="block size-full">
+                        <img :src="`${ASSET}/badge-check.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
                       </span>
                     </span>
                     <span
@@ -304,7 +306,7 @@ function docIcon(doc: AdmissionDocument) {
                     >
                       {{ $t('admission.statusPending') }}
                       <span class="size-16 overflow-clip">
-                        <img :src="`${ASSET}/badge-clock.svg`" alt="" width="16" height="16" class="block size-full">
+                        <img :src="`${ASSET}/badge-clock.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
                       </span>
                     </span>
                     <span
@@ -313,7 +315,7 @@ function docIcon(doc: AdmissionDocument) {
                     >
                       {{ $t('admission.statusUpload') }}
                       <span class="size-16 overflow-clip">
-                        <img :src="`${ASSET}/badge-upload.svg`" alt="" width="16" height="16" class="block size-full">
+                        <img :src="`${ASSET}/badge-upload.svg`" alt="" width="16" height="16" class="block size-full" loading="lazy" decoding="async">
                       </span>
                     </span>
                     <a
@@ -325,7 +327,7 @@ function docIcon(doc: AdmissionDocument) {
                       :aria-label="$t('admission.downloadDoc')"
                     >
                       <span class="size-20 overflow-clip">
-                        <img :src="`${ASSET}/icon-download.svg`" alt="" width="20" height="20" class="block size-full">
+                        <img :src="`${ASSET}/icon-download.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
                       </span>
                     </a>
                     <label
@@ -335,7 +337,7 @@ function docIcon(doc: AdmissionDocument) {
                     >
                       <QSpinner v-if="uploading[doc.formField]" size="sm" />
                       <span v-else class="size-20 overflow-clip">
-                        <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="20" height="20" class="block size-full">
+                        <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
                       </span>
                       <input
                         type="file"
@@ -372,7 +374,7 @@ function docIcon(doc: AdmissionDocument) {
             <aside class="flex items-center justify-between gap-24 rounded-[16px] border border-[#f3f4f6] bg-[#f9f8fd] p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
               <div class="flex min-w-0 items-center gap-16">
                 <span class="size-48 shrink-0 overflow-clip">
-                  <img :src="`${ASSET}/icon-help.svg`" alt="" width="48" height="48" class="block size-full">
+                  <img :src="`${ASSET}/icon-help.svg`" alt="" width="48" height="48" class="block size-full" loading="lazy" decoding="async">
                 </span>
                 <div>
                   <p class="m-0 text-[16px] leading-24 font-bold text-[#1a1d2b]">{{ $t('desktop.admission.helpTitle') }}</p>
@@ -444,6 +446,8 @@ function docIcon(doc: AdmissionDocument) {
                           :width="item.iconKind === 'glyph' ? 20 : 40"
                           :height="item.iconKind === 'glyph' ? 20 : 40"
                           class="block size-full"
+                          loading="lazy"
+                          decoding="async"
                         >
                       </span>
                     </span>
@@ -452,7 +456,7 @@ function docIcon(doc: AdmissionDocument) {
                       <span class="mt-2 block text-[12px] leading-16 text-[#64748b]">{{ $t(item.descKey) }}</span>
                     </span>
                     <span class="size-20 shrink-0 overflow-clip">
-                      <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="20" height="20" class="block size-full">
+                      <img :src="`${ASSET}/icon-chevron.svg`" alt="" width="20" height="20" class="block size-full" loading="lazy" decoding="async">
                     </span>
                   </button>
                 </li>
