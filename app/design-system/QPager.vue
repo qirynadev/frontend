@@ -59,7 +59,7 @@ function go(page: number) {
         :aria-current="item === page ? 'page' : undefined"
         :class="[
           'inline-flex size-30 cursor-pointer items-center justify-center rounded-lg text-xl font-medium transition-colors duration-150',
-          item === page ? 'bg-primary text-white' : 'bg-white text-text shadow-sm hover:bg-surface',
+          item === page ? 'bg-primary text-white' : 'bg-surface-card text-text shadow-sm hover:bg-surface',
         ]"
         @click="go(item)"
       >

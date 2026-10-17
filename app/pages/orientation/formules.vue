@@ -55,7 +55,7 @@ const VISUALS = [
     badgeBg: 'bg-of-badge-jordan-bg',
     badgeText: 'text-of-badge-jordan',
     price: 'text-tier-2',
-    button: 'border border-tier-2 bg-white text-tier-2',
+    button: 'border border-tier-2 bg-surface-card text-tier-2',
     checkIcon: 'ic-of-check-purple',
   },
   {
@@ -68,7 +68,7 @@ const VISUALS = [
     badgeBg: 'bg-of-badge-tyson-bg',
     badgeText: 'text-of-badge-tyson',
     price: 'text-tier-1-price',
-    button: 'border border-tier-1-line bg-white text-tier-1-line',
+    button: 'border border-tier-1-line bg-surface-card text-tier-1-line',
     checkIcon: 'ic-of-check-green',
   },
   {
@@ -81,7 +81,7 @@ const VISUALS = [
     badgeBg: 'bg-of-badge-pele-bg',
     badgeText: 'text-of-badge-pele',
     price: 'text-tier-3',
-    button: 'border border-tier-3 bg-white text-tier-3',
+    button: 'border border-tier-3 bg-surface-card text-tier-3',
     checkIcon: 'ic-of-check-red',
   },
 ] as const
@@ -135,7 +135,7 @@ useContractSeo(() => offer.value?.seo, t('offer.fallbackTitle'))
             v-for="entry in tiers"
             :key="entry.tier.id"
             :class="[
-              'relative box-border flex w-full flex-col gap-8 overflow-visible rounded-2xl border bg-white px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
+              'relative box-border flex w-full flex-col gap-8 overflow-visible rounded-2xl border bg-surface-card px-20 pt-26 pb-16 max-2xs:px-14 max-2xs:pb-14',
               entry.visual.card,
             ]"
           >

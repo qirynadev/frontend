@@ -97,7 +97,7 @@ usePageSeo(() => ({
 </script>
 
 <template>
-  <div class="page-mpl flex flex-1 flex-col bg-white">
+  <div class="page-mpl flex flex-1 flex-col bg-surface-card">
     <!-- Gouttières et retrait supérieur fournis par le layout mobile. -->
     <div class="mpl-main flex flex-col box-border">
       <!-- `gap: 0` : pas de retrait sous la barre, le bandeau vient à 8px. -->
@@ -149,7 +149,7 @@ usePageSeo(() => ({
                 'mpl-tab flex-1 flex items-center justify-center gap-8 border rounded-[5px] px-8 pt-10 pb-11 text-md leading-[19.5px] font-medium cursor-pointer box-border',
                 activeTab === tab
                   ? 'is-active bg-mpl-tab-active-bg border-mpl-tab-active-border border-b-mpl-tab-active-underline text-mpl-tab-active-text'
-                  : 'border-transparent bg-mpl-tab-bg text-black',
+                  : 'border-transparent bg-mpl-tab-bg text-text',
               ]"
               @click="setTab(tab)"
             >
@@ -187,7 +187,7 @@ usePageSeo(() => ({
               :title="$t('projectHousing.stepsEmptyTitle')"
               :description="$t('projectHousing.stepsEmptyDescription')"
             />
-            <div v-else ref="timelineRef" class="mpl-timeline relative w-full rounded-xl border border-mpo-card-border bg-white pt-21 pr-10 pb-21 pl-40 shadow-xs box-border">
+            <div v-else ref="timelineRef" class="mpl-timeline relative w-full rounded-xl border border-mpo-card-border bg-surface-card pt-21 pr-10 pb-21 pl-40 shadow-xs box-border">
               <div class="mpl-timeline-lines pointer-events-none absolute top-0 bottom-0 left-21 w-1" aria-hidden="true">
                 <span ref="pinkRef" class="mpl-timeline-line mpl-timeline-line--pink absolute left-0 w-1 bg-mpl-line-pink" />
                 <span ref="greyRef" class="mpl-timeline-line mpl-timeline-line--grey absolute left-0 w-1 bg-mpl-line-grey" />
@@ -209,8 +209,8 @@ usePageSeo(() => ({
                   :class="[
                     'mpl-marker absolute -left-31 top-1/2 -translate-y-1/2 flex size-24 shrink-0 items-center justify-center rounded-full box-border',
                     step.status === 'done' ? 'mpl-marker--done bg-mpl-marker-done' : '',
-                    step.status === 'current' ? 'mpl-marker--current border border-mpl-marker-done bg-white text-sm leading-15 font-bold text-mpl-marker-done' : '',
-                    step.status === 'upcoming' ? 'mpl-marker--upcoming border border-mpl-marker-upcoming bg-white text-sm leading-15 font-bold text-mpl-marker-upcoming' : '',
+                    step.status === 'current' ? 'mpl-marker--current border border-mpl-marker-done bg-surface-card text-sm leading-15 font-bold text-mpl-marker-done' : '',
+                    step.status === 'upcoming' ? 'mpl-marker--upcoming border border-mpl-marker-upcoming bg-surface-card text-sm leading-15 font-bold text-mpl-marker-upcoming' : '',
                   ]"
                 >
                   <img v-if="step.status === 'done'" src="/img/icons/ic-mpl-check.svg" alt="" width="14" height="14" class="block size-14">
@@ -222,7 +222,7 @@ usePageSeo(() => ({
                 </span>
 
                 <span class="mpl-step-copy flex min-w-0 flex-1 flex-col gap-2">
-                  <span class="mpl-step-title text-xl leading-[22.5px] font-medium text-black">{{ $t(step.titleKey) }}</span>
+                  <span class="mpl-step-title text-xl leading-[22.5px] font-medium text-text">{{ $t(step.titleKey) }}</span>
                   <span
                     :class="[
                       'mpl-step-status text-lg leading-[19.5px] font-normal',
@@ -240,12 +240,12 @@ usePageSeo(() => ({
           </div>
 
           <!-- Documents utiles -->
-          <a href="#" class="mpl-docs mt-20 flex w-full items-center gap-16 rounded-xl border border-mpo-card-border bg-white p-21 text-inherit no-underline shadow-xs box-border">
+          <a href="#" class="mpl-docs mt-20 flex w-full items-center gap-16 rounded-xl border border-mpo-card-border bg-surface-card p-21 text-inherit no-underline shadow-xs box-border">
             <span class="mpl-docs-icon flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-mpo-card-border">
               <img src="/img/icons/ic-mpl-folder.svg" alt="" width="24" height="24" class="block size-24">
             </span>
             <span class="mpl-docs-copy flex min-w-0 flex-1 flex-col gap-4">
-              <span class="mpl-docs-title text-2xl leading-[22.5px] font-semibold text-black">{{ $t('projectHousing.docsTitle') }}</span>
+              <span class="mpl-docs-title text-2xl leading-[22.5px] font-semibold text-text">{{ $t('projectHousing.docsTitle') }}</span>
               <span class="mpl-docs-desc text-base leading-[16.5px] font-normal text-mpo-heading">{{ $t('projectHousing.docsDesc') }}</span>
             </span>
             <img class="mpl-docs-chevron block size-20 shrink-0" src="/img/icons/ic-mpl-doc-chevron.svg" alt="" width="20" height="20">

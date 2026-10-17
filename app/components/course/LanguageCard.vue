@@ -54,7 +54,7 @@ const badgeClass = computed(() => (presentation.value ? toneClass[presentation.v
     role="option"
     :aria-selected="selected"
     :class="[
-      'flex w-full cursor-pointer items-center gap-10 rounded-xl border bg-white p-11 text-left',
+      'flex w-full cursor-pointer items-center gap-10 rounded-xl border bg-surface-card p-11 text-left',
       selected ? 'border-primary-select shadow-none' : 'border-border-soft shadow-soft',
     ]"
     @click="$emit('select', course.slug)"

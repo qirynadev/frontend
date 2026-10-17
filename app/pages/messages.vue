@@ -274,7 +274,7 @@ usePageSeo(() => ({
                   v-for="entry in threads"
                   :key="entry.id"
                   type="button"
-                  class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-white px-18 py-17 text-left box-border"
+                  class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-surface-card px-18 py-17 text-left box-border"
                   @click="openConversation(entry)"
                 >
                   <div class="msg-avatar relative size-48 shrink-0 overflow-hidden rounded-full">
@@ -325,7 +325,7 @@ usePageSeo(() => ({
               </div>
             </template>
 
-            <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
+            <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-surface-card px-16 py-28 text-center box-border">
               <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.noMessagesTitle') }}</p>
               <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.noMessagesDesc') }}</p>
             </div>
@@ -345,7 +345,7 @@ usePageSeo(() => ({
                   v-for="item in notifications.items"
                   :key="item.id"
                   type="button"
-                  class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-white px-18 py-17 text-left box-border"
+                  class="msg-card relative flex w-full cursor-pointer items-start rounded-xl border border-border bg-surface-card px-18 py-17 text-left box-border"
                   @click="openNotification(item)"
                 >
                   <span class="flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-full bg-msg-avatar-target">
@@ -379,7 +379,7 @@ usePageSeo(() => ({
               />
             </template>
 
-            <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-white px-16 py-28 text-center box-border">
+            <div v-else class="msg-empty w-full max-w-full rounded-xl border border-border bg-surface-card px-16 py-28 text-center box-border">
               <p class="msg-empty-title m-0 text-xl leading-[normal] font-semibold text-text">{{ $t('messages.emptyTitle') }}</p>
               <p class="msg-empty-desc m-0 mt-6 text-base leading-[normal] text-muted-2">{{ $t('messages.emptyDesc') }}</p>
             </div>
@@ -408,7 +408,7 @@ usePageSeo(() => ({
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
       <DialogContent
-        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex h-[75dvh] min-h-[75vh] w-full max-w-shell flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in"
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex h-[75dvh] min-h-[75vh] w-full max-w-shell flex-col overflow-hidden rounded-t-2xl bg-surface-card animate-ed-form-modal-in"
       >
         <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
           <div class="flex min-w-0 flex-1 items-center gap-12 pr-8">

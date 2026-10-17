@@ -29,7 +29,7 @@ const id = useId()
         :aria-invalid="invalid || undefined"
         :aria-describedby="error ? `${id}-err` : undefined"
         :class="[
-          'size-13 shrink-0 cursor-pointer appearance-none rounded-xs border bg-white',
+          'size-13 shrink-0 cursor-pointer appearance-none rounded-xs border bg-surface-card',
           'checked:border-primary checked:bg-primary',
           invalid ? 'border-danger' : 'border-border',
           disabled ? 'pointer-events-none opacity-50' : '',

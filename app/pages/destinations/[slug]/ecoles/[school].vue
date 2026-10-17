@@ -274,7 +274,7 @@ useSchoolSchemaOrg(school)
 
         <div class="pointer-events-none absolute inset-x-0 top-0 h-140 overflow-visible">
           <div
-            class="pointer-events-auto absolute -bottom-23 left-15 box-border flex size-102 flex-col items-center justify-center overflow-hidden rounded-3xl border border-ed-badge-border bg-white p-12 shadow-ed-badge"
+            class="pointer-events-auto absolute -bottom-23 left-15 box-border flex size-102 flex-col items-center justify-center overflow-hidden rounded-3xl border border-ed-badge-border bg-surface-card p-12 shadow-ed-badge"
             :class="!school.logo && 'bg-ed-badge-text-bg p-0 border-0'"
           >
             <NuxtImg
@@ -301,7 +301,7 @@ useSchoolSchemaOrg(school)
           <div class="pointer-events-auto absolute right-14 bottom-0 flex translate-y-1/2 items-center gap-8">
             <button
               type="button"
-              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-white p-0 shadow-ed-icon-btn"
+              class="flex size-40 cursor-pointer items-center justify-center rounded-full border-0 bg-surface-card p-0 shadow-ed-icon-btn"
               :aria-label="$t('school.detail.share')"
               @click="shareSchool"
             >
@@ -353,7 +353,7 @@ useSchoolSchemaOrg(school)
               v-for="formation in formations"
               :key="formation.title"
               type="button"
-              class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-white p-20 text-left text-text shadow-card"
+              class="box-border flex w-full items-start gap-16 rounded-xl border-0 bg-surface-card p-20 text-left text-text shadow-card"
               @click="activeFormation = formation"
             >
               <!-- `.ed-form-icon` — icône et teinte selon le type de formation (`formationVisual`) -->
@@ -446,7 +446,7 @@ useSchoolSchemaOrg(school)
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-100 bg-[rgba(13,27,62,0.45)]" />
       <DialogContent
-        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-white animate-ed-form-modal-in shell:inset-auto shell:top-1/2 shell:left-1/2 shell:w-720 shell:max-w-[calc(100vw-48px)] shell:-translate-x-1/2 shell:-translate-y-1/2 shell:rounded-2xl shell:max-h-[min(80vh,720px)] shell:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
+        class="fixed inset-x-0 bottom-0 z-100 mx-auto flex w-full max-w-shell max-h-[min(85vh,640px)] flex-col overflow-hidden rounded-t-2xl bg-surface-card animate-ed-form-modal-in shell:inset-auto shell:top-1/2 shell:left-1/2 shell:w-720 shell:max-w-[calc(100vw-48px)] shell:-translate-x-1/2 shell:-translate-y-1/2 shell:rounded-2xl shell:max-h-[min(80vh,720px)] shell:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
       >
         <header class="flex shrink-0 items-start justify-between gap-12 border-b border-border-soft px-20 pt-20 pb-12">
           <DialogTitle class="m-0 pr-8 text-xl leading-21 font-bold text-navy">
