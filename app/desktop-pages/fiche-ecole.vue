@@ -155,6 +155,12 @@ function similarLocation(item: SchoolSummary) {
         </div>
       </div>
 
+      <SchoolOtherDomains
+        :domains="school.otherDomains"
+        :destination-slug="destinationSlug"
+        :school-slug="school.slug"
+      />
+
       <!-- Onglets + contenu -->
       <div class="flex w-full flex-col gap-31 rounded-[16px] border border-[#f9fafb] bg-white p-33 shadow-[0_0_3px_rgba(0,0,0,0.12)]">
         <div

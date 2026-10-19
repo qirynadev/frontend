@@ -55,19 +55,24 @@ export const schoolRepo = {
   /**
    * Fiche complète par slug (`GET /schools/by-slug/{slug}` côté API, §21).
    *
-   * ⚠️ 21 slugs sont dupliqués en base (`universite-lille`, `insead`…).
-   * L'arbitrage — école active de plus petit `id` — est le même côté API et
-   * dans `dedupeBySlug` pour la liste : la fiche ouverte depuis la liste est
-   * bien celle de la liste.
+   * ⚠️ Plusieurs fiches peuvent partager un slug : une école enseignée dans
+   * deux domaines a une fiche par domaine. `domaine` (slug du titre du
+   * domaine, la valeur du `?domaine=` des liens) désigne la bonne. Sans lui,
+   * l'arbitrage (école active de plus petit `id`) est le même côté API et
+   * dans `dedupeBySlug` pour la liste.
    *
    * `destination` (slug API de la destination) renseigne `School.destinationSlug`,
-   * que la réponse de l'API ne porte pas.
+   * que la réponse de l'API ne porte pas, et départage deux écoles homonymes
+   * de deux pays.
    */
-  async bySlug(slug: string, locale?: string, destination?: string): Promise<School | null> {
+  async bySlug(slug: string, locale?: string, destination?: string, domaine?: string): Promise<School | null> {
+    const query: Record<string, string> = {}
+    if (destination) query.destination = destination
+    if (domaine) query.domaine = domaine
     try {
       return await bffFetch<School>(`/schools/${encodeURIComponent(slug)}`, {
         locale,
-        query: destination ? { destination } : undefined,
+        query: Object.keys(query).length > 0 ? query : undefined,
       })
     }
     catch (error) {

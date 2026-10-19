@@ -48,16 +48,19 @@ const offersTo = computed(() =>
  * pages ; le lien `fonts.googleapis.com` qui vivait ici a été retiré.
  */
 
+// `domaine` désigne la fiche : une école enseignée dans deux domaines en a une
+// par domaine, sous le même slug (plan IA, lot 7). Il entre donc dans la clé et
+// dans les dépendances, sinon passer d'un domaine à l'autre garderait la fiche.
 const { data, apiError, isInitialLoading, refresh } = await usePageData(
-  `school-${schoolSlug.value}`,
+  `school-${schoolSlug.value}-${domaine.value}`,
   async () => {
-    const school = await schoolRepo.bySlug(schoolSlug.value, locale.value, apiSlug.value)
+    const school = await schoolRepo.bySlug(schoolSlug.value, locale.value, apiSlug.value, domaine.value)
     // Formations : appel dédié (§12), pas la fiche complète — a besoin de
     // l'UUID de l'école, donc après sa résolution par slug.
     const formations = school ? await schoolRepo.formations(school.id, locale.value) : []
     return { school, formations }
   },
-  { watch: [schoolSlug, locale] },
+  { watch: [schoolSlug, domaine, locale] },
 )
 
 const school = computed(() => data.value?.school ?? null)
@@ -315,6 +318,13 @@ useSchoolSchemaOrg(school)
         <h1>{{ school.title }}</h1>
         <p v-if="school.city || school.country.name">{{ [school.city, school.country.name].filter(Boolean).join(', ') }}</p>
       </div>
+
+      <SchoolOtherDomains
+        class="mt-22"
+        :domains="school.otherDomains"
+        :destination-slug="destinationSlug"
+        :school-slug="school.slug"
+      />
 
       <div class="mt-22 flex w-full flex-col">
         <div

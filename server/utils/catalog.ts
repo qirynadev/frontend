@@ -231,9 +231,9 @@ export function isPlausibleSlug(slug: string): boolean {
   return slug.length > 0 && slug.length <= 150 && SLUG_PATTERN.test(slug)
 }
 
-async function requestOrNull<T>(event: H3Event, locale: string, path: string): Promise<T | null> {
+async function requestOrNull<T>(event: H3Event, locale: string, path: string, query?: Record<string, string>): Promise<T | null> {
   try {
-    return await apiClient(event, locale).request<T>(path)
+    return await apiClient(event, locale).request<T>(path, query ? { query } : {})
   }
   catch (error) {
     if (error instanceof ApiError && error.kind === 'notFound') return null
@@ -243,12 +243,39 @@ async function requestOrNull<T>(event: H3Event, locale: string, path: string): P
 
 const UNIT_CACHE = { name: 'qiryna', swr: true, maxAge: 300, staleMaxAge: 3600 } as const
 
-/** Fiche école brute — `GET /schools/by-slug/{slug}`, même forme qu'une entrée de `schoolSheets[*].schools[*]`. */
+/**
+ * Fiche école brute : `GET /schools/by-slug/{slug}`, même forme qu'une entrée de `schoolSheets[*].schools[*]`.
+ *
+ * Une école enseignée dans deux domaines a deux fiches de même titre, donc de
+ * même slug (plan IA, lot 7, back-office 2026-10-19). `destination` (slug du
+ * pays) et `domaine` (slug du titre du domaine) désignent la bonne : l'API
+ * ignore un critère sans correspondance, et sans critère renvoie la fiche
+ * d'avant. Les deux entrent dans la clé de cache : sans eux, la première fiche
+ * mise en cache serait servie pour tous les domaines.
+ */
 export const cachedSchoolBySlug = defineCachedFunction(
-  (event: H3Event, locale: string, slug: string) =>
-    requestOrNull<Record<string, unknown>>(event, locale, `/schools/by-slug/${encodeURIComponent(slug)}`),
-  { ...UNIT_CACHE, group: 'school', getKey: (_event: H3Event, locale: string, slug: string) => `${locale}:${slug}` },
+  (event: H3Event, locale: string, slug: string, destination = '', domaine = '') =>
+    requestOrNull<Record<string, unknown>>(
+      event,
+      locale,
+      `/schools/by-slug/${encodeURIComponent(slug)}`,
+      schoolBySlugQuery(destination, domaine),
+    ),
+  {
+    ...UNIT_CACHE,
+    group: 'school',
+    getKey: (_event: H3Event, locale: string, slug: string, destination = '', domaine = '') =>
+      `${locale}:${slug}:${destination}:${domaine}`,
+  },
 )
+
+/** Paramètres de `GET /schools/by-slug/{slug}`, sans les critères vides. */
+export function schoolBySlugQuery(destination: string, domaine: string): Record<string, string> | undefined {
+  const query: Record<string, string> = {}
+  if (destination !== '') query.destination = destination
+  if (domaine !== '') query.domaine = domaine
+  return Object.keys(query).length > 0 ? query : undefined
+}
 
 /** Formations brutes d'une école — `GET /schools/{id}/formations` (§12). */
 export const cachedSchoolFormations = defineCachedFunction(

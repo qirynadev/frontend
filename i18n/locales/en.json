@@ -1787,6 +1787,8 @@
       "favourite": "Add to favourites",
       "floatingCta": "Get support with your application",
       "notFound": "School not found",
+      "otherDomains": "This school also offers:",
+      "otherDomainsLabel": "Other fields of study at this school",
       "placeholderDuration1": "1 year",
       "placeholderDuration2": "2 years",
       "placeholderDuration5": "5 years",

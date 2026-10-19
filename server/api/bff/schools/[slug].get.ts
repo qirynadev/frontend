@@ -9,10 +9,14 @@ import type { School } from '~~/app/core/contracts'
  * `schoolSheets[*].schools[*]` du dump complet (vérifié champ par champ le
  * 2026-09-11) : le même `toSchool` s'applique sans adaptation.
  *
- * **Doublons de slug** : 21 écoles sont saisies deux fois. Le back-office
- * retient l'école active de plus petit `id` (`SchoolAction::getBySlug`,
- * corrigé le 2026-09-11), exactement comme `dedupeBySlug` pour la liste : la
- * fiche ouverte depuis la liste est bien celle de la liste.
+ * **Doublons de slug** : une école enseignée dans deux domaines a deux fiches
+ * de même titre (une fiche par domaine, décision du 2026-10-14), et deux
+ * écoles homonymes peuvent exister dans deux pays. `?destination=` (slug du
+ * pays) et `?domaine=` (slug du titre du domaine) sont transmis à l'API, qui
+ * renvoie la fiche correspondante (plan IA, lot 7). Sans eux, ou s'ils ne
+ * correspondent à rien, le back-office retient l'école active de plus petit
+ * `id`, exactement comme `dedupeBySlug` pour une liste sans domaine : la fiche
+ * ouverte depuis la liste est bien celle de la liste.
  *
  * `destinationSlug` n'existe pas dans la réponse (l'école ne connaît que son
  * `lc_country_id`) : la page le transmet en `?destination=`, elle le tient de
@@ -26,14 +30,17 @@ import type { School } from '~~/app/core/contracts'
  */
 export default defineEventHandler(async (event): Promise<School> => {
   const slug = getRouterParam(event, 'slug') ?? ''
-  const destination = getQuery(event).destination
-  const destinationSlug = typeof destination === 'string' ? destination : ''
+  const query = getQuery(event)
+  const destinationSlug = typeof query.destination === 'string' && isPlausibleSlug(query.destination) ? query.destination : ''
+  // Slug du titre du domaine (`?domaine=mba`). Une valeur fantaisiste est ignorée
+  // plutôt que transmise : elle multiplierait les entrées de cache pour rien.
+  const domaine = typeof query.domaine === 'string' && isPlausibleSlug(query.domaine) ? query.domaine : ''
 
   if (!isPlausibleSlug(slug)) notFound(slug)
 
   let raw: Record<string, unknown> | null
   try {
-    raw = await cachedSchoolBySlug(event, readLocale(event), slug)
+    raw = await cachedSchoolBySlug(event, readLocale(event), slug, destinationSlug, domaine)
   }
   catch (error) {
     rethrowApiError(error)
