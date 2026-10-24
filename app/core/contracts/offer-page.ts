@@ -1,6 +1,7 @@
 import type { Price, SeoMeta } from './common'
 import type { LanguageLevelKey } from './course'
 import type { LivingDestination, LivingStats } from './living'
+import type { PageContent } from './page-content'
 
 /**
  * Palier tarifaire.
@@ -70,4 +71,25 @@ export interface OfferPage {
   seo: SeoMeta
   /** Pays, photo et bandeau statistique — renseigné uniquement pour `kind: 'living'`. */
   living: (LivingDestination & LivingStats) | null
+  /**
+   * Contenu de la page réglé dans le back-office (2026-10-24) : formule d'un
+   * domaine (`/offres/{slug}`) et orientation. Facultatif : absent d'un
+   * catalogue mis en cache par une version antérieure.
+   */
+  page?: PageContent
+  /** Domaine : pastille saisie (`badge_label`), `null` = texte par défaut. */
+  badge?: string | null
+  /** Domaine : prestations incluses (`items`), dans l'ordre saisi. */
+  includes?: string[]
+  /** Orientation : situations proposées (catégories sociales du profilage). */
+  audiences?: OfferAudience[]
+}
+
+/** Situation proposée sur la page orientation (catégorie sociale du profilage). */
+export interface OfferAudience {
+  slug: string
+  title: string
+  /** Texte simple, sans HTML. */
+  description: string
+  icon: string | null
 }

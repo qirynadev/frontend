@@ -2,7 +2,8 @@ import type { OfferPage, OfferTier, OfferTierLevel } from '../contracts'
 import { isLanguageLevelKey } from './course.adapter'
 import { toPrice, toSeo } from './common.adapter'
 import { toLivingDestination, toLivingStats } from './living.adapter'
-import { asArray, asRecord, bool, html, num, optionalNum, optionalStr, str, toUrl } from './primitives'
+import { toPageContent } from './page-content.adapter'
+import { asArray, asRecord, bool, html, num, optionalNum, optionalStr, plainText, str, toUrl } from './primitives'
 
 /**
  * Unification des deux formes tarifaires de l'API.
@@ -190,6 +191,9 @@ export function toDomainOfferPage(raw: unknown): OfferPage {
     serviceType: 'area',
     seo: toSeo(source, title, description),
     living: null,
+    page: toPageContent(source),
+    badge: optionalStr(source, 'badge_label'),
+    includes: asArray(source.items).map((item) => str(item, 'title').trim()).filter((label) => label !== ''),
   }
 }
 
@@ -248,5 +252,14 @@ export function toOrientationOfferPage(rawProfilage: unknown, rawFormulas: unkno
     serviceType: 'profilage',
     seo: toSeo(source, title, description),
     living: null,
+    page: toPageContent(source),
+    audiences: asArray(source.categories)
+      .map((entry) => ({
+        slug: str(entry, 'slug'),
+        title: str(entry, 'title'),
+        description: plainText(asRecord(entry).description),
+        icon: toUrl(asRecord(entry).icon),
+      }))
+      .filter((audience) => audience.title !== ''),
   }
 }

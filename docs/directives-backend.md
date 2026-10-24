@@ -1503,6 +1503,41 @@ Restent hors périmètre : le contenu des formules (réglé dans chaque formule)
 les quatre avatars et les étoiles de niveau de la page langue, les pages
 mobiles.
 
+## 34. ✅ Codé (back-office, `staging`) : pages formule d'accompagnement et orientation administrables
+
+Demande du responsable (2026-10-24), sur le socle des §32 et §33
+(`PageContent::SCHEMAS` : entrées `offer` et `orientation`). Les champs déjà
+saisis dans les fiches, jusque-là ignorés par le desktop, sont branchés
+d'abord ; les nouveaux champs ne couvrent que ce qui était écrit en dur.
+
+- **Formule d'un domaine** (`offers`, `offer_translations`, page
+  `/offres/{slug}`) :
+  - existants désormais affichés : `badge_label` (pastille), `hero_image`
+    (photo du bandeau), `items` (prestations « Ce qui est inclus » et carte
+    de prix ; un astérisque affiche la note) ;
+  - nouveaux : grand titre, sous-titre, titres de sections, note, 6 étapes,
+    bouton, mention de paiement, encart ; icônes des prestations (10, par
+    position, choisies à côté de chaque prestation), des étapes et de
+    l'encart ;
+  - « Description » devient le texte pour Google (elle n'apparaît pas).
+- **Orientation** (`profilages`, `profilage_translations`, page
+  `/orientation`) :
+  - existantes désormais affichées : les catégories sociales (titre, texte,
+    icône) forment le panneau « Votre sélection actuelle » ;
+  - nouveaux : pastille, grand titre, texte, 3 chiffres, photo, titres des
+    formules, ruban, 3 engagements, panneau, encart de garantie, encart de
+    confiance ; icônes des chiffres, engagements et garantie ;
+  - titre, description et « cover » du profilage, qui ne servaient qu'au
+    référencement et au partage, sont renommés en conséquence.
+- **Front** : `OfferPage.page`, `.badge`, `.includes`, `.audiences`
+  (facultatifs). Pages desktop seulement.
+
+**À reprendre côté contenu (recette)** : les prestations d'Ingénierie,
+Classes Prépa, Architecture, Management, Science Politique et Médecine sont du
+faux texte et s'affichent maintenant sur leur page ; Droit et MBA sont
+propres. Les formules d'orientation (Profilage → Formules) gardent leurs
+accroches de maquette.
+
 ## Pour mémoire — pas des écarts, aucune action requise
 
 - **Prix professeur « à partir de »** (`docs/mon-projet-professeur-mocks.md`) :

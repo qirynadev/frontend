@@ -2,17 +2,23 @@
 /**
  * Orientation desktop ← Figma `Profilage` (998:555), 1728 px.
  * Formules : `GET /profilage` + `GET /profilage/formulas` (même source que mobile).
+ *
+ * Réglable dans Profilage depuis le 2026-10-24 : textes, icônes et photo de
+ * la page (`offer.page`), situations du panneau de droite (catégories
+ * sociales, `offer.audiences`). Ce qui n'y est pas saisi garde les
+ * traductions et les visuels de la maquette.
  */
 import { offerPageRepo } from '~/core/repositories'
+import { emphasisSegments } from '~/utils/emphasis'
+import { pageIcon, pageListText, pageText } from '~/utils/page-content'
 
-const { n, locale } = useI18n()
+const { t, n, locale } = useI18n()
 const ASSET = '/img/desktop/orientation'
 
-type Audience = 'eleve' | 'etudiant' | 'professionnel'
+const audience = ref('')
 
-const audience = ref<Audience>('eleve')
-
-const audiences = [
+/** Situations de la maquette, tant que le profilage n'en sert aucune. */
+const AUDIENCES_MAQUETTE = [
   {
     id: 'eleve' as const,
     icon: `${ASSET}/path-eleve.svg`,
@@ -35,6 +41,9 @@ const audiences = [
     descKey: 'desktop.orientation.audience.proDesc',
   },
 ] as const
+
+/** Pastilles des situations, par position. */
+const AUDIENCE_BGS = ['bg-[#fef3f2]', 'bg-[#faf5ff]', 'bg-[#fff7ed]'] as const
 
 const heroStats = [
   { icon: `${ASSET}/stat-profiles.svg`, valueKey: 'desktop.orientation.stat1Value', labelKey: 'desktop.orientation.stat1Label', bg: 'bg-[#fee7e7]', iconSize: 20 },
@@ -103,6 +112,52 @@ const tiers = computed(() => {
 })
 
 const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startCheckout } = useCheckout()
+
+const page = computed(() => offer.value?.page ?? null)
+const texte = (key: string) => pageText(page.value, key)
+
+const titre = computed(() => {
+  const saisi = texte('heading')
+  return saisi ? emphasisSegments(saisi) : null
+})
+
+const chiffres = computed(() => heroStats.map((stat, index) => ({
+  ...stat,
+  image: pageIcon(page.value, 'stats', index),
+  value: pageListText(page.value, 'stats', index, 'value') ?? t(stat.valueKey),
+  label: pageListText(page.value, 'stats', index, 'label') ?? t(stat.labelKey),
+})))
+
+const engagements = computed(() => trusts.map((item, index) => ({
+  ...item,
+  image: pageIcon(page.value, 'trust', index),
+  titre: pageListText(page.value, 'trust', index, 'title') ?? t(item.titleKey),
+  texte: pageListText(page.value, 'trust', index, 'text') ?? t(item.descKey),
+})))
+
+/** Situations : catégories sociales du profilage, sinon celles de la maquette. */
+const situations = computed(() => {
+  const saisies = offer.value?.audiences ?? []
+  if (saisies.length === 0) {
+    return AUDIENCES_MAQUETTE.map(item => ({
+      id: item.id as string,
+      icon: item.icon,
+      iconBg: item.iconBg,
+      titre: t(item.titleKey),
+      texte: t(item.descKey),
+    }))
+  }
+  return saisies.map((item, index) => ({
+    id: item.slug || String(index),
+    icon: item.icon,
+    iconBg: AUDIENCE_BGS[index % AUDIENCE_BGS.length]!,
+    titre: item.title,
+    texte: item.description,
+  }))
+})
+
+/** Première situation cochée par défaut, comme la maquette. */
+const situationChoisie = computed(() => audience.value || situations.value[0]?.id || '')
 </script>
 
 <template>
@@ -112,21 +167,30 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
         <section class="flex flex-col items-start gap-16 xl:flex-row xl:items-center">
           <div class="flex min-w-0 w-full max-w-498 flex-col">
             <span class="inline-flex w-fit rounded-[6px] bg-[#f0ecff] px-12 py-4 text-[11px] leading-[16.5px] font-bold tracking-[0.55px] text-[#580ffe] uppercase">
-              {{ $t('desktop.orientation.badge') }}
+              {{ texte('badge') ?? $t('desktop.orientation.badge') }}
             </span>
-            <h1 class="m-0 pt-16 text-[length:var(--q-fs-hero,40px)] leading-[1.21] font-semibold">
+            <h1 v-if="titre" class="m-0 pt-16 text-[length:var(--q-fs-hero,40px)] leading-[1.21] font-semibold whitespace-pre-line">
+              <span
+                v-for="(segment, index) in titre"
+                :key="index"
+                :class="segment.emphasis ? 'text-[#ed1c24]' : ''"
+              >{{ segment.text }}</span>
+            </h1>
+            <h1 v-else class="m-0 pt-16 text-[length:var(--q-fs-hero,40px)] leading-[1.21] font-semibold">
               <span class="block">{{ $t('desktop.orientation.titleBefore') }}</span>
               <span>
                 {{ $t('desktop.orientation.titleMid') }}
                 <span class="text-[#ed1c24]">{{ $t('desktop.orientation.titleAccent') }}</span>
               </span>
             </h1>
-            <p class="m-0 max-w-448 pt-16 text-[length:var(--q-fs-body,16px)] leading-26">
-              {{ $t('desktop.orientation.intro') }}
+            <p class="m-0 max-w-448 pt-16 text-[length:var(--q-fs-body,16px)] leading-26 whitespace-pre-line">
+              {{ texte('intro') ?? $t('desktop.orientation.intro') }}
             </p>
             <div class="flex flex-nowrap items-center gap-24 pt-32">
-              <div v-for="stat in heroStats" :key="stat.valueKey" class="flex shrink-0 items-center gap-12">
+              <div v-for="stat in chiffres" :key="stat.valueKey" class="flex shrink-0 items-center gap-12">
+                <img v-if="stat.image" :src="stat.image" alt="" width="40" height="40" class="block size-40 shrink-0" loading="lazy" decoding="async">
                 <span
+                  v-else
                   class="flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-full"
                   :class="stat.bg || undefined"
                 >
@@ -141,23 +205,23 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
                   >
                 </span>
                 <div class="shrink-0">
-                  <p class="m-0 whitespace-nowrap text-[14px] leading-[17.5px] font-bold">{{ $t(stat.valueKey) }}</p>
-                  <p class="m-0 whitespace-nowrap text-[12px] leading-[15px] text-[#3e3e3e]">{{ $t(stat.labelKey) }}</p>
+                  <p class="m-0 whitespace-nowrap text-[14px] leading-[17.5px] font-bold">{{ stat.value }}</p>
+                  <p class="m-0 whitespace-nowrap text-[12px] leading-[15px] text-[#3e3e3e]">{{ stat.label }}</p>
                 </div>
               </div>
             </div>
           </div>
           <div class="relative w-full max-w-496 shrink-0">
-            <img :src="`${ASSET}/hero.jpg`" alt="" width="1024" height="682" class="block h-auto w-full" loading="lazy" decoding="async">
+            <img :src="page?.heroImage ?? `${ASSET}/hero.jpg`" alt="" width="1024" height="682" class="block h-auto w-full" loading="lazy" decoding="async">
           </div>
         </section>
 
         <section class="rounded-16 border border-[#f0f2f6] bg-white px-16 pt-15 pb-32">
           <h2 class="m-0 text-center text-[length:var(--q-fs-title,24px)] leading-32 font-semibold">
-            {{ $t('offer.title') }}
+            {{ texte('formulas_title') ?? $t('offer.title') }}
           </h2>
           <p class="m-0 pt-4 text-center text-[15px] leading-[22.5px] text-[#404040]">
-            {{ $t('offer.subtitle') }}
+            {{ texte('formulas_text') ?? $t('offer.subtitle') }}
           </p>
 
           <PageState :loading="isInitialLoading" :error="apiError" :on-retry="() => refresh()">
@@ -187,7 +251,7 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
                   class="absolute top-[-1px] right-0 inline-flex items-center gap-4 rounded-tr-[16px] rounded-bl-[4px] bg-[#ed1c24] px-12 py-4 text-[11px] leading-[16.5px] font-bold text-white"
                 >
                   <img :src="`${ASSET}/star.svg`" alt="" width="12" height="12" class="size-12" loading="lazy" decoding="async">
-                  {{ $t('desktop.orientation.popular') }}
+                  {{ texte('popular_label') ?? $t('desktop.orientation.popular') }}
                 </span>
                 <div class="flex flex-col items-center">
                   <div class="flex items-center justify-center gap-16">
@@ -238,17 +302,18 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
 
         <div class="grid grid-cols-3 gap-16 rounded-16 border border-[#f0f2f6] bg-white px-32 py-20 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
           <div
-            v-for="(item, index) in trusts"
+            v-for="(item, index) in engagements"
             :key="item.titleKey"
             class="flex items-center gap-16"
             :class="index > 0 ? 'border-l border-[#f0f2f6] pl-32' : ''"
           >
-            <span class="flex size-48 shrink-0 items-center justify-center rounded-full" :class="item.bg">
+            <img v-if="item.image" :src="item.image" alt="" width="48" height="48" class="block size-48 shrink-0" loading="lazy" decoding="async">
+            <span v-else class="flex size-48 shrink-0 items-center justify-center rounded-full" :class="item.bg">
               <img :src="item.icon" alt="" width="24" height="24" class="size-24" loading="lazy" decoding="async">
             </span>
             <div class="min-w-0">
-              <p class="m-0 text-[14px] leading-21 font-bold">{{ $t(item.titleKey) }}</p>
-              <p class="m-0 text-[13px] leading-[19.5px] text-[#525252]">{{ $t(item.descKey) }}</p>
+              <p class="m-0 text-[14px] leading-21 font-bold">{{ item.titre }}</p>
+              <p class="m-0 text-[13px] leading-[19.5px] text-[#525252]">{{ item.texte }}</p>
             </div>
           </div>
         </div>
@@ -256,57 +321,59 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
 
       <aside class="desktop-rail flex flex-col">
         <div class="rounded-16 border border-[#f3f4f6] bg-white p-24">
-          <h2 class="m-0 text-[17px] leading-[25.5px] font-bold">{{ $t('desktop.orientation.audience.title') }}</h2>
-          <p class="m-0 pt-4 text-[13px] leading-[19.5px] text-[#202020]">{{ $t('desktop.orientation.audience.lead') }}</p>
-          <div class="flex flex-col gap-16 pt-24" role="radiogroup" :aria-label="$t('desktop.orientation.audience.title')">
+          <h2 class="m-0 text-[17px] leading-[25.5px] font-bold">{{ texte('audience_title') ?? $t('desktop.orientation.audience.title') }}</h2>
+          <p class="m-0 pt-4 text-[13px] leading-[19.5px] text-[#202020]">{{ texte('audience_text') ?? $t('desktop.orientation.audience.lead') }}</p>
+          <div class="flex flex-col gap-16 pt-24" role="radiogroup" :aria-label="texte('audience_title') ?? $t('desktop.orientation.audience.title')">
             <button
-              v-for="item in audiences"
+              v-for="item in situations"
               :key="item.id"
               type="button"
               role="radio"
-              :aria-checked="audience === item.id"
+              :aria-checked="situationChoisie === item.id"
               class="relative flex w-full items-center gap-16 rounded-16 border bg-white p-16 text-left"
-              :class="audience === item.id ? 'border-[#fe5358]' : 'border-[#f2f4f8]'"
+              :class="situationChoisie === item.id ? 'border-[#fe5358]' : 'border-[#f2f4f8]'"
               @click="audience = item.id"
             >
               <span class="flex size-48 shrink-0 items-center justify-center overflow-hidden rounded-full" :class="item.iconBg">
                 <img
+                  v-if="item.icon"
                   :src="item.icon"
                   alt=""
-                  :width="item.id === 'eleve' ? 18 : 24"
-                  :height="item.id === 'eleve' ? 22 : 24"
-                  :class="item.id === 'eleve' ? 'block h-22 w-18' : 'size-24'"
+                  width="24"
+                  height="24"
+                  class="block size-24 object-contain"
                   loading="lazy"
                   decoding="async"
                 >
               </span>
               <span class="min-w-0 flex-1 pr-28">
-                <span class="block text-[15px] leading-[22.5px] font-semibold">{{ $t(item.titleKey) }}</span>
-                <span class="mt-2 block text-[12px] leading-[15px] text-[#252525]">{{ $t(item.descKey) }}</span>
+                <span class="block text-[15px] leading-[22.5px] font-semibold">{{ item.titre }}</span>
+                <span class="mt-2 line-clamp-3 text-[12px] leading-[15px] text-[#252525]">{{ item.texte }}</span>
               </span>
               <span
                 class="absolute top-1/2 right-16 size-20 -translate-y-1/2 rounded-full border box-border"
-                :class="audience === item.id ? 'border-[#f60914]' : 'border-[#e5e7eb]'"
+                :class="situationChoisie === item.id ? 'border-[#f60914]' : 'border-[#e5e7eb]'"
                 aria-hidden="true"
               >
-                <span v-if="audience === item.id" class="absolute inset-[4px] rounded-full bg-[#f60914]" />
+                <span v-if="situationChoisie === item.id" class="absolute inset-[4px] rounded-full bg-[#f60914]" />
               </span>
             </button>
           </div>
         </div>
 
         <div class="mt-24 flex items-start gap-16 rounded-16 bg-[#fef2f3] p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <span class="flex size-48 shrink-0 items-center justify-center rounded-full bg-[#fee9ea]">
+          <img v-if="pageIcon(page, 'guarantee', 0)" :src="pageIcon(page, 'guarantee', 0)!" alt="" width="48" height="48" class="block size-48 shrink-0" loading="lazy" decoding="async">
+          <span v-else class="flex size-48 shrink-0 items-center justify-center rounded-full bg-[#fee9ea]">
             <img :src="`${ASSET}/guarantee.svg`" alt="" width="24" height="24" class="size-24" loading="lazy" decoding="async">
           </span>
           <div>
-            <p class="m-0 text-[15px] leading-[22.5px] font-bold text-[#252525]">{{ $t('desktop.orientation.guaranteeTitle') }}</p>
-            <p class="m-0 pt-4 text-[13px] leading-[21px]">{{ $t('desktop.orientation.guaranteeDesc') }}</p>
+            <p class="m-0 text-[15px] leading-[22.5px] font-bold text-[#252525]">{{ texte('guarantee_title') ?? $t('desktop.orientation.guaranteeTitle') }}</p>
+            <p class="m-0 pt-4 text-[13px] leading-[21px] whitespace-pre-line">{{ texte('guarantee_text') ?? $t('desktop.orientation.guaranteeDesc') }}</p>
           </div>
         </div>
 
         <div class="mt-24 rounded-16 border border-[#f3f4f6] bg-white p-24 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <p class="m-0 text-[15px] leading-[22.5px] font-bold text-[#151515]">{{ $t('desktop.orientation.socialTitle') }}</p>
+          <p class="m-0 text-[15px] leading-[22.5px] font-bold text-[#151515]">{{ texte('social_title') ?? $t('desktop.orientation.socialTitle') }}</p>
           <div class="flex items-center pt-20">
             <div class="flex">
               <img
@@ -322,11 +389,11 @@ const { pending: checkoutPending, errorKey: checkoutErrorKey, start: startChecko
               >
             </div>
             <div class="pl-16 text-[12px] leading-16 font-extrabold">
-              4.9/5
+              {{ texte('rating') ?? '4.9/5' }}
               <span class="pl-8 font-normal text-[#fbbf24]">★★★★★</span>
             </div>
           </div>
-          <p class="m-0 pt-12 text-[12px] leading-18 text-[#2d2d2d]">{{ $t('desktop.orientation.socialCount') }}</p>
+          <p class="m-0 pt-12 text-[12px] leading-18 text-[#2d2d2d]">{{ texte('social_text') ?? $t('desktop.orientation.socialCount') }}</p>
         </div>
       </aside>
     </div>

@@ -2,6 +2,11 @@
 /**
  * Offres d'accompagnement desktop ← Figma `341:3720`, 1728 px.
  * Sans fil d'Ariane. Copy et tarif suivent le domaine (`offer.slug`).
+ *
+ * Réglable dans la fiche « Offre » du domaine depuis le 2026-10-24 : pastille
+ * (`badge_label`), photo (`hero_image`), prestations incluses (`items`) et,
+ * dans `offer.page`, titres, étapes, encart et icônes. Ce qui n'y est pas
+ * saisi garde les traductions et les visuels de la maquette.
  */
 import type { OfferPage } from '~/core/contracts'
 import {
@@ -10,6 +15,8 @@ import {
   desktopOfferMbaIncludes,
   desktopOfferSteps,
 } from '~/config/desktop-offres-accompagnement'
+import { emphasisSegments } from '~/utils/emphasis'
+import { pageIcon, pageListText, pageText } from '~/utils/page-content'
 
 const props = defineProps<{
   offer: OfferPage
@@ -31,10 +38,35 @@ const accent = computed(() => {
   return t('desktop.offer.accent.default', { domain: domainLabel.value })
 })
 
-/** Puces Figma `341:4102` — jamais les `features` API (textes longs du back-office). */
-const includeItems = computed(() =>
-  desktopOfferMbaIncludes.map(item => ({ icon: item.icon, label: t(item.labelKey) })),
-)
+const page = computed(() => props.offer.page ?? null)
+const texte = (key: string) => pageText(page.value, key)
+
+const titre = computed(() => {
+  const saisi = texte('heading')
+  return saisi ? emphasisSegments(saisi) : null
+})
+
+/**
+ * Prestations incluses : celles saisies dans l'offre (`items`, courtes), sinon
+ * les puces de la maquette (Figma `341:4102`). Icône choisie par position,
+ * sinon celle de la maquette au même rang.
+ */
+const includeItems = computed(() => {
+  const saisies = props.offer.includes ?? []
+  const labels = saisies.length > 0 ? saisies : desktopOfferMbaIncludes.map(item => t(item.labelKey))
+  return labels.map((label, index) => ({
+    icon: desktopOfferMbaIncludes[index % desktopOfferMbaIncludes.length]!.icon,
+    image: pageIcon(page.value, 'includes', index),
+    label,
+  }))
+})
+
+const etapes = computed(() => desktopOfferSteps.map((step, index) => ({
+  ...step,
+  image: pageIcon(page.value, 'steps', index),
+  titre: pageListText(page.value, 'steps', index, 'title') ?? t(step.titleKey),
+  texte: pageListText(page.value, 'steps', index, 'text') ?? t(step.descKey),
+})))
 
 const showIncludeNote = computed(() => includeItems.value.some(item => item.label.includes('*')))
 </script>
@@ -45,20 +77,27 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
       <div class="flex items-start gap-4">
         <div class="flex w-548 shrink-0 flex-col gap-14 self-stretch pt-2">
           <span class="rounded-[6px] bg-[#fef2f2] px-12 py-4 text-[11px] leading-[16.5px] font-semibold tracking-[0.55px] text-[#ff1b40]">
-            {{ $t('desktop.offer.badge', { domain: domainLabel }) }}
+            {{ offer.badge ?? $t('desktop.offer.badge', { domain: domainLabel }) }}
           </span>
-          <h1 class="m-0 text-[40px] leading-46 font-bold tracking-[-1px] text-[#151515]">
+          <h1 v-if="titre" class="m-0 text-[40px] leading-46 font-bold tracking-[-1px] whitespace-pre-line text-[#151515]">
+            <span
+              v-for="(segment, index) in titre"
+              :key="index"
+              :class="segment.emphasis ? 'text-[#ff1b40]' : ''"
+            >{{ segment.text }}</span>
+          </h1>
+          <h1 v-else class="m-0 text-[40px] leading-46 font-bold tracking-[-1px] text-[#151515]">
             {{ $t('desktop.offer.titleLine1') }}
             <span class="block">{{ $t('desktop.offer.titleLine2') }}</span>
             <span class="block text-[#ff1b40]">{{ accent }}</span>
           </h1>
-          <p class="m-0 max-w-512 text-[14px] leading-[22.75px] font-medium tracking-[-0.154px] text-black">
-            {{ $t('desktop.offer.subtitle', { domain: domainLabel }) }}
+          <p class="m-0 max-w-512 text-[14px] leading-[22.75px] font-medium tracking-[-0.154px] whitespace-pre-line text-black">
+            {{ texte('subtitle') ?? $t('desktop.offer.subtitle', { domain: domainLabel }) }}
           </p>
         </div>
         <div class="flex min-w-0 flex-1 items-start justify-center self-stretch">
           <img
-            :src="`${ASSET}/hero.png`"
+            :src="page?.heroImage ?? `${ASSET}/hero.png`"
             alt=""
             width="475"
             height="412"
@@ -71,7 +110,7 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
 
       <div class="flex w-full flex-col gap-12 pt-16">
         <h2 class="m-0 text-[17px] leading-[25.5px] font-bold tracking-[-0.442px] text-[#151515]">
-          {{ $t('desktop.offer.includedTitle') }}
+          {{ texte('included_title') ?? $t('desktop.offer.includedTitle') }}
         </h2>
         <div
           class="grid gap-x-10 gap-y-10 pt-8"
@@ -82,7 +121,8 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
             :key="item.label"
             class="flex h-60 min-h-60 items-center gap-8 rounded-[12px] border border-[#f3f4f6] bg-white p-11 shadow-[0_2px_4px_rgba(0,0,0,0.02)]"
           >
-            <span class="flex shrink-0 rounded-[6px] bg-[#fef2f2] p-6">
+            <img v-if="item.image" :src="item.image" alt="" width="28" height="28" class="block size-28 shrink-0" loading="lazy" decoding="async">
+            <span v-else class="flex shrink-0 rounded-[6px] bg-[#fef2f2] p-6">
               <img :src="`${ASSET}/${item.icon}`" alt="" width="16" height="16" class="block size-16" loading="lazy" decoding="async">
             </span>
             <p class="m-0 min-w-0 text-[9px] leading-[10.8px] font-semibold tracking-[0.171px] whitespace-pre-line text-[#1f2937]">
@@ -91,13 +131,13 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
           </div>
         </div>
         <p v-if="showIncludeNote" class="m-0 text-[10px] leading-[15px] tracking-[0.12px] text-[#6b7280]">
-          {{ $t('desktop.offer.includedNote') }}
+          {{ texte('included_note') ?? $t('desktop.offer.includedNote') }}
         </p>
       </div>
 
       <div class="flex w-full flex-col gap-40 pt-24">
         <h2 class="m-0 text-[17px] leading-[25.5px] font-bold tracking-[-0.442px] text-[#151515]">
-          {{ $t('desktop.offer.methodTitle') }}
+          {{ texte('method_title') ?? $t('desktop.offer.methodTitle') }}
         </h2>
         <div class="relative flex w-full items-start justify-between">
           <div
@@ -105,16 +145,16 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
             aria-hidden="true"
           />
           <div
-            v-for="step in desktopOfferSteps"
+            v-for="step in etapes"
             :key="step.titleKey"
             class="relative z-1 flex w-[142px] shrink-0 flex-col items-center"
           >
-            <img :src="`${ASSET}/${step.icon}`" alt="" width="54" height="54" class="block size-54 shrink-0" loading="lazy" decoding="async">
+            <img :src="step.image ?? `${ASSET}/${step.icon}`" alt="" width="54" height="54" class="block size-54 shrink-0" loading="lazy" decoding="async">
             <p class="m-0 pt-10 pb-5 text-center text-[12px] leading-18 font-bold text-[#151515]">
-              {{ $t(step.titleKey) }}
+              {{ step.titre }}
             </p>
             <p class="m-0 px-8 text-center text-[10px] leading-[12.5px] font-medium tracking-[0.12px] whitespace-pre-line text-[#6b7280]">
-              {{ $t(step.descKey) }}
+              {{ step.texte }}
             </p>
           </div>
         </div>
@@ -162,26 +202,27 @@ const showIncludeNote = computed(() => includeItems.value.some(item => item.labe
             @click="startCheckout(offer, tier)"
           >
             <QSpinner v-if="checkoutPending === tier.id" size="sm" />
-            <span v-else>{{ $t('desktop.offer.cta') }}</span>
+            <span v-else>{{ texte('cta_label') ?? $t('desktop.offer.cta') }}</span>
           </button>
           <p class="m-0 flex items-center gap-8 text-[11px] leading-[16.5px] font-medium tracking-[0.066px] text-[#6b7280]">
             <img :src="`${ASSET}/lock.svg`" alt="" width="14" height="14" class="block size-14 shrink-0" loading="lazy" decoding="async">
-            {{ $t('desktop.offer.secure') }}
+            {{ texte('secure_text') ?? $t('desktop.offer.secure') }}
           </p>
         </div>
       </div>
 
       <div class="mt-auto flex w-full flex-col items-start">
         <div class="flex w-full items-start gap-20 rounded-[6px] border border-[#fef2f2] bg-[#fff5f6] px-21 py-31 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-          <span class="flex size-48 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+          <img v-if="pageIcon(page, 'human', 0)" :src="pageIcon(page, 'human', 0)!" alt="" width="48" height="48" class="block size-48 shrink-0" loading="lazy" decoding="async">
+          <span v-else class="flex size-48 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
             <img :src="`${ASSET}/human.svg`" alt="" width="20" height="20" class="block size-20" loading="lazy" decoding="async">
           </span>
           <div class="flex min-w-0 flex-col gap-[7.375px]">
             <p class="m-0 text-[13px] leading-[16.25px] font-bold tracking-[-0.078px] whitespace-pre-line text-[#151515]">
-              {{ $t('desktop.offer.humanTitle') }}
+              {{ texte('human_title') ?? $t('desktop.offer.humanTitle') }}
             </p>
-            <p class="m-0 text-[11px] leading-[17.88px] font-semibold tracking-[0.066px] text-[#151515]">
-              {{ $t('desktop.offer.humanDesc') }}
+            <p class="m-0 text-[11px] leading-[17.88px] font-semibold tracking-[0.066px] whitespace-pre-line text-[#151515]">
+              {{ texte('human_text') ?? $t('desktop.offer.humanDesc') }}
             </p>
           </div>
         </div>
