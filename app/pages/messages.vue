@@ -67,8 +67,23 @@ const threadOpen = computed({
   set: (value: boolean) => { if (!value) selected.value = null },
 })
 
-function openConversation(entry: MessageThread) {
+/**
+ * Ouvrir le fil vaut lecture : sans `POST /user/messages/read`, `read_at`
+ * restait vide côté back-office et la pastille ne baissait jamais. Le
+ * back-office marque tous les messages reçus d'un coup, d'où la remise à zéro
+ * de chaque fil ; `threads` est un `shallowRef` (`usePageData`), réassigné en
+ * entier comme pour les notifications plus bas.
+ */
+async function openConversation(entry: MessageThread) {
   selected.value = entry
+  if (entry.unreadCount === 0) return
+  try {
+    await messageRepo.markRead(locale.value)
+    if (threads.value) threads.value = threads.value.map(thread => ({ ...thread, unreadCount: 0 }))
+  }
+  catch {
+    // La lecture du fil ne doit pas dépendre du succès du marquage.
+  }
 }
 
 const {

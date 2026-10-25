@@ -12,4 +12,8 @@ export const messageRepo = {
   list(locale?: string): Promise<MessageThread[]> {
     return bffFetch<MessageThread[]>('/messages', { locale })
   },
+  /** Marque comme lus tous les messages reçus (le back-office ne distingue pas les fils). */
+  markRead(locale?: string): Promise<{ ok: boolean }> {
+    return bffFetch<{ ok: boolean }>('/messages/read', { method: 'POST', locale })
+  },
 }
