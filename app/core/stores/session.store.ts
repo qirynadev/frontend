@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { AuthOutcome, User } from '../contracts'
 import { authRepo } from '../repositories'
+import { forgetPushSubscription } from '../../utils/push-browser'
 
 /**
  * Session de l'utilisateur.
@@ -79,6 +80,9 @@ export const useSessionStore = defineStore('session', () => {
     // Le cookie ne peut être effacé que par le serveur ; l'état local suit,
     // même si l'appel échoue — sinon une API indisponible interdirait de se
     // déconnecter.
+    // D'abord, tant que la session vaut encore : ce navigateur cesse de
+    // recevoir les notifications push du compte qui s'en va.
+    await forgetPushSubscription().catch(() => {})
     await authRepo.logout().catch(() => {})
     apply(null)
   }

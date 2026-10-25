@@ -255,6 +255,9 @@ export default defineNuxtConfig({
         { key: 'favicon-32', rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
         { key: 'favicon-16', rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        // Ouvert depuis l'écran d'accueil d'un iPhone, le site devient une
+        // application web : seule forme sous laquelle Apple autorise le push.
+        { rel: 'manifest', href: '/manifest.webmanifest' },
         /**
          * Plus aucun `preconnect` vers Google Fonts : Jost (2026-09-09) puis
          * `Plus Jakarta Sans` (2026-09-10) sont auto-hébergées dans

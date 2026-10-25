@@ -1779,6 +1779,16 @@
     "title": "My project",
     "updatedToday": "Updated today"
   },
+  "push": {
+    "activate": "Turn on",
+    "deactivate": "Turn off",
+    "denied": "Notifications are blocked for Qiryna in your browser settings.",
+    "error": "Notifications could not be turned on. Please try again in a moment.",
+    "iosHint": "On iPhone, add Qiryna to your Home Screen (Share button, then \"Add to Home Screen\") to receive notifications.",
+    "offerDesc": "New message, session reminder, test result: stay informed even when the site is closed.",
+    "offerTitle": "Get your notifications on this device",
+    "on": "Notifications are on for this device."
+  },
   "school": {
     "detail": {
       "emptyDescription": "This school has no published content yet. Our team is working on it.",

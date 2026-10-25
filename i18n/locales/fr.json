@@ -1779,6 +1779,16 @@
     "title": "Mon projet",
     "updatedToday": "Mis à jour aujourd'hui"
   },
+  "push": {
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "denied": "Les notifications sont bloquées pour Qiryna dans les réglages de votre navigateur.",
+    "error": "L'activation n'a pas abouti. Réessayez dans un instant.",
+    "iosHint": "Sur iPhone, ajoutez Qiryna à votre écran d'accueil (bouton Partager, puis « Sur l'écran d'accueil ») pour recevoir les notifications.",
+    "offerDesc": "Nouveau message, rappel de séance, résultat de votre test : soyez prévenu même lorsque le site est fermé.",
+    "offerTitle": "Recevez vos notifications sur cet appareil",
+    "on": "Notifications activées sur cet appareil."
+  },
   "school": {
     "detail": {
       "emptyDescription": "Cette école n’a pas encore de contenu publié. Nos équipes le complètent.",
