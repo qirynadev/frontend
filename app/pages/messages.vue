@@ -340,6 +340,9 @@ usePageSeo(() => ({
             ]"
             :aria-hidden="activeTab !== 'notification'"
           >
+            <!-- Notifications push sur ce navigateur (provisoire, en attendant un écran de réglage) -->
+            <PushOptIn />
+
             <template v-if="notifications && notifications.items.length">
               <div class="msg-list flex w-full flex-col gap-16">
                 <button
