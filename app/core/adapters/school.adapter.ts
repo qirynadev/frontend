@@ -1,4 +1,4 @@
-import type { MbaRegionSchools, School, SchoolDetail, SchoolFormation, SchoolSummary } from '../contracts'
+import type { MbaRegionSchools, School, SchoolDetail, SchoolDomain, SchoolFormation, SchoolSummary } from '../contracts'
 import { summaryFromHtml } from '~/utils/formation-content'
 import { toAreaOfStudySummary } from './area.adapter'
 import { toCountry, toSeo } from './common.adapter'
@@ -76,7 +76,19 @@ export function toSchoolSummary(raw: unknown, destinationSlug = '', flagBase?: s
     excerpt: liteExcerpt !== null ? truncateText(liteExcerpt, 180) : plainText(source.presentation, 180),
     foundedYear: optionalNum(source, 'founded_year'),
     studentCount: optionalNum(source, 'student_count'),
+    area: toSchoolDomain(source.area),
   }
+}
+
+/**
+ * Domaine d'une fiche (`area` et entrées de `other_domains`, back-office plan IA
+ * lot 7). Écarté (`null`) sans identifiant ou sans slug : il ne pourrait servir
+ * ni à un lien `?domaine=`, ni à distinguer deux fiches.
+ */
+function toSchoolDomain(raw: unknown): SchoolDomain | null {
+  const source = asRecord(raw)
+  const domain = { id: str(source, 'id'), slug: str(source, 'slug'), title: str(source, 'title') }
+  return domain.id !== '' && domain.slug !== '' ? domain : null
 }
 
 /** Fiche complète. */
@@ -90,6 +102,9 @@ export function toSchool(raw: unknown, destinationSlug = '', flagBase?: string):
     presentation,
     details: toDetails(source.details),
     pointsForts: html(source, 'points_forts'),
+    otherDomains: asArray(source.other_domains)
+      .map(toSchoolDomain)
+      .filter((domain): domain is SchoolDomain => domain !== null && domain.slug !== summary.area?.slug),
     seo: toSeo(source, summary.title, presentation),
   }
 }

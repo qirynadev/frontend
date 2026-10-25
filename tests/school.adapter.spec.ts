@@ -58,7 +58,7 @@ describe('version liste', () => {
     const summary = toSchoolSummary(rawSchoolWithFormations, 'france')
 
     expect(Object.keys(summary).sort()).toEqual(
-      ['city', 'country', 'destinationSlug', 'excerpt', 'formationCount', 'foundedYear', 'id', 'image', 'logo', 'slug', 'studentCount', 'title'].sort(),
+      ['area', 'city', 'country', 'destinationSlug', 'excerpt', 'formationCount', 'foundedYear', 'id', 'image', 'logo', 'slug', 'studentCount', 'title'].sort(),
     )
     expect(summary.formationCount).toBe(1)
   })
@@ -178,5 +178,42 @@ describe('toFormations', () => {
 
     expect(formations[0]?.grade).toBe('Grade Licence')
     expect(formations[0]?.duration).toBe('4 ans')
+  })
+})
+
+describe('domaine de la fiche (une fiche par domaine, plan IA lot 7)', () => {
+  const droit = { id: 'area-droit', title: 'Droit', slug: 'droit' }
+  const medecine = { id: 'area-medecine', title: 'Médecine', slug: 'medecine' }
+
+  it('lit le domaine de la fiche, dans la liste comme dans la fiche complète', () => {
+    expect(toSchoolSummary({ ...rawSchool, area: medecine }).area).toEqual(medecine)
+    expect(toSchool({ ...rawSchool, area: medecine }).area).toEqual(medecine)
+  })
+
+  it('donne null sans domaine, ou avec un domaine sans identifiant ni slug', () => {
+    expect(toSchool(rawSchool).area).toBeNull()
+    expect(toSchool({ ...rawSchool, area: null }).area).toBeNull()
+    expect(toSchool({ ...rawSchool, area: { id: '', title: 'Droit', slug: 'droit' } }).area).toBeNull()
+    expect(toSchool({ ...rawSchool, area: { id: 'area-droit', title: 'Droit', slug: '' } }).area).toBeNull()
+  })
+
+  it('lit les autres domaines de l’école', () => {
+    const school = toSchool({ ...rawSchool, area: medecine, other_domains: [droit] })
+
+    expect(school.otherDomains).toEqual([droit])
+  })
+
+  it('écarte des autres domaines celui de la fiche et les entrées inexploitables', () => {
+    const school = toSchool({
+      ...rawSchool,
+      area: medecine,
+      other_domains: [medecine, droit, { id: '', slug: 'x', title: 'X' }, 'n’importe quoi'],
+    })
+
+    expect(school.otherDomains).toEqual([droit])
+  })
+
+  it('donne une liste vide quand l’API ne renvoie pas les autres domaines', () => {
+    expect(toSchool(rawSchool).otherDomains).toEqual([])
   })
 })

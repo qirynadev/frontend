@@ -97,6 +97,7 @@ export default defineEventHandler(async (event) => {
     excerpt: school.excerpt,
     foundedYear: school.foundedYear,
     studentCount: school.studentCount,
+    area: school.area,
   }))
 
   setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')

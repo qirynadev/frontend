@@ -28,6 +28,20 @@ export interface SchoolSummary {
   /** `null` pour la quasi-totalité du catalogue actuel — le champ existe mais n'est pas alimenté. Masqué plutôt qu'un chiffre inventé (voir `ecoles/index.vue`). */
   foundedYear: number | null
   studentCount: number | null
+  /**
+   * Domaine d'études de cette fiche (`SchoolResource.area`, back-office, plan IA lot 7).
+   * Une école enseignée dans deux domaines a deux fiches de même titre : c'est ce
+   * domaine qui les distingue, et son `slug` qui se passe en `?domaine=`.
+   * `null` si l'API ne l'a pas renvoyé.
+   */
+  area: SchoolDomain | null
+}
+
+/** Domaine d'une fiche école. `slug` = slug du titre du domaine, comme `AreaOfStudySummary.slug`. */
+export interface SchoolDomain {
+  id: string
+  slug: string
+  title: string
 }
 
 export interface SchoolFormation {
@@ -72,6 +86,12 @@ export interface School extends SchoolSummary {
    * champ est vide (la quasi-totalité du catalogue n'est pas encore migrée).
    */
   pointsForts: string
+  /**
+   * Autres domaines où la même école (même titre, même pays) a une fiche active,
+   * sans celui de cette fiche : « cette école propose aussi : Droit ». Vide si
+   * l'école n'a qu'une fiche, ou si l'API ne l'a pas renvoyé.
+   */
+  otherDomains: SchoolDomain[]
   seo: SeoMeta
 }
 
