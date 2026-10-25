@@ -13,7 +13,7 @@ import type { Branding } from '~~/app/core/contracts'
  */
 export default defineEventHandler(async (event): Promise<Branding> => {
   const { catalog } = await getSnapshot(event)
-  setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return {
     logoLight: catalog.settings.logoLight,
     logoDark: catalog.settings.logoDark,

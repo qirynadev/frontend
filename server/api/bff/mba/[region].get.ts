@@ -45,7 +45,7 @@ export default defineEventHandler(async (event): Promise<MbaRegionSchools> => {
       )),
     ])
 
-    setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+    setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
     return {
       ...toMbaRegionSchools(
         raw,

@@ -63,7 +63,7 @@ export default defineEventHandler(async (event): Promise<AreaOfStudySummary[]> =
     ),
   )
 
-  setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return areas
     .map((area, index) => ({ ...area, schoolCount: counts[index]! }))
     .filter((area) => area.schoolCount > 0)

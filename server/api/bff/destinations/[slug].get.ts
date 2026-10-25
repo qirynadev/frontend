@@ -14,6 +14,6 @@ export default defineEventHandler(async (event): Promise<Destination> => {
     throw createError({ statusCode: 404, statusMessage: `Destination « ${slug} » introuvable` })
   }
 
-  setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return destination
 })
