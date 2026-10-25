@@ -49,7 +49,7 @@ export default defineEventHandler(async (event): Promise<School> => {
   const school = raw === null ? null : toSchool(raw, destinationSlug, mediaBase(event))
   if (school === null || school.id === '') notFound(slug)
 
-  setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return school
 })
 

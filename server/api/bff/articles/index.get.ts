@@ -8,6 +8,6 @@ import type { Article } from '~~/app/core/contracts'
  */
 export default defineEventHandler(async (event): Promise<Article[]> => {
   const { articles } = await getSnapshot(event)
-  setResponseHeader(event, 'cache-control', 'public, max-age=120, stale-while-revalidate=600')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return articles
 })

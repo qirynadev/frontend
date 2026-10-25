@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
       )
       const items = (Array.isArray(raw.data) ? raw.data : []).map(school => toSchoolSummary(school, destination, flagBase))
 
-      setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+      setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
       return {
         items,
         page: Number(raw.current_page ?? page),
@@ -100,7 +100,7 @@ export default defineEventHandler(async (event) => {
     area: school.area,
   }))
 
-  setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return {
     items,
     page,

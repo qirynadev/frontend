@@ -7,6 +7,6 @@ export default defineEventHandler(async (event): Promise<Orientation> => {
     throw createError({ statusCode: 404, statusMessage: 'Offre d’orientation indisponible' })
   }
 
-  setResponseHeader(event, 'cache-control', 'public, max-age=300, stale-while-revalidate=3600')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return orientation
 })

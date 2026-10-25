@@ -5,6 +5,6 @@
  */
 export default defineEventHandler(async (event) => {
   const { catalog } = await getSnapshot(event)
-  setResponseHeader(event, 'cache-control', 'public, max-age=60, stale-while-revalidate=300')
+  setResponseHeader(event, 'cache-control', PUBLIC_CONTENT_CACHE)
   return catalog
 })
