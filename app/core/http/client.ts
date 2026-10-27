@@ -23,8 +23,23 @@ import { ApiError, toApiError } from './errors'
  * contexte Nuxt et `useRuntimeConfig()` y levait `NUXT_E1001`.
  */
 
+/**
+ * Origine du BFF : vide sur le site (même origine, chemin relatif).
+ *
+ * Dans l'application mobile (Capacitor, build `NUXT_MOBILE=1`), aucun serveur
+ * n'est embarqué : les appels partent vers le BFF du site déployé, dont
+ * l'origine est figée au build (`__QIRYNA_BFF_ORIGIN__`, `nuxt.config.ts`).
+ * Ils passent par le HTTP natif de Capacitor (`CapacitorHttp`) : pas de CORS,
+ * et le cookie de session `httpOnly` est gardé par le téléphone, jamais lisible
+ * en JavaScript — la règle « pas de jeton côté navigateur » tient toujours.
+ *
+ * `typeof` plutôt qu'un accès direct : hors build Nuxt (tests Vitest), la
+ * constante n'est pas définie et le site garde son chemin relatif.
+ */
+const BFF_ORIGIN: string = typeof __QIRYNA_BFF_ORIGIN__ === 'string' ? __QIRYNA_BFF_ORIGIN__ : ''
+
 /** Préfixe des routes BFF. Doit rester aligné sur `server/api/bff/`. */
-export const BFF_BASE = '/api/bff'
+export const BFF_BASE = `${BFF_ORIGIN}/api/bff`
 
 export interface BffRequestOptions extends ApiRequestOptions {
   /**

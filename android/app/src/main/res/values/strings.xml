@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Qiryna</string>
+    <string name="title_activity_main">Qiryna</string>
+    <string name="package_name">com.qiryna.app</string>
+    <string name="custom_url_scheme">com.qiryna.app</string>
+</resources>

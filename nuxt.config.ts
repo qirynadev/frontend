@@ -21,13 +21,26 @@ const MEDIA_HOSTS = [...new Set([mediaHost, 'admin.qiryna.com', 'admin.stage.qir
 /** Même variable que `i18n.baseUrl` plus bas — exposée aussi en `public` pour `robots.txt` (comparaison d'hôte). */
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com'
 
+/**
+ * Build de l'application mobile (Capacitor) : `NUXT_MOBILE=1 nuxt generate`,
+ * voir `MOBILE.md`.
+ *
+ * Une application n'embarque pas de serveur : le site y est livré en page
+ * unique (`ssr: false`), et ses appels partent vers le BFF du site déployé
+ * (`NUXT_MOBILE_BFF_ORIGIN`, la recette par défaut). Le site, lui, ne change
+ * pas : sans la variable, tout ce qui suit garde sa valeur d'avant.
+ */
+const isMobile = process.env.NUXT_MOBILE === '1'
+const mobileBffOrigin = (process.env.NUXT_MOBILE_BFF_ORIGIN || 'https://stage.qiryna.com').replace(/\/+$/, '')
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: !isMobile },
 
-  // SSR obligatoire : session lisible côté serveur, SEO, first paint.
-  ssr: true,
+  // SSR obligatoire sur le site : session lisible côté serveur, SEO, first
+  // paint. L'application mobile, sans serveur, est une page unique.
+  ssr: !isMobile,
 
   future: { compatibilityVersion: 4 },
 
@@ -165,6 +178,11 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // Origine du BFF dans l'application mobile (`app/core/http/client.ts`) ;
+    // vide sur le site, qui appelle son propre BFF en chemin relatif.
+    define: {
+      __QIRYNA_BFF_ORIGIN__: JSON.stringify(isMobile ? mobileBffOrigin : ''),
+    },
   },
 
   typescript: {
@@ -183,6 +201,9 @@ export default defineNuxtConfig({
     ],
     defaultLocale: 'fr',
     strategy: 'prefix_except_default',
+    // Les traductions sont servies par une route du serveur (`/_i18n/...`),
+    // absente de l'application mobile : elles y sont générées au build.
+    experimental: { prerenderMessages: isMobile },
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'qiryna_locale',
@@ -191,6 +212,9 @@ export default defineNuxtConfig({
   },
 
   image: {
+    // L'optimiseur `/_ipx` est une route du serveur : absent de l'application
+    // mobile, qui charge les images telles quelles (locales ou du back-office).
+    provider: isMobile ? 'none' : 'ipx',
     format: ['webp'],
     /**
      * Sans cet hôte ici, `$img()` (`image.js` de `@nuxt/image`) laisse passer
