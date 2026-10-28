@@ -87,5 +87,11 @@ export interface Destination extends DestinationSummary {
   texts: DestinationPageTexts
   /** Toujours trois entrées, dans l'ordre du bandeau. */
   trust: DestinationTrustItem[]
+  /**
+   * Écoles du bloc « Écoles reconnues », choisies dans la fiche (2026-10-28),
+   * dans l'ordre : leurs slugs dans `schools`. Vide = sélection automatique.
+   * Facultatif : absent d'un catalogue mis en cache avant ce champ.
+   */
+  featuredSchoolSlugs?: string[]
   seo: SeoMeta
 }

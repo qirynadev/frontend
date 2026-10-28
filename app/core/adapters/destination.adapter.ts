@@ -123,6 +123,16 @@ export function toDestination(raw: unknown, flagBase?: string): Destination {
 
   const uniqueSchools = dedupeBySlug(schools, `écoles de « ${summary.slug} »`)
 
+  // Écoles mises en avant : choisies par identifiant, retrouvées par slug. Une
+  // école de deux domaines a deux fiches de même slug et la déduplication n'en
+  // garde qu'une : l'autre, si c'est elle qui est choisie, doit rester visible.
+  const slugById = new Map(schools.map((school) => [school.id, school.slug]))
+  const featuredSchoolSlugs = [...new Set(
+    asArray(source.featured_school_ids)
+      .map((id) => slugById.get(String(id)))
+      .filter((slug): slug is string => slug !== undefined),
+  )]
+
   return {
     ...summary,
     description,
@@ -132,6 +142,7 @@ export function toDestination(raw: unknown, flagBase?: string): Destination {
     highlights: toDestinationHighlights(source.highlights, source.icons),
     texts: toDestinationPageTexts(source.page_texts),
     trust: toDestinationTrust(source.page_texts, source.icons),
+    featuredSchoolSlugs,
     seo: toSeo(source, summary.title, description),
   }
 }
