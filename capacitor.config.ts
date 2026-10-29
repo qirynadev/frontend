@@ -16,6 +16,8 @@ const config: CapacitorConfig = {
   appId: 'com.qiryna.app',
   appName: 'Qiryna',
   webDir: '.output/public',
+  // Fond des marges système et du chargement : le blanc du logo.
+  backgroundColor: '#ffffff',
   plugins: {
     CapacitorHttp: { enabled: true },
     CapacitorCookies: { enabled: true },
@@ -23,6 +25,11 @@ const config: CapacitorConfig = {
   android: {
     // Pas de contenu mixte : tout passe en https.
     allowMixedContent: false,
+  },
+  ios: {
+    // Le contenu commence sous la barre d'état et finit au-dessus de la barre
+    // d'accueil, comme sur Android (voir la balise `viewport` en mode mobile).
+    contentInset: 'always',
   },
 }
 

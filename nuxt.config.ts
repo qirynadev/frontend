@@ -264,7 +264,10 @@ export default defineNuxtConfig({
       // `lang` n'est pas figé ici : il est posé dynamiquement par `useLocaleHead`
       // dans `app.vue`. Le coder en dur laisserait `lang="fr"` sur /en/**.
       meta: [
-        { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
+        // Application mobile : sans `viewport-fit=cover`, la page reste entre
+        // la barre d'état et la barre de navigation du téléphone (Capacitor,
+        // `SystemBars`) — seuls quelques en-têtes du site gèrent la zone haute.
+        { name: 'viewport', content: isMobile ? 'width=device-width, initial-scale=1' : 'width=device-width, initial-scale=1, viewport-fit=cover' },
         { name: 'theme-color', content: '#582cfd' },
       ],
       link: [

@@ -37,6 +37,12 @@ export function usePushNotifications() {
 
   async function refresh(): Promise<void> {
     if (!import.meta.client) return
+    // Application mobile : pas de push web dans une WebView ; le push natif
+    // (Firebase, APNs) reste à brancher — voir `MOBILE.md`.
+    if (isNativeApp()) {
+      state.value = 'unsupported'
+      return
+    }
     if (!isPushSupported()) {
       state.value = isIosOutsideHomeScreen() ? 'ios-install' : 'unsupported'
       return

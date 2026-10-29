@@ -52,11 +52,11 @@ export function useAuthFlow() {
    */
   async function resume(outcome: AuthOutcome | null): Promise<void> {
     if (outcome?.pendingPayment) {
-      const { redirectUrl } = await paymentRepo.init(undefined, locale.value)
+      const { order, redirectUrl } = await paymentRepo.init(undefined, locale.value)
       session.pendingPayment = false
 
       if (redirectUrl !== null && import.meta.client) {
-        window.location.assign(redirectUrl)
+        await goToPayment(redirectUrl, order?.id ?? null)
         return
       }
     }

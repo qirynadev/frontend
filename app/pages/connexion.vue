@@ -57,6 +57,8 @@ const {
   cancelLink,
   handleLinkedinReturn,
 } = useSocialAuth('login')
+/** Application mobile : connexion par e-mail seulement (voir `useSocialAuth`). */
+const inApp = isNativeApp()
 
 const email = ref('')
 const password = ref('')
@@ -256,14 +258,14 @@ usePageSeo(() => ({
 
         <!-- Réseaux sociaux d'abord (2026-09-13), comme sur ordinateur : un
              tap suffit, le formulaire e-mail reste en dessous. -->
-        <p class="m-0 pb-12 text-center text-base leading-16 font-semibold text-navy">
+        <p v-if="!inApp" class="m-0 pb-12 text-center text-base leading-16 font-semibold text-navy">
           {{ $t('desktop.auth.socialTitle') }}
         </p>
 
-        <AuthSocialRow :configured="socialConfigured" :pending="socialPending" @select="onSocial" />
+        <AuthSocialRow v-if="!inApp" :configured="socialConfigured" :pending="socialPending" @select="onSocial" />
 
-        <!-- Séparateur « ou » -->
-        <div class="flex items-center py-14">
+        <!-- Séparateur « ou » (sans les réseaux sociaux, absents de l'application) -->
+        <div v-if="!inApp" class="flex items-center py-14">
           <span aria-hidden="true" class="h-1 flex-1 bg-border" />
           <span class="px-10 text-base leading-16 font-medium tracking-widest whitespace-nowrap text-muted-2 uppercase">
             {{ $t('auth.or') }}

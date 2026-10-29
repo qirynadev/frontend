@@ -99,11 +99,19 @@ export function useSocialAuth(mode: MaybeRefOrGetter<SocialAuthMode> = 'login') 
 
   const oauth = config.public.oauth as { googleClientId: string; facebookAppId: string; linkedinClientId: string }
 
-  /** Un fournisseur sans identifiant client configuré n'est pas proposé. */
+  /**
+   * Un fournisseur sans identifiant client configuré n'est pas proposé.
+   *
+   * Aucun dans l'application mobile : Google et Facebook refusent leurs
+   * fenêtres de connexion dans une WebView, et LinkedIn renverrait vers le
+   * site, pas vers l'application. Il y faudra leurs modules natifs (et « Se
+   * connecter avec Apple » pour l'App Store) — voir `MOBILE.md`.
+   */
+  const inApp = isNativeApp()
   const configured = computed<Record<SocialProvider, boolean>>(() => ({
-    google: oauth.googleClientId !== '',
-    facebook: oauth.facebookAppId !== '',
-    linkedin: oauth.linkedinClientId !== '',
+    google: !inApp && oauth.googleClientId !== '',
+    facebook: !inApp && oauth.facebookAppId !== '',
+    linkedin: !inApp && oauth.linkedinClientId !== '',
   }))
 
   const pending = ref<SocialProvider | null>(null)

@@ -73,8 +73,10 @@ export function useLmsEntry() {
     try {
       const { url } = await lmsRepo.entryUrl(input, locale.value)
       if (input.orderId) writeStarted({ ...readStarted(), [input.orderId]: Date.now() })
-      // `openingKey` reste posé : la page s'en va.
-      window.location.assign(url)
+      // `openingKey` reste posé : la page s'en va. Dans l'application, elle
+      // reste dessous : le bouton se libère au retour.
+      await openExternal(url)
+      if (isNativeApp()) openingKey.value = null
     }
     catch (error) {
       // Un refus du back-office porte un code et un message déjà traduit ;

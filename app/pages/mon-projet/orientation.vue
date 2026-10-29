@@ -36,12 +36,15 @@ const { data: orientation, apiError, isInitialLoading, refresh } = await useOrie
  * (`Content-Type: application/pdf`), pas un JSON d'URL — PT-TESTS renvoie le
  * PDF en base64 brut, jamais une URL à ouvrir. Plus besoin d'un aller-retour
  * avant d'ouvrir : le navigateur charge/affiche directement cette adresse,
- * comme un lien de téléchargement normal.
+ * comme un lien de téléchargement normal. Dans l'application mobile, il est
+ * téléchargé puis ouvert dans la visionneuse du téléphone (`openBffPdf`).
  */
 function openReport() {
   const evaluation = orientation.value?.evaluation
   if (!evaluation) return
-  window.open(`/api/bff/etesting/${evaluation.id}/pdf`, '_blank', 'noopener')
+  openBffPdf(`/etesting/${evaluation.id}/pdf`, 'bilan-orientation.pdf').catch((error) => {
+    console.error('[orientation] PDF du bilan', error)
+  })
 }
 
 const infoKeys = [

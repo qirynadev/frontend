@@ -134,15 +134,16 @@ export function useCheckout() {
         return
       }
 
-      const { redirectUrl } = await paymentRepo.init(intent, locale.value)
+      const { order, redirectUrl } = await paymentRepo.init(intent, locale.value)
 
       if (redirectUrl === null) {
         errorKey.value = 'checkout.error.noRedirect'
         return
       }
 
-      // Le paiement quitte le site : navigation complète, pas le routeur.
-      if (import.meta.client) window.location.assign(redirectUrl)
+      // Le paiement quitte le site : navigation complète, pas le routeur
+      // (navigateur intégré dans l'application, voir `utils/native-app.ts`).
+      if (import.meta.client) await goToPayment(redirectUrl, order?.id ?? null)
     }
     catch (error) {
       errorKey.value = error instanceof ApiError && (error.kind === 'network' || error.kind === 'timeout')
