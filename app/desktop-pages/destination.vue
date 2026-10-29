@@ -138,10 +138,22 @@ const argumentsPays = computed(() =>
   })),
 )
 
-/** Huit logos réels, comme la maquette en aligne huit. */
-const logosEcoles = computed(() =>
-  props.destination.schools.filter((ecole) => ecole.logo).slice(0, 8),
-)
+/**
+ * Huit logos, comme la maquette : les écoles choisies dans la fiche
+ * destination, dans l'ordre (2026-10-28) ; à défaut, les premières écoles du
+ * pays qui ont un logo. Une école choisie puis désactivée n'est plus servie
+ * par l'API : elle disparaît simplement du bloc.
+ */
+const logosEcoles = computed(() => {
+  const choisies = props.destination.featuredSchoolSlugs ?? []
+  if (choisies.length > 0) {
+    return choisies
+      .map(slug => props.destination.schools.find(ecole => ecole.slug === slug))
+      .filter((ecole): ecole is NonNullable<typeof ecole> => ecole !== undefined)
+      .slice(0, 8)
+  }
+  return props.destination.schools.filter((ecole) => ecole.logo).slice(0, 8)
+})
 </script>
 
 <template>
@@ -333,7 +345,8 @@ const logosEcoles = computed(() =>
               class="flex h-95 items-center justify-center rounded-[12px] border border-[#d1d5db] bg-white p-5"
               :title="ecole.title"
             >
-              <img :src="ecole.logo!" :alt="ecole.title" class="max-h-56 max-w-full object-contain" loading="lazy" decoding="async">
+              <img v-if="ecole.logo" :src="ecole.logo" :alt="ecole.title" class="max-h-56 max-w-full object-contain" loading="lazy" decoding="async">
+              <span v-else class="text-center text-[11px] leading-14 font-semibold text-[#040c3d]">{{ ecole.title }}</span>
             </div>
           </div>
         </aside>

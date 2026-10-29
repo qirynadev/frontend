@@ -228,3 +228,22 @@ describe('slugs dupliqués', () => {
     expect(toDestinationList({ schoolSheets: [] })).toEqual([])
   })
 })
+
+describe('écoles mises en avant (2026-10-28)', () => {
+  const school = (id: string, title: string, slug: string) => ({ ...rawSchool, id, title, slug })
+
+  it('garde l’ordre choisi et retrouve une école même quand sa fiche choisie a été dédupliquée', () => {
+    const destination = toDestination({
+      ...rawDestination,
+      schools: [school('b', 'ESSEC', 'essec'), school('a2', 'HEC Paris', 'hec-paris'), school('a1', 'HEC Paris', 'hec-paris'), school('c', 'EDHEC', 'edhec')],
+      // `a2` : seconde fiche de HEC Paris (autre domaine), écartée par la déduplication.
+      featured_school_ids: ['c', 'a2', 'inconnue', 'a1'],
+    })
+
+    expect(destination.featuredSchoolSlugs).toEqual(['edhec', 'hec-paris'])
+  })
+
+  it('sans sélection, la liste est vide : la page reprend le choix automatique', () => {
+    expect(toDestination(rawDestination).featuredSchoolSlugs).toEqual([])
+  })
+})
