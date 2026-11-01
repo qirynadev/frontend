@@ -60,9 +60,15 @@ const ctaTo = computed(() => {
   return localePath('/orientation')
 })
 
+/**
+ * Les écoles similaires partagent le domaine de la fiche affichée : le lien
+ * vise leur fiche de ce domaine-là, même quand la page a été ouverte sans
+ * `?domaine=` (une école enseignée dans deux domaines a deux fiches).
+ */
 function similarHref(item: SchoolSummary) {
   const base = `/destinations/${props.destinationSlug}/ecoles/${item.slug}`
-  return localePath(props.domaine ? `${base}?domaine=${props.domaine}` : base)
+  const domaine = props.domaine || props.school.area?.slug || ''
+  return localePath(domaine ? `${base}?domaine=${domaine}` : base)
 }
 
 function similarLocation(item: SchoolSummary) {

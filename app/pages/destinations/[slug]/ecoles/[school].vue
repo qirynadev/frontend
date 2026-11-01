@@ -22,7 +22,7 @@
  */
 import { DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { schoolRepo } from '~/core/repositories'
-import type { SchoolFormation } from '~/core/contracts'
+import type { SchoolFormation, SchoolSummary } from '~/core/contracts'
 import { resolveDestinationApiSlug } from '~/config/destination-slugs'
 import { formationVisual } from '~/config/formation-visual'
 import DesktopFicheEcole from '~/desktop-pages/fiche-ecole.vue'
@@ -66,16 +66,34 @@ const { data, apiError, isInitialLoading, refresh } = await usePageData(
 const school = computed(() => data.value?.school ?? null)
 const formations = computed(() => data.value?.formations ?? [])
 
-const { data: similarPage } = await usePageData(
-  `school-similar-${apiSlug.value}`,
-  () => schoolRepo.list({ destination: apiSlug.value, page: 1, perPage: 8 }, locale.value),
-  { watch: [apiSlug, locale] },
-)
+/**
+ * « Établissements similaires » : même pays ET même domaine que la fiche
+ * affichée. Filtrer sur le seul pays mêlait écoles de droit et de médecine à
+ * une école d'ingénieurs (constaté sur Georgia Tech, 2026-11-01). Sans domaine
+ * connu, la rubrique reste vide (masquée) plutôt que de proposer n'importe
+ * quelle école du pays.
+ *
+ * `GET /schools/{countryId}/{areaId}` renvoie 5 écoles par page : l'école
+ * affichée peut en faire partie, une deuxième page complète alors la liste.
+ */
+const SIMILAR_COUNT = 5
+const similarArea = computed(() => school.value?.area ?? null)
 
-const similarSchools = computed(() =>
-  (similarPage.value?.items ?? [])
-    .filter(item => item.slug !== schoolSlug.value)
-    .slice(0, 5),
+const { data: similarSchools } = await usePageData(
+  `school-similar-${apiSlug.value}-${similarArea.value?.id ?? ''}`,
+  async () => {
+    const area = similarArea.value?.id
+    if (!area) return []
+    const currentId = school.value?.id
+    const items: SchoolSummary[] = []
+    for (let page = 1; page <= 2 && items.length < SIMILAR_COUNT; page++) {
+      const result = await schoolRepo.list({ destination: apiSlug.value, area, page }, locale.value)
+      items.push(...result.items.filter(item => item.id !== currentId))
+      if (page >= result.totalPages) break
+    }
+    return items.slice(0, SIMILAR_COUNT)
+  },
+  { watch: [apiSlug, similarArea, locale] },
 )
 
 if (school.value === null && !apiError.value) {
@@ -442,7 +460,7 @@ useSchoolSchemaOrg(school)
         v-if="school"
         :school="school"
         :formations="formations"
-        :similar-schools="similarSchools"
+        :similar-schools="similarSchools ?? []"
         :destination-slug="destinationSlug"
         :domaine="desktopDomaine"
         @share="shareSchool"
