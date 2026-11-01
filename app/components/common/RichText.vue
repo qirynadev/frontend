@@ -33,14 +33,17 @@ withDefaults(
   margin-top: calc(var(--spacing) * 20);
 }
 
-.qiryna-rich-text p {
+/* Marges remises à zéro avec une spécificité NULLE (`:where`) : écrite
+   `.qiryna-rich-text p { margin: 0 }`, la remise à zéro l'emportait sur
+   l'écart entre blocs ci-dessus (sélecteur plus spécifique), et deux
+   paragraphes restaient collés quel que soit l'écart prévu (2026-11-01). */
+:where(.qiryna-rich-text p, .qiryna-rich-text h2, .qiryna-rich-text h3, .qiryna-rich-text h4, .qiryna-rich-text ul, .qiryna-rich-text ol) {
   margin: 0;
 }
 
 .qiryna-rich-text h2,
 .qiryna-rich-text h3,
 .qiryna-rich-text h4 {
-  margin: 0;
   font-weight: var(--font-weight-semibold);
   color: var(--color-navy);
 }
@@ -51,7 +54,6 @@ withDefaults(
 
 .qiryna-rich-text ul,
 .qiryna-rich-text ol {
-  margin: 0;
   padding-left: calc(var(--spacing) * 20);
   display: flex;
   flex-direction: column;
