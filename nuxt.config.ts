@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 
-const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.com/api'
+const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://myadmin.qiryna.com/api'
 /**
  * Hôtes des back-offices qui servent les médias (logos, photos d'école,
  * bannières), autorisés par l'optimiseur d'images (`image.domains`).
@@ -17,7 +17,8 @@ const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.
  * pour la même raison.
  */
 const mediaHost = new URL(apiBaseUrl).host
-const MEDIA_HOSTS = [...new Set([mediaHost, 'admin.qiryna.com', 'admin.stage.qiryna.com'])]
+// Recette : `admin.stage.qiryna.com` renommé `myadmin.qiryna.com` le 2026-11-01.
+const MEDIA_HOSTS = [...new Set([mediaHost, 'admin.qiryna.com', 'myadmin.qiryna.com'])]
 /** Même variable que `i18n.baseUrl` plus bas — exposée aussi en `public` pour `robots.txt` (comparaison d'hôte). */
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com'
 
