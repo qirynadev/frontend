@@ -296,6 +296,7 @@ personnalisées** :
 | `NUXT_CATALOG_CACHE_TTL` | `300` |
 | `NUXT_API_TIMEOUT` | `15000` |
 | `NUXT_BFF_SHARED_KEY` | clé secrète, **la même** que `BFF_SHARED_KEY` du back-office appelé |
+| `NUXT_ACCESS_CODE` | qiryna.com seulement, tant que le site n'est pas ouvert à tous : le code d'accès |
 
 `NUXT_BFF_SHARED_KEY` (2026-09-30) : le site transmet l'IP du visiteur à l'API
 avec cette clé, pour que les limites de fréquence (connexion, inscription,
@@ -307,6 +308,18 @@ rien ne casse : les limites restent communes à tous les visiteurs, comme avant.
 
 Les trois `NUXT_PUBLIC_OAUTH_*` restent vides tant que les identifiants ne sont
 pas fournis (LOT-5.md § 7).
+
+**Accès réservé par un code** (`NUXT_ACCESS_CODE`, qiryna.com seulement) : tant
+que cette variable est renseignée, le site répond par une page 403 avec un champ
+de code, et un accès accordé dure 30 jours. Pour ouvrir le site à tous, retirer
+la variable ou la vider, puis redémarrer l'application dans Plesk : aucun build
+n'est nécessaire. Ne pas la définir sur my ni sur danube. Changer le code
+invalide tous les accès déjà accordés. Choisir un code long, par exemple
+`openssl rand -hex 16`.
+
+Tant que le blocage est actif : l'application mobile, les robots et les
+vérificateurs externes (Meta, Google, Apple) reçoivent aussi le 403 ; les
+fichiers de `public/` et `/_nuxt/` restent lisibles (logo, polices, scripts).
 
 > **Ne pas définir `PORT` ni `HOST`.** Passenger choisit lui-même la socket
 > d'écoute ; les figer casse le démarrage.
