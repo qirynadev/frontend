@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { html } from '~/core/adapters/primitives'
-import { frenchSpacing } from '~/core/adapters/typography'
+import { frenchSpacing, markRubriques } from '~/core/adapters/typography'
 
 const NBSP = ' '
 
@@ -27,5 +27,22 @@ describe('frenchSpacing', () => {
   it('s\'applique à tout HTML éditorial, après l\'assainissement', () => {
     expect(html({ presentation: '<p>En 2026 : <strong>56 715</strong> inscrits.</p><script>x</script>' }, 'presentation'))
       .toBe(`<p>En 2026${NBSP}: <strong>56${NBSP}715</strong> inscrits.</p>`)
+  })
+})
+
+describe('markRubriques', () => {
+  it('marque un paragraphe fait uniquement de gras, avec ou sans attribut', () => {
+    expect(markRubriques('<p><strong>Cible</strong></p><p>Texte.</p><p class="ql-align-center"><strong>Frais</strong></p>'))
+      .toBe('<p data-rubrique><strong>Cible</strong></p><p>Texte.</p><p data-rubrique class="ql-align-center"><strong>Frais</strong></p>')
+  })
+
+  it('laisse un paragraphe qui commence en gras puis continue en texte', () => {
+    const html = '<p><strong>Cible ?</strong>&nbsp;Le lycéen.</p><p>Un <strong>7 %</strong> seul.</p>'
+    expect(markRubriques(html)).toBe(html)
+  })
+
+  it('s\'applique au HTML éditorial des formations', () => {
+    expect(html({ d: '<p><strong>Admissions</strong></p><p>Sur dossier.</p>' }, 'd'))
+      .toBe('<p data-rubrique><strong>Admissions</strong></p><p>Sur dossier.</p>')
   })
 })

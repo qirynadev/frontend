@@ -29,3 +29,17 @@ export function frenchSpacing(html: string): string {
 
   return html.replace(/(^|>)([^<]+)/g, (_whole, boundary: string, text: string) => boundary + fixText(text))
 }
+
+/**
+ * Titres de rubrique : un paragraphe fait **uniquement** de gras (« Cible »,
+ * « Admissions », « Frais » dans les formations) est marqué `data-rubrique`,
+ * pour que `RichText` le colle au texte qui le suit au lieu de l'en séparer
+ * de l'écart entre paragraphes (2026-11-01). Un paragraphe qui commence en
+ * gras puis continue en texte n'est pas un titre.
+ */
+export function markRubriques(html: string): string {
+  return html.replace(
+    /<p(\s[^>]*)?>(\s*<strong>[^<]+<\/strong>\s*)<\/p>/g,
+    (_whole, attributes: string | undefined, content: string) => `<p data-rubrique${attributes ?? ''}>${content}</p>`,
+  )
+}

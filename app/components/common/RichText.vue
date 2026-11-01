@@ -33,6 +33,12 @@ withDefaults(
   margin-top: calc(var(--spacing) * 20);
 }
 
+/* Un titre de rubrique (« Cible », « Frais »...) reste collé à son texte :
+   `data-rubrique` est posé par l'adapter (typography.ts). */
+.qiryna-rich-text > [data-rubrique] + * {
+  margin-top: calc(var(--spacing) * 4);
+}
+
 /* Marges remises à zéro avec une spécificité NULLE (`:where`) : écrite
    `.qiryna-rich-text p { margin: 0 }`, la remise à zéro l'emportait sur
    l'écart entre blocs ci-dessus (sélecteur plus spécifique), et deux

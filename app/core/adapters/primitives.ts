@@ -7,7 +7,7 @@
  */
 
 import { sanitizeHtml } from './sanitize'
-import { frenchSpacing } from './typography'
+import { frenchSpacing, markRubriques } from './typography'
 
 /** Vrai si la valeur est un objet exploitable (ni `null`, ni tableau). */
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -45,7 +45,7 @@ export function str(source: unknown, path: string, fallback = ''): string {
  * les espaces insécables aussi (`typography.ts`), après l'assainissement.
  */
 export function html(source: unknown, path: string): string {
-  return frenchSpacing(sanitizeHtml(str(source, path)))
+  return markRubriques(frenchSpacing(sanitizeHtml(str(source, path))))
 }
 
 /** Chaîne ou `null` — pour les champs réellement optionnels (image, badge…). */
