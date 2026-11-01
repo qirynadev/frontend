@@ -26,8 +26,11 @@ withDefaults(
 
 <style>
 /* Non « scoped » : le HTML injecté n'a pas d'attribut de portée. */
+/* 20 px entre deux paragraphes, près d'une ligne de texte : à 12 px, une
+   présentation de plusieurs paragraphes se lisait comme un bloc compact
+   (remarque du 2026-11-01). */
 .qiryna-rich-text > * + * {
-  margin-top: calc(var(--spacing) * 12);
+  margin-top: calc(var(--spacing) * 20);
 }
 
 .qiryna-rich-text p {

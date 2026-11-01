@@ -147,9 +147,9 @@ describe('toFormations', () => {
     // L’API insère systématiquement un `{ title: null, description: null }`.
     expect(formations).toHaveLength(1)
     expect(formations[0]?.title).toBe('Global Bachelor of Business Administration')
-    // `description` : HTML brut du back-office, non retravaillé (affiché tel
-    // quel par la modale — voir `[school].vue`).
-    expect(formations[0]?.description).toContain('<strong>Cible ?</strong>')
+    // `description` : HTML du back-office assaini, espaces insécables comprises
+    // (l'espace de « Cible ? » devient insécable) ; affiché par la modale, voir `[school].vue`.
+    expect(formations[0]?.description).toContain('<strong>Cible ?</strong>')
     expect(formations[0]?.description).toContain('Bachelor international')
     expect(formations[0]?.summary).toContain('Bachelor international')
   })

@@ -192,10 +192,11 @@ function similarLocation(item: SchoolSummary) {
         </div>
 
         <div v-show="activeTab === 'presentation'" class="w-full">
+          <!-- max-w-[720px] : environ 75 caractères par ligne, confort de lecture (2026-11-01). -->
           <RichText
             v-if="school.presentation"
             :content="school.presentation"
-            class="text-[16px] leading-[22.75px] tracking-[-0.154px] text-[#252525] [&_p]:text-[16px] [&_p]:leading-[22.75px] [&_p]:text-[#252525]"
+            class="max-w-[720px] text-[16px] leading-[22.75px] tracking-[-0.154px] text-[#252525] [&_p]:text-[16px] [&_p]:leading-[22.75px] [&_p]:text-[#252525]"
           />
           <p v-else class="m-0 text-[16px] leading-[22.75px] text-[#252525]">
             {{ $t('school.detail.emptyDescription') }}
@@ -237,7 +238,7 @@ function similarLocation(item: SchoolSummary) {
           <RichText
             v-if="strengthsHtml"
             :content="strengthsHtml"
-            class="text-[16px] leading-[22.75px] tracking-[-0.154px] text-[#252525] [&_p]:text-[16px] [&_p]:leading-[22.75px] [&_p]:text-[#252525]"
+            class="max-w-[720px] text-[16px] leading-[22.75px] tracking-[-0.154px] text-[#252525] [&_p]:text-[16px] [&_p]:leading-[22.75px] [&_p]:text-[#252525]"
           />
         </div>
       </div>
