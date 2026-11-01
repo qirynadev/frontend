@@ -136,7 +136,7 @@ npm run build
 Créer `/var/www/qiryna/.env` à partir de [`.env.example`](.env.example) :
 
 ```bash
-NUXT_API_BASE_URL=https://admin.stage.qiryna.com/api
+NUXT_API_BASE_URL=https://myadmin.qiryna.com/api
 NUXT_CATALOG_CACHE_TTL=300
 NUXT_API_TIMEOUT=15000
 
@@ -292,7 +292,7 @@ personnalisées** :
 | Nom | Valeur |
 |---|---|
 | `NODE_ENV` | `production` |
-| `NUXT_API_BASE_URL` | `https://admin.stage.qiryna.com/api` |
+| `NUXT_API_BASE_URL` | `https://myadmin.qiryna.com/api` |
 | `NUXT_CATALOG_CACHE_TTL` | `300` |
 | `NUXT_API_TIMEOUT` | `15000` |
 | `NUXT_BFF_SHARED_KEY` | clé secrète, **la même** que `BFF_SHARED_KEY` du back-office appelé |

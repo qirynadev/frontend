@@ -7,6 +7,7 @@
  */
 
 import { sanitizeHtml } from './sanitize'
+import { frenchSpacing } from './typography'
 
 /** Vrai si la valeur est un objet exploitable (ni `null`, ni tableau). */
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -40,10 +41,11 @@ export function str(source: unknown, path: string, fallback = ''): string {
  * Champ **HTML** éditorial, assaini.
  *
  * À employer partout où la valeur finira dans un `v-html`. Le passage par la
- * liste blanche est fait ici, une fois, pour qu'aucune page n'ait à y penser.
+ * liste blanche est fait ici, une fois, pour qu'aucune page n'ait à y penser ;
+ * les espaces insécables aussi (`typography.ts`), après l'assainissement.
  */
 export function html(source: unknown, path: string): string {
-  return sanitizeHtml(str(source, path))
+  return frenchSpacing(sanitizeHtml(str(source, path)))
 }
 
 /** Chaîne ou `null` — pour les champs réellement optionnels (image, badge…). */
