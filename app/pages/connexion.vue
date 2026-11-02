@@ -31,9 +31,8 @@
  * `AuthSocialRow.vue`.
  */
 import { ApiError } from '~/core/http/errors'
-import { paymentRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
-import type { PaymentIntent, SocialProvider } from '~/core/contracts'
+import type { SocialProvider } from '~/core/contracts'
 import DesktopConnexion from '~/desktop-pages/connexion.vue'
 
 definePageMeta({
@@ -76,14 +75,6 @@ const fieldErrors = ref<Record<string, string[]>>({})
  * avant d'être redirigée.
  */
 await redirectIfAuthenticated()
-
-/** Rappel de la commande à reprendre. Chargé seulement quand il y en a une. */
-const pendingIntent = ref<PaymentIntent | null>(null)
-
-watchEffect(async () => {
-  if (!session.pendingPayment || !import.meta.client) return
-  pendingIntent.value = await paymentRepo.pendingIntent().catch(() => null)
-})
 
 onMounted(async () => {
   // Retour de la redirection LinkedIn : `?code=…&state=…` sur cette même URL.
@@ -375,7 +366,6 @@ usePageSeo(() => ({
       :social-pending="socialPending"
       :link-request="linkRequest"
       :pending-payment="session.pendingPayment"
-      :pending-label="pendingIntent?.label ?? ''"
       :is-authenticated="session.isAuthenticated"
       @submit="onSubmit"
       @social="onSocial"

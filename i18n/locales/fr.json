@@ -151,9 +151,7 @@
       "title": "Mot de passe oublié"
     },
     "resume": {
-      "cta": "Reprendre le paiement",
-      "description": "Votre commande vous attend : {label}",
-      "title": "Un paiement est en attente"
+      "cta": "Reprendre le paiement"
     },
     "signIn": "Se connecter",
     "signUp": "S'inscrire",

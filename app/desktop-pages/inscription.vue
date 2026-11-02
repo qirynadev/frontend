@@ -21,8 +21,6 @@ defineProps<{
   socialConfigured: Record<SocialProvider, boolean>
   socialPending: SocialProvider | null
   linkRequest: SocialLinkRequest | null
-  pendingPayment: boolean
-  pendingLabel: string
   score: number
   strengthHint: string
   strengthTone: 'neutral' | 'error' | 'ok'
@@ -69,14 +67,6 @@ const socialOrder: SocialProvider[] = ['facebook', 'google', 'linkedin']
             {{ $t('desktop.register.desc') }}
           </p>
         </div>
-
-        <QAlert
-          v-if="pendingPayment"
-          tone="info"
-          :title="$t('auth.resume.title')"
-          :message="$t('auth.resume.description', { label: pendingLabel })"
-          class="mt-24"
-        />
 
         <QAlert
           v-if="visibleError"

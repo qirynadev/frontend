@@ -28,9 +28,9 @@
  * de la spécification. Il est porté tel quel dans `usePasswordStrength`.
  */
 import { ApiError } from '~/core/http/errors'
-import { authRepo, paymentRepo } from '~/core/repositories'
+import { authRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
-import type { PaymentIntent, SocialProvider } from '~/core/contracts'
+import type { SocialProvider } from '~/core/contracts'
 import DesktopInscription from '~/desktop-pages/inscription.vue'
 import { useBotGuard } from '~/composables/useBotGuard'
 
@@ -77,13 +77,6 @@ const notice = ref<string | null>(null)
 const fieldErrors = ref<Record<string, string[]>>({})
 
 const { score, valid: passwordValid, missing, hasDisallowedChars } = usePasswordStrength(password)
-
-const pendingIntent = ref<PaymentIntent | null>(null)
-
-watchEffect(async () => {
-  if (!session.pendingPayment || !import.meta.client) return
-  pendingIntent.value = await paymentRepo.pendingIntent().catch(() => null)
-})
 
 onMounted(async () => {
   const result = await handleLinkedinReturn()
@@ -551,8 +544,6 @@ usePageSeo(() => ({
       :social-configured="socialConfigured"
       :social-pending="socialPending"
       :link-request="linkRequest"
-      :pending-payment="session.pendingPayment"
-      :pending-label="pendingIntent?.label ?? ''"
       :score="score"
       :strength-hint="strengthHint"
       :strength-tone="strengthTone"
