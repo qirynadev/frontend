@@ -5,7 +5,8 @@
  * Actions immédiates branchées sur ce qui existe déjà :
  * - Corriger / Supprimer → `/reglages/informations-personnelles`
  * - Retirer mon consentement → rouvre la bannière cookies
- * - Télécharger / demandes équipe → mailto privacy@
+ * - Demandes traitées par l'équipe, dont l'export des données → formulaire de
+ *   contact prérempli (2026-11-02), qui arrive dans la messagerie du back-office
  * - CNIL → site public de l’autorité
  * Sections : `gap-22` entre topbar / intro / cartes.
  *
@@ -19,13 +20,13 @@
  */
 import { NuxtLink } from '#components'
 import DesktopReglagesDroits from '~/desktop-pages/reglages-droits.vue'
+import { contactPath, type RightsRequest } from '~/utils/contact-links'
 
 const { t } = useI18n()
 const localePath = useLocalePath()
 const { reset: resetCookieConsent } = useCookieConsent()
 
 const ICON = '/img/icons/legal-rights'
-const PRIVACY_MAIL = 'mailto:privacy@qiryna.com'
 const CNIL_URL = 'https://www.cnil.fr/fr/plaintes'
 
 interface RightsRow {
@@ -42,15 +43,6 @@ interface RightsRow {
 }
 
 const immediateRows: RightsRow[] = [
-  {
-    id: 'download',
-    icon: 'ic-rrd-download-line',
-    chevron: 'ic-rrd-chevron',
-    titleKey: 'settingsRights.downloadTitle',
-    descKey: 'settingsRights.downloadDesc',
-    href: `${PRIVACY_MAIL}?subject=${encodeURIComponent('Télécharger mes données')}`,
-    tileClass: 'bg-rml-team-tile',
-  },
   {
     id: 'correct',
     icon: 'ic-rrd-edit-line',
@@ -81,14 +73,25 @@ const immediateRows: RightsRow[] = [
   },
 ]
 
+const rightsRequestPath = (request: RightsRequest) => contactPath({ subject: 'privacy', request })
+
 const teamRows: RightsRow[] = [
+  {
+    id: 'download',
+    icon: 'ic-rrd-download-line',
+    chevron: 'ic-rrd-chevron-team',
+    titleKey: 'settingsRights.downloadTitle',
+    descKey: 'settingsRights.downloadDesc',
+    to: rightsRequestPath('download'),
+    tileClass: 'bg-rml-team-tile',
+  },
   {
     id: 'object',
     icon: 'ic-rrd-hand',
     chevron: 'ic-rrd-chevron-team',
     titleKey: 'settingsRights.objectTitle',
     descKey: 'settingsRights.objectDesc',
-    href: `${PRIVACY_MAIL}?subject=${encodeURIComponent('Opposition à un traitement')}`,
+    to: rightsRequestPath('object'),
     tileClass: 'bg-rml-team-tile',
   },
   {
@@ -97,7 +100,7 @@ const teamRows: RightsRow[] = [
     chevron: 'ic-rrd-chevron-team',
     titleKey: 'settingsRights.limitTitle',
     descKey: 'settingsRights.limitDesc',
-    href: `${PRIVACY_MAIL}?subject=${encodeURIComponent('Limitation d’un traitement')}`,
+    to: rightsRequestPath('limit'),
     tileClass: 'bg-rml-team-tile',
   },
   {
@@ -106,7 +109,7 @@ const teamRows: RightsRow[] = [
     chevron: 'ic-rrd-chevron-team',
     titleKey: 'settingsRights.legalRepTitle',
     descKey: 'settingsRights.legalRepDesc',
-    href: `${PRIVACY_MAIL}?subject=${encodeURIComponent('Demande d’un représentant légal')}`,
+    to: rightsRequestPath('legalRep'),
     tileClass: 'bg-rml-team-tile',
   },
   {
@@ -115,7 +118,7 @@ const teamRows: RightsRow[] = [
     chevron: 'ic-rrd-chevron-team',
     titleKey: 'settingsRights.postDeathTitle',
     descKey: 'settingsRights.postDeathDesc',
-    href: `${PRIVACY_MAIL}?subject=${encodeURIComponent('Directives après mon décès')}`,
+    to: rightsRequestPath('postDeath'),
     tileClass: 'bg-rml-team-tile',
   },
 ]
@@ -186,10 +189,10 @@ usePageSeo(() => ({
           {{ $t('settingsRights.team') }}
         </h2>
         <div class="mt-12 w-full overflow-hidden rounded-[10px] border border-rml-row-border bg-surface-card box-border">
-          <a
+          <NuxtLink
             v-for="(row, index) in teamRows"
             :key="row.id"
-            :href="row.href"
+            :to="localePath(row.to!)"
             :class="[
               'flex w-full items-center p-16 text-inherit no-underline box-border',
               index === 0 ? 'border-t-0' : 'border-t border-t-rml-row-border',
@@ -203,26 +206,11 @@ usePageSeo(() => ({
               <span class="mt-2 text-base leading-[16.25px] font-normal text-text">{{ $t(row.descKey) }}</span>
             </span>
             <img :src="`${ICON}/${row.chevron}.svg`" alt="" width="20" height="20" class="block size-20 shrink-0">
-          </a>
+          </NuxtLink>
         </div>
       </section>
 
       <section class="flex w-full flex-col gap-22">
-        <div class="w-full">
-          <h2 class="m-0 px-4 text-xl leading-[22.5px] font-medium text-rml-muted">
-            {{ $t('settingsRights.requests') }}
-          </h2>
-          <div class="mt-12 flex w-full items-center justify-between rounded-[10px] border border-rml-row-border bg-surface-card p-16 box-border">
-            <div class="min-w-0">
-              <p class="m-0 text-2xl leading-[22.5px] font-bold text-rml-heading">{{ $t('settingsRights.requestTitle') }}</p>
-              <p class="m-0 mt-2 text-lg leading-[19.5px] font-normal text-rml-desc">{{ $t('settingsRights.requestDate') }}</p>
-            </div>
-            <span class="shrink-0 rounded-full border border-rml-badge-border bg-rml-badge-bg px-12 py-6 text-lg leading-[19.5px] font-semibold text-rml-badge">
-              {{ $t('settingsRights.requestStatus') }}
-            </span>
-          </div>
-        </div>
-
         <p class="m-0 rounded-[10px] bg-rml-rights-info p-16 text-lg leading-[21.938px] font-medium text-rml-heading">
           {{ $t('settingsRights.deadline') }}
         </p>

@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
   const body = asRecord(await readBody(event))
   // Robot pris au piège : même réponse qu'un envoi réel (voir ci-dessus).
   if (!passBotGuard(body)) return { ok: true }
+  await enforceTurnstile(event, body)
   const email = str(body, 'email').toLowerCase()
 
   if (email === '') {

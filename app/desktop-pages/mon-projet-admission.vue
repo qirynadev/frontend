@@ -382,7 +382,7 @@ function docIcon(doc: AdmissionDocument) {
                 </div>
               </div>
               <NuxtLink
-                :to="localePath('/messages')"
+                :to="localePath(contactPath({ subject: 'accompaniment', order: order?.id }))"
                 class="shrink-0 whitespace-nowrap rounded-[8px] border border-solid border-[#450ff2] bg-[#450ffd] px-24 py-10 text-center text-[16px] leading-24 font-medium text-white no-underline"
               >
                 {{ $t('admission.contactAdvisor') }}

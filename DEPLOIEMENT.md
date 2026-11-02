@@ -136,7 +136,7 @@ npm run build
 Créer `/var/www/qiryna/.env` à partir de [`.env.example`](.env.example) :
 
 ```bash
-NUXT_API_BASE_URL=https://admin.stage.qiryna.com/api
+NUXT_API_BASE_URL=https://myadmin.qiryna.com/api
 NUXT_CATALOG_CACHE_TTL=300
 NUXT_API_TIMEOUT=15000
 
@@ -292,10 +292,12 @@ personnalisées** :
 | Nom | Valeur |
 |---|---|
 | `NODE_ENV` | `production` |
-| `NUXT_API_BASE_URL` | `https://admin.stage.qiryna.com/api` |
+| `NUXT_API_BASE_URL` | `https://myadmin.qiryna.com/api` |
 | `NUXT_CATALOG_CACHE_TTL` | `300` |
 | `NUXT_API_TIMEOUT` | `15000` |
 | `NUXT_BFF_SHARED_KEY` | clé secrète, **la même** que `BFF_SHARED_KEY` du back-office appelé |
+| `NUXT_ACCESS_CODE` | tant que le domaine n'est pas ouvert à tous : le code d'accès |
+| `NUXT_PUBLIC_TURNSTILE_SITE_KEY`, `NUXT_TURNSTILE_SECRET_KEY` | clés Cloudflare Turnstile, les deux ou aucune |
 
 `NUXT_BFF_SHARED_KEY` (2026-09-30) : le site transmet l'IP du visiteur à l'API
 avec cette clé, pour que les limites de fréquence (connexion, inscription,
@@ -307,6 +309,30 @@ rien ne casse : les limites restent communes à tous les visiteurs, comme avant.
 
 Les trois `NUXT_PUBLIC_OAUTH_*` restent vides tant que les identifiants ne sont
 pas fournis (LOT-5.md § 7).
+
+**Accès réservé par un code** (`NUXT_ACCESS_CODE`, qiryna.com seulement) : tant
+que cette variable est renseignée, le site répond par une page 403 avec un champ
+de code, et un accès accordé dure 30 jours. Pour ouvrir le site à tous, retirer
+la variable ou la vider, puis redémarrer l'application dans Plesk : aucun build
+n'est nécessaire. La poser aussi sur my et danube pour fermer ces environnements
+au public, avec un code différent. Changer le code invalide tous les accès déjà
+accordés. Choisir un code long, par exemple
+`openssl rand -hex 16`.
+
+**Indexation** : seuls qiryna.com et www.qiryna.com sont ouverts aux moteurs de
+recherche. Tout autre domaine reçoit `noindex` et un `robots.txt` fermé, sans
+réglage. Le back-office et son API sont toujours exclus.
+
+**Cloudflare Turnstile** : créer un widget pour le domaine dans Cloudflare, puis
+poser les deux clés. Avec une clé secrète seule, les formulaires publics sont
+refusés. L'application mobile doit aussi déclarer son hôte dans le widget et
+envoyer un jeton, sinon sa connexion sera refusée : ne poser les clés qu'une fois
+la version mobile prête, ou sur le seul domaine du site si l'application vise
+encore une autre adresse.
+
+Tant que le blocage est actif : l'application mobile, les robots et les
+vérificateurs externes (Meta, Google, Apple) reçoivent aussi le 403 ; les
+fichiers de `public/` et `/_nuxt/` restent lisibles (logo, polices, scripts).
 
 > **Ne pas définir `PORT` ni `HOST`.** Passenger choisit lui-même la socket
 > d'écoute ; les figer casse le démarrage.

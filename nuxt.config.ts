@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 
-const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.com/api'
+const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://myadmin.qiryna.com/api'
 /**
  * Hôtes des back-offices qui servent les médias (logos, photos d'école,
  * bannières), autorisés par l'optimiseur d'images (`image.domains`).
@@ -17,7 +17,8 @@ const apiBaseUrl = process.env.NUXT_API_BASE_URL || 'https://admin.stage.qiryna.
  * pour la même raison.
  */
 const mediaHost = new URL(apiBaseUrl).host
-const MEDIA_HOSTS = [...new Set([mediaHost, 'admin.qiryna.com', 'admin.stage.qiryna.com'])]
+// Recette : `admin.stage.qiryna.com` renommé `myadmin.qiryna.com` le 2026-11-01.
+const MEDIA_HOSTS = [...new Set([mediaHost, 'admin.qiryna.com', 'myadmin.qiryna.com'])]
 /** Même variable que `i18n.baseUrl` plus bas — exposée aussi en `public` pour `robots.txt` (comparaison d'hôte). */
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com'
 
@@ -73,8 +74,17 @@ export default defineNuxtConfig({
      * transmise, l'API voit celle du serveur du site comme avant.
      */
     bffSharedKey: process.env.NUXT_BFF_SHARED_KEY ?? '',
+    /**
+     * Clé secrète Cloudflare Turnstile (`NUXT_TURNSTILE_SECRET_KEY`), lue à
+     * l'exécution. Vide : pas de contrôle. Va avec la clé publique ci-dessous.
+     */
+    turnstileSecretKey: '',
+    /** `NUXT_ALLOWED_ORIGINS` : origines supplémentaires pour écrire sur le BFF. */
+    allowedOrigins: '',
 
     public: {
+      /** `NUXT_PUBLIC_TURNSTILE_SITE_KEY`, lue à l'exécution. Vide : aucun widget. */
+      turnstileSiteKey: '',
       /**
        * Identifiants clients OAuth.
        *

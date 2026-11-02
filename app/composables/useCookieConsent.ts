@@ -1,8 +1,22 @@
-export type CookieConsentChoice = 'accepted' | 'declined'
+/**
+ * `accepted` et `declined` restent valables pour les choix déjà enregistrés ;
+ * `measure` et `marketing` : une seule des deux catégories acceptée (2026-11-02).
+ */
+export type CookieConsentChoice = 'accepted' | 'declined' | 'measure' | 'marketing'
 
 const COOKIE_NAME = 'qiryna_cookie_consent'
 /** 13 mois — durée maximale recommandée par la CNIL pour un consentement cookies. */
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 395
+
+export function consentAllows(choice: CookieConsentChoice | null, category: 'measure' | 'marketing'): boolean {
+  return choice === 'accepted' || choice === category
+}
+
+export function consentChoiceFor(measure: boolean, marketing: boolean): CookieConsentChoice {
+  if (measure && marketing) return 'accepted'
+  if (measure) return 'measure'
+  return marketing ? 'marketing' : 'declined'
+}
 
 /**
  * Consentement cookies (bannière `CookieConsentBanner.vue`).
@@ -28,10 +42,15 @@ export function useCookieConsent() {
     choice.value = 'declined'
   }
 
+  /** Choix catégorie par catégorie : mesure d'audience, marketing. */
+  function choose(measure: boolean, marketing: boolean) {
+    choice.value = consentChoiceFor(measure, marketing)
+  }
+
   /** Efface le choix pour rouvrir la bannière (« Gérer mes cookies »). */
   function reset() {
     choice.value = null
   }
 
-  return { choice, accept, decline, reset }
+  return { choice, accept, decline, choose, reset }
 }

@@ -61,6 +61,7 @@ export function parsePaymentIntent(raw: unknown): PaymentIntent | null {
     stripeProductId: str(source, 'stripeProductId') || null,
     options,
     label: str(source, 'label'),
+    termsAccepted: source.termsAccepted === true,
     // Un chemin, jamais une URL : sans ce contrôle, une intention forgée
     // pourrait renvoyer l'utilisateur vers un domaine tiers après paiement.
     returnPath: toSafePath(str(source, 'returnPath')),

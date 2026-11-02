@@ -1,5 +1,5 @@
 import type { OrientationEvaluation } from '~/core/contracts'
-import { orientationEvaluationRepo } from '~/core/repositories'
+import { orientationEvaluationRepo, paymentRepo } from '~/core/repositories'
 
 export type OrientationMilestoneStatus = 'done' | 'current' | 'upcoming'
 
@@ -42,20 +42,28 @@ function toMilestones(evaluation: OrientationEvaluation): OrientationMilestone[]
  * `Order.checklist` n'existe pas pour `profilage` (jamais alimenté côté
  * back-office, voir `OrderChecklistItem::seedDefaultsForOrder`) — c'est
  * l'évaluation e-testing elle-même qui porte l'avancement réel.
+ *
+ * Commande payée sans évaluation (`orderConfirmed`, 2026-11-02) : au lancement, le
+ * test n'est pas encore ouvert et sa date est annoncée ensuite. Le client voit donc
+ * sa commande confirmée, et non « Aucune orientation en cours ».
  */
 export async function useOrientationData(locale: Ref<string>) {
   return usePageData(
     'mon-projet-orientation',
     async () => {
-      const evaluations = await orientationEvaluationRepo.list(locale.value)
+      const [evaluations, orders] = await Promise.all([
+        orientationEvaluationRepo.list(locale.value),
+        paymentRepo.orders(locale.value),
+      ])
       const evaluation = [...evaluations]
         .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0] ?? null
+      const order = orders.find((candidate) => candidate.serviceType === 'profilage' && candidate.status === 'confirmed') ?? null
 
       const milestones = evaluation ? toMilestones(evaluation) : []
       const done = milestones.filter((m) => m.status === 'done').length
       const progressPercent = milestones.length > 0 ? Math.round((done / milestones.length) * 100) : 0
 
-      return { evaluation, milestones, progressPercent }
+      return { evaluation, orderId: order?.id ?? null, orderConfirmed: order !== null, milestones, progressPercent }
     },
     { watch: [locale] },
   )

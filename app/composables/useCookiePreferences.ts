@@ -1,30 +1,28 @@
 /**
- * Brouillon des préférences cookies (binaire : audience = analytics).
- * Les catégories fonctionnelles / pub ne sont pas déposées sur Qiryna.
+ * Brouillon des préférences cookies : mesure d'audience et marketing, séparés.
+ * La catégorie fonctionnelle n'est pas déposée sur Qiryna.
  */
 export function useCookiePreferences() {
-  const { choice, accept, decline } = useCookieConsent()
-  const audience = ref(choice.value === 'accepted')
+  const { choice, choose } = useCookieConsent()
+  const audience = ref(consentAllows(choice.value, 'measure'))
+  const marketing = ref(consentAllows(choice.value, 'marketing'))
   const saved = ref(false)
 
   watch(choice, (value) => {
-    audience.value = value === 'accepted'
+    audience.value = consentAllows(value, 'measure')
+    marketing.value = consentAllows(value, 'marketing')
   })
 
-  function persist(next: boolean) {
-    audience.value = next
-    if (next) accept()
-    else decline()
+  function save() {
+    choose(audience.value, marketing.value)
     saved.value = true
   }
 
-  function save() {
-    persist(audience.value)
-  }
-
   function rejectAll() {
-    persist(false)
+    audience.value = false
+    marketing.value = false
+    save()
   }
 
-  return { audience, saved, save, rejectAll }
+  return { audience, marketing, saved, save, rejectAll }
 }

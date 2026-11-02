@@ -89,6 +89,8 @@ export interface SiteSettings {
   description: string
   email: string
   phone: string
+  /** Numéro WhatsApp saisi dans les paramètres du site, `''` tant qu'il n'y en a pas. */
+  whatsapp: string
   stripePublicKey: string | null
   analyticsId: string | null
   socials: SocialLink[]
@@ -130,4 +132,6 @@ export interface BotGuardFields {
   _hp: string
   /** Millisecondes écoulées depuis l'affichage du formulaire. */
   _elapsed: number
+  /** Jeton Cloudflare Turnstile, s'il est configuré (`server/utils/turnstile.ts`). */
+  _turnstile?: string
 }

@@ -139,6 +139,7 @@ export function toSiteSettings(raw: unknown): SiteSettings {
     description: str(source, 'site.description'),
     email: str(source, 'site.email'),
     phone: str(source, 'site.phone'),
+    whatsapp: str(source, 'site.whatsapp'),
     stripePublicKey: optionalStr(source, 'site.stripe_pk_api_key'),
     analyticsId: optionalStr(source, 'site.ga_id'),
     socials: list(source, 'socials')

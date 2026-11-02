@@ -33,6 +33,7 @@ export function useCheckout() {
   const localePath = useLocalePath()
   const route = useRoute()
   const session = useSessionStore()
+  const terms = useCheckoutTerms()
 
   const pending = ref<string | null>(null)
   /** Clé i18n de l'erreur, jamais le message brut de l'API. */
@@ -78,6 +79,8 @@ export function useCheckout() {
       stripeProductId: tier.stripeProductId,
       options,
       label: `${tier.name} — ${offer.title}`,
+      // Seul `start()` fabrique une intention, après la case des conditions générales.
+      termsAccepted: true,
       /**
        * Où revenir après paiement.
        *
@@ -118,6 +121,8 @@ export function useCheckout() {
    */
   async function start(offer: OfferPage, tier: OfferTier, extraOptions: Record<string, string> = {}): Promise<void> {
     if (pending.value !== null) return
+
+    if (!await terms.ask()) return
 
     errorKey.value = null
     pending.value = tier.id

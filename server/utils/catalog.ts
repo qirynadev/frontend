@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { Article, Catalog, Course, Destination, LivingDestination, Offer, OfferPage, Orientation, Page, SchoolSummary } from '~~/app/core/contracts'
+import type { Article, Catalog, Course, Destination, LegalNoticeTexts, LivingDestination, Offer, OfferPage, Orientation, Page, SchoolSummary } from '~~/app/core/contracts'
 import { createApiClient } from '~~/app/core/http/api-client'
 import {
   toArticleList,
@@ -9,6 +9,7 @@ import {
   toDomainOfferPage,
   toHomeContent,
   toLanguageOfferPage,
+  toLegalNoticeTexts,
   toLivingDestination,
   toLivingOfferPage,
   toMenu,
@@ -79,6 +80,7 @@ export interface CatalogSnapshot {
   offerPages: OfferPage[]
   orientation: Orientation | null
   articles: Article[]
+  legalNotice: LegalNoticeTexts
 }
 
 function apiClient(event: H3Event, locale: string) {
@@ -96,7 +98,7 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
 
   // AUJOURD'HUI : un dump monolithique plus cinq appels annexes.
   // DEMAIN : `client.request('/bootstrap')` seul.
-  const [raw, rawCourses, rawLivings, rawOrientation, rawOrientationFormulas, rawArticles] = await Promise.all([
+  const [raw, rawCourses, rawLivings, rawOrientation, rawOrientationFormulas, rawArticles, rawLegalNotice] = await Promise.all([
     client.request<Record<string, unknown>>('/all-data', { query: { lite: 1 } }),
     // Ceux-là ne doivent pas faire tomber la page d'accueil s'ils échouent :
     // le catalogue principal suffit à rendre l'essentiel du site.
@@ -107,6 +109,7 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
     // langues/logements où les formules vivent déjà sous `/profilage`.
     client.request<unknown>('/profilage/formulas').catch(() => []),
     client.request<unknown>('/articles').catch(() => []),
+    client.request<unknown>('/legal-notice').catch(() => null),
   ])
 
   const destinations = toDestinationList(raw.schoolSheets, flagBase)
@@ -155,7 +158,7 @@ async function loadSnapshot(event: H3Event, locale: string): Promise<CatalogSnap
     courses: courses.map(({ description: _d, levels: _l, seo: _seo, ...summary }) => summary),
   }
 
-  return { catalog, destinations, schools, offers, pages, courses, livings, offerPages, orientation: toOrientation(rawOrientation), articles: toArticleList(rawArticles) }
+  return { catalog, destinations, schools, offers, pages, courses, livings, offerPages, orientation: toOrientation(rawOrientation), articles: toArticleList(rawArticles), legalNotice: toLegalNoticeTexts(rawLegalNotice) }
 }
 
 /**

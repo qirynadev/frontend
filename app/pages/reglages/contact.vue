@@ -20,9 +20,12 @@
  *   serait trompeur.
  * - **non connecté** — `POST /send-email` (public, `messages/public.post.ts`)
  *   : aucun compte pour fournir nom/e-mail à sa place, ces champs restent
- *   donc éditables. N'enregistre rien en base (`TODO #56` dans le code
- *   source réel de cette route) — e-mail de notification seulement, voir
- *   `docs/directives-backend.md`.
+ *   donc éditables. Enregistré dans la messagerie du back-office, avec un
+ *   accusé de réception envoyé au visiteur.
+ *
+ * Préremplissage par l'adresse (2026-11-02, `contactPath`) : `?objet=` choisit le
+ * sujet, `?commande=` et `?demande=` ouvrent le message avec leur référence.
+ * « Contacter un conseiller » et « Exercer mes droits » arrivent par là.
  *
  * Sujet/nom/e-mail saisis dans le formulaire n'ont pas de champ dédié côté
  * `/user/messages` : regroupés dans `text` plutôt que perdus (chemin
@@ -37,13 +40,14 @@ import { ApiError } from '~/core/http/errors'
 import { contactRepo } from '~/core/repositories'
 import { useSessionStore } from '~/core/stores'
 import { useBotGuard } from '~/composables/useBotGuard'
+import { contactPrefill } from '~/utils/contact-links'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
 const isAuthenticated = computed(() => session.isAuthenticated)
 // Anti-robots invisible (champ piège + délai minimum), voir `useBotGuard`.
-const botGuard = useBotGuard()
+const botGuard = useBotGuard({ turnstile: true })
 
 const MESSAGE_MAX = 1000
 const FORM_ICON = '/img/icons/contact-form'
@@ -55,13 +59,19 @@ const subjects = [
   { id: 'billing', labelKey: 'settingsContact.subjectBilling' },
   { id: 'accompaniment', labelKey: 'settingsContact.subjectAccompaniment' },
   { id: 'technical', labelKey: 'settingsContact.subjectTechnical' },
+  { id: 'privacy', labelKey: 'settingsContact.subjectPrivacy' },
   { id: 'other', labelKey: 'settingsContact.subjectOther' },
 ] as const
 
-const subject = ref('')
+const route = useRoute()
+const prefill = contactPrefill(route.query)
+const subject = ref<string>(subjects.find((item) => item.id === prefill.subject)?.id ?? '')
 const name = ref('')
 const email = ref('')
-const message = ref('')
+const message = ref([
+  prefill.request ? t('settingsContact.prefillRequest', { request: t(`settingsRights.${prefill.request}Title`) }) : '',
+  prefill.order ? t('settingsContact.prefillOrder', { order: prefill.order }) : '',
+].filter(Boolean).join('\n'))
 const consent = ref(false)
 const submitted = ref(false)
 const submitting = ref(false)

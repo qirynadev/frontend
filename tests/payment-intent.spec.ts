@@ -13,6 +13,7 @@ const valid = {
   stripeProductId: 'price_123',
   options: { language: 'Anglais', level: 'B2' },
   label: 'Everest — Anglais',
+  termsAccepted: true,
   returnPath: '/offres/anglais',
   expiresAt: '2026-08-12T18:00:00.000Z',
 }
@@ -43,6 +44,8 @@ describe('champ manquant', () => {
       stripeProductId: null,
       options: {},
       label: '',
+      // Sans la case cochée, `payment/init` refuse de démarrer le paiement.
+      termsAccepted: false,
       returnPath: '/',
       expiresAt: '',
     })

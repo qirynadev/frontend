@@ -15,7 +15,8 @@ export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'public, max-age=3600, s-maxage=3600')
 
   const host = getRequestHost(event)
-  const protocol = getRequestProtocol(event)
+  // Derrière Cloudflare et nginx, le protocole vu ici peut être `http`.
+  const protocol = isIndexableHost(host) ? 'https' : getRequestProtocol(event)
   const baseUrl = `${protocol}://${host}`
 
   // Charger le catalogue pour FR et EN de manière résiliente

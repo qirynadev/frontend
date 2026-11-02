@@ -4,10 +4,8 @@ import { passBotGuard } from '~~/server/utils/bot-guard'
 
 /**
  * Envoie un message de support (`/reglages/contact`) — visiteur **non
- * connecté**. `POST /send-email` (API, public) : contrairement à `POST
- * /user/messages` (voir `index.post.ts`), il n'enregistre rien en base
- * (`docs/directives-backend.md`) — e-mail de notification seulement. Accepté
- * ici parce qu'aucun compte connecté ne peut fournir nom/e-mail à sa place.
+ * connecté**. `POST /send-email` (API, public) : le back-office l'enregistre dans
+ * sa messagerie, prévient l'équipe et envoie un accusé de réception au visiteur.
  *
  * Pas de téléphone dans ce formulaire : l'API l'accepte absent depuis la
  * correction de `MessageAction::sendEmail()` (repli `?? null`,
@@ -19,6 +17,7 @@ export default defineEventHandler(async (event): Promise<{ ok: boolean }> => {
   const body = asRecord(await readBody(event).catch(() => ({})))
   // Robot pris au piège : faux succès, rien n'est envoyé (`server/utils/bot-guard.ts`).
   if (!passBotGuard(body)) return { ok: true }
+  await enforceTurnstile(event, body)
 
   const firstName = str(body, 'firstName')
   const lastName = str(body, 'lastName')

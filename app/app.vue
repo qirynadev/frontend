@@ -69,5 +69,6 @@ useHead(() => {
     <NuxtPage />
   </NuxtLayout>
   <CookieConsentBanner />
+  <CheckoutTermsDialog />
   <NewsletterNotice />
 </template>

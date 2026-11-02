@@ -72,4 +72,5 @@ export const RATE_LIMITS = {
   resetPassword: { name: 'reset-password', max: 5, windowMs: 60_000 },
   newsletter: { name: 'newsletter', max: 5, windowMs: 60_000 },
   contact: { name: 'contact', max: 5, windowMs: 60_000 },
+  siteAccess: { name: 'site-access', max: 5, windowMs: 60_000 },
 } satisfies Record<string, RateLimitRule>

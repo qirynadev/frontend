@@ -10,12 +10,14 @@
 import MpaDocsCard from '~/components/admission/MpaDocsCard.vue'
 import MpaStepsCard from '~/components/admission/MpaStepsCard.vue'
 import DesktopMonProjetAdmission from '~/desktop-pages/mon-projet-admission.vue'
+import { contactPath } from '~/utils/contact-links'
 
 definePageMeta({
   middleware: 'auth',
 })
 
 const { t, locale } = useI18n()
+const localePath = useLocalePath()
 const route = useRoute()
 const router = useRouter()
 
@@ -130,9 +132,12 @@ usePageSeo(() => ({
                 <p class="m-0 mt-4 text-xs leading-16 font-normal text-text">{{ $t('admission.helpDesc') }}</p>
               </div>
             </div>
-            <a href="#" class="mpa-help-btn shrink-0 whitespace-nowrap rounded-xl border border-primary-link bg-primary-cta px-11 py-9 text-center text-sm leading-16 font-medium text-on-primary no-underline">
+            <NuxtLink
+              :to="localePath(contactPath({ subject: 'accompaniment', order: admission?.order?.id }))"
+              class="mpa-help-btn shrink-0 whitespace-nowrap rounded-xl border border-primary-link bg-primary-cta px-11 py-9 text-center text-sm leading-16 font-medium text-on-primary no-underline"
+            >
               {{ $t('admission.contactAdvisor') }}
-            </a>
+            </NuxtLink>
           </section>
         </template>
       </PageState>

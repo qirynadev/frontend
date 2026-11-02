@@ -25,9 +25,12 @@
  * d'orientation — voir `useOrientationData` pour les trois jalons réels qui
  * les remplacent.
  */
+import { contactPath } from '~/utils/contact-links'
+
 definePageMeta({ middleware: 'auth' })
 
 const { t, locale } = useI18n()
+const localePath = useLocalePath()
 
 const { data: orientation, apiError, isInitialLoading, refresh } = await useOrientationData(locale)
 
@@ -110,7 +113,7 @@ usePageSeo(() => ({
       <PageState
         :loading="isInitialLoading"
         :error="apiError"
-        :empty="!orientation?.evaluation"
+        :empty="!orientation?.evaluation && !orientation?.orderConfirmed"
         :empty-title="$t('projectOrientation.emptyTitle')"
         :empty-description="$t('projectOrientation.emptyDescription')"
         :on-retry="() => refresh()"
@@ -121,6 +124,21 @@ usePageSeo(() => ({
             <QSkeleton variant="rect" :height="140" />
           </div>
         </template>
+
+        <!-- Commande payée, test pas encore ouvert : la date est annoncée ensuite. -->
+        <section
+          v-if="!orientation?.evaluation && orientation?.orderConfirmed"
+          class="mt-8 w-full rounded-xl border border-mpo-card-border bg-mpo-card-bg px-19 py-25 shadow-2xs box-border"
+        >
+          <h1 class="m-0 text-3xl leading-28 font-bold text-mpo-heading">{{ $t('projectOrientation.pendingTitle') }}</h1>
+          <p class="m-0 mt-8 text-sm leading-20 font-normal text-mpo-heading-soft">{{ $t('projectOrientation.pendingDesc') }}</p>
+          <NuxtLink
+            :to="localePath(contactPath({ subject: 'accompaniment', order: orientation.orderId ?? undefined }))"
+            class="mpo-support-btn mt-16 inline-block rounded-xl border border-mpo-support bg-transparent px-12 py-9 text-sm leading-16 font-medium text-mpo-support no-underline"
+          >
+            {{ $t('projectOrientation.contactAdvisor') }}
+          </NuxtLink>
+        </section>
 
         <template v-if="orientation?.evaluation">
           <!-- Progression -->
@@ -235,9 +253,12 @@ usePageSeo(() => ({
                 <p class="m-0 text-xs leading-16 font-normal text-text">{{ $t('projectOrientation.helpDesc') }}</p>
               </div>
             </div>
-            <a href="#" class="mpo-support-btn shrink-0 rounded-xl border border-mpo-support bg-transparent px-8 py-9 text-sm leading-16 font-medium text-center whitespace-nowrap text-mpo-support no-underline">
+            <NuxtLink
+              :to="localePath(contactPath({ subject: 'accompaniment', order: orientation.orderId ?? undefined }))"
+              class="mpo-support-btn shrink-0 rounded-xl border border-mpo-support bg-transparent px-8 py-9 text-sm leading-16 font-medium text-center whitespace-nowrap text-mpo-support no-underline"
+            >
               {{ $t('projectOrientation.contactAdvisor') }}
-            </a>
+            </NuxtLink>
           </section>
         </template>
       </PageState>
