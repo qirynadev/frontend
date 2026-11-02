@@ -89,6 +89,8 @@ export interface SiteSettings {
   description: string
   email: string
   phone: string
+  /** Numéro WhatsApp saisi dans les paramètres du site, `''` tant qu'il n'y en a pas. */
+  whatsapp: string
   stripePublicKey: string | null
   analyticsId: string | null
   socials: SocialLink[]

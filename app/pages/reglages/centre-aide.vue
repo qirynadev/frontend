@@ -10,7 +10,7 @@
  *   repassant chacun sur une seule ligne |
  * | options | `gap-12` entre cartes contact |
  * | Envoyer un message | → `/reglages/contact` |
- * | WhatsApp | `wa.me` vers le téléphone des réglages du site — carte masquée sans numéro |
+ * | WhatsApp | `wa.me` vers le numéro WhatsApp des réglages du site, carte masquée sans numéro |
  * | Être rappelé | pas d’écran Figma branché — inerte |
  *
  * Doc : `docs/reglages-contact-mocks.md`.
@@ -26,22 +26,15 @@ const localePath = useLocalePath()
 const ICON = '/img/icons/centre-aide'
 
 /**
- * WhatsApp : le téléphone saisi dans les réglages du site (`settings.site.phone`),
- * en attendant un champ dédié au numéro WhatsApp — le jour où il existe, c'est
- * la seule ligne à changer. Le catalogue est déjà chargé par la mise en page.
- *
- * `wa.me` attend l'indicatif et le numéro, chiffres seuls : `+33 6 23…` et
- * `0033 6 23…` donnent tous deux `33623…`. Sans numéro, la carte est masquée
- * plutôt que d'ouvrir une conversation vers un numéro fictif, comme le faisait
- * l'ancien numéro de maquette.
+ * WhatsApp : le numéro saisi dans les paramètres du site (`settings.site.whatsapp`).
+ * Le catalogue est déjà chargé par la mise en page. Sans numéro, la carte est
+ * masquée plutôt que d'ouvrir une conversation vers un numéro fictif, comme le
+ * faisait l'ancien numéro de maquette.
  */
 const catalog = useCatalogStore()
 if (!catalog.isReady) await catalog.load()
 
-const whatsappHref = computed(() => {
-  const digits = (catalog.settings?.phone ?? '').replace(/\D/g, '').replace(/^00/, '')
-  return digits.length >= 8 ? `https://wa.me/${digits}` : null
-})
+const whatsappHref = computed(() => whatsappLink(catalog.settings?.whatsapp))
 
 usePageSeo(() => ({
   title: t('settingsHelp.seoTitle'),

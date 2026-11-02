@@ -1,0 +1,42 @@
+# Test de charge lancé à la main depuis GitHub : une machine bien raccordée peut
+# télécharger les pages complètes (MODE=get), ce qu'un poste de travail ne permet pas.
+# À ne lancer que sur un site qui n'a pas encore de clients, ou en heure creuse.
+name: Test de charge
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Adresse du site
+        default: https://danube.qiryna.com
+        required: true
+      vus:
+        description: Visiteurs simultanés
+        default: '1200'
+        required: true
+      mode:
+        description: get (pages complètes) ou head (rendu seul)
+        default: get
+        required: true
+
+jobs:
+  charge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: grafana/setup-k6-action@v1
+      - name: Lancer k6
+        run: >
+          k6 run --no-color
+          -e BASE_URL="${{ inputs.base_url }}"
+          -e VUS="${{ inputs.vus }}"
+          -e MODE="${{ inputs.mode }}"
+          -e RAMP=3m -e HOLD=5m
+          --summary-export resume.json
+          tests/load/public-load.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resume-charge
+          path: resume.json

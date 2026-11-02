@@ -31,7 +31,7 @@ export default defineEventHandler(async (event): Promise<AdmissionDocumentsState
 
   try {
     const raw = await client.request('/client-data/store', { method: 'POST', body: form })
-    return toAdmissionDocumentsState(raw, storageBaseUrl(event))
+    return toAdmissionDocumentsState(raw)
   }
   catch (error) {
     rethrowApiError(error)
