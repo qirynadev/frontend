@@ -23,7 +23,9 @@
 1. L'application démarre le paiement comme le site (`POST /payment/init`).
 2. Le lien Stripe s'ouvre dans le **navigateur intégré** (onglet Chrome sur Android, Safari sur iOS), par-dessus l'application (`goToPayment`).
 3. Après paiement, Stripe renvoie vers l'écran de succès **du site**, dans ce navigateur intégré. Le jeton `rt` y rouvre la session web : l'écran s'affiche normalement.
-4. Quand l'utilisateur referme le navigateur intégré, l'application ouvre **son** écran de succès pour la même commande (`browserFinished`). Il interroge le back-office avec la session de l'application et affiche « confirmé », « en attente » ou « échoué ». L'écran générique renvoie vers celui du bon tunnel.
+4. Quand l'utilisateur referme le navigateur intégré (`browserFinished`), l'application lit l'état de la commande avec sa propre session :
+   - **payée ou refusée** : elle ouvre son écran de succès, qui affiche « confirmé » ou « échoué ». L'écran générique renvoie vers celui du bon tunnel.
+   - **encore impayée** (paiement abandonné) : l'utilisateur reste sur l'offre et peut réessayer. L'écran de succès, lui, attendrait la confirmation de Stripe jusqu'à 30 s côté back-office, au-delà du délai du BFF (15 s) : il afficherait une erreur 502.
 5. Offre gratuite : pas de Stripe, l'écran de succès s'ouvre directement dans l'application.
 
 Aucun changement back-office n'a été nécessaire.
