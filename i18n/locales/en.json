@@ -151,9 +151,7 @@
       "title": "Forgot password"
     },
     "resume": {
-      "cta": "Resume payment",
-      "description": "Your order is waiting: {label}",
-      "title": "A payment is pending"
+      "cta": "Resume payment"
     },
     "signIn": "Sign in",
     "signUp": "Sign up",

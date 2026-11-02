@@ -17,7 +17,6 @@ defineProps<{
   socialPending: SocialProvider | null
   linkRequest: SocialLinkRequest | null
   pendingPayment: boolean
-  pendingLabel: string
   isAuthenticated: boolean
 }>()
 
@@ -53,14 +52,6 @@ const socialOrder: SocialProvider[] = ['facebook', 'google', 'linkedin']
             {{ $t('desktop.auth.welcomeDesc') }}
           </p>
         </div>
-
-        <QAlert
-          v-if="pendingPayment"
-          tone="info"
-          :title="$t('auth.resume.title')"
-          :message="$t('auth.resume.description', { label: pendingLabel })"
-          class="mt-24"
-        />
 
         <QAlert
           v-if="visibleError"
