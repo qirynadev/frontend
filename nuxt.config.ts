@@ -27,11 +27,13 @@ const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://web.qiryna.com'
  *
  * Une application n'embarque pas de serveur : le site y est livré en page
  * unique (`ssr: false`), et ses appels partent vers le BFF du site déployé
- * (`NUXT_MOBILE_BFF_ORIGIN`, la recette par défaut). Le site, lui, ne change
- * pas : sans la variable, tout ce qui suit garde sa valeur d'avant.
+ * (`NUXT_MOBILE_BFF_ORIGIN`) : la production par défaut (danube, branché sur
+ * `admin.qiryna.com/api`), `https://stage.qiryna.com` pour la recette. Le
+ * site, lui, ne change pas : sans `NUXT_MOBILE`, tout ce qui suit garde sa
+ * valeur d'avant.
  */
 const isMobile = process.env.NUXT_MOBILE === '1'
-const mobileBffOrigin = (process.env.NUXT_MOBILE_BFF_ORIGIN || 'https://stage.qiryna.com').replace(/\/+$/, '')
+const mobileBffOrigin = (process.env.NUXT_MOBILE_BFF_ORIGIN || 'https://danube.qiryna.com').replace(/\/+$/, '')
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({

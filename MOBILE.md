@@ -9,7 +9,7 @@
 | Sujet | Site | Application |
 | --- | --- | --- |
 | Rendu | serveur (SSR) | page unique (`ssr: false`), fichiers embarqués |
-| Appels à l'API | BFF Nitro, même origine (`/api/bff`) | BFF du site déployé (`NUXT_MOBILE_BFF_ORIGIN`, recette par défaut), en HTTP natif (`CapacitorHttp`) : pas de CORS |
+| Appels à l'API | BFF Nitro, même origine (`/api/bff`) | BFF du site déployé (`NUXT_MOBILE_BFF_ORIGIN` : production `danube.qiryna.com` par défaut, donc l'API `admin.qiryna.com/api`), en HTTP natif (`CapacitorHttp`) : pas de CORS |
 | Session | cookie `httpOnly` posé par le BFF | le même cookie, gardé par le stockage natif du téléphone (`CapacitorCookies`), jamais lisible en JavaScript |
 | Traductions | route `/_i18n/...` du serveur | fichiers générés au build (`i18n.experimental.prerenderMessages`) |
 | Images | optimiseur `/_ipx` | images telles quelles (`image.provider: 'none'`) |
@@ -92,7 +92,7 @@ Le push web ne fonctionne pas dans une WebView : l'encart d'activation est masqu
 Node n'est pas installé sur le poste de développement : les commandes Node passent par Docker (`node:22-alpine`, `node_modules` dans le volume `qiryna-front-nm`).
 
 ```bash
-# 1. Site en page unique, pointé sur la recette (ou NUXT_MOBILE_BFF_ORIGIN=https://danube.qiryna.com pour la production)
+# 1. Site en page unique, pointé sur la production (ou NUXT_MOBILE_BFF_ORIGIN=https://stage.qiryna.com pour la recette)
 NUXT_MOBILE=1 npx nuxt generate
 # 2. Copie dans les projets natifs
 npx cap sync
