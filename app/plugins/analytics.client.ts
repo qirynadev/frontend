@@ -15,12 +15,16 @@ const DENIED = {
   analytics_storage: 'denied',
 } as const
 
-const GRANTED = {
-  ad_storage: 'granted',
-  ad_user_data: 'granted',
-  ad_personalization: 'granted',
-  analytics_storage: 'granted',
-} as const
+/** Mesure d'audience et marketing s'accordent séparément. */
+function consentUpdate(choice: CookieConsentChoice) {
+  const marketing = consentAllows(choice, 'marketing') ? 'granted' : 'denied'
+  return {
+    ad_storage: marketing,
+    ad_user_data: marketing,
+    ad_personalization: marketing,
+    analytics_storage: consentAllows(choice, 'measure') ? 'granted' : 'denied',
+  }
+}
 
 /**
  * Google Analytics 4, chargé une fois, piloté par Google Consent Mode v2 —
@@ -57,6 +61,6 @@ export default defineNuxtPlugin(async () => {
   const { choice } = useCookieConsent()
   watch(choice, (value: CookieConsentChoice | null) => {
     if (value === null) return
-    window.gtag('consent', 'update', value === 'accepted' ? GRANTED : DENIED)
+    window.gtag('consent', 'update', consentUpdate(value))
   }, { immediate: true })
 })

@@ -53,6 +53,7 @@ const {
 
 const selecteurPaysOuvert = ref(false)
 const selecteurIndicatifOuvert = ref(false)
+const suppressionOuverte = ref(false)
 
 usePageSeo(() => ({
   title: t('settingsPersonal.seoTitle'),
@@ -240,6 +241,7 @@ usePageSeo(() => ({
       <button
         type="button"
         class="rp-card box-border flex w-full cursor-pointer items-center rounded-[16px] border border-rp-card-border bg-surface-card p-20 text-left shadow-rp-card"
+        @click="suppressionOuverte = true"
       >
         <span class="mr-16 flex size-48 shrink-0 items-center justify-center rounded-[12px] bg-rp-delete-bg" aria-hidden="true">
           <img :src="`${ICON}/ic-rp-trash.svg`" alt="" width="24" height="24" class="block size-24">
@@ -258,6 +260,8 @@ usePageSeo(() => ({
   </div>
 
   <div class="hidden shell:block">
-    <DesktopReglagesProfil />
+    <DesktopReglagesProfil @delete-account="suppressionOuverte = true" />
   </div>
+
+  <AccountDeleteSheet v-model:open="suppressionOuverte" />
 </template>

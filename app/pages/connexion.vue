@@ -46,6 +46,8 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const session = useSessionStore()
 const { resume, redirectIfAuthenticated } = useAuthFlow()
+// Cloudflare Turnstile, s'il est configuré. Pas de champ piège sur la connexion.
+const botGuard = useBotGuard({ turnstile: true })
 
 const {
   configured: socialConfigured,
@@ -120,7 +122,7 @@ async function onSubmit(): Promise<void> {
 
   submitting.value = true
   try {
-    const outcome = await session.login({ email: email.value.trim(), password: password.value }, locale.value)
+    const outcome = await session.login({ email: email.value.trim(), password: password.value, ...botGuard.fields() }, locale.value)
     await finish(() => resume(outcome))
   }
   catch (error) {

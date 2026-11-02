@@ -406,6 +406,14 @@ usePageSeo(() => ({
         </div>
       </PageState>
 
+      <!-- Messagerie en lecture seule : on répond par le formulaire de contact. -->
+      <p v-if="activeTab === 'messages'" class="m-0 mt-16 text-sm leading-18 font-normal text-text">
+        {{ $t('messages.replyNotice') }}
+        <NuxtLink :to="localePath('/reglages/contact')" class="font-semibold text-primary-link no-underline">
+          {{ $t('messages.replyCta') }}
+        </NuxtLink>
+      </p>
+
       <!-- Échanges sécurisés -->
       <aside class="msg-secure mt-16 flex min-h-86 w-full max-w-full items-center justify-between gap-8 overflow-hidden rounded-xl bg-surface-2 px-9 py-8 box-border">
         <div class="msg-secure-left flex min-w-0 flex-1 items-start gap-11">
@@ -481,6 +489,12 @@ usePageSeo(() => ({
               </p>
             </article>
           </div>
+          <p class="m-0 mt-20 text-sm leading-18 font-normal text-text">
+            {{ $t('messages.replyNotice') }}
+            <NuxtLink :to="localePath('/reglages/contact')" class="font-semibold text-primary-link no-underline">
+              {{ $t('messages.replyCta') }}
+            </NuxtLink>
+          </p>
         </div>
       </DialogContent>
     </DialogPortal>

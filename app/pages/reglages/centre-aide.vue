@@ -17,6 +17,7 @@
  */
 import { useCatalogStore } from '~/core/stores'
 import DesktopReglagesCentreAide from '~/desktop-pages/reglages-centre-aide.vue'
+import { whatsappLink } from '~/utils/contact-links'
 
 // Accessible sans connexion (sur demande explicite) : contenu statique
 // (FAQ/contact), rien qui dépende de la session.

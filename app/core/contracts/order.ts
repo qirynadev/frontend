@@ -178,6 +178,8 @@ export interface PaymentIntent {
   options: Record<string, string>
   /** Intitulé affiché pendant la reprise (« Everest — Anglais »). */
   label: string
+  /** Case des conditions générales cochée. Exigée par `payment/init`, horodatée par le back-office. */
+  termsAccepted: boolean
   /** Chemin où renvoyer l'utilisateur après le paiement. */
   returnPath: string
   /** ISO complet. Passé cette date, l'intention est ignorée et effacée. */

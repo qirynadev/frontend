@@ -31,7 +31,15 @@ export const authRepo = {
     return bffFetch<AuthOutcome | null>('/session', { locale })
   },
 
-  login(credentials: { email: string; password: string }, locale?: string): Promise<AuthOutcome> {
+  /**
+   * Suppression définitive du compte connecté (`server/api/bff/user/account.delete.ts`).
+   * Sans nouvel essai automatique : le premier appel a pu aboutir.
+   */
+  deleteAccount(password: string, locale?: string): Promise<{ ok: boolean }> {
+    return bffFetch('/user/account', { method: 'DELETE', body: { confirm: true, password }, locale, retry: 0 })
+  },
+
+  login(credentials: { email: string; password: string } & Partial<BotGuardFields>, locale?: string): Promise<AuthOutcome> {
     return bffFetch<AuthOutcome>('/session', { method: 'POST', body: credentials, locale })
   },
 

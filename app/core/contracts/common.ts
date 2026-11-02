@@ -132,4 +132,6 @@ export interface BotGuardFields {
   _hp: string
   /** Millisecondes écoulées depuis l'affichage du formulaire. */
   _elapsed: number
+  /** Jeton Cloudflare Turnstile, s'il est configuré (`server/utils/turnstile.ts`). */
+  _turnstile?: string
 }

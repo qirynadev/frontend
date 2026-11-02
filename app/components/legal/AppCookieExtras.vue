@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Préférences + inventaire — Figma `1562:1890`, consentement réel (audience).
+ * Préférences + inventaire — Figma `1562:1890`, consentement réel (audience, marketing).
  */
 import { legalCookieRows } from '~/config/legal-cookies'
 
@@ -8,7 +8,7 @@ defineProps<{
   wide?: boolean
 }>()
 
-const { audience, saved, save, rejectAll } = useCookiePreferences()
+const { audience, marketing, saved, save, rejectAll } = useCookiePreferences()
 </script>
 
 <template>
@@ -88,15 +88,10 @@ const { audience, saved, save, rejectAll } = useCookiePreferences()
                   {{ $t('legalCookies.adsDesc') }}
                 </p>
               </div>
-              <div class="flex flex-col items-end">
-                <AppLegalSwitch
-                  disabled
-                  :label="$t('legalCookies.adsTitle')"
-                />
-                <span class="mt-4 text-[10px] leading-15 text-rml-desc">
-                  {{ $t('legalCookies.adsUnused') }}
-                </span>
-              </div>
+              <AppLegalSwitch
+                v-model="marketing"
+                :label="$t('legalCookies.adsTitle')"
+              />
             </div>
           </div>
 

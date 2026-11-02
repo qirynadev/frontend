@@ -59,8 +59,17 @@ export default defineNuxtConfig({
      * transmise, l'API voit celle du serveur du site comme avant.
      */
     bffSharedKey: process.env.NUXT_BFF_SHARED_KEY ?? '',
+    /**
+     * Clé secrète Cloudflare Turnstile (`NUXT_TURNSTILE_SECRET_KEY`), lue à
+     * l'exécution. Vide : pas de contrôle. Va avec la clé publique ci-dessous.
+     */
+    turnstileSecretKey: '',
+    /** `NUXT_ALLOWED_ORIGINS` : origines supplémentaires pour écrire sur le BFF. */
+    allowedOrigins: '',
 
     public: {
+      /** `NUXT_PUBLIC_TURNSTILE_SITE_KEY`, lue à l'exécution. Vide : aucun widget. */
+      turnstileSiteKey: '',
       /**
        * Identifiants clients OAuth.
        *
