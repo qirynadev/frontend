@@ -14,14 +14,17 @@
  *   sur mobile, modale centrée sur desktop — un bandeau tout en bas d'un
  *   écran 1728px passait facilement inaperçu.
  *
- * Binaire (accepter/refuser), pas de personnalisation par catégorie : le
- * seul cookie non essentiel du site aujourd'hui est Google Analytics (voir
- * `plugins/analytics.client.ts`) — proposer un choix par catégorie sans
- * deuxième catégorie réelle simulerait une granularité qui n'existe pas.
+ * Refuser est aussi simple qu'accepter (2026-11-02) : même bouton, un seul clic,
+ * au même niveau. « Personnaliser » ouvre les deux catégories, mesure d'audience
+ * et marketing, décochées par défaut.
  */
-const { choice, accept, decline } = useCookieConsent()
+const { choice, accept, decline, choose } = useCookieConsent()
 const localePath = useLocalePath()
 const route = useRoute()
+
+const customizing = ref(false)
+const measure = ref(false)
+const marketing = ref(false)
 
 /**
  * Masquée sur `/pages/cookies` : cette page porte son propre formulaire de
@@ -63,13 +66,42 @@ const open = computed({
       </div>
     </div>
 
+    <div v-if="customizing" class="flex flex-col gap-12">
+      <div class="flex items-center gap-12">
+        <div class="min-w-0 flex-1">
+          <p class="m-0 text-base leading-20 font-semibold text-text">{{ $t('legalCookies.audienceTitle') }}</p>
+          <p class="m-0 text-sm leading-16 text-muted-2">{{ $t('legalCookies.audienceDesc') }}</p>
+        </div>
+        <AppLegalSwitch v-model="measure" :label="$t('legalCookies.audienceTitle')" />
+      </div>
+      <div class="flex items-center gap-12">
+        <div class="min-w-0 flex-1">
+          <p class="m-0 text-base leading-20 font-semibold text-text">{{ $t('legalCookies.adsTitle') }}</p>
+          <p class="m-0 text-sm leading-16 text-muted-2">{{ $t('legalCookies.adsDesc') }}</p>
+        </div>
+        <AppLegalSwitch v-model="marketing" :label="$t('legalCookies.adsTitle')" />
+      </div>
+      <QButton variant="outline" tone="primary" block @click="choose(measure, marketing)">
+        {{ $t('cookieBanner.saveChoices') }}
+      </QButton>
+    </div>
+
     <div class="flex gap-10">
-      <QButton variant="outline" tone="neutral" block @click="decline">
+      <QButton variant="solid" tone="primary" block @click="decline">
         {{ $t('cookieBanner.decline') }}
       </QButton>
       <QButton variant="solid" tone="primary" block @click="accept">
         {{ $t('cookieBanner.accept') }}
       </QButton>
     </div>
+
+    <button
+      v-if="!customizing"
+      type="button"
+      class="cursor-pointer self-center border-0 bg-transparent p-4 text-base leading-20 font-semibold text-primary-link"
+      @click="customizing = true"
+    >
+      {{ $t('cookieBanner.customize') }}
+    </button>
   </QSheet>
 </template>

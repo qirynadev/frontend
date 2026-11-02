@@ -42,6 +42,15 @@ export default defineEventHandler(async (event): Promise<PaymentInit> => {
     })
   }
 
+  // Conditions générales : la case se contournerait en appelant cette route directement.
+  if (!intent.termsAccepted) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: 'Conditions générales à accepter',
+      data: { message: 'Conditions générales à accepter', errors: {} },
+    })
+  }
+
   // Usage unique — consommée dès que le paiement démarre.
   clearPaymentIntent(event)
 
@@ -53,6 +62,7 @@ export default defineEventHandler(async (event): Promise<PaymentInit> => {
         offer_id: intent.offerId,
         service_id: intent.serviceId,
         service_type: intent.serviceType,
+        terms_accepted: true,
         ...(intent.stripeProductId ? { stripe_product_id: intent.stripeProductId } : {}),
         ...(Object.keys(intent.options).length > 0 ? { options: intent.options } : {}),
         ...(str(body, 'profileId') !== '' ? { profile_id: str(body, 'profileId') } : {}),

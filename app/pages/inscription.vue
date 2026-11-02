@@ -45,7 +45,7 @@ const localePath = useLocalePath()
 const session = useSessionStore()
 const { resume, redirectIfAuthenticated } = useAuthFlow()
 // Anti-robots invisible (champ piège + délai minimum), voir `useBotGuard`.
-const botGuard = useBotGuard()
+const botGuard = useBotGuard({ turnstile: true })
 
 const {
   configured: socialConfigured,

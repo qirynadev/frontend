@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
   enforceRateLimit(event, RATE_LIMITS.register)
   const body = asRecord(await readBody(event))
   if (!passBotGuard(body)) return { ok: true, email: str(body, 'email').toLowerCase() }
+  await enforceTurnstile(event, body)
   const email = str(body, 'email').toLowerCase()
   const password = str(body, 'password')
   const firstName = str(body, 'firstName')

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { AuthOutcome, User } from '../contracts'
+import type { AuthOutcome, BotGuardFields, User } from '../contracts'
 import { authRepo } from '../repositories'
 import { forgetPushSubscription } from '../../utils/push-browser'
 
@@ -70,7 +70,7 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
-  async function login(credentials: { email: string; password: string }, locale?: string): Promise<AuthOutcome> {
+  async function login(credentials: { email: string; password: string } & Partial<BotGuardFields>, locale?: string): Promise<AuthOutcome> {
     const outcome = await authRepo.login(credentials, locale)
     apply(outcome)
     return outcome

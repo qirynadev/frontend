@@ -15,6 +15,7 @@ import { enforceRateLimit, RATE_LIMITS } from '~~/server/utils/rate-limit'
 export default defineEventHandler(async (event): Promise<AuthOutcome> => {
   enforceRateLimit(event, RATE_LIMITS.login)
   const body = asRecord(await readBody(event))
+  await enforceTurnstile(event, body)
   const email = str(body, 'email').toLowerCase()
   const password = str(body, 'password')
 

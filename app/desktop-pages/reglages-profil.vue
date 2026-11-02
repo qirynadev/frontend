@@ -12,6 +12,8 @@
  */
 import { drapeauEmoji } from '~/utils/country-search'
 
+const emit = defineEmits<{ 'delete-account': [] }>()
+
 const ICON = '/img/icons/reglages-profil'
 
 const {
@@ -173,6 +175,7 @@ const champs = computed(() => [
     <button
       type="button"
       class="flex w-full cursor-pointer items-center rounded-[16px] border border-[#f9fafb] bg-white p-24 text-left shadow-[0_0_3px_rgba(0,0,0,0.12)]"
+      @click="emit('delete-account')"
     >
       <span class="mr-16 flex size-48 shrink-0 items-center justify-center rounded-[12px] bg-[#fef2f2]">
         <img :src="`${ICON}/ic-rp-trash.svg`" alt="" width="24" height="24" class="block size-24" loading="lazy" decoding="async">
