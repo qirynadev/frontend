@@ -41,8 +41,15 @@ function consentUpdate(choice: CookieConsentChoice) {
  * Client uniquement (`.client.ts`) : `gtag` n'a aucun sens au rendu serveur.
  * `catalogRepo.load()` est mis en cache côté Nitro (voir son docblock) —
  * l'appeler encore une fois ici ne recharge rien côté réseau.
+ *
+ * Rien dans l'application mobile : sans mesure d'audience, pas de
+ * consentement à demander (le bandeau y est masqué, voir `app.vue`), ni de
+ * demande de suivi d'Apple (ATT). Une mesure native (Firebase) aurait son
+ * propre consentement — voir `MOBILE.md`.
  */
 export default defineNuxtPlugin(async () => {
+  if (isNativeApp()) return
+
   const analyticsId = await catalogRepo.load().then(c => c.settings.analyticsId).catch(() => null)
   if (!analyticsId) return
 

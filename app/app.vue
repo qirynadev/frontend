@@ -68,7 +68,8 @@ useHead(() => {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <CookieConsentBanner />
+  <!-- Application mobile : ni Google Analytics ni bandeau (voir `plugins/analytics.client.ts`). -->
+  <CookieConsentBanner v-if="!isNativeApp()" />
   <CheckoutTermsDialog />
   <NewsletterNotice />
 </template>

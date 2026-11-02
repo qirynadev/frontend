@@ -66,6 +66,25 @@ Le push web ne fonctionne pas dans une WebView : l'encart d'activation est masqu
 - le module `@capacitor/push-notifications` ;
 - côté back-office, l'enregistrement des jetons d'appareil et l'envoi par FCM, en plus du Web Push existant.
 
+### Cookies et mesure d'audience
+
+Le bandeau cookies du site sert au consentement de Google Analytics. Dans l'application, **ni Google Analytics ni bandeau** :
+- aucun suivi, donc aucun consentement à demander ;
+- pas de demande d'autorisation de suivi d'Apple (ATT) ;
+- des fiches confidentialité des stores plus simples.
+
+Le cookie de session reste : il est indispensable au fonctionnement et n'a pas besoin de consentement.
+
+Pour mesurer l'audience de l'application, il faudra une mesure native (Firebase Analytics) avec son propre consentement.
+
+### Protections du BFF (danube)
+
+- **Contrôle d'origine des écritures** (`server/utils/origin.ts`) : il accepte déjà les origines de l'application (`https://localhost`, `capacitor://localhost`).
+- **Cloudflare Turnstile** (anti-robots sur la connexion, l'inscription, le mot de passe oublié et le contact) : éteint en production au 2026-11-02. S'il est activé, deux choses sont nécessaires, sinon ces formulaires seront refusés dans l'application (429) :
+  - compiler l'application avec `NUXT_PUBLIC_TURNSTILE_SITE_KEY` ;
+  - ajouter `localhost` aux noms d'hôte du widget dans la console Cloudflare.
+- **Compatibilité** : le BFF déployé sert aussi les versions de l'application déjà installées, qui ne se mettent pas à jour toutes seules. Une nouvelle exigence du BFF peut casser une ancienne version de l'application : la case des CGV obligatoire, par exemple, a cassé le paiement de la 1.0.1 avant sa recompilation.
+
 ### Icône et écran de démarrage
 
 - **Sources** : `mobile/assets/`, générées par `mobile/make-sources.mjs` à partir de l'icône iOS 1024 px fournie.
