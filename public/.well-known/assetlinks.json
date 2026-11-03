@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.qiryna.app",
+      "sha256_cert_fingerprints": [
+        "27:05:4B:89:0D:1E:CE:4C:4F:A4:00:0D:44:45:93:9B:94:7C:B1:58:C3:E5:F4:67:DC:85:6C:82:0B:7A:B7:36"
+      ]
+    }
+  }
+]

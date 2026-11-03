@@ -18,6 +18,53 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Liens d'application (App Links) : un lien du site ouvert depuis
+                 le navigateur intégré (retour du LMS, retour de Stripe), un
+                 e-mail ou une autre application arrive dans l'application.
+                 Vérifiés par `/.well-known/assetlinks.json` du site (empreinte
+                 de la clé de signature) : sans ce fichier, Android les laisse
+                 au navigateur. Voir MOBILE.md, « Liens d'application ».
+
+                 Un seul domaine tant que les autres ne servent pas ce fichier :
+                 jusqu'à Android 11, un domaine non vérifié invalide tous les
+                 autres. `/connexion` et `/inscription` restent au navigateur :
+                 la connexion LinkedIn du site y revient avec son code. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="danube.qiryna.com" />
+                <data android:path="/" />
+                <data android:path="/en" />
+                <data android:pathPrefix="/compte" />
+                <data android:pathPrefix="/en/compte" />
+                <data android:pathPrefix="/destinations" />
+                <data android:pathPrefix="/en/destinations" />
+                <data android:pathPrefix="/langues" />
+                <data android:pathPrefix="/en/langues" />
+                <data android:pathPrefix="/lms" />
+                <data android:pathPrefix="/en/lms" />
+                <data android:pathPrefix="/logement" />
+                <data android:pathPrefix="/en/logement" />
+                <data android:pathPrefix="/messages" />
+                <data android:pathPrefix="/en/messages" />
+                <data android:pathPrefix="/mon-projet" />
+                <data android:pathPrefix="/en/mon-projet" />
+                <data android:pathPrefix="/mot-de-passe" />
+                <data android:pathPrefix="/en/mot-de-passe" />
+                <data android:pathPrefix="/offres" />
+                <data android:pathPrefix="/en/offres" />
+                <data android:pathPrefix="/orientation" />
+                <data android:pathPrefix="/en/orientation" />
+                <data android:pathPrefix="/pages" />
+                <data android:pathPrefix="/en/pages" />
+                <data android:pathPrefix="/paiement-reussi" />
+                <data android:pathPrefix="/en/paiement-reussi" />
+                <data android:pathPrefix="/reglages" />
+                <data android:pathPrefix="/en/reglages" />
+            </intent-filter>
         </activity>
 
         <provider

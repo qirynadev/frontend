@@ -39,7 +39,13 @@ onMounted(async () => {
   try {
     const { url } = await lmsRepo.entryUrl({ ...(orderId ? { orderId } : {}), target }, locale.value)
     // `replace` : cette page ne doit pas rester dans l'historique, un retour
-    // arrière y rejouerait une adresse déjà utilisée.
+    // arrière y rejouerait une adresse déjà utilisée. Dans l'application, le
+    // LMS s'ouvre dans le navigateur intégré, au-dessus de l'espace personnel.
+    if (isNativeApp()) {
+      await navigateTo(localePath('/mon-projet'), { replace: true })
+      await openExternal(url)
+      return
+    }
     window.location.replace(url)
   }
   catch (error) {

@@ -30,11 +30,28 @@
 
 Aucun changement back-office n'a été nécessaire.
 
-**Amélioration possible** : revenir dans l'application sans refermer le navigateur, grâce aux liens d'application (Android App Links, iOS Universal Links) sur `/…/paiement-reussi`. Il faut publier `/.well-known/assetlinks.json` (empreinte de la clé de signature Google Play) et `apple-app-site-association` (Team ID Apple) sur le domaine du site.
+Avec les liens d'application (ci-dessous), le retour de Stripe vers `/…/paiement-reussi` arrive directement dans l'application, sans refermer le navigateur.
+
+### Liens d'application (retour dans l'application)
+
+Un lien vers le site (`danube.qiryna.com`) ouvert hors de l'application revient dans l'application : par exemple « Voir le détail de mon résultat » à la fin du test de niveau dans le LMS, le retour de Stripe, ou un lien reçu par e-mail. Le navigateur intégré se referme et l'écran correspondant s'ouvre (`appUrlOpen` dans `app/plugins/capacitor.client.ts`).
+
+- **Android (App Links)** : filtre `autoVerify` dans `AndroidManifest.xml`, vérifié par `public/.well-known/assetlinks.json`, servi par le site. Ce fichier porte l'empreinte SHA-256 de la clé d'envoi (`qiryna-upload`). **Tant que danube n'est pas déployé avec ce fichier, Android laisse ces liens au navigateur.**
+- **Google Play** : avec la signature d'application Google Play, l'application installée depuis le store est signée par la clé de Google. Il faut ajouter son empreinte (Play Console › Intégrité de l'application) dans `assetlinks.json`.
+- **Chemins** : toutes les pages de l'application, sauf `/connexion` et `/inscription`. La connexion LinkedIn du site y revient avec son code : sur un téléphone où l'application est installée, elle quitterait le navigateur et échouerait.
+- **Effet de bord** : un paiement fait sur le site mobile, téléphone avec l'application installée, revient lui aussi dans l'application. Si l'application n'est pas connectée au même compte, elle demande la connexion avant d'afficher la commande.
+- **Changement de domaine** (par exemple `qiryna.com` à la place de `danube.qiryna.com`) :
+  1. servir le même `assetlinks.json` sur le nouveau domaine ;
+  2. ajouter son `android:host` au filtre ;
+  3. publier une mise à jour.
+
+  Les versions déjà installées ne connaissent que l'ancien domaine : il doit continuer à servir `assetlinks.json` (sans redirection), au moins le temps des mises à jour. Jusqu'à Android 11, un domaine du filtre qui ne sert pas ce fichier invalide tous les autres : n'ajouter un domaine qu'une fois son fichier en ligne.
+- **iOS (Universal Links)** : pas encore branché. Il faut le Team ID Apple, la capacité « Associated Domains » (`applinks:danube.qiryna.com`) et le fichier `/.well-known/apple-app-site-association` sur le site.
+- **Test sans déploiement** (téléphone de test, version debug) : `adb shell pm set-app-link com.qiryna.app always` force l'association.
 
 ### Autres pages externes
 
-- **LMS** : ouvert dans le navigateur intégré, l'application reste dessous.
+- **LMS** : ouvert dans le navigateur intégré, l'application reste dessous. La page de reconnexion (`/lms/entree`, où le LMS renvoie quand sa session expire) le rouvre de la même façon.
 - **Liens `target="_blank"`, `mailto:`, `tel:`** : confiés au téléphone (navigateur, messagerie, appel) par Capacitor.
 
 ### Visio Zoom (cours de langue)

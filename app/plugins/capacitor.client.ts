@@ -17,6 +17,14 @@ import { paymentRepo } from '~/core/repositories'
  * - commande encore impayée (paiement abandonné) : on reste sur l'offre, d'où
  *   l'on peut réessayer. L'écran de succès attendrait en vain la confirmation
  *   de Stripe (jusqu'à 30 s côté back-office, au-delà du délai du BFF : 502).
+ *
+ * Lien du site reçu par l'application (liens d'application, voir
+ * `AndroidManifest.xml`) : par exemple « Voir le détail de mon résultat » à la
+ * fin du test de niveau dans le LMS, ou le retour de Stripe. Le navigateur
+ * intégré se referme et l'écran correspondant s'ouvre dans l'application. Le
+ * jeton `rt` du retour de Stripe ne sert qu'au site : l'application a déjà sa
+ * session. Le retour de paiement en attente est consommé ici, pour que la
+ * fermeture du navigateur n'ouvre pas une seconde fois l'écran de succès.
  */
 export default defineNuxtPlugin((nuxtApp) => {
   if (!Capacitor.isNativePlatform()) return
@@ -38,5 +46,14 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (status !== 'confirmed' && status !== 'failed') return
 
     await navigateTo({ path: localePath('/paiement-reussi'), query: { order_id: orderId } })
+  })
+
+  App.addListener('appUrlOpen', async ({ url }) => {
+    const target = new URL(url)
+    if (target.protocol !== 'https:') return
+    target.searchParams.delete('rt')
+    takePaymentReturn()
+    await Browser.close().catch(() => {})
+    await navigateTo(target.pathname + target.search + target.hash)
   })
 })
