@@ -2,7 +2,7 @@
 
 - **Branche** : `mobile-capacitor`, à jour de `danube` (la branche de référence du site depuis le 2026-10-29).
 - **Principe** : le site Nuxt, livré en page unique dans une coquille native Android et iOS (Capacitor 8). Le site ne change pas : tout ce qui est propre à l'application ne s'active qu'au build `NUXT_MOBILE=1` ou, à l'exécution, quand `isNativeApp()` est vrai (`app/utils/native-app.ts`).
-- **Identité** : nom « Qiryna », identifiant `com.qiryna.app` (Android et iOS), version 1.0.1 (code 2).
+- **Identité** : nom « Qiryna », identifiant `com.qiryna.app` (Android et iOS), version 1.0.2 (code 3).
 
 ## Comment ça marche
 
