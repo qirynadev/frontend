@@ -16,6 +16,13 @@
 import { courseRepo } from '~/core/repositories'
 import { orderByMaquette } from '~/config/language-badges'
 import DesktopLangues from '~/desktop-pages/langues.vue'
+import DesktopLanguesFrancais from '~/desktop-pages/langues-francais.vue'
+
+const route = useRoute()
+const isFrancaisDesktopLanding = computed(() => {
+  const langue = String(route.query.langue ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  return langue === 'francais'
+})
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -120,12 +127,17 @@ usePageSeo(() => ({
       :on-retry="() => refresh()"
     >
       <template #loading>
-        <div class="desktop-boxed flex items-start gap-24 pt-11 pb-32">
+        <div v-if="isFrancaisDesktopLanding" class="desktop-boxed flex items-start gap-24 pt-11 pb-32">
+          <QSkeleton variant="rect" :height="503" class="min-w-0 flex-1" />
+          <QSkeleton variant="rect" :height="503" class="w-476 shrink-0" />
+        </div>
+        <div v-else class="desktop-boxed flex items-start gap-24 pt-11 pb-32">
           <QSkeleton variant="rect" :height="610" class="w-939 shrink-0" />
           <QSkeleton variant="rect" :height="610" class="min-w-0 flex-1" />
         </div>
       </template>
-      <DesktopLangues :courses="courses" />
+      <DesktopLanguesFrancais v-if="isFrancaisDesktopLanding" :courses="courses" />
+      <DesktopLangues v-else :courses="courses" />
     </PageState>
   </div>
 </template>

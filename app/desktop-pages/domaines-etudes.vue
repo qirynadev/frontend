@@ -29,6 +29,7 @@ const emit = defineEmits<{
 }>()
 
 const localePath = useLocalePath()
+const { n } = useI18n()
 
 const ASSET = '/img/desktop/domaines'
 const tabOffset = ref(0)
@@ -311,6 +312,18 @@ const trustItems = [
                     <img :src="`${ASSET}/pin.svg`" alt="" width="14" height="14" class="block size-full">
                   </span>
                   {{ locationLabel(school) }}
+                </span>
+                <span v-if="school.foundedYear !== null" class="flex items-center gap-6 text-[12px] leading-18 font-medium whitespace-nowrap text-[#65738f]">
+                  <span class="size-14 shrink-0 overflow-clip">
+                    <img :src="`${ASSET}/calendar.svg`" alt="" width="14" height="14" class="block size-full">
+                  </span>
+                  {{ $t('school.list.foundedYear', { year: school.foundedYear }) }}
+                </span>
+                <span v-if="school.studentCount !== null" class="flex items-center gap-6 text-[12px] leading-18 font-medium whitespace-nowrap text-[#65738f]">
+                  <span class="flex size-14 shrink-0 items-center justify-center overflow-clip">
+                    <img :src="`${ASSET}/students.svg`" alt="" width="13" height="12" class="block">
+                  </span>
+                  {{ $t('school.list.students', { count: n(school.studentCount, 'decimal') }) }}
                 </span>
               </div>
             </div>
