@@ -113,6 +113,7 @@ async function onSubmit(): Promise<void> {
 
   submitting.value = true
   try {
+    await botGuard.ready()
     const outcome = await session.login({ email: email.value.trim(), password: password.value, ...botGuard.fields() }, locale.value)
     await finish(() => resume(outcome))
   }

@@ -19,6 +19,8 @@ import type { InjectionKey, Ref } from 'vue'
  */
 export interface BotGuard {
   trap: Ref<string>
+  /** À attendre avant `fields()` : le jeton Cloudflare peut arriver après le clic. */
+  ready: () => Promise<void>
   /** Champs à joindre au corps de la requête. */
   fields: () => { _hp: string; _elapsed: number; _turnstile?: string }
 }
@@ -36,6 +38,7 @@ export function useBotGuard(options: { turnstile?: boolean } = {}): BotGuard {
 
   const guard: BotGuard = {
     trap,
+    ready: () => turnstile?.ready() ?? Promise.resolve(),
     fields: () => ({
       _hp: trap.value,
       _elapsed: shownAt === null ? 0 : Date.now() - shownAt,
