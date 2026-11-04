@@ -17,6 +17,36 @@ describe('pickClientIp', () => {
     expect(pickClientIp(undefined, '::ffff:198.51.100.4')).toBe('198.51.100.4')
     expect(pickClientIp('', null)).toBeNull()
   })
+
+  it('derrière Cloudflare, retrouve le visiteur et non l\'adresse de Cloudflare', () => {
+    expect(pickClientIp('203.0.113.7, 172.70.1.2', '127.0.0.1')).toBe('203.0.113.7')
+    expect(pickClientIp('2001:db8::7, 2606:4700::1', '::1')).toBe('2001:db8::7')
+  })
+
+  it('une adresse inventée par le visiteur devant la sienne ne change rien', () => {
+    expect(pickClientIp('8.8.8.8, 203.0.113.7, 172.70.1.2', '127.0.0.1')).toBe('203.0.113.7')
+    // Il annonce une adresse de Cloudflare : elle est sautée, la sienne reste.
+    expect(pickClientIp('172.70.9.9, 203.0.113.7, 172.70.1.2', '127.0.0.1')).toBe('203.0.113.7')
+  })
+
+  it('sans passer par Cloudflare, se faire passer pour Cloudflare ne sert à rien', () => {
+    // Appel direct au serveur : nginx ajoute la vraie adresse à la fin.
+    expect(pickClientIp('198.51.100.1, 203.0.113.7', '127.0.0.1')).toBe('203.0.113.7')
+    expect(pickClientIp('172.70.1.2, 203.0.113.7', '127.0.0.1')).toBe('203.0.113.7')
+  })
+
+  it('nginx qui restaure déjà l\'adresse réelle reste bien lu', () => {
+    expect(pickClientIp('203.0.113.7, 203.0.113.7', '127.0.0.1')).toBe('203.0.113.7')
+  })
+
+  it('un appel interne au serveur garde l\'adresse locale', () => {
+    expect(pickClientIp(undefined, '127.0.0.1')).toBe('127.0.0.1')
+    expect(pickClientIp('172.70.1.2', '127.0.0.1')).toBe('127.0.0.1')
+  })
+
+  it('une valeur illisible n\'est jamais prise pour un relais', () => {
+    expect(pickClientIp('pas-une-ip', '127.0.0.1')).toBe('pas-une-ip')
+  })
 })
 
 describe('hitRateLimit', () => {
