@@ -35,6 +35,13 @@ La restriction par IP de l'API a été retirée le 2026-11-04 : aucune adresse d
 serveur n'est à autoriser. Seul un site peut encore être fermé au public, par le
 code d'accès `NUXT_ACCESS_CODE`.
 
+### 4. Le domaine de l'application mobile
+
+`mobile.qiryna.com` est un alias de qiryna.com dans Plesk, sans redirection, et un
+CNAME proxifié chez Cloudflare. L'application y appelle `/api/bff/` sans Turnstile
+ni page 403 (`server/utils/app-host.ts`) ; les pages du site n'y sont pas servies.
+Le certificat du serveur doit couvrir ce domaine.
+
 ### 4. `sharp` est compilé pour l'architecture de build
 
 Le build vient de le dire :

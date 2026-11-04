@@ -9,6 +9,7 @@ import {
   safeNextPath,
   siteAccessCode,
 } from '~~/server/utils/access-gate'
+import { isAppApiHost, isAppApiPath } from '~~/server/utils/app-host'
 
 /**
  * Accès au site réservé par un code (`NUXT_ACCESS_CODE`). Le parcours complet
@@ -49,6 +50,24 @@ describe('isInternalRequest', () => {
   it('reconnaît seulement l\'objet requête simulé par Nitro', () => {
     expect(isInternalRequest({ __unenv__: undefined, headers: {} })).toBe(true)
     expect(isInternalRequest({ headers: { __unenv__: '1' } })).toBe(false)
+  })
+})
+
+describe('domaine de l\'application mobile', () => {
+  it('reconnaît ce seul domaine, quels que soient la casse et le port', () => {
+    expect(isAppApiHost('mobile.qiryna.com')).toBe(true)
+    expect(isAppApiHost('MOBILE.qiryna.com:443')).toBe(true)
+    expect(isAppApiHost('qiryna.com')).toBe(false)
+    expect(isAppApiHost('danube.qiryna.com')).toBe(false)
+    expect(isAppApiHost('mobile.qiryna.com.exemple.net')).toBe(false)
+  })
+
+  it('n\'ouvre que le BFF', () => {
+    expect(isAppApiPath('/api/bff/session')).toBe(true)
+    expect(isAppApiPath('/')).toBe(false)
+    expect(isAppApiPath('/connexion')).toBe(false)
+    expect(isAppApiPath('/api/cache/revalidate')).toBe(false)
+    expect(isAppApiPath('/api/bff/../cache/revalidate')).toBe(false)
   })
 })
 
