@@ -12,6 +12,8 @@ export default defineEventHandler((event) => {
 
   const [path = '/'] = event.path.split('?')
   if (isOpenRoute(event.method, path)) return
+  // L'application mobile n'a ni page 403 ni cookie d'accès : voir `app-host.ts`.
+  if (isAppApiHost(getRequestHost(event)) && isAppApiPath(path)) return
   if (hasAccess(getCookie(event, ACCESS_COOKIE), code)) return
 
   const locale = accessLocale(event.path, getRequestHeader(event, 'accept-language'))

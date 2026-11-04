@@ -105,10 +105,20 @@ describe('enforceTurnstile', () => {
 
   beforeEach(() => {
     vi.stubGlobal('getRequestHeader', () => undefined)
+    vi.stubGlobal('getRequestHost', () => 'qiryna.com')
     vi.stubGlobal('createError', (input: { statusCode: number }) => Object.assign(new Error('refus'), input))
   })
 
   afterEach(() => vi.unstubAllGlobals())
+
+  it('dispense le seul domaine de l\'application mobile', async () => {
+    stubConfig('secret')
+    vi.stubGlobal('getRequestHost', () => 'mobile.qiryna.com')
+    await expect(enforceTurnstile(event, {})).resolves.toBeUndefined()
+
+    vi.stubGlobal('getRequestHost', () => 'danube.qiryna.com')
+    await expect(enforceTurnstile(event, {})).rejects.toMatchObject({ statusCode: 429 })
+  })
 
   it('éteint sans clé secrète', async () => {
     stubConfig('')
