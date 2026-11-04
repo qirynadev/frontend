@@ -6,6 +6,7 @@ defineProps<{
   submitted: boolean
   submitting: boolean
   submitError: boolean
+  submitRetryLater: boolean
   isAuthenticated: boolean
   subject: string
   name: string
@@ -76,7 +77,7 @@ const SUCCESS_ICON = '/img/icons/contact-success'
         v-if="submitError"
         tone="danger"
         :title="$t('settingsContact.submitErrorTitle')"
-        :message="$t('settingsContact.submitErrorDesc')"
+        :message="$t(submitRetryLater ? 'settingsContact.submitErrorRetryDesc' : 'settingsContact.submitErrorDesc')"
       />
 
       <form class="flex w-full flex-col gap-16 rounded-[16px] border border-[#f9fafb] bg-white p-32 shadow-[0_0_3px_rgba(0,0,0,0.12)]" @submit.prevent="emit('submit')">

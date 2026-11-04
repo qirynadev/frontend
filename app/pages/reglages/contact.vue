@@ -76,6 +76,7 @@ const consent = ref(false)
 const submitted = ref(false)
 const submitting = ref(false)
 const submitError = ref(false)
+const submitRetryLater = ref(false)
 
 const errors = reactive({
   subject: '',
@@ -139,6 +140,7 @@ async function onSubmit(): Promise<void> {
     }
     else {
       const { firstName, lastName } = splitName()
+      await botGuard.ready()
       await contactRepo.sendPublic(
         { firstName, lastName, email: email.value.trim(), subject: subjectLabel.value, message: message.value.trim() },
         locale.value,
@@ -159,6 +161,8 @@ async function onSubmit(): Promise<void> {
       if (emailError || messageError) return
       errors.message = t('settingsContact.errorMessage')
     }
+    // Vérification anti-robot pas encore aboutie ou trop d'essais : réessayer suffit.
+    submitRetryLater.value = error instanceof ApiError && error.kind === 'rateLimited'
     submitError.value = true
   }
   finally {
@@ -286,7 +290,7 @@ usePageSeo(() => ({
           v-if="submitError"
           tone="danger"
           :title="$t('settingsContact.submitErrorTitle')"
-          :message="$t('settingsContact.submitErrorDesc')"
+          :message="$t(submitRetryLater ? 'settingsContact.submitErrorRetryDesc' : 'settingsContact.submitErrorDesc')"
         />
 
         <form class="flex w-full flex-col gap-12" @submit.prevent="onSubmit">
@@ -444,6 +448,7 @@ usePageSeo(() => ({
       :submitted="submitted"
       :submitting="submitting"
       :submit-error="submitError"
+      :submit-retry-later="submitRetryLater"
       :is-authenticated="isAuthenticated"
       :subject="subject"
       :name="name"

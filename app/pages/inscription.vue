@@ -157,6 +157,7 @@ async function onSubmit(): Promise<void> {
 
   submitting.value = true
   try {
+    await botGuard.ready()
     await authRepo.register(
       {
         email: email.value.trim(),

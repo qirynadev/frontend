@@ -1895,6 +1895,7 @@
     "subjectTechnical": "Technical issue",
     "submit": "Send message",
     "submitErrorDesc": "Something went wrong — please try again in a moment.",
+    "submitErrorRetryDesc": "Security check in progress. Please wait a few seconds, then try again.",
     "submitErrorTitle": "Could not send",
     "subtitle": "Describe your request and we will reply by email.",
     "successBannerDesc": "Our team will contact you as soon as possible.",

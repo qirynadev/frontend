@@ -33,12 +33,14 @@ export async function enforceTurnstile(event: H3Event, body: Record<string, unkn
 
 async function verify(secret: string, token: string, ip: string | null): Promise<boolean> {
   try {
-    const outcome = await $fetch<{ success?: boolean }>(SITEVERIFY_URL, {
+    const outcome = await $fetch<{ success?: boolean, 'error-codes'?: string[] }>(SITEVERIFY_URL, {
       method: 'POST',
       body: { secret, response: token, ...(ip ? { remoteip: ip } : {}) },
       timeout: 5000,
     })
-    return outcome.success === true
+    if (outcome.success === true) return true
+    console.warn('[turnstile] jeton refusé par Cloudflare', outcome['error-codes'] ?? [])
+    return false
   }
   catch (error) {
     console.error('[turnstile] vérification impossible, formulaire laissé passer', error)

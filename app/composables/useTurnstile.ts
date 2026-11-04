@@ -1,3 +1,8 @@
+import { createTokenSlot } from '~/utils/turnstile-token'
+
+/** Attente maximale du jeton à l'envoi d'un formulaire. */
+const TOKEN_WAIT_MS = 25_000
+
 interface TurnstileApi {
   render: (container: HTMLElement, options: Record<string, unknown>) => string
   reset: (widgetId: string) => void
@@ -35,11 +40,12 @@ function loadScript(): Promise<void> {
  * Le widget reste invisible et ne se montre, dans un coin de l'écran, que si
  * Cloudflare a besoin d'une action du visiteur : aucune place à réserver dans les
  * formulaires. Un jeton ne sert qu'une fois : `consume()` en redemande aussitôt un,
- * pour qu'un nouvel envoi après une erreur de saisie reste possible.
+ * pour qu'un nouvel envoi après une erreur de saisie reste possible. `ready()` se
+ * place avant l'envoi : sans lui, un visiteur plus rapide que Cloudflare est refusé.
  */
 export function useTurnstile() {
   const siteKey = String(useRuntimeConfig().public.turnstileSiteKey ?? '')
-  let token = ''
+  const slot = createTokenSlot(TOKEN_WAIT_MS, siteKey !== '')
   let widgetId: string | null = null
   let container: HTMLElement | null = null
 
@@ -47,20 +53,21 @@ export function useTurnstile() {
     if (siteKey === '') return
     try {
       await loadScript()
-      if (!window.turnstile) return
+      if (!window.turnstile) return slot.disable()
       container = document.createElement('div')
       container.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:60'
       document.body.appendChild(container)
       widgetId = window.turnstile.render(container, {
         sitekey: siteKey,
         appearance: 'interaction-only',
-        callback: (value: string) => { token = value },
-        'expired-callback': () => { token = '' },
-        'error-callback': () => { token = '' },
+        callback: (value: string) => slot.set(value),
+        'expired-callback': () => slot.clear(),
+        'error-callback': () => slot.clear(),
       })
     }
     catch {
       // Script bloqué : le serveur décidera, le formulaire reste affiché.
+      slot.disable()
     }
   })
 
@@ -70,11 +77,10 @@ export function useTurnstile() {
   })
 
   function consume(): string {
-    const current = token
-    token = ''
+    const current = slot.take()
     if (widgetId !== null) window.turnstile?.reset(widgetId)
     return current
   }
 
-  return { consume }
+  return { consume, ready: slot.ready }
 }

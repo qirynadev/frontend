@@ -142,6 +142,7 @@ async function onRequest(): Promise<void> {
 
   submitting.value = true
   try {
+    await botGuard.ready()
     await authRepo.forgotPassword(value, locale.value, botGuard.fields())
     // Formulé sans confirmer que le compte existe : ce serait offrir un moyen
     // d'énumérer les comptes. Le back-office répond 200 dans les deux cas.
