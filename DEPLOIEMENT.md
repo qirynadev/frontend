@@ -29,17 +29,11 @@ jamais conservé.
 
 → Certificat TLS obligatoire. Pas de `http://ip-du-serveur:3000`.
 
-### 3. Le back-office **filtre par adresse IP**
+### 3. Le back-office ne filtre plus par adresse IP
 
-`GET /all-data` peut répondre **403** selon l'IP appelante
-(ARCHITECTURE-API.md § 1, constat n° 14). C'est le serveur qui appelle l'API,
-pas le navigateur : **c'est l'IP sortante de l'hébergement qui doit être
-autorisée**.
-
-→ Avant de déployer, demander à l'équipe back-office d'ajouter l'IP du serveur.
-Sur un VPS c'est une IP fixe, donc simple. Sur Vercel / Netlify / Cloudflare
-Workers, les IP sont dynamiques et partagées : **ces plateformes ne
-fonctionneront pas** tant que le filtrage est en place.
+La restriction par IP de l'API a été retirée le 2026-11-04 : aucune adresse de
+serveur n'est à autoriser. Seul un site peut encore être fermé au public, par le
+code d'accès `NUXT_ACCESS_CODE`.
 
 ### 4. `sharp` est compilé pour l'architecture de build
 
@@ -62,8 +56,7 @@ Nuxt 4 / Nitro 2.13. `node --version` sur la cible avant tout.
 ## 1. Le plus rapide : partager le poste de développement (10 minutes)
 
 Pour montrer l'écran à trois personnes cet après-midi, sans serveur. HTTPS
-compris, et l'IP sortante est celle du poste — **déjà autorisée**, puisque le
-développement fonctionne.
+compris.
 
 ```bash
 npm run build
@@ -89,7 +82,7 @@ telle quelle.
 |---|---|
 | HTTPS, donc la connexion fonctionne | l'URL meurt quand vous fermez le terminal |
 | aucune configuration réseau | le poste doit rester allumé |
-| l'IP sortante est déjà autorisée | l'URL change à chaque lancement |
+| aucun serveur à installer | l'URL change à chaque lancement |
 | gratuit, sans compte | inadapté à une démonstration client |
 
 > ⚠️ Cette URL est **publique et non protégée**. Ne la laissez pas tourner sans
@@ -434,11 +427,9 @@ Le reverse proxy et le TLS restent à faire — § 2.5.
 
 ## 4. Vercel, Netlify, Cloudflare — à écarter pour l'instant
 
-Nuxt s'y déploie très bien en principe. Deux obstacles concrets ici :
+Nuxt s'y déploie très bien en principe. Un obstacle concret ici :
 
-1. **le filtrage par IP du back-office** (§ 0.3) : ces plateformes sortent par
-   des IP dynamiques et partagées, impossibles à autoriser ;
-2. **`sharp`** n'est pas disponible dans tous leurs environnements
+1. **`sharp`** n'est pas disponible dans tous leurs environnements
    d'exécution — `@nuxt/image` devrait alors être reconfiguré.
 
 À reconsidérer le jour où l'API est ouverte, ou si l'équipe accepte d'autoriser
@@ -450,7 +441,6 @@ des plages entières — ce qui n'est pas souhaitable.
 
 | Demande | Pourquoi | Bloquant ? |
 |---|---|---|
-| **Autoriser l'IP sortante du serveur** | sinon `/all-data` répond 403 et le site est vide | 🔴 oui |
 | Déclarer les URL de retour OAuth : `https://<domaine>/connexion` et `https://<domaine>/inscription` | sinon LinkedIn refuse la redirection | 🟠 seulement pour OAuth |
 | Fournir les trois identifiants clients OAuth | boutons grisés sans eux | 🟠 |
 | **Remplacer `pk_live_…` par une clé de test en recette** | une clé *live* en recette autorise des paiements réels | 🔴 avant toute recette du paiement |
@@ -469,7 +459,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://demo.qiryna.com/en/connexion
 
 | Contrôle | Attendu | Ce qu'un échec signifie |
 |---|---|---|
-| `/` répond 200 **avec du contenu** | 200 | une page vide = 403 de l'API → **IP non autorisée** (§ 0.3) |
+| `/` répond 200 **avec du contenu** | 200 | une page vide = erreur de l'API, voir les journaux |
 | `/connexion` répond 200 | 200 | |
 | Se connecter, puis recharger : rester connecté | session conservée | cookie perdu → **le site n'est pas en HTTPS** (§ 0.2) |
 | `POST /api/bff/payment/init` sans session | **401** | autre chose = la garde serveur ne tourne pas |

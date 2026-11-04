@@ -22,8 +22,7 @@ export interface ApiClientOptions {
   /**
    * IP du visiteur, transmise à l'API avec la clé partagée `bffKey` pour que
    * ses limites de fréquence visent le visiteur et non le serveur du site
-   * (`ResolveBffClientIp` côté back-office). Jamais dans `X-Forwarded-For` :
-   * la restriction d'accès par IP de l'API s'appliquerait alors au visiteur.
+   * (`ResolveBffClientIp` côté back-office).
    */
   clientIp?: string | null
   bffKey?: string
