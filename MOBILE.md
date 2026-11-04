@@ -2,14 +2,14 @@
 
 - **Branche** : `mobile-capacitor`, à jour de `danube` (la branche de référence du site depuis le 2026-10-29).
 - **Principe** : le site Nuxt, livré en page unique dans une coquille native Android et iOS (Capacitor 8). Le site ne change pas : tout ce qui est propre à l'application ne s'active qu'au build `NUXT_MOBILE=1` ou, à l'exécution, quand `isNativeApp()` est vrai (`app/utils/native-app.ts`).
-- **Identité** : nom « Qiryna », identifiant `com.qiryna.app` (Android et iOS), version 1.0.2 (code 3).
+- **Identité** : nom « Qiryna », identifiant `com.qiryna.app` (Android et iOS), version 1.0.3 (code 4).
 
 ## Comment ça marche
 
 | Sujet | Site | Application |
 | --- | --- | --- |
 | Rendu | serveur (SSR) | page unique (`ssr: false`), fichiers embarqués |
-| Appels à l'API | BFF Nitro, même origine (`/api/bff`) | BFF du site déployé (`NUXT_MOBILE_BFF_ORIGIN` : production `danube.qiryna.com` par défaut, donc l'API `admin.qiryna.com/api`), en HTTP natif (`CapacitorHttp`) : pas de CORS |
+| Appels à l'API | BFF Nitro, même origine (`/api/bff`) | BFF dédié à l'application (`NUXT_MOBILE_BFF_ORIGIN` : production `mobile.qiryna.com` par défaut, qui ne sert que `/api/bff/`, branché sur l'API `admin.qiryna.com/api`), en HTTP natif (`CapacitorHttp`) : pas de CORS |
 | Session | cookie `httpOnly` posé par le BFF | le même cookie, gardé par le stockage natif du téléphone (`CapacitorCookies`), jamais lisible en JavaScript |
 | Traductions | route `/_i18n/...` du serveur | fichiers générés au build (`i18n.experimental.prerenderMessages`) |
 | Images | optimiseur `/_ipx` | images telles quelles (`image.provider: 'none'`) |
@@ -96,12 +96,14 @@ Le cookie de session reste : il est indispensable au fonctionnement et n'a pas b
 
 Pour mesurer l'audience de l'application, il faudra une mesure native (Firebase Analytics) avec son propre consentement.
 
-### Protections du BFF (danube)
+### Protections du BFF (`mobile.qiryna.com`)
 
-- **Contrôle d'origine des écritures** (`server/utils/origin.ts`) : il accepte déjà les origines de l'application (`https://localhost`, `capacitor://localhost`).
-- **Cloudflare Turnstile** (anti-robots sur la connexion, l'inscription, le mot de passe oublié et le contact) : éteint en production au 2026-11-02. S'il est activé, deux choses sont nécessaires, sinon ces formulaires seront refusés dans l'application (429) :
-  - compiler l'application avec `NUXT_PUBLIC_TURNSTILE_SITE_KEY` ;
-  - ajouter `localhost` aux noms d'hôte du widget dans la console Cloudflare.
+L'application appelle `mobile.qiryna.com` depuis la 1.0.3 (le 2026-11-04). Ce domaine ne sert que `/api/bff/`, pas les pages du site.
+
+- **Contrôle d'origine des écritures** (`server/utils/origin.ts`) : il accepte les origines de l'application (`https://localhost`, `capacitor://localhost`).
+- **Cloudflare Turnstile** (anti-robots sur la connexion, l'inscription, le mot de passe oublié et le contact) : actif sur le site (danube), **pas sur `mobile.qiryna.com`**. Une application ne peut pas obtenir de jeton Turnstile : il ne faut donc ni `NUXT_PUBLIC_TURNSTILE_SITE_KEY` au build, ni `localhost` dans le widget.
+- **Versions 1.0.2 et antérieures** : elles appellent danube et sont refusées (429) sur ces quatre formulaires. Il faut les remplacer par la 1.0.3 ou plus.
+- **Liens d'application** : ils restent sur le domaine du site (danube), qui sert les pages et `assetlinks.json`, et non sur `mobile.qiryna.com`.
 - **Compatibilité** : le BFF déployé sert aussi les versions de l'application déjà installées, qui ne se mettent pas à jour toutes seules. Une nouvelle exigence du BFF peut casser une ancienne version de l'application : la case des CGV obligatoire, par exemple, a cassé le paiement de la 1.0.1 avant sa recompilation.
 
 ### Icône et écran de démarrage
@@ -130,7 +132,7 @@ Pour mesurer l'audience de l'application, il faudra une mesure native (Firebase 
 Node n'est pas installé sur le poste de développement : les commandes Node passent par Docker (`node:22-alpine`, `node_modules` dans le volume `qiryna-front-nm`).
 
 ```bash
-# 1. Site en page unique, pointé sur la production (ou NUXT_MOBILE_BFF_ORIGIN=https://stage.qiryna.com pour la recette)
+# 1. Site en page unique, pointé sur la production, mobile.qiryna.com (ou NUXT_MOBILE_BFF_ORIGIN=https://stage.qiryna.com pour la recette)
 NUXT_MOBILE=1 npx nuxt generate
 # 2. Copie dans les projets natifs
 npx cap sync

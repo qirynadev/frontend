@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Écran de démarrage : fond blanc (celui du logo) et logo centré à sa
+     taille (`splash_logo`, 200 dp de large), jamais étiré. L'ancienne image
+     plein écran (`splash.png`, 2:3) était déformée au format du téléphone. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@android:color/white" />
+    <item>
+        <bitmap android:gravity="center" android:src="@drawable/splash_logo" />
+    </item>
+</layer-list>
