@@ -79,10 +79,18 @@ export async function useAdmissionData(locale: Ref<string>) {
 
       const documents = order ? toAdmissionDocuments(documentsState, order.status) : []
 
+      const documentsStep = order?.checklist.find((item) => item.stepKey === 'documents_submitted')
+
       return {
         order,
         steps: order ? toAdmissionSteps(order.checklist, documents) : [],
         documents,
+        /**
+         * Dépôt des documents encore à faire : ni dossier finalisé par le client,
+         * ni étape validée par l'équipe. L'écran ouvre alors l'onglet Document
+         * par défaut (demande du 2026-11-24).
+         */
+        documentsPending: order !== null && !documentsState.locked && documentsStep?.status !== 'done',
         documentsLocked: documentsState.locked,
         documentsFinalizedAt: documentsState.finalizedAt ? toFrenchDate(documentsState.finalizedAt) : null,
       }
