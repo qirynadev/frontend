@@ -5,8 +5,12 @@
 export type CookieConsentChoice = 'accepted' | 'declined' | 'measure' | 'marketing'
 
 const COOKIE_NAME = 'qiryna_cookie_consent'
-/** 13 mois — durée maximale recommandée par la CNIL pour un consentement cookies. */
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 395
+/**
+ * 6 mois, comme l'annonce la politique cookies (section 3) : le choix, accord ou
+ * refus, est redemandé ensuite. Était de 13 mois (plafond de la CNIL) jusqu'au
+ * 2026-11-23, en contradiction avec le texte publié.
+ */
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 183
 
 export function consentAllows(choice: CookieConsentChoice | null, category: 'measure' | 'marketing'): boolean {
   return choice === 'accepted' || choice === category

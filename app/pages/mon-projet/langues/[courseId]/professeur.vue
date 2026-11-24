@@ -93,9 +93,14 @@ function fromMock(teacher: LangueTeacherCardMock): TeacherCardView {
   return { ...teacher }
 }
 
+/**
+ * Professeurs de démonstration réservés au cours `demo` : pour une vraie
+ * commande, une liste vide affiche l'écran « Aucun professeur disponible »
+ * (avant le 2026-11-23, de faux professeurs s'y affichaient).
+ */
 const displayTeachers = computed<TeacherCardView[]>(() => {
-  const api = teachers.value ?? []
-  return api.length > 0 ? api.map(fromApi) : langueTeachersMock.map(fromMock)
+  if (isDemo.value) return langueTeachersMock.map(fromMock)
+  return (teachers.value ?? []).map(fromApi)
 })
 
 const TEACHERS_PER_PAGE = LANGUE_TEACHERS_PER_PAGE
@@ -130,6 +135,11 @@ async function choose(teacherId: string) {
     assignError.value = true
     assigning.value = null
   }
+}
+
+/** Initiales du professeur, à la place d'une photo absente. */
+function initials(fullName: string): string {
+  return fullName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part.charAt(0).toUpperCase()).join('')
 }
 
 function formatRating(value: number | null): string {
@@ -174,7 +184,7 @@ usePageSeo(() => ({
           :key="teacher.id"
           class="box-border flex w-full gap-14 rounded-[10px] border border-border bg-surface-card p-15 shadow-[0_2px_6px_rgba(0,0,0,0.03)]"
         >
-          <div class="h-113 w-75 shrink-0 overflow-hidden rounded-[10px] bg-surface">
+          <div class="flex h-113 w-75 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-surface">
             <img
               v-if="teacher.photo"
               :src="teacher.photo"
@@ -183,6 +193,7 @@ usePageSeo(() => ({
               height="113"
               class="block size-full object-cover"
             >
+            <span v-else class="text-[22px] font-semibold text-muted" aria-hidden="true">{{ initials(teacher.fullName) }}</span>
           </div>
 
           <div class="flex min-w-0 flex-1 gap-22">

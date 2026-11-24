@@ -55,7 +55,8 @@ export function useTurnstile() {
       await loadScript()
       if (!window.turnstile) return slot.disable()
       container = document.createElement('div')
-      container.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:60'
+      // Position dans `main.css` (`.q-turnstile`) : au-dessus de la barre du bas sur téléphone.
+      container.className = 'q-turnstile'
       document.body.appendChild(container)
       widgetId = window.turnstile.render(container, {
         sitekey: siteKey,

@@ -1806,3 +1806,21 @@
     }
   }
 }
+
+/* Widget Cloudflare Turnstile (`useTurnstile`), invisible sauf si Cloudflare
+   demande une action. Sur téléphone, il se pose au-dessus de la barre de
+   navigation du bas (≈ 75px + son décollement), qu'il couvrait avant le
+   2026-11-23 ; sur ordinateur, dans le coin. */
+.q-turnstile {
+  position: fixed;
+  right: 16px;
+  bottom: calc(75px + var(--spacing-nav-bottom, max(12px, env(safe-area-inset-bottom, 0px))) + 12px);
+  z-index: 60;
+  max-width: calc(100vw - 32px);
+}
+
+@media (min-width: 768px) {
+  .q-turnstile {
+    bottom: 16px;
+  }
+}

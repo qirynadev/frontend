@@ -55,9 +55,10 @@ const strengthsHtml = computed(() => {
   return match?.description ?? ''
 })
 
+/** Même règle que la fiche mobile : domaine de l'URL, sinon celui de l'école (2026-11-23). */
 const ctaTo = computed(() => {
-  if (props.domaine) return localePath(`/offres/${props.domaine}`)
-  return localePath('/orientation')
+  const slug = props.domaine || props.school.area?.slug || ''
+  return localePath(slug ? `/offres/${slug}` : '/orientation')
 })
 
 /**

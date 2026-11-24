@@ -64,16 +64,22 @@ const { data: teachers } = await usePageData(
   { watch: [courseId, locale] },
 )
 
+/**
+ * Professeur de la commande. Les professeurs de démonstration ne servent qu'au
+ * cours `demo` ; un professeur absent de la liste donne une carte neutre, sans
+ * nom ni photo d'emprunt (2026-11-23).
+ */
 const teacherCard = computed(() => {
-  const mock = langueTeachersMock.find(item => item.id === teacherId.value)
-  if (mock) return mock
+  if (isDemo.value) {
+    return langueTeachersMock.find(item => item.id === teacherId.value) ?? langueTeachersMock[1]!
+  }
   const api = (teachers.value ?? []).find(item => item.id === teacherId.value)
   if (api) {
     const availability = resolveTeacherAvailability(api.nextAvailableAt, locale.value, t)
     return {
       id: api.id,
       fullName: api.fullName,
-      photo: api.photo ?? '/img/mpl-prof/sarah.jpg',
+      photo: api.photo,
       verified: api.verified,
       countryLabel: api.countryLabel,
       flagSrc: api.countryFlag,
@@ -86,8 +92,30 @@ const teacherCard = computed(() => {
       priceFrom: '-',
     }
   }
-  return langueTeachersMock[1]!
+  return {
+    id: teacherId.value,
+    fullName: '',
+    photo: null as string | null,
+    verified: false,
+    countryLabel: null as string | null,
+    flagSrc: null as string | null,
+    rating: null as number | null,
+    reviewsCount: 0,
+    qualification: null as string | null,
+    experienceYears: null as number | null,
+    availabilityLabel: null as string | null,
+    availabilityTone: null,
+    priceFrom: '-',
+  }
 })
+
+/** Initiales du professeur, à la place d'une photo absente. */
+const teacherInitials = computed(() => teacherCard.value.fullName
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map(part => part.charAt(0).toUpperCase())
+  .join(''))
 
 interface HourSlot {
   blockId: string
@@ -175,7 +203,11 @@ const availableSlots = computed<HourSlot[]>(() => {
   const apiSlots = (events.value ?? [])
     .flatMap(event => (event.free ? sessionSlots(event) : event.joinable ? joinSlot(event) : []))
     .sort((a, b) => a.start.getTime() - b.start.getTime())
-  if (apiSlots.length > 0) return apiSlots
+  // Créneaux de démonstration réservés au cours `demo` : pour une vraie
+  // commande, aucun créneau affiche « Aucun créneau disponible ». Avant le
+  // 2026-11-23, de faux créneaux s'affichaient, et en « confirmer » un ne
+  // réservait rien tout en renvoyant le client comme si c'était fait.
+  if (apiSlots.length > 0 || !isDemo.value) return apiSlots
   return buildMockSlots()
 })
 
@@ -379,14 +411,16 @@ usePageSeo(() => ({
         <!-- Carte professeur -->
         <section class="box-border w-full rounded-[10px] border border-border bg-surface-card p-17">
           <div class="flex items-start gap-14 pb-20">
-            <div class="size-106 shrink-0 overflow-hidden rounded-[10px] bg-surface">
+            <div class="flex size-106 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-surface">
               <img
+                v-if="teacherCard.photo"
                 :src="teacherCard.photo"
                 alt=""
                 width="106"
                 height="106"
                 class="block size-106 object-cover"
               >
+              <span v-else class="text-[28px] font-semibold text-muted" aria-hidden="true">{{ teacherInitials }}</span>
             </div>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-5">
