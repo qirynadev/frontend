@@ -24,23 +24,31 @@ const router = useRouter()
 const { data: admission, apiError, isInitialLoading, refresh } = await useAdmissionData(locale)
 
 type TabId = 'apercu' | 'document'
-const activeTab = ref<TabId>('apercu')
+
+/**
+ * Onglet ouvert : celui de l'adresse (`?tab=`), sinon Document tant que le
+ * dépôt des documents reste à faire, Aperçu ensuite (2026-11-24). Calculé dès
+ * le rendu serveur, sans bascule visible à l'arrivée.
+ */
+function initialTab(): TabId {
+  const tabFromQuery = route.query.tab
+  if (tabFromQuery === 'document' || tabFromQuery === 'apercu') return tabFromQuery
+  return admission.value?.documentsPending ? 'document' : 'apercu'
+}
+
+const activeTab = ref<TabId>(initialTab())
 
 onMounted(() => {
-  const tabFromQuery = route.query.tab as string
-  if (tabFromQuery === 'document') {
-    activeTab.value = 'document'
-  } else {
-    activeTab.value = 'apercu'
-    if (tabFromQuery) {
-      router.replace({ query: { ...route.query, tab: undefined } })
-    }
+  const tabFromQuery = route.query.tab
+  if (tabFromQuery && tabFromQuery !== 'document' && tabFromQuery !== 'apercu') {
+    router.replace({ query: { ...route.query, tab: undefined } })
   }
 })
 
+/** Le choix reste dans l'adresse : un retour sur l'écran le conserve. */
 function setTab(tab: TabId) {
   activeTab.value = tab
-  router.replace({ query: { ...route.query, tab: tab === 'apercu' ? undefined : tab } })
+  router.replace({ query: { ...route.query, tab } })
 }
 
 usePageSeo(() => ({
