@@ -36,9 +36,16 @@ const apiSlug = computed(() => resolveDestinationApiSlug(destinationSlug.value))
 const schoolSlug = computed(() => String(route.params.school ?? ''))
 const domaine = computed(() => String(route.query.domaine ?? ''))
 const desktopDomaine = computed(() => domaine.value)
-const offersTo = computed(() =>
-  domaine.value ? `/offres/${domaine.value}` : '/orientation',
-)
+/**
+ * « Être accompagné pour candidater » : formule d'accompagnement du domaine de
+ * cette fiche, celui de l'URL (`?domaine=`) ou, à défaut, celui de l'école
+ * (2026-11-23 : sans filtre de domaine, le bouton menait à l'orientation).
+ * L'orientation ne reste que pour une fiche sans domaine.
+ */
+const offersTo = computed(() => {
+  const slug = domaine.value || school.value?.area?.slug || ''
+  return slug ? `/offres/${slug}` : '/orientation'
+})
 
 /**
  * `Plus Jakarta Sans` (700) : seule cette fiche l'utilise (`.font-jakarta`,
